@@ -1,0 +1,35 @@
+import React from 'react';
+import { createUseStyles } from 'react-jss';
+import { Card } from '@material-ui/core';
+import classNames from 'classnames';
+
+
+/** ============================ Types ===================================== */
+type NavigaderCardProps = {
+  className?: string;
+  raised?: boolean;
+  
+  // style props
+  padding?: number | string;
+}
+
+/** ============================ Styles ==================================== */
+const useStyles = createUseStyles({
+  card: (props: NavigaderCardProps) => ({
+    padding: props.padding
+  })
+});
+
+/** ============================ Components ================================ */
+const NavigaderCard: React.FC<NavigaderCardProps> = ({ className, ...rest }) => {
+  const classes = useStyles(rest);
+  const cardClasses = classNames(className, classes.card);
+  return <Card className={cardClasses} {...rest} />;
+};
+
+NavigaderCard.defaultProps = {
+  padding: '1rem'
+};
+
+/** ============================ Exports =================================== */
+export default NavigaderCard;

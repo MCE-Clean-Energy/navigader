@@ -1,0 +1,26 @@
+{
+  "name": "server",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "tsc": "tsc",
+    "dev": "ts-node-dev --respawn --transpileOnly --require dotenv/config ./start.ts",
+    "prod": "tsc && node ./build/app.js"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.4",
+    "express": "^4.16.4",
+    "express-http-proxy": "^1.6.0",
+    "http-errors": "^1.6.3",
+    "morgan": "^1.9.1"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.2",
+    "@types/express-http-proxy": "^1.5.12",
+    "@types/http-errors": "^1.6.3",
+    "@types/morgan": "^1.7.37",
+    "dotenv": "^8.2.0",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.7.5"
+  }
+}
