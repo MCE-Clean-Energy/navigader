@@ -2,10 +2,10 @@ import React, { FormEvent, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import assign from 'lodash/assign';
 
-import logo from '@tv/shared/images/logo.png';
-import { Button, Card, TextField, Typography } from '@tv/shared/wrappers';
-import { primaryColor, secondaryColor } from '@tv/shared/styles';
-import { login } from './serverAgent';
+import * as api from '@nav/shared/api';
+import logo from '@nav/shared/images/logo.png';
+import { Button, Card, TextField, Typography } from '@nav/shared/components';
+import { primaryColor, secondaryColor } from '@nav/shared/styles';
 
 
 /** ============================ Styles ==================================== */
@@ -115,7 +115,7 @@ const LoginCard: React.FC = () => {
     setError(false);
     
     event.preventDefault();
-    const response = await login(username, password);
+    const response = await api.login(username, password);
     
     setError(response.status !== 200);
   }

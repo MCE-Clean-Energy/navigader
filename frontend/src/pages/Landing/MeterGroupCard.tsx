@@ -1,0 +1,51 @@
+import React from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { createUseStyles } from 'react-jss';
+
+import { Card, Grid, Frame288Graph, Statistic } from '@nav/shared/components';
+import { hasDataField, MeterGroup } from '@nav/shared/models/meter';
+import { dateFormatter } from '@nav/shared/util';
+
+
+/** ============================ Types ===================================== */
+type MeterGroupCardProps = RouteComponentProps & {
+  meterGroup: MeterGroup
+};
+
+/** ============================ Styles ==================================== */
+const useMeterGroupCardStyles = createUseStyles({
+  card: {
+    cursor: 'pointer'
+  }
+});
+
+/** ============================ Components ================================ */
+const MeterGroupCard: React.FC<MeterGroupCardProps> = ({ meterGroup, history}) => {
+  const classes = useMeterGroupCardStyles();
+  
+  // Render the graph if we've loaded the average data
+  const graph = hasDataField(meterGroup.data, 'average')
+    ? <Frame288Graph data={meterGroup.data.average} height={200} />
+    : null;
+  
+  return (
+    <Card raised className={classes.card} onClick={viewMeterGroup}>
+      {graph}
+      <Grid>
+        <Grid.Item span={4}>
+          <Statistic title="# of Meters" value={meterGroup.numMeters} />
+        </Grid.Item>
+        <Grid.Item span={4}>
+          <Statistic title="Uploaded" value={dateFormatter(meterGroup.created)} />
+        </Grid.Item>
+      </Grid>
+    </Card>
+  );
+  
+  function viewMeterGroup () {
+    history.push(`/meter_group/${meterGroup.id}`);
+  }
+};
+
+/** ============================ Exports =================================== */
+export default withRouter(MeterGroupCard);

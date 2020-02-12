@@ -1,4 +1,4 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 
 
 export const primaryColor = '#EC0B88';
@@ -16,3 +16,4 @@ const theme = createMuiTheme({
 });
 
 export default theme;
+export type Theme = typeof theme;

@@ -1,12 +1,11 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
-import { Card } from '@material-ui/core';
+import Card from '@material-ui/core/Card';
 import classNames from 'classnames';
 
 
 /** ============================ Types ===================================== */
-type NavigaderCardProps = {
-  className?: string;
+type NavigaderCardProps = React.HTMLAttributes<HTMLDivElement> & {
   raised?: boolean;
   
   // style props
