@@ -8,19 +8,23 @@ import Login from './pages/Login';
 
 
 /** ============================ Components ================================ */
-const App: React.FC = () => {
-  return (
-    <Router>
-      <ThemeProvider>
-        <Switch>
-          <Route path="/meter_group/:id" component={MeterGroup} />
-          <Route path="/landing" component={Landing} />
-          <Route path="/" component={Login} />
-        </Switch>
-      </ThemeProvider>
-    </Router>
-  );
-};
+/**
+ * This is separated from the `App` component so that we can provide a different router inside
+ * tests. This enables us to test that we transition from page to page successfully.
+ */
+export const AppRoutes: React.FC = () =>
+  <ThemeProvider>
+    <Switch>
+      <Route path="/meter_group/:id" component={MeterGroup} />
+      <Route path="/landing" component={Landing} />
+      <Route path="/" component={Login} />
+    </Switch>
+  </ThemeProvider>;
+  
+const App: React.FC = () =>
+  <Router>
+    <AppRoutes />
+  </Router>;
 
 /** ============================ Exports =================================== */
 export default App;

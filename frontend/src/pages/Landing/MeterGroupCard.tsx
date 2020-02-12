@@ -4,6 +4,7 @@ import { createUseStyles } from 'react-jss';
 
 import { Card, Grid, Frame288Graph, Statistic } from '@nav/shared/components';
 import { hasDataField, MeterGroup } from '@nav/shared/models/meter';
+import * as routes from '@nav/shared/routes';
 import { dateFormatter } from '@nav/shared/util';
 
 
@@ -43,7 +44,7 @@ const MeterGroupCard: React.FC<MeterGroupCardProps> = ({ meterGroup, history}) =
   );
   
   function viewMeterGroup () {
-    history.push(`/meter_group/${meterGroup.id}`);
+    history.push(routes.meterGroup(meterGroup.id));
   }
 };
 

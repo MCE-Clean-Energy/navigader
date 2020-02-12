@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { createUseStyles } from 'react-jss';
+import ArrowBack from '@material-ui/icons/ArrowBack';
 
 import * as api from '@nav/shared/api';
-import { AppContainer, Centered, Grid, Typography } from '@nav/shared/components';
+import { AppContainer, Button, Fade, Grid, Progress, Typography } from '@nav/shared/components';
 import { Frame288LoadType, MeterGroup } from '@nav/shared/models/meter';
+import * as routes from '@nav/shared/routes';
 import { Theme } from '@nav/shared/styles';
 import LoadGraph from './LoadGraph';
 import MetersTable from './MetersTable';
@@ -18,7 +20,12 @@ type MeterGroupProps = RouteComponentProps<{
 /** ============================ Styles ==================================== */
 const useStyles = createUseStyles((theme: Theme) => ({
   header: {
-    marginBottom: theme.spacing(5)
+    alignItems: 'center',
+    display: 'flex',
+    marginBottom: theme.spacing(2),
+    '& > button': {
+      marginRight: theme.spacing(2)
+    }
   },
   tableWrapper: {
     marginTop: theme.spacing(3)
@@ -39,6 +46,18 @@ const DetailsSection: React.FC = () => (
   </div>
 );
 
+const BackButton = withRouter(({ history }) => {
+  return (
+    <Button icon onClick={goBack}>
+      <ArrowBack />
+    </Button>
+  );
+  
+  function goBack () {
+    history.push(routes.landing);
+  }
+});
+
 const MeterGroupPage: React.FC<MeterGroupProps> = ({ match }) => {
   const [meterGroup, setMeterGroup] = useState<MeterGroup | null>(null);
   const [graphDataType, setGraphDataType] = useState<Frame288LoadType>('average');
@@ -49,36 +68,40 @@ const MeterGroupPage: React.FC<MeterGroupProps> = ({ match }) => {
       .then(res => setMeterGroup(res));
   }, [match.params.id, graphDataType]);
   
-  // If we don't have the meter group, don't render anything yet
-  if (!meterGroup) return null;
-  
   return (
     <AppContainer>
-      <Centered className={classes.header}>
+      <div className={classes.header}>
+        <BackButton />
         <Typography variant="h6">
           ID: {meterGroup && meterGroup.id}
         </Typography>
-      </Centered>
+      </div>
       
-      <Grid>
-        <Grid.Item span={8}>
-          <LoadGraph
-            changeType={changeGraphType}
-            dataType={graphDataType}
-            meterGroup={meterGroup}
-          />
-        </Grid.Item>
-        <Grid.Item span={1} />
-        <Grid.Item span={3}>
-          <DetailsSection />
-        </Grid.Item>
-        
-        <Grid.Item span={12}>
-          <div className={classes.tableWrapper}>
-            <MetersTable meterGroupId={meterGroup.id} />
-          </div>
-        </Grid.Item>
-      </Grid>
+      {meterGroup ? (
+        <Grid>
+          <Grid.Item span={8}>
+            <LoadGraph
+              changeType={changeGraphType}
+              dataType={graphDataType}
+              meterGroup={meterGroup}
+            />
+          </Grid.Item>
+          <Grid.Item span={1} />
+          <Grid.Item span={3}>
+            <DetailsSection />
+          </Grid.Item>
+          
+          <Grid.Item span={12}>
+            <div className={classes.tableWrapper}>
+              <MetersTable meterGroupId={meterGroup.id} />
+            </div>
+          </Grid.Item>
+        </Grid>
+      ) : (
+        <Fade in unmountOnExit>
+          <Progress circular />
+        </Fade>
+      )}
     </AppContainer>
   );
   

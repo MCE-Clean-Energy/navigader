@@ -28,10 +28,20 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
   const classes = useStyles();
 
   useEffect(() => {
+    let didCancel = false;
+    
     api.getMeters({
       meterGroupId,
       types: ['default']
-    }).then(res => setMeters(res));
+    }).then((res) => {
+      if (!didCancel) {
+        setMeters(res)
+      }
+    });
+    
+    return () => {
+      didCancel = true;
+    };
   }, [meterGroupId]);
   
   // TODO: virtualize the table
