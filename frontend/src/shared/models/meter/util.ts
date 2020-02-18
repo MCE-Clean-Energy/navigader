@@ -109,6 +109,7 @@ export function parseMeterGroup (rawMeterGroup: RawMeterGroup): MeterGroup {
   return {
     created: rawMeterGroup.created_at,
     data: rawMeterGroup.data,
+    fileName: rawMeterGroup.originfile.filename,
     groupType: rawMeterGroup.meter_group_type,
     id: rawMeterGroup.id,
     meterIds: rawMeterGroup.meters,

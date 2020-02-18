@@ -1,9 +1,9 @@
+import { MonthIndex } from '@nav/shared/types';
 
 /** ============================ Meter Types =============================== */
-type Frame288Keys = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 export type Frame288LoadType = 'total' | 'average' | 'maximum' | 'minimum' | 'count';
 export type Frame288 = {
-  [P in Frame288Keys]: number[];
+  [P in MonthIndex]: number[];
 }
 
 export type ComputedValueTypes = {
@@ -74,11 +74,16 @@ export type RawMeterGroup = {
   meter_count: number;
   meter_group_type: MeterGroupType;
   meters: string[]
+  originfile: {
+    filename: string;
+    owners: [];
+  };
 }
 
 export type MeterGroup = {
   created: string;
   data: MeterDataField;
+  fileName: string;
   groupType: MeterGroupType;
   id: string;
   numMeters: number;

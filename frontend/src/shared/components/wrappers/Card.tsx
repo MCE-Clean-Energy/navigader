@@ -1,6 +1,6 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
-import Card from '@material-ui/core/Card';
+import Card, { CardProps } from '@material-ui/core/Card';
 import classNames from 'classnames';
 
 
@@ -10,6 +10,7 @@ type NavigaderCardProps = React.HTMLAttributes<HTMLDivElement> & {
   
   // style props
   padding?: number | string;
+  styleOverrides?: React.CSSProperties
 }
 
 /** ============================ Styles ==================================== */
@@ -20,10 +21,10 @@ const useStyles = createUseStyles({
 });
 
 /** ============================ Components ================================ */
-const NavigaderCard: React.FC<NavigaderCardProps> = ({ className, ...rest }) => {
+const NavigaderCard: React.FC<NavigaderCardProps> = ({ className, styleOverrides, ...rest }) => {
   const classes = useStyles(rest);
   const cardClasses = classNames(className, classes.card);
-  return <Card className={cardClasses} {...rest} />;
+  return <Card className={cardClasses} style={styleOverrides} {...rest} />;
 };
 
 NavigaderCard.defaultProps = {

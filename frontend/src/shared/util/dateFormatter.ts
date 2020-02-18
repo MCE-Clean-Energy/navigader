@@ -9,8 +9,6 @@ type DateType = Date | string;
  *
  * @param {Date object | string} date - The date to format
  */
-function dateFormatter (date: DateType): string {
+export function dateFormatter (date: DateType): string {
   return moment(date).format('MMM D, YYYY');
 }
-
-export default dateFormatter;

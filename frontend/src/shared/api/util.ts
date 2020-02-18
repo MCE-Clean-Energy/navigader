@@ -19,6 +19,13 @@ type QueryParams = {
 }
 
 /** ============================ API Methods =============================== */
+/**
+ * Makes a request using the fetch API
+ *
+ * @param {HttpMethodType} method - The HTTP method to use for the request (e.g. GET, POST, etc)
+ * @param {string} route - The LOCAL route to send the request to. I.e. this should begin with a "/"
+ * @param {object} body - The body of the request. Typically this will be JSON.
+ */
 function makeRequest (method: HttpMethodType, route: string, body?: object) {
   const headers = new Headers({
     'Content-Type': 'application/json'
