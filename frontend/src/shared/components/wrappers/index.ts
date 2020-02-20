@@ -10,7 +10,7 @@ export { default as Menu } from './Menu';
 export { default as Progress } from './Progress';
 export { default as Radio } from './Radio';
 export { default as Select } from './Select';
-export { default as Table } from './Table';
+export * from './Table';
 export { default as TextField } from './TextField';
 export { default as ThemeProvider } from './ThemeProvider';
 export { default as Typography } from './Typography';

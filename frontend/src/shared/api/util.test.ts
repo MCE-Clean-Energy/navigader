@@ -1,4 +1,5 @@
 import * as utils from './util';
+import { PaginationSetRaw } from '../types';
 
 
 /** ============================ Tests ===================================== */
@@ -47,5 +48,36 @@ describe('`getRequest` method', () => {
     expect(mockFn).toHaveBeenCalledTimes(1);
     const callArgs = mockFn.mock.calls[0];
     expect(callArgs[0]).toEqual('myRoute');
+  });
+});
+
+describe('`parsePaginationSet` method', () => {
+  type Coordinate = { x: number, y: number };
+  const paginationData: PaginationSetRaw<Coordinate> = {
+    count: 3,
+    previous: null,
+    next: 'URL to next page',
+    results: [
+      { x: 1, y: 2 },
+      { x: 2, y: 3 },
+      { x: 3, y: 4 }
+    ]
+  };
+  
+  const invertCoord = (coord: Coordinate): Coordinate => ({
+    y: coord.x,
+    x: coord.y
+  });
+  
+  test('Parses the input correctly', () => {
+    const parsed = utils.parsePaginationSet(paginationData, invertCoord);
+    
+    expect(parsed.count).toEqual(paginationData.count);
+    expect(parsed.hasPrevious).toEqual(false);
+    expect(parsed.hasNext).toEqual(true);
+    
+    for (let i = 0; i < parsed.data.length; i++) {
+      expect(parsed.data[i].x).toEqual(paginationData.results[i].y);
+    }
   });
 });

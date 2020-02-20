@@ -22,7 +22,7 @@ const LandingPage: React.FC = () => {
   
   useEffect(() => {
     api.getMeterGroups({ types: 'average' })
-      .then(res => setMeterGroups(res.results));
+      .then(res => setMeterGroups(res.data));
   }, []);
 
   return (

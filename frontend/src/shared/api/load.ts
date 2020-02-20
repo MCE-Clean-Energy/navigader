@@ -1,13 +1,22 @@
-import { LoadType, parseMeter, RawMeter } from '../models/meter';
-import { MeterGroup, RawMeterGroup, parseMeterGroup } from '../models/meter';
-import { PaginationSet } from '../types';
-import { appendId, getRequest } from './util';
+import {
+  LoadType,
+  Meter,
+  MeterGroup,
+  parseMeter,
+  parseMeterGroup,
+  RawMeter,
+  RawMeterGroup
+} from '@nav/shared/models/meter';
+import { PaginationSet, PaginationSetRaw, RowsPerPageOption } from '@nav/shared/types';
+import { appendId, getRequest, parsePaginationSet } from '@nav/shared/api/util';
 
 
 /** ============================ Types ===================================== */
 type MeterQueryParams = Partial<{
   end: Date;
   meterGroupId: MeterGroup['id'];
+  page: number;
+  pageSize: RowsPerPageOption,
   start: Date;
   types: LoadType | LoadType[];
 }>;
@@ -18,17 +27,13 @@ type MeterGroupQueryParams = Omit<MeterQueryParams, 'meterGroupId'>;
 export async function getMeterGroups (
   queryParams?: MeterGroupQueryParams
 ): Promise<PaginationSet<MeterGroup>> {
-  const response: PaginationSet<RawMeterGroup> =
+  const response: PaginationSetRaw<RawMeterGroup> =
     await getRequest(
       routes.meterGroup(),
       makeQueryParams(queryParams)
     ).then(res => res.json());
   
-  // Parse the meter group results
-  return {
-    ...response,
-    results: response.results.map(parseMeterGroup)
-  };
+  return parsePaginationSet(response, parseMeterGroup);
 }
 
 export async function getMeterGroup (
@@ -56,15 +61,17 @@ export async function getMeter (id: string, queryParams?: MeterQueryParams) {
   return parseMeter(response);
 }
 
-export async function getMeters (queryParams?: MeterQueryParams) {
-  const response: PaginationSet<RawMeter> =
+export async function getMeters (
+  queryParams?: MeterQueryParams
+): Promise<PaginationSet<Meter>> {
+  const response: PaginationSetRaw<RawMeter> =
     await getRequest(
       routes.meter(),
       makeQueryParams(queryParams)
     ).then(res => res.json());
   
   // Parse the meter results
-  return response.results.map(parseMeter);
+  return parsePaginationSet(response, parseMeter);
 }
 
 /** ============================ Helpers =================================== */
@@ -80,6 +87,8 @@ function makeQueryParams (queryParams?: MeterQueryParams) {
     data_types: queryParams.types,
     end_limit: queryParams.end,
     meter_groups: queryParams.meterGroupId,
+    page: queryParams.page,
+    page_size: queryParams.pageSize,
     start: queryParams.start
   };
 }

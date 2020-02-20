@@ -1,5 +1,8 @@
 
 /** ============================ Types ===================================== */
+import { PaginationSet, PaginationSetRaw } from '../types';
+
+
 /**
  * Needless to say, this is not a complete set of HTTP method types. It is the set of the ones used
  * in the NavigaDER application.
@@ -78,10 +81,31 @@ function appendId (route: string) {
   };
 }
 
+/**
+ * Parses a raw pagination set (the raw response from the back end for a paginated endpoint) into a
+ * parsed pagination set.
+ *
+ * @param {PaginationSetRaw} paginationSet - The raw server response to parse
+ * @param {Function} [parseFn] - A function that parses an individual result from its raw version
+ *   to its parsed version.
+ */
+function parsePaginationSet <T, K>(
+  paginationSet: PaginationSetRaw<T>,
+  parseFn: (result: T) => K
+): PaginationSet<K> {
+  return {
+    count: paginationSet.count,
+    hasNext: typeof paginationSet.next === 'string',
+    hasPrevious: typeof paginationSet.previous === 'string',
+    data: paginationSet.results.map(parseFn)
+  };
+}
+
 /** ============================ Exports =================================== */
 export {
   appendId,
   getRequest,
   makeRequest,
+  parsePaginationSet,
   postRequest
 };

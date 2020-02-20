@@ -1,6 +1,6 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
-import Card, { CardProps } from '@material-ui/core/Card';
+import Card from '@material-ui/core/Card';
 import classNames from 'classnames';
 
 
