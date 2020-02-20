@@ -117,7 +117,11 @@ const LoginCard: React.FC = () => {
     event.preventDefault();
     const response = await api.login(username, password);
     
-    setError(response.status !== 200);
+    if (response.status === 200) {
+      window.location.assign('/load');
+    } else {
+      setError(true);
+    }
   }
 };
 
