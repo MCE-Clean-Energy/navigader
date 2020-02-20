@@ -3,7 +3,7 @@ import { MemoryRouterProps } from 'react-router';
 import { MemoryRouter } from 'react-router-dom';
 import { render } from '@testing-library/react';
 
-import { AppRoutes } from '../../App';
+import { AppRoutes } from '../../../App';
 
 
 export const setupRouter = (startingPage?: string) => {
