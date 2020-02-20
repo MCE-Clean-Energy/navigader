@@ -68,15 +68,12 @@ const MeterGroupPage: React.FC<MeterGroupProps> = ({ match }) => {
       .then(res => setMeterGroup(res));
   }, [match.params.id, graphDataType]);
   
-  const fileName = meterGroup &&
-    meterGroup.fileName.replace(/origin_files\//g, '');
-  
   return (
     <AppContainer>
       <div className={classes.header}>
         <BackButton />
         <Typography variant="h6">
-          {fileName}
+          {meterGroup && meterGroup.fileName}
         </Typography>
       </div>
       
