@@ -4,19 +4,20 @@ import { fixtures, setupRouter } from '@nav/shared/util/testing';
 
 
 describe('Meter Group Page', () => {
+  const rawMeterGroup = fixtures.makeRawMeterGroup();
   beforeEach(() => {
     fetchMock.resetMocks();
     
     // Set up URLs to mock
     fetchMock.mockResponse(async (req) => {
       if (req.url.match(/v1\/load\/meter_group\/\d+/)) {
-        return JSON.stringify(fixtures.meterGroup);
+        return JSON.stringify(rawMeterGroup);
       } else if (req.url.match(/v1\/load\/meter_group/)) {
         return JSON.stringify({
           count: 1,
           next: null,
           previous: null,
-          results: [fixtures.meterGroup]
+          results: [rawMeterGroup]
         });
       } else if (req.url.match(/v1\/load\/meter/)) {
         return JSON.stringify({
@@ -48,7 +49,7 @@ describe('Meter Group Page', () => {
     test('Meter group name is rendered', async () => {
       const { getByText } = setupRouter('/meter_group/2');
       
-      const expectedFileName = fixtures.meterGroup.originfile.filename.replace(/origin_files\//, '');
+      const expectedFileName = rawMeterGroup.originfile.filename.replace(/origin_files\//, '');
       await waitForElement(() => getByText(expectedFileName));
     });
   });

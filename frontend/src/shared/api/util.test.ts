@@ -1,5 +1,5 @@
+import { PaginationSetRaw } from '@nav/shared/types';
 import * as utils from './util';
-import { PaginationSetRaw } from '../types';
 
 
 /** ============================ Tests ===================================== */
