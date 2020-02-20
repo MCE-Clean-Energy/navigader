@@ -2,7 +2,7 @@ import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { createUseStyles } from 'react-jss';
 
-import { Card, Grid, Frame288Graph, Statistic } from '@nav/shared/components';
+import { Card, Grid, Frame288Graph, Statistic, Typography } from '@nav/shared/components';
 import { hasDataField, MeterGroup } from '@nav/shared/models/meter';
 import * as routes from '@nav/shared/routes';
 import { dateFormatter } from '@nav/shared/util';
@@ -31,6 +31,7 @@ const MeterGroupCard: React.FC<MeterGroupCardProps> = ({ meterGroup, history}) =
   
   return (
     <Card raised className={classes.card} onClick={viewMeterGroup}>
+      <Typography variant="h6">{meterGroup.fileName}</Typography>
       {graph}
       <Grid>
         <Grid.Item span={4}>
