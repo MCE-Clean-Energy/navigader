@@ -1,4 +1,4 @@
-import dateFormatter from './dateFormatter';
+import { dateFormatter } from './dateFormatter';
 
 
 const janOne2020 = '2020-01-01T10:00:00';

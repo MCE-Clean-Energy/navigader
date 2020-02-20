@@ -76,7 +76,7 @@ export type RawMeterGroup = {
   meters: string[]
   originfile: {
     filename: string;
-    owners: [];
+    owners: any[];
   };
 }
 
