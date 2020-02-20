@@ -15,8 +15,8 @@ import Login from './pages/Login';
 export const AppRoutes: React.FC = () =>
   <ThemeProvider>
     <Switch>
-      <Route path="/meter_group/:id" component={MeterGroup} />
-      <Route path="/landing" component={Landing} />
+      <Route path="/load/group/:id" component={MeterGroup} />
+      <Route path="/load" component={Landing} />
       <Route path="/" component={Login} />
     </Switch>
   </ThemeProvider>;

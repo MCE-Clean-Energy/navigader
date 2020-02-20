@@ -54,7 +54,7 @@ const BackButton = withRouter(({ history }) => {
   );
   
   function goBack () {
-    history.push(routes.landing);
+    history.push(routes.load);
   }
 });
 
