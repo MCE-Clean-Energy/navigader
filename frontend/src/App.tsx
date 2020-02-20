@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 import { ThemeProvider } from '@nav/shared/components';
 import MeterGroup from './pages/MeterGroup';
-import Landing from './pages/Landing';
+import Load from './pages/Load';
 import Login from './pages/Login';
 
 
@@ -16,7 +16,7 @@ export const AppRoutes: React.FC = () =>
   <ThemeProvider>
     <Switch>
       <Route path="/load/group/:id" component={MeterGroup} />
-      <Route path="/load" component={Landing} />
+      <Route path="/load" component={Load} />
       <Route path="/" component={Login} />
     </Switch>
   </ThemeProvider>;
