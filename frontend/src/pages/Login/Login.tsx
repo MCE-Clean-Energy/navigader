@@ -1,49 +1,37 @@
 import React, { FormEvent, useState } from 'react';
 import { createUseStyles } from 'react-jss';
-import assign from 'lodash/assign';
+import classNames from 'classnames';
 
 import * as api from '@nav/shared/api';
-import logo from '@nav/shared/images/logo.png';
-import { Button, Card, TextField, Typography } from '@nav/shared/components';
-import { primaryColor, secondaryColor } from '@nav/shared/styles';
+import { Button, Card, Flex, Branding, TextField, Typography } from '@nav/shared/components';
 
 
 /** ============================ Styles ==================================== */
-const centerContent = {
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'center'
-};
-
 const useStyles = createUseStyles({
   container: {
-    display: 'flex',
-    flexFlow: 'row nowrap',
     height: '100vh'
   },
-  gradient: assign({
-    backgroundColor: secondaryColor,
-    background: `linear-gradient(0, ${primaryColor} 0%, ${secondaryColor} 100%)`,
+  gradient: {
     width: '50%'
-  }, centerContent),
+  },
   navigader: {
     letterSpacing: 25
   }
 });
 
 const useLoginCardStyles = createUseStyles({
-  loginCard: assign({
+  loginCard: {
     width: '50%'
-  }, centerContent),
+  },
+  loginCardContent: {
+    height: '100%'
+  },
   loginField: {
     width: '100%'
   },
   loginForm: {
     marginTop: '3rem'
-  },
-  logo: {
-    width: 300
-  },
+  }
 });
 
 const useSpacerStyles = createUseStyles({
@@ -68,8 +56,8 @@ const LoginCard: React.FC = () => {
   
   return (
     <Card className={classes.loginCard} raised>
-      <div>
-        <img src={logo} className={classes.logo} alt="logo" />
+      <Flex.Container alignItems="center" className={classes.loginCardContent} direction="column" justifyContent="center">
+        <Branding.Logo width={300} />
         
         <form className={classes.loginForm} onSubmit={onSubmit}>
           <TextField
@@ -101,7 +89,7 @@ const LoginCard: React.FC = () => {
           
           <Button color="primary" type="submit">Log in</Button>
         </form>
-      </div>
+      </Flex.Container>
     </Card>
   );
   
@@ -127,15 +115,21 @@ const LoginCard: React.FC = () => {
 
 const LoginPage: React.FC = () => {
   const classes = useStyles();
+  const gradientClasses = classNames(
+    classes.gradient,
+    Branding.useGradientStyles().root
+  );
+  
   return (
-    <div className={classes.container}>
-      <div className={classes.gradient}>
+    <Flex.Container alignItems="stretch" className={classes.container}>
+      <Flex.Container className={gradientClasses} direction="column" justifyContent="center">
         <Typography variant="h2" className={classes.navigader}>
           NAVIGADER
         </Typography>
-      </div>
+      </Flex.Container>
+      
       <LoginCard />
-    </div>
+    </Flex.Container>
   );
 };
 

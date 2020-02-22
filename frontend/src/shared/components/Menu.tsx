@@ -1,26 +1,26 @@
 import React from 'react';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import MuiMenu from '@material-ui/core/Menu';
+import MuiMenuItem from '@material-ui/core/MenuItem';
 
 import { Button } from '@nav/shared/components';
 import { randomString } from '@nav/shared/util';
 
 
 /** ============================ Types ===================================== */
-type NavigaderMenuProps = {
+type MenuProps = {
   label: string;
 };
-type NavigaderMenuItemProps = {
+type MenuItemProps = {
   className?: string;
 };
 
-type NavigaderMenuItem = React.FC<NavigaderMenuItemProps>;
-type NavigaderMenuExport = React.FC<NavigaderMenuProps> & {
-  Item: NavigaderMenuItem;
+type MenuItem = React.FC<MenuItemProps>;
+type MenuExport = React.FC<MenuProps> & {
+  Item: MenuItem;
 };
 
 /** ============================ Components ================================ */
-const NavigaderMenu: NavigaderMenuExport = ({ label, ...rest }) => {
+export const Menu: MenuExport = ({ label, ...rest }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const menuId = randomString();
   
@@ -34,7 +34,7 @@ const NavigaderMenu: NavigaderMenuExport = ({ label, ...rest }) => {
         {label}
       </Button>
       
-      <Menu
+      <MuiMenu
         id={menuId}
         anchorEl={anchorEl}
         open={!!anchorEl}
@@ -53,8 +53,5 @@ const NavigaderMenu: NavigaderMenuExport = ({ label, ...rest }) => {
   }
 };
 
-const NavigaderMenuItem: NavigaderMenuItem = props => <MenuItem {...props}  />;
-
-/** ============================ Exports =================================== */
-NavigaderMenu.Item = NavigaderMenuItem;
-export default NavigaderMenu;
+const MenuItem: MenuItem = props => <MuiMenuItem {...props}  />;
+Menu.Item = MenuItem;

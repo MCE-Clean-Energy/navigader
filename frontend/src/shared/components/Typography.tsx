@@ -1,19 +1,19 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
-import Typography, { TypographyProps } from '@material-ui/core/Typography';
+import MuiTypography, { TypographyProps as MuiTypographyProps } from '@material-ui/core/Typography';
 import classNames from 'classnames';
 
 
 
 /** ============================ Types ===================================== */
 type Emphasis = 'normal' | 'secondary' | 'disabled';
-type NavigaderTypographyProps = {
+type TypographyProps = {
   className?: string;
   component?: React.ElementType;
   emphasis?: Emphasis;
   style?: React.CSSProperties;
   useDiv?: boolean;
-  variant: TypographyProps['variant'];
+  variant: MuiTypographyProps['variant'];
 };
 
 /** ============================ Styles ==================================== */
@@ -33,7 +33,7 @@ const useStyles = createUseStyles({
 });
 
 /** ============================ Components ================================ */
-const NavigaderTypography: React.FC<NavigaderTypographyProps> = (props) => {
+export const Typography: React.FC<TypographyProps> = (props) => {
   const {
     children,
     className,
@@ -57,11 +57,8 @@ const NavigaderTypography: React.FC<NavigaderTypographyProps> = (props) => {
   }
   
   return (
-    <Typography style={style} variant={variant} component="span">
+    <MuiTypography style={style} variant={variant} component="span">
       {React.createElement(actualComponent, { className: spanClasses, children })}
-    </Typography>
+    </MuiTypography>
   );
 };
-
-/** ============================ Exports =================================== */
-export default NavigaderTypography;

@@ -1,5 +1,5 @@
 import React from 'react';
-import TablePagination from '@material-ui/core/TablePagination';
+import MuiTablePagination from '@material-ui/core/TablePagination';
 
 import { RowsPerPageOption } from '@nav/shared/types';
 
@@ -17,11 +17,11 @@ type TablePaginationProps = TableState & {
 };
 
 /** ============================ Components ================================ */
-const NavigaderTablePagination: React.FC<TablePaginationProps> = (props) => {
+export const TablePagination: React.FC<TablePaginationProps> = (props) => {
   const { count, currentPage, rowsPerPage, updateTableState } = props;
   
   return (
-    <TablePagination
+    <MuiTablePagination
       component="div"
       count={count}
       onChangePage={changePage}
@@ -46,6 +46,3 @@ const NavigaderTablePagination: React.FC<TablePaginationProps> = (props) => {
     });
   }
 };
-
-/** ============================ Exports =================================== */
-export default NavigaderTablePagination;

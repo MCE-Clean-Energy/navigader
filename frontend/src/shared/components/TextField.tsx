@@ -1,9 +1,9 @@
 import React, { ChangeEvent } from 'react';
-import TextField, { TextFieldProps } from '@material-ui/core/TextField';
+import MuiTextField, { TextFieldProps as MuiTextFieldProps } from '@material-ui/core/TextField';
 
 
 /** ============================ Types ===================================== */
-type NavigaderTextFieldProps = {
+type TextFieldProps = {
   autoComplete?: string;
   className?: string;
   color?: 'primary' | 'secondary';
@@ -18,19 +18,16 @@ type NavigaderTextFieldProps = {
 }
 
 /** ============================ Components ================================ */
-const NavigaderTextField: React.FC<NavigaderTextFieldProps> = ({ outlined, ...rest }) => {
-  const textFieldProps: TextFieldProps = {
+export const TextField: React.FC<TextFieldProps> = ({ outlined, ...rest }) => {
+  const textFieldProps: MuiTextFieldProps = {
     ...rest,
     variant: outlined ? 'outlined' : 'standard'
   };
   
-  return <TextField {...textFieldProps} />;
+  return <MuiTextField {...textFieldProps} />;
 };
 
-NavigaderTextField.defaultProps = {
+TextField.defaultProps = {
   color: 'primary',
   outlined: false
 };
-
-/** ============================ Exports =================================== */
-export default NavigaderTextField;

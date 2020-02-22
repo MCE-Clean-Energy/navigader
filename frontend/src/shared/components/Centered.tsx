@@ -14,11 +14,8 @@ const useStyles = createUseStyles({
 });
 
 /** ============================ Components ================================ */
-const Centered: React.FC<CenteredProps> = ({ className, ...rest }) => {
+export const Centered: React.FC<CenteredProps> = ({ className, ...rest }) => {
   const styles = useStyles();
   const classes = classNames(styles.wrapper, className);
   return <div className={classes} {...rest} />;
 };
-
-/** ============================ Exports =================================== */
-export default Centered;

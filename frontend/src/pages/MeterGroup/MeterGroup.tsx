@@ -48,7 +48,7 @@ const DetailsSection: React.FC = () => (
 
 const BackButton = withRouter(({ history }) => {
   return (
-    <Button icon onClick={goBack}>
+    <Button icon onClick={goBack} role="back-button">
       <ArrowBack />
     </Button>
   );

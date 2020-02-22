@@ -1,16 +1,13 @@
 import React, { CSSProperties } from 'react';
-import Fade from '@material-ui/core/Fade';
+import MuiFade from '@material-ui/core/Fade';
 
 
 /** ============================ Types ===================================== */
-type NavigaderFadeProps = {
+type FadeProps = {
   in: boolean;
   style?: CSSProperties;
   unmountOnExit?: boolean;
 };
 
 /** ============================ Components ================================ */
-const NavigaderFade: React.FC<NavigaderFadeProps> = props => <Fade {...props} />;
-
-/** ============================ Exports =================================== */
-export default NavigaderFade;
+export const Fade: React.FC<FadeProps> = props => <MuiFade {...props} />;

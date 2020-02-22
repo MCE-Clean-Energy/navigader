@@ -4,15 +4,12 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 
 
 /** ============================ Types ===================================== */
-type NavigaderProgressProps = {
+type ProgressProps = {
   circular?: boolean
 };
 
 /** ============================ Components ================================ */
-const NavigaderProgress: React.FC<NavigaderProgressProps> = ({ circular, ...rest }) => {
+export const Progress: React.FC<ProgressProps> = ({ circular, ...rest }) => {
   const Component = circular ? CircularProgress : LinearProgress;
   return <Component {...rest} />;
 };
-
-/** ============================ Exports =================================== */
-export default NavigaderProgress;

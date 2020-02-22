@@ -5,35 +5,35 @@ import { useTheme } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+import MuiSelect from '@material-ui/core/Select';
 
 import { Theme } from '@nav/shared/styles';
 import { randomString } from '@nav/shared/util';
 
 
 /** ============================ Types ===================================== */
-type NavigaderSelectCommonProps<T> = {
+type SelectCommonProps<T> = {
   id?: string;
   label?: string;
   options: T[];
   renderOption?: (option: T) => React.ReactNode;
 };
 
-type NavigaderMultiSelectProps<T> = {
+type MultiSelectProps<T> = {
   multiple: true;
   onChange?: (value: T[]) => void;
   value?: T[];
 }
 
-type NavigaderSingleSelectProps<T> = {
+type SingleSelectProps<T> = {
   multiple: false;
   onChange?: (value: T) => void;
   value?: T;
 }
 
-type NavigaderSelectProps<T> = React.PropsWithChildren<
-  NavigaderSelectCommonProps<T> &
-  (NavigaderSingleSelectProps<T> | NavigaderMultiSelectProps<T>)
+type SelectProps<T> = React.PropsWithChildren<
+  SelectCommonProps<T> &
+  (SingleSelectProps<T> | MultiSelectProps<T>)
 >;
 
 /** ============================ Styles ==================================== */
@@ -58,7 +58,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 /** ============================ Components ================================ */
-function NavigaderSelect <T>(props: NavigaderSelectProps<T>) {
+export function Select <T>(props: SelectProps<T>) {
   const {
     id = randomString(),
     label,
@@ -87,13 +87,13 @@ function NavigaderSelect <T>(props: NavigaderSelectProps<T>) {
   return (
     <FormControl>
       {inputLabel}
-      <Select {...selectProps}>
+      <MuiSelect {...selectProps}>
         {options.map((option, i) =>
           <MenuItem key={i} value={i} className={getStyles(option)}>
             {renderOption(option)}
           </MenuItem>
         )}
-      </Select>
+      </MuiSelect>
     </FormControl>
   );
   
@@ -113,6 +113,3 @@ function NavigaderSelect <T>(props: NavigaderSelectProps<T>) {
       : classes.option;
   }
 }
-
-/** ============================ Exports =================================== */
-export default NavigaderSelect;

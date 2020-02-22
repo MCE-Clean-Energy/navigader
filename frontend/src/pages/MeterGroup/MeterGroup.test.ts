@@ -34,10 +34,10 @@ describe('Meter Group Page', () => {
   
   describe('Back button', () => {
     test('Clicking the back button returns you to the load page', async () => {
-      const { getByRole, getByText } = setupRouter('/meter_group/2');
+      const { getByRole, getByText } = setupRouter('/load/group/2');
       
       // Click on the back button
-      expect(getByRole('button')).toBeInTheDocument();
+      expect(getByRole('back-button')).toBeInTheDocument();
       fireEvent.click(getByRole('button'));
     
       // check that the content changed to the new page
@@ -47,7 +47,7 @@ describe('Meter Group Page', () => {
   
   describe('Header',  () => {
     test('Meter group name is rendered', async () => {
-      const { getByText } = setupRouter('/meter_group/2');
+      const { getByText } = setupRouter('/load/group/2');
       
       const expectedFileName = rawMeterGroup.originfile.filename.replace(/origin_files\//, '');
       await waitForElement(() => getByText(expectedFileName));

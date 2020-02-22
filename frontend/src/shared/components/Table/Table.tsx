@@ -9,10 +9,10 @@ import MuiTableContainer from '@material-ui/core/TableContainer';
 import MuiTableHead from '@material-ui/core/TableHead';
 import MuiTableRow from '@material-ui/core/TableRow';
 
-import { FlexBox, Progress, Typography } from '@nav/shared/components';
+import { Flex, Progress, Typography } from '@nav/shared/components';
 import { Theme } from '@nav/shared/styles';
 import { PaginationSet } from '@nav/shared/types';
-import TablePagination, { TableState } from './Pagination';
+import { TablePagination, TableState } from './Pagination';
 
 
 /** ============================ Types ===================================== */
@@ -48,6 +48,10 @@ type DataState<T> = {
 
 /** ============================ Styles ==================================== */
 const useStyles = createUseStyles((theme: Theme) => ({
+  header: {
+    // Provides the proper height for the toolbar
+    ...theme.mixins.toolbar
+  },
   progressBarSpacer: {
     height: 4
   }
@@ -92,7 +96,7 @@ export function Table <T>(props: TableProps<T>) {
 
   return (
     <div>
-      <FlexBox>
+      <Flex.Container className={classes.header}>
         <Typography variant="h6">{title}</Typography>
         {data && count && (
           <TablePagination
@@ -102,7 +106,7 @@ export function Table <T>(props: TableProps<T>) {
             updateTableState={updateTableState}
           />
         )}
-      </FlexBox>
+      </Flex.Container>
       <MuiTableContainer className={containerClassName} component={raised ? TableRaiser : MuiPaper}>
         <MuiTable {...rest}>
           {children(data || [])}

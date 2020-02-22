@@ -1,11 +1,11 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
-import Card from '@material-ui/core/Card';
+import MuiCard from '@material-ui/core/Card';
 import classNames from 'classnames';
 
 
 /** ============================ Types ===================================== */
-type NavigaderCardProps = React.HTMLAttributes<HTMLDivElement> & {
+type CardProps = React.HTMLAttributes<HTMLDivElement> & {
   raised?: boolean;
   
   // style props
@@ -15,21 +15,18 @@ type NavigaderCardProps = React.HTMLAttributes<HTMLDivElement> & {
 
 /** ============================ Styles ==================================== */
 const useStyles = createUseStyles({
-  card: (props: NavigaderCardProps) => ({
+  card: (props: CardProps) => ({
     padding: props.padding
   })
 });
 
 /** ============================ Components ================================ */
-const NavigaderCard: React.FC<NavigaderCardProps> = ({ className, styleOverrides, ...rest }) => {
+export const Card: React.FC<CardProps> = ({ className, styleOverrides, ...rest }) => {
   const classes = useStyles(rest);
   const cardClasses = classNames(className, classes.card);
-  return <Card className={cardClasses} style={styleOverrides} {...rest} />;
+  return <MuiCard className={cardClasses} style={styleOverrides} {...rest} />;
 };
 
-NavigaderCard.defaultProps = {
+Card.defaultProps = {
   padding: '1rem'
 };
-
-/** ============================ Exports =================================== */
-export default NavigaderCard;

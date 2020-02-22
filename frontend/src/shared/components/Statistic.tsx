@@ -5,7 +5,7 @@ import * as React from 'react';
 import padEnd from 'lodash/padEnd';
 import { createUseStyles } from 'react-jss';
 
-import Typography from './wrappers/Typography';
+import { Typography } from './Typography';
 
 
 /** ============================ Types ===================================== */
@@ -80,7 +80,7 @@ const StatisticNumber: React.FC<NumberProps> = props => {
   return <span>{valueNode}</span>;
 };
 
-const Statistic: React.FC<StatisticProps> = (props) => {
+export const Statistic: React.FC<StatisticProps> = (props) => {
   const {
     className,
     style,
@@ -124,5 +124,3 @@ Statistic.defaultProps = {
   decimalSeparator: '.',
   groupSeparator: ',',
 };
-
-export default Statistic;
