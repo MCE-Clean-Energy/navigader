@@ -124,6 +124,7 @@ const SideDrawer: React.FC = () => {
         
         <Flex.Item grow>
           <DrawerButton linkTo={routes.load}>Load</DrawerButton>
+          <DrawerButton linkTo={routes.upload}>Upload</DrawerButton>
         </Flex.Item>
         <Gradient height={100} invert />
       </Flex.Container>
