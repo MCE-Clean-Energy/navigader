@@ -2,9 +2,11 @@ import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 import { ThemeProvider } from '@nav/shared/components';
-import MeterGroup from './pages/MeterGroup';
-import Load from './pages/Load';
-import Login from './pages/Login';
+import * as routes from '@nav/shared/routes';
+import MeterGroupPage from './pages/MeterGroup';
+import LoadPage from './pages/Load';
+import LoginPage from './pages/Login';
+import UploadPage from './pages/Upload';
 
 
 /** ============================ Components ================================ */
@@ -15,9 +17,10 @@ import Login from './pages/Login';
 export const AppRoutes: React.FC = () =>
   <ThemeProvider>
     <Switch>
-      <Route path="/load/group/:id" component={MeterGroup} />
-      <Route path="/load" component={Load} />
-      <Route path="/" component={Login} />
+      <Route path={routes.meterGroup(':id')} component={MeterGroupPage} />
+      <Route path={routes.load} component={LoadPage} />
+      <Route path={routes.upload} component={UploadPage} />
+      <Route path={routes.login} component={LoginPage} />
     </Switch>
   </ThemeProvider>;
   

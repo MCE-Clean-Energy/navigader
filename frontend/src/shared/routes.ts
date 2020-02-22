@@ -4,3 +4,4 @@
 export const login = '/';
 export const load = '/load';
 export const meterGroup = (id: string) => `/load/group/${id}`;
+export const upload = '/upload';
