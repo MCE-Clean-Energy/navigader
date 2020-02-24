@@ -26,9 +26,9 @@ export const Button: Button = ({ icon, ...rest }) => {
     : <MuiButton variant="contained" {...rest} />;
 };
 
-Button.Fab = ({ name, size, ...rest }) => {
+Button.Fab = ({ name, ...rest }) => {
   const fabProps = omit(rest, 'children');
-  const iconProps = { name, size };
+  const iconProps = { name };
   return (
       <MuiFab {...fabProps}>
         <Icon {...iconProps} />

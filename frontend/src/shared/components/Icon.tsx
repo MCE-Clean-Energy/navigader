@@ -6,13 +6,13 @@ import AddIcon from '@material-ui/icons/Add';
 export type ValidIcon = 'add';
 export type IconProps = {
   name: ValidIcon;
-  size?: 'default' | 'small' | 'large';
+  size?: 'small' | 'medium' | 'large';
 };
 
 /** ============================ Components ================================ */
 export const Icon: React.FC<IconProps> = ({ name, size, ...rest }) => {
   const IconComponent = iconMap[name];
-  return <IconComponent fontSize={size} {...rest} />;
+  return <IconComponent {...rest} />;
 };
 
 /** ============================ Helpers =================================== */
