@@ -17,6 +17,7 @@ export * from './Icon';
 export * from './List';
 export * from './Menu';
 export * from './Padding';
+export * from './Popover';
 export * from './Progress';
 export * from './Radio';
 export * from './Select';
