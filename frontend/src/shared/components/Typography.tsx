@@ -14,7 +14,7 @@ type TypographyProps = {
   emphasis?: Emphasis;
   style?: React.CSSProperties;
   useDiv?: boolean;
-  variant: MuiTypographyProps['variant'];
+  variant?: MuiTypographyProps['variant'];
 };
 
 /** ============================ Styles ==================================== */
@@ -42,7 +42,7 @@ export const Typography: React.FC<TypographyProps> = (props) => {
     emphasis = 'normal',
     style,
     useDiv = false,
-    variant
+    variant = 'body1'
   } = props;
   const classes = useStyles(emphasis);
   const spanClasses = classNames(className, classes.text);
