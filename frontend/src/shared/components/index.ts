@@ -13,6 +13,7 @@ export * from './Divider';
 export * from './Fade';
 export { Flex };
 export * from './Grid';
+export * from './Icon';
 export * from './List';
 export * from './Menu';
 export * from './Padding';
