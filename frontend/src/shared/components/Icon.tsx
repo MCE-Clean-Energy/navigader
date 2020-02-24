@@ -4,14 +4,15 @@ import AddIcon from '@material-ui/icons/Add';
 
 /** ============================ Types ===================================== */
 export type ValidIcon = 'add';
-type IconProps = {
+export type IconProps = {
   name: ValidIcon;
+  size?: 'default' | 'small' | 'large';
 };
 
 /** ============================ Components ================================ */
-export const Icon: React.FC<IconProps> = ({ name, ...rest }) => {
+export const Icon: React.FC<IconProps> = ({ name, size, ...rest }) => {
   const IconComponent = iconMap[name];
-  return <IconComponent {...rest} />;
+  return <IconComponent fontSize={size} {...rest} />;
 };
 
 /** ============================ Helpers =================================== */
