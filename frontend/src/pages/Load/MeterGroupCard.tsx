@@ -34,10 +34,11 @@ const MeterGroupCard: React.FC<MeterGroupCardProps> = ({ meterGroup, history}) =
       <Typography variant="h6">{meterGroup.fileName}</Typography>
       {graph}
       <Grid>
-        <Grid.Item span={4}>
+        <Grid.Item>
           <Statistic title="# of Meters" value={meterGroup.numMeters} />
         </Grid.Item>
-        <Grid.Item span={4}>
+        <Grid.Item span={1} />
+        <Grid.Item>
           <Statistic title="Uploaded" value={dateFormatter(meterGroup.created)} />
         </Grid.Item>
       </Grid>
