@@ -3,6 +3,7 @@ import { createUseStyles } from 'react-jss';
 import MuiTypography, { TypographyProps as MuiTypographyProps } from '@material-ui/core/Typography';
 import classNames from 'classnames';
 
+import { printWarning } from '@nav/shared/util';
 
 
 /** ============================ Types ===================================== */
@@ -50,7 +51,7 @@ export const Typography: React.FC<TypographyProps> = (props) => {
   // (when in development mode) and use a div.
   const actualComponent = useDiv ? 'div' : component;
   if (props.hasOwnProperty('component') && props.hasOwnProperty('useDiv')) {
-    console.warn(
+    printWarning(
       '`Typography component` received both `useDiv` and `component` props. At most one prop' +
       ' should be provided'
     );
