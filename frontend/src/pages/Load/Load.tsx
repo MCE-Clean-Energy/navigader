@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
+import { withRouter } from 'react-router-dom';
 
 import * as api from '@nav/shared/api';
 import { AppContainer, Button, Flex, Grid, Typography } from '@nav/shared/components';
 import { MeterGroup } from '@nav/shared/models/meter';
+import * as routes from '@nav/shared/routes';
 import { Theme } from '@nav/shared/styles';
 import MeterGroupCard from './MeterGroupCard';
 
@@ -16,7 +18,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 /** ============================ Components ================================ */
-const LandingPage: React.FC = () => {
+const LandingPage = withRouter(({ history }) => {
   const [meterGroups, setMeterGroups] = useState([] as MeterGroup[]);
   const classes = useStyles();
   
@@ -27,14 +29,14 @@ const LandingPage: React.FC = () => {
 
   return (
     <AppContainer>
-      <Flex.Container>
+      <Flex.Container className={classes.header}>
         <Flex.Item>
-          <Typography className={classes.header} variant="h6">
+          <Typography variant="h6">
             Uploaded Files
           </Typography>
         </Flex.Item>
         <Flex.Item>
-          <Button color="primary" fab="add" aria-label="add"/>
+          <Button color="secondary" onClick={goToUpload}>Add File</Button>
         </Flex.Item>
       </Flex.Container>
       <Grid>
@@ -46,7 +48,11 @@ const LandingPage: React.FC = () => {
       </Grid>
     </AppContainer>
   );
-};
+  
+  function goToUpload () {
+    history.push(routes.upload);
+  }
+});
 
 /** ============================ Exports =================================== */
 export default LandingPage;
