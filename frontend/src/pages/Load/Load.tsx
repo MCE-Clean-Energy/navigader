@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 
 import * as api from '@nav/shared/api';
-import { AppContainer, Grid, Typography } from '@nav/shared/components';
+import { AppContainer, Button, Flex, Grid, Typography } from '@nav/shared/components';
 import { MeterGroup } from '@nav/shared/models/meter';
 import { Theme } from '@nav/shared/styles';
 import MeterGroupCard from './MeterGroupCard';
@@ -27,9 +27,16 @@ const LandingPage: React.FC = () => {
 
   return (
     <AppContainer>
-      <Typography className={classes.header} useDiv variant="h6">
-        Uploaded Files
-      </Typography>
+      <Flex.Container>
+        <Flex.Item>
+          <Typography className={classes.header} variant="h6">
+            Uploaded Files
+          </Typography>
+        </Flex.Item>
+        <Flex.Item>
+          <Button color="primary" fab="add" aria-label="add"/>
+        </Flex.Item>
+      </Flex.Container>
       <Grid>
         {meterGroups.map(meterGroup =>
           <Grid.Item key={meterGroup.id} span={6}>
