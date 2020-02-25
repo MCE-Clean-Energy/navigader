@@ -11,6 +11,7 @@ import { Icon, IconProps } from './Icon';
 type BaseButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
 type ButtonProps = React.HTMLAttributes<HTMLButtonElement> & {
   color?: 'primary' | 'secondary';
+  disabled?: boolean;
   icon?: boolean;
 } & Pick<BaseButtonProps, 'type'>;
 
