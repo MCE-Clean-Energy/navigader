@@ -27,7 +27,8 @@ const useFileCardStyles = createUseStyles((theme: Theme) => ({
     marginTop: theme.spacing(2)
   },
   item17: {
-    cursor: 'pointer'
+    cursor: 'pointer',
+    display: 'inline-block'
   }
 }));
 
@@ -49,12 +50,19 @@ const FileCard: React.FC<FileCardProps> = ({ file }) => {
         </Flex.Item>
       </Flex.Container>
       
-      <Flex.Container className={classes.item17} justifyContent="flex-start" onClick={toggleItem17}>
-        <Flex.Item>
-          <Checkbox checked={useItem17} />
+      <Flex.Container>
+        <Flex.Item grow>
+          <div>
+            <div className={classes.item17} onClick={toggleItem17}>
+              <Checkbox checked={useItem17} />
+              <Typography>Confirm "Item 17" file</Typography>
+            </div>
+          </div>
         </Flex.Item>
-        <Flex.Item>Confirm "Item 17" file</Flex.Item>
+        <Flex.Item>
+        </Flex.Item>
       </Flex.Container>
+      
     </Card>
   );
   
