@@ -8,8 +8,17 @@ import { printWarning } from '@nav/shared/util';
 
 /** ============================ Types ===================================== */
 type Emphasis = 'normal' | 'secondary' | 'disabled';
+type TextColor =
+  | 'initial'
+  | 'primary'
+  | 'secondary'
+  | 'textPrimary'
+  | 'textSecondary'
+  | 'error';
+
 type TypographyProps = {
   className?: string;
+  color?: TextColor;
   component?: React.ElementType;
   emphasis?: Emphasis;
   style?: React.CSSProperties;
@@ -38,6 +47,7 @@ export const Typography: React.FC<TypographyProps> = (props) => {
   const {
     children,
     className,
+    color = 'initial',
     component = 'span',
     emphasis = 'normal',
     style,
@@ -57,8 +67,15 @@ export const Typography: React.FC<TypographyProps> = (props) => {
     );
   }
   
+  const typographyProps = {
+    color,
+    component: 'span',
+    style,
+    variant
+  };
+  
   return (
-    <MuiTypography style={style} variant={variant} component="span">
+    <MuiTypography {...typographyProps}>
       {React.createElement(actualComponent, { className: spanClasses, children })}
     </MuiTypography>
   );
