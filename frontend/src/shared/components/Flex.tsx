@@ -7,9 +7,9 @@ import { Theme } from '../styles';
 
 /** ============================ Types ===================================== */
 type AlignItemsValue = 'center' | 'stretch';
-type JustifyContentValue = 'center' | 'space-between' | 'space-around';
+type JustifyContentValue = 'center' | 'flex-start' | 'space-between' | 'space-around';
 type FlexDirection = 'row' | 'column';
-type FlexContainerProps = {
+type FlexContainerProps = React.HTMLAttributes<HTMLDivElement> & {
   alignItems?: AlignItemsValue;
   className?: string;
   direction?: FlexDirection;
