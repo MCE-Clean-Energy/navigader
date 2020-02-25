@@ -1,7 +1,9 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
 
-import { AppContainer, Button, Card, Checkbox, Flex, Typography } from '@nav/shared/components';
+import {
+  AppContainer, Button, Card, Checkbox, Flex, TextField, Typography
+} from '@nav/shared/components';
 import { Theme } from '@nav/shared/styles';
 
 
@@ -26,40 +28,64 @@ const useFileCardStyles = createUseStyles((theme: Theme) => ({
   card: {
     marginTop: theme.spacing(2)
   },
+  fileName: {
+    width: '100%'
+  },
+  fileSize: {
+    marginLeft: theme.spacing(2)
+  },
   item17: {
     cursor: 'pointer',
     display: 'inline-block'
+  },
+  item17Wrapper: {
+    margin: `0 ${theme.spacing(2)}px`
+  },
+  row2: {
+    marginTop: theme.spacing(2)
   }
 }));
 
 /** ============================ Components ================================ */
 const FileCard: React.FC<FileCardProps> = ({ file }) => {
   const [useItem17, setUseItem17] = React.useState(false);
+  const [fileName, setFileName] = React.useState('');
+  const canUpload = Boolean(useItem17) && Boolean(fileName);
   const classes = useFileCardStyles();
   
   return (
     <Card className={classes.card} raised>
-      <Flex.Container>
+      <Flex.Container justifyContent="flex-start">
         <Flex.Item>
-          <Typography useDiv variant="h6">{file.name}</Typography>
+          <Typography useDiv variant="subtitle2">{file.name}</Typography>
         </Flex.Item>
-        <Flex.Item>
+        <Flex.Item className={classes.fileSize}>
           <Typography color="textSecondary" variant="body2">
             {renderFileSize(file.size)}
           </Typography>
         </Flex.Item>
       </Flex.Container>
       
-      <Flex.Container>
+      <Flex.Container className={classes.row2}>
         <Flex.Item grow>
-          <div>
-            <div className={classes.item17} onClick={toggleItem17}>
-              <Checkbox checked={useItem17} />
-              <Typography>Confirm "Item 17" file</Typography>
-            </div>
+          <TextField
+            className={classes.fileName}
+            id="file-name"
+            label="File Name"
+            onChange={changeFileName}
+            outlined
+          />
+        </Flex.Item>
+        
+        <Flex.Item className={classes.item17Wrapper}>
+          <div className={classes.item17} onClick={toggleItem17}>
+            <Checkbox checked={useItem17} />
+            <Typography>Confirm "Item 17" file</Typography>
           </div>
         </Flex.Item>
-        <Flex.Item>
+        
+        <Flex.Item grow textAlign="right">
+          <Button color="secondary" disabled={!canUpload}>Upload</Button>
         </Flex.Item>
       </Flex.Container>
       
@@ -67,6 +93,10 @@ const FileCard: React.FC<FileCardProps> = ({ file }) => {
   );
   
   /** ============================ Callbacks =============================== */
+  function changeFileName (event: React.ChangeEvent<HTMLInputElement>) {
+    setFileName(event.target.value);
+  }
+  
   function toggleItem17 () {
     setUseItem17(!useItem17);
   }
