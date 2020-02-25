@@ -17,6 +17,7 @@ type FlexContainerProps = React.HTMLAttributes<HTMLDivElement> & {
 };
 
 type FlexItemProps = React.HTMLAttributes<HTMLDivElement> & {
+  textAlign?: 'right' | 'left';
   grow?: boolean | number;
 }
 
@@ -36,7 +37,12 @@ const useItemStyles = createUseStyles({
       ? props.grow === true
         ? 1
         : props.grow
-      : 0
+      : 0,
+    textAlign: props.textAlign === 'left'
+      ? 'left'
+      : props.textAlign === 'right'
+        ? 'right'
+        : undefined
   })
 });
 
