@@ -59,7 +59,7 @@ export const Item: React.FC<FlexItemProps> = (props) => {
   const { className, ...rest } = props;
   const classes = useItemStyles(props);
   const itemClasses = classNames(classes.item, className);
-  const childProps = omit(rest, 'grow');
+  const childProps = omit(rest, 'textAlign', 'grow');
   return <div className={itemClasses} {...childProps} />
 };
 
