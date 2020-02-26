@@ -120,7 +120,6 @@ export function parsePaginationSet <T, K>(
 
 function getRequestHeaders (contentType: ContentType | null) {
   const authToken = getCookie('authToken');
-  debugger;
   return new Headers(
     omitFalsey({
       'Authorization': authToken && `Token ${authToken}`,
