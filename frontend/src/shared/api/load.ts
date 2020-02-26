@@ -96,7 +96,7 @@ const baseRoute = (rest: string) => `/beo/v1/load/${rest}`;
 const routes = {
   meter: appendId(baseRoute('meter')),
   meterGroup: appendId(baseRoute('meter_group')),
-  originFile: baseRoute('origin_file/')
+  originFile: 'http://localhost:8000/v1/load/origin_file/'
 };
 
 function makeQueryParams (queryParams?: MeterQueryParams) {
