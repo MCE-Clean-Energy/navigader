@@ -1,8 +1,8 @@
+import { PaginationSet, PaginationSetRaw } from '@nav/shared/types';
+import { getCookie, omitFalsey } from '@nav/shared/util';
+
 
 /** ============================ Types ===================================== */
-import { PaginationSet, PaginationSetRaw } from '../types';
-
-
 /**
  * Needless to say, this is not a complete set of HTTP method types. It is the set of the ones used
  * in the NavigaDER application.
@@ -21,27 +21,44 @@ type QueryParams = {
   [x: string]: Stringable | undefined;
 }
 
+type ContentType = 'application/json' | 'multipart/form-data';
+
 /** ============================ API Methods =============================== */
 /**
  * Makes a request using the fetch API
  *
- * @param {HttpMethodType} method - The HTTP method to use for the request (e.g. GET, POST, etc)
- * @param {string} route - The LOCAL route to send the request to. I.e. this should begin with a "/"
- * @param {object} body - The body of the request. Typically this will be JSON.
+ * @param {HttpMethodType} method: the HTTP method to use for the request (e.g. GET, POST, etc)
+ * @param {string} route: the LOCAL route to send the request to. I.e. this should begin with a "/"
+ * @param {object} body: the body of the request. Typically this will be JSON.
  */
-function makeRequest (method: HttpMethodType, route: string, body?: object) {
-  const headers = new Headers({
-    'Content-Type': 'application/json'
-  });
-  
+function makeJsonRequest (method: HttpMethodType, route: string, body?: string | FormData) {
   return fetch(route, {
-    body: JSON.stringify(body),
-    headers,
+    body,
+    headers: getRequestHeaders('application/json'),
     method
   });
 }
 
-function getRequest (route: string, queryParams?: QueryParams | null) {
+/**
+ * Emulates a form submission using the fetch API
+ *
+ * @param {string} route: the route to send the request to
+ * @param {object} formFields: an object mapping form data fields to their values
+ */
+export function makeFormPost (route: string, formFields: object) {
+  const formData = new FormData();
+  Object.entries(formFields).forEach(([fieldName, value]) => {
+    formData.append(fieldName, value);
+  });
+  
+  return fetch(route, {
+    body: formData,
+    headers: getRequestHeaders(null),
+    method: 'POST'
+  });
+}
+
+export function getRequest (route: string, queryParams?: QueryParams | null) {
   let completeRoute = route;
   if (queryParams) {
     const queryString = Object.entries(queryParams)
@@ -61,11 +78,11 @@ function getRequest (route: string, queryParams?: QueryParams | null) {
     completeRoute = completeRoute.concat(`?${queryString}`);
   }
   
-  return makeRequest('GET', completeRoute);
+  return makeJsonRequest('GET', completeRoute);
 }
 
-function postRequest (route: string, body: object) {
-  return makeRequest('POST', route, body);
+export function postRequest (route: string, body: object) {
+  return makeJsonRequest('POST', route, JSON.stringify(body));
 }
 
 /** ============================ Helpers =============================== */
@@ -75,7 +92,7 @@ function postRequest (route: string, body: object) {
  *
  * @param {string} route - The base route
  */
-function appendId (route: string) {
+export function appendId (route: string) {
   return (id?: number | string) => {
     return (id ? [route, id].join('/') : route).concat('/');
   };
@@ -89,7 +106,7 @@ function appendId (route: string) {
  * @param {Function} [parseFn] - A function that parses an individual result from its raw version
  *   to its parsed version.
  */
-function parsePaginationSet <T, K>(
+export function parsePaginationSet <T, K>(
   paginationSet: PaginationSetRaw<T>,
   parseFn: (result: T) => K
 ): PaginationSet<K> {
@@ -101,11 +118,14 @@ function parsePaginationSet <T, K>(
   };
 }
 
-/** ============================ Exports =================================== */
-export {
-  appendId,
-  getRequest,
-  makeRequest,
-  parsePaginationSet,
-  postRequest
-};
+function getRequestHeaders (contentType: ContentType | null) {
+  const authToken = getCookie('authToken');
+  debugger;
+  return new Headers(
+    omitFalsey({
+      'Authorization': authToken && `Token ${authToken}`,
+      'Content-Type': contentType,
+      'X-CSRFToken': getCookie('csrftoken')
+    })
+  );
+}
