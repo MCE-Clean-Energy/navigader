@@ -24,7 +24,7 @@ export const TextField: React.FC<TextFieldProps> = ({ outlined, ...rest }) => {
     variant: outlined ? 'outlined' : 'standard'
   };
   
-  return <MuiTextField {...textFieldProps} />;
+  return <MuiTextField autoComplete="off" {...textFieldProps} />;
 };
 
 TextField.defaultProps = {
