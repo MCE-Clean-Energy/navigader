@@ -38,7 +38,7 @@ describe('Meter Group Page', () => {
       
       // Click on the back button
       expect(getByRole('back-button')).toBeInTheDocument();
-      fireEvent.click(getByRole('button'));
+      fireEvent.click(getByRole('back-button'));
     
       // check that the content changed to the new page
       await waitForElement(() => getByText('Uploaded Files'));
