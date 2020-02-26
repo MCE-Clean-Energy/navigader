@@ -1,20 +1,21 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { createUseStyles } from 'react-jss';
 
+import * as api from '@nav/shared/api';
 import {
-  AppContainer, Button, Card, Checkbox, Flex, TextField, Typography
+  Alert, AppContainer, Button, Card, Checkbox, Flex, Progress, TextField, Typography
 } from '@nav/shared/components';
+import * as routes from '@nav/shared/routes';
 import { Theme } from '@nav/shared/styles';
 
 
 /** ============================ Types ===================================== */
-type Item17File = {
-  name: string;
-  size: number;
-};
-
+type UploadingStatus = 'not started' | 'uploading' | 'success' | 'failure';
 type FileCardProps = {
-  file: Item17File
+  file: File;
+  startUpload: (name: string) => void;
+  status: UploadingStatus;
 };
 
 /** ============================ Styles ==================================== */
@@ -43,15 +44,19 @@ const useFileCardStyles = createUseStyles((theme: Theme) => ({
   },
   row2: {
     marginTop: theme.spacing(2)
+  },
+  uploadingStatus: {
+    marginTop: theme.spacing(2)
   }
 }));
 
 /** ============================ Components ================================ */
-const FileCard: React.FC<FileCardProps> = ({ file }) => {
+const FileCard: React.FC<FileCardProps> = ({ file, startUpload, status }) => {
   const [useItem17, setUseItem17] = React.useState(false);
-  const [fileName, setFileName] = React.useState('');
-  const canUpload = Boolean(useItem17) && Boolean(fileName);
+  const [name, setFileName] = React.useState('');
   const classes = useFileCardStyles();
+  
+  const canUpload = useItem17 && Boolean(name) && statusAllowsUpload(status);
   
   return (
     <Card className={classes.card} raised>
@@ -72,7 +77,7 @@ const FileCard: React.FC<FileCardProps> = ({ file }) => {
             className={classes.fileName}
             id="file-name"
             label="File Name"
-            onChange={changeFileName}
+            onChange={handleNameChange}
             outlined
           />
         </Flex.Item>
@@ -85,16 +90,43 @@ const FileCard: React.FC<FileCardProps> = ({ file }) => {
         </Flex.Item>
         
         <Flex.Item grow textAlign="right">
-          <Button color="secondary" disabled={!canUpload}>Upload</Button>
+          <Button color="secondary" disabled={!canUpload} onClick={handleUploadClick}>
+            Upload
+          </Button>
         </Flex.Item>
       </Flex.Container>
       
+      {status !== 'not started' &&
+        <div className={classes.uploadingStatus}>
+          {status === 'uploading' && <Progress />}
+          {status === 'success' &&
+            <Alert title="Success!" type="success">
+              <Typography variant="body2">
+                The upload was successful. Check it out on the <Link to={routes.load}>Load page</Link>.
+              </Typography>
+            </Alert>
+          }
+          {status === 'failure' &&
+            <Alert title="Error" type="error">
+              <Typography>
+                The upload failed. Please try again or contact support.
+              </Typography>
+            </Alert>
+          }
+        </div>
+      }
     </Card>
   );
   
   /** ============================ Callbacks =============================== */
-  function changeFileName (event: React.ChangeEvent<HTMLInputElement>) {
+  function handleNameChange (event: React.ChangeEvent<HTMLInputElement>) {
     setFileName(event.target.value);
+  }
+  
+  function handleUploadClick () {
+    if (statusAllowsUpload(status)) {
+      startUpload(name);
+    }
   }
   
   function toggleItem17 () {
@@ -103,7 +135,8 @@ const FileCard: React.FC<FileCardProps> = ({ file }) => {
 };
 
 const UploadPage: React.FC = () => {
-  const [file, setFile] = React.useState<Item17File | null>(null);
+  const [file, setFile] = React.useState<File | null>(null);
+  const [uploadStatus, setUploadStatus] = React.useState<UploadingStatus>('not started');
   const fileUpload = React.useRef<HTMLInputElement>(null);
   const classes = useStyles();
   
@@ -121,7 +154,7 @@ const UploadPage: React.FC = () => {
         type="file"
       />
       
-      {file && <FileCard file={file} />}
+      {file && <FileCard file={file} startUpload={startUpload} status={uploadStatus} />}
     </AppContainer>
   );
   
@@ -146,10 +179,19 @@ const UploadPage: React.FC = () => {
       return;
     }
     
-    setFile({
-      name: file.name,
-      size: file.size
-    });
+    setFile(file);
+  }
+  
+  async function startUpload (name: string) {
+    if (!file) return;
+    
+    try {
+      setUploadStatus('uploading');
+      const response = await api.postOriginFile(file, name);
+      setUploadStatus(response.status === 204 ? 'success' : 'failure');
+    } catch (e) {
+      setUploadStatus('failure');
+    }
   }
 };
 
@@ -176,6 +218,16 @@ export function renderFileSize (size: number) {
   }
   
   return `${parseFloat(val.toFixed(1))} ${suffix}`;
+}
+
+/**
+ * Returns `true` if the uploading status is either "not started" or "failure"
+ *
+ * @param {UploadingStatus} status: the current uploading status
+ */
+function statusAllowsUpload (status: UploadingStatus) {
+  const uploadableStatuses: UploadingStatus[] = ['not started', 'failure'];
+  return uploadableStatuses.includes(status);
 }
 
 /** ============================ Exports =================================== */

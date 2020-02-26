@@ -1,4 +1,7 @@
 import {
+  appendId, getRequest, parsePaginationSet, makeFormPost,
+} from '@nav/shared/api/util';
+import {
   LoadType,
   Meter,
   MeterGroup,
@@ -8,7 +11,6 @@ import {
   RawMeterGroup
 } from '@nav/shared/models/meter';
 import { PaginationSet, PaginationSetRaw, RowsPerPageOption } from '@nav/shared/types';
-import { appendId, getRequest, parsePaginationSet } from '@nav/shared/api/util';
 
 
 /** ============================ Types ===================================== */
@@ -50,6 +52,21 @@ export async function getMeterGroup (
   return parseMeterGroup(response);
 }
 
+export async function postOriginFile (
+  file: File,
+  name: string
+) {
+  // TODO: Provide the correct LSE ID
+  return await makeFormPost(
+    routes.originFile,
+    {
+      file,
+      name,
+      load_serving_entity_id: 1
+    }
+  );
+}
+
 export async function getMeter (id: string, queryParams?: MeterQueryParams) {
   const response: RawMeter =
     await getRequest(
@@ -78,7 +95,8 @@ export async function getMeters (
 const baseRoute = (rest: string) => `/beo/v1/load/${rest}`;
 const routes = {
   meter: appendId(baseRoute('meter')),
-  meterGroup: appendId(baseRoute('meter_group'))
+  meterGroup: appendId(baseRoute('meter_group')),
+  originFile: baseRoute('origin_file/')
 };
 
 function makeQueryParams (queryParams?: MeterQueryParams) {
