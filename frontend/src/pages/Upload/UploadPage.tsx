@@ -76,7 +76,7 @@ const FileCard: React.FC<FileCardProps> = ({ file, startUpload, status }) => {
           <TextField
             className={classes.fileName}
             id="file-name"
-            label="File Name"
+            label="Upload Name"
             onChange={handleNameChange}
             outlined
           />
