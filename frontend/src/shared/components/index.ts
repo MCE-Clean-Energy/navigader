@@ -1,9 +1,11 @@
 import * as Branding from './branding';
 import * as Flex from './Flex';
 
-export * from './graphs';
-export * from './AppContainer';
 export { Branding };
+export { Flex };
+
+export * from './Alert';
+export * from './AppContainer';
 export * from './Button';
 export * from './Card';
 export * from './Centered';
@@ -11,7 +13,7 @@ export * from './Checkbox';
 export * from './Container';
 export * from './Divider';
 export * from './Fade';
-export { Flex };
+export * from './graphs';
 export * from './Grid';
 export * from './Icon';
 export * from './List';
