@@ -9,7 +9,7 @@ type LoginResponse = {
 
 /** ============================ API Methods =============================== */
 export async function login (username: string, password: string): Promise<Response> {
-  return postRequest('/beo/rest-auth/login/', {  username, password })
+  return postRequest(`${process.env.REACT_APP_BEO_URI}/rest-auth/login/`, {  username, password })
     .then(res => {
       res.json().then((response: LoginResponse) => {
         if (res.status === 200) {
