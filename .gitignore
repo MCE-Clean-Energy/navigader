@@ -1,10 +1,18 @@
-
 # production
 /build
 
 # misc
 .DS_Store
-
-# IDEs
 .idea
 
+# dependencies
+/node_modules
+
+# config
+.env
+
+# testing
+/coverage
+
+# logging
+npm-debug.log*
