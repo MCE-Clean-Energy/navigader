@@ -2,10 +2,29 @@
 
 The front-end of the BEO project.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Set Up
+Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/TerraVerdeRenewablePartners/navigader
+cd navigader
+npm run install
+```
+
+Building the application requires a `.env` file to specify certain environment variables:
+
+- `REACT_APP_BEO_URI`: the URI of the `beo_datastore` backend that will be serving data to the
+ front end. This should omit a trailing `/`.
+
+Full example:
+
+```
+REACT_APP_BEO_URI=http://localhost:8000
+```
 
 ## Available Scripts
 
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 In the project directory, you can run:
 
 ### `npm start`

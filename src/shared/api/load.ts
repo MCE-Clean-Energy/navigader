@@ -92,7 +92,7 @@ export async function getMeters (
 }
 
 /** ============================ Helpers =================================== */
-const baseRoute = (rest: string) => `/beo/v1/load/${rest}`;
+const baseRoute = (rest: string) => `${process.env.REACT_APP_BEO_URI}/v1/load/${rest}`;
 const routes = {
   meter: appendId(baseRoute('meter')),
   meterGroup: appendId(baseRoute('meter_group')),
