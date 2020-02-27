@@ -15,6 +15,7 @@ export async function login (username: string, password: string): Promise<Respon
         if (res.status === 200) {
           // Store the token
           setCookie('authToken', response.key);
+          window.location.assign('/load');
         }
       });
       
