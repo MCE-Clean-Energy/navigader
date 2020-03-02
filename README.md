@@ -22,6 +22,18 @@ Full example:
 REACT_APP_BEO_URI=http://localhost:8000
 ```
 
+## Deployment
+There are scripts contained in the `/scripts` directory for handling deployment to various
+ environments. You will need the AWS CLI, which entails [installing](http://docs.aws.amazon.com/cli/latest/userguide/installing.html)
+ the CLI, creating a user in AWS with the proper security credentials for writing to the bucket, and
+ configuring the CLI with `aws configure`.
+ 
+ Once set up with the CLI, you can deploy by simply calling the proper script:
+ 
+ ```bash
+./scripts/deploy-staging.sh
+ ```
+
 ## Available Scripts
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
