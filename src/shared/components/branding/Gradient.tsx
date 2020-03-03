@@ -10,25 +10,37 @@ import { primaryColor, secondaryColor } from '../../styles';
 type GradientProps = {
   className?: string;
   finishPercent?: number;
-  height?: number | string;
   invert?: boolean;
+  length?: number | string;
+  orientation?: 'horizontal' | 'vertical';
+  startPercent?: number;
 };
 
-const defaultProps = {
+const defaultProps: GradientProps = {
   finishPercent: 100,
-  invert: false
+  invert: false,
+  orientation: 'vertical',
+  startPercent: 0
 };
 
 /** ============================ Styles ==================================== */
 // Styles are exported so they can be used as a mixin elsewhere
 export const useGradientStyles = createUseStyles({
+  // The props are default-initialized to `defaultProps` because, when used as a mixin elsewhere in
+  // the application, the `Gradient` component's `defaultProps` attribute is not present
   root: (props: GradientProps = defaultProps) => {
     const startColor = props.invert ? secondaryColor : primaryColor;
     const endColor = props.invert ? primaryColor : secondaryColor;
+    const lengthDimension = props.orientation === 'vertical' ? 'height' : 'width';
+    const orientation = props.orientation === 'vertical' ? '0deg' : '90deg';
     return {
       backgroundColor: secondaryColor,
-      background: `linear-gradient(0, ${startColor} 0%, ${endColor} ${props.finishPercent}%)`,
-      height: props.height
+      background: `linear-gradient(
+        ${orientation},
+        ${startColor} ${props.startPercent}%,
+        ${endColor} ${props.finishPercent}%
+      )`,
+      [lengthDimension]: props.length
     };
   }
 });
@@ -36,7 +48,7 @@ export const useGradientStyles = createUseStyles({
 /** ============================ Components ================================ */
 export const Gradient: React.FC<GradientProps> = ({ className, ...rest }) => {
   const classes = useGradientStyles(rest);
-  const childProps = omit(rest, 'finishPercent', 'invert');
+  const childProps = omit(rest, 'finishPercent', 'invert', 'orientation', 'startPercent');
   return <div className={classNames(classes.root, className)} {...childProps} />;
 };
 

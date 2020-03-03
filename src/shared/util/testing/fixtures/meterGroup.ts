@@ -25,6 +25,7 @@ function meterGroupToRawMeterGroup (meterGroupProps: Partial<MeterGroup> = {}): 
     meter_count     : getObjProperty(meterGroupProps, 'numMeters', defaultMeterGroup.meter_count),
     meter_group_type: getObjProperty(meterGroupProps, 'groupType', defaultMeterGroup.meter_group_type),
     meters          : getObjProperty(meterGroupProps, 'meterIds', defaultMeterGroup.meters),
+    name            : getObjProperty(meterGroupProps, 'name', defaultMeterGroup.name),
     originfile: {
       filename      : getObjProperty(meterGroupProps, 'fileName', defaultMeterGroup.originfile.filename),
       owners: [],
@@ -38,6 +39,7 @@ function rawMeterGroupToMeterGroup (rawMeterGroupProps: Partial<RawMeterGroup> =
     data     : getObjProperty(rawMeterGroupProps, 'data', defaultMeterGroup.data),
     fileName : getObjProperty(rawMeterGroupProps.originfile || defaultMeterGroup.originfile, 'filename', defaultMeterGroup.originfile.filename),
     id       : getObjProperty(rawMeterGroupProps, 'id', defaultMeterGroup.id),
+    name     : getObjProperty(rawMeterGroupProps, 'name', defaultMeterGroup.name),
     numMeters: getObjProperty(rawMeterGroupProps, 'meter_count', defaultMeterGroup.meter_count),
     groupType: getObjProperty(rawMeterGroupProps, 'meter_group_type', defaultMeterGroup.meter_group_type),
     meterIds : getObjProperty(rawMeterGroupProps, 'meters', defaultMeterGroup.meters)
@@ -53,6 +55,7 @@ const defaultMeterGroup: RawMeterGroup = {
     "filename": "origin_files/nem_e6_60min.csv",
     "owners": []
   },
+  "name": "NEM E6",
   "meter_count": 797,
   "meters": [],
   "data": {

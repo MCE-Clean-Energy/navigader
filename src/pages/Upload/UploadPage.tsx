@@ -4,7 +4,7 @@ import { createUseStyles } from 'react-jss';
 
 import * as api from '@nav/shared/api';
 import {
-  Alert, AppContainer, Button, Card, Checkbox, Flex, Progress, TextField, Typography
+  Alert, Button, Card, Checkbox, Flex, Progress, TextField, Typography
 } from '@nav/shared/components';
 import * as routes from '@nav/shared/routes';
 import { Theme } from '@nav/shared/styles';
@@ -141,7 +141,7 @@ const UploadPage: React.FC = () => {
   const classes = useStyles();
   
   return (
-    <AppContainer>
+    <>
       <Typography useDiv variant="h4">Upload</Typography>
       <Button color="primary" onClick={openFileSelector}>Select File</Button>
       
@@ -155,7 +155,7 @@ const UploadPage: React.FC = () => {
       />
       
       {file && <FileCard file={file} startUpload={startUpload} status={uploadStatus} />}
-    </AppContainer>
+    </>
   );
   
   /** ============================ Callbacks =============================== */

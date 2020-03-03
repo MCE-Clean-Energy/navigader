@@ -1,11 +1,13 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Redirect, Route, RouteProps } from 'react-router-dom';
 
-import { ThemeProvider } from '@nav/shared/components';
+import { AppContainer, ThemeProvider } from '@nav/shared/components';
 import * as routes from '@nav/shared/routes';
-import MeterGroupPage from './pages/MeterGroup';
+import { getCookie } from '@nav/shared/util';
+import DashboardPage from './pages/Dashboard';
 import LoadPage from './pages/Load';
 import LoginPage from './pages/Login';
+import MeterGroupPage from './pages/MeterGroup';
 import UploadPage from './pages/Upload';
 
 
@@ -17,12 +19,44 @@ import UploadPage from './pages/Upload';
 export const AppRoutes: React.FC = () =>
   <ThemeProvider>
     <Switch>
-      <Route path={routes.meterGroup(':id')} component={MeterGroupPage} />
-      <Route path={routes.load} component={LoadPage} />
-      <Route path={routes.upload} component={UploadPage} />
       <Route path={routes.login} component={LoginPage} />
+      <AuthenticatedRoute>
+        <AppContainer>
+          <Switch>
+            <Route path={routes.meterGroup(':id')} component={MeterGroupPage} />
+            <Route path={routes.load} component={LoadPage} />
+            <Route path={routes.upload} component={UploadPage} />
+            <Route path={routes.dashboard} component={DashboardPage} />
+          
+            {/** Route of last resort */}
+            <Redirect to={routes.dashboard} />
+          </Switch>
+        </AppContainer>
+      </AuthenticatedRoute>
     </Switch>
   </ThemeProvider>;
+
+/**
+ * A wrapper for <Route> that redirects to the login screen if the user isn't authenticated.
+ */
+const AuthenticatedRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
+  const userAuthenticated = getCookie('authToken') !== undefined;
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        userAuthenticated ? children : (
+          <Redirect
+            to={{
+              pathname: routes.login,
+              state: { from: location }
+            }}
+          />
+        )
+      }
+    />
+  );
+};
   
 const App: React.FC = () =>
   <Router>

@@ -113,6 +113,7 @@ export function parseMeterGroup (rawMeterGroup: RawMeterGroup): MeterGroup {
     groupType: rawMeterGroup.meter_group_type,
     id: rawMeterGroup.id,
     meterIds: rawMeterGroup.meters,
+    name: rawMeterGroup.name,
     numMeters: rawMeterGroup.meter_count,
   };
 }

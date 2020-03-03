@@ -4,11 +4,21 @@
 import Cookies from 'js-cookie';
 
 
-/** ============================ Types =============================== */
+/** ============================ Types ===================================== */
 type CookieTypes = {
   authToken: string;
   csrftoken: string;
 };
+
+/** ============================ Methods =================================== */
+/**
+ * Removes a cookie by name.
+ *
+ * @param {keyof CookieTypes} name: the name of the cookie to get
+ */
+export function removeCookie (name: keyof CookieTypes) {
+  Cookies.remove(name);
+}
 
 /**
  * Retrieves a cookie by name. Returns `undefined` if not found.

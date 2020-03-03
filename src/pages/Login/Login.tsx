@@ -50,7 +50,7 @@ const LoginCard: React.FC = () => {
   const classes = useLoginCardStyles();
   
   // Component state
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
   
@@ -65,8 +65,8 @@ const LoginCard: React.FC = () => {
             error={error}
             id="email"
             label="E-mail address"
-            name="username"
-            onChange={e => setUsername(e.target.value)}
+            name="email"
+            onChange={e => setEmail(e.target.value)}
             outlined
           />
           
@@ -76,7 +76,7 @@ const LoginCard: React.FC = () => {
             autoComplete="current-password"
             className={classes.loginField}
             error={error}
-            helperText={error ? 'Invalid username or password' : ' '}
+            helperText={error ? 'Invalid email or password' : ' '}
             id="outlined-secondary"
             label="Password"
             name="password"
@@ -103,7 +103,7 @@ const LoginCard: React.FC = () => {
     setError(false);
     
     event.preventDefault();
-    const response = await api.login(username, password);
+    const response = await api.login(email, password);
     
     if (response.status !== 200) {
       setError(true);

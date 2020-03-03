@@ -15,9 +15,11 @@ type ButtonProps = React.HTMLAttributes<HTMLButtonElement> & {
   icon?: boolean;
 } & Pick<BaseButtonProps, 'type'>;
 
-type FabProps = Omit<ButtonProps, 'type'> & IconProps;
+type TextButtonProps = Omit<ButtonProps, 'type'>;
+type FabProps = TextButtonProps & IconProps;
 type Button = React.FC<ButtonProps> & {
-  Fab: React.FC<FabProps>
+  Fab: React.FC<FabProps>;
+  Text: React.FC<TextButtonProps>;
 };
 
 /** ============================ Components ================================ */
@@ -31,8 +33,10 @@ Button.Fab = ({ name, ...rest }) => {
   const fabProps = omit(rest, 'children');
   const iconProps = { name };
   return (
-      <MuiFab {...fabProps}>
-        <Icon {...iconProps} />
-      </MuiFab>
-    );
+    <MuiFab {...fabProps}>
+      <Icon {...iconProps} />
+    </MuiFab>
+  );
 };
+
+Button.Text = props => <MuiButton {...props} />;

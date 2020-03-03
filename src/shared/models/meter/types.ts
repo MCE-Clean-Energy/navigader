@@ -73,7 +73,8 @@ export type RawMeterGroup = {
   id: string;
   meter_count: number;
   meter_group_type: MeterGroupType;
-  meters: string[]
+  meters: string[];
+  name: string;
   originfile: {
     filename: string;
     owners: any[];
@@ -86,6 +87,7 @@ export type MeterGroup = {
   fileName: string;
   groupType: MeterGroupType;
   id: string;
+  name: string;
   numMeters: number;
   meterIds: string[]
 };

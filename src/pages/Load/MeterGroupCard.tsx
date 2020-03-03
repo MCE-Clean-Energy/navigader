@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { createUseStyles } from 'react-jss';
 
 import { Card, Grid, Frame288Graph, Statistic, Typography } from '@nav/shared/components';
@@ -9,7 +9,7 @@ import { dateFormatter } from '@nav/shared/util';
 
 
 /** ============================ Types ===================================== */
-type MeterGroupCardProps = RouteComponentProps & {
+type MeterGroupCardProps = {
   meterGroup: MeterGroup
 };
 
@@ -21,8 +21,9 @@ const useMeterGroupCardStyles = createUseStyles({
 });
 
 /** ============================ Components ================================ */
-const MeterGroupCard: React.FC<MeterGroupCardProps> = ({ meterGroup, history}) => {
+export const MeterGroupCard: React.FC<MeterGroupCardProps> = ({ meterGroup}) => {
   const classes = useMeterGroupCardStyles();
+  const history = useHistory();
   
   // Render the graph if we've loaded the average data
   const graph = hasDataField(meterGroup.data, 'average')
@@ -31,7 +32,7 @@ const MeterGroupCard: React.FC<MeterGroupCardProps> = ({ meterGroup, history}) =
   
   return (
     <Card raised className={classes.card} onClick={viewMeterGroup}>
-      <Typography variant="h6">{meterGroup.fileName}</Typography>
+      <Typography variant="h6">{meterGroup.name || meterGroup.fileName}</Typography>
       {graph}
       <Grid>
         <Grid.Item>
@@ -49,6 +50,3 @@ const MeterGroupCard: React.FC<MeterGroupCardProps> = ({ meterGroup, history}) =
     history.push(routes.meterGroup(meterGroup.id));
   }
 };
-
-/** ============================ Exports =================================== */
-export default withRouter(MeterGroupCard);

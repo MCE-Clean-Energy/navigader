@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
-import { withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import * as api from '@nav/shared/api';
-import { AppContainer, Button, Flex, Grid, Typography } from '@nav/shared/components';
+import { Button, Flex, Grid, Typography } from '@nav/shared/components';
 import { MeterGroup } from '@nav/shared/models/meter';
 import * as routes from '@nav/shared/routes';
 import { Theme } from '@nav/shared/styles';
-import MeterGroupCard from './MeterGroupCard';
+import { MeterGroupCard } from './MeterGroupCard';
 
 
 /** ============================ Styles ==================================== */
@@ -18,9 +18,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 /** ============================ Components ================================ */
-const LandingPage = withRouter(({ history }) => {
+const LoadPage = () => {
   const [meterGroups, setMeterGroups] = useState([] as MeterGroup[]);
   const classes = useStyles();
+  const history = useHistory();
   
   useEffect(() => {
     api.getMeterGroups({ types: 'average' })
@@ -28,12 +29,10 @@ const LandingPage = withRouter(({ history }) => {
   }, []);
 
   return (
-    <AppContainer>
+    <>
       <Flex.Container className={classes.header}>
         <Flex.Item>
-          <Typography variant="h6">
-            Uploaded Files
-          </Typography>
+          <Typography variant="h4">Uploaded Files</Typography>
         </Flex.Item>
         <Flex.Item>
           <Button color="secondary" onClick={goToUpload}>Add File</Button>
@@ -46,13 +45,14 @@ const LandingPage = withRouter(({ history }) => {
           </Grid.Item>
         )}
       </Grid>
-    </AppContainer>
+    </>
   );
-  
+
+  /** ============================ Callbacks =============================== */
   function goToUpload () {
     history.push(routes.upload);
   }
-});
+};
 
 /** ============================ Exports =================================== */
-export default LandingPage;
+export default LoadPage;

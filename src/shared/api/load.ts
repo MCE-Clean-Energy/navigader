@@ -96,7 +96,7 @@ const baseRoute = (rest: string) => `${process.env.REACT_APP_BEO_URI}/v1/load/${
 const routes = {
   meter: appendId(baseRoute('meter')),
   meterGroup: appendId(baseRoute('meter_group')),
-  originFile: 'http://localhost:8000/v1/load/origin_file/'
+  originFile: baseRoute('origin_file/')
 };
 
 function makeQueryParams (queryParams?: MeterQueryParams) {

@@ -1,21 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { createUseStyles } from 'react-jss';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 
 import * as api from '@nav/shared/api';
-import { AppContainer, Button, Fade, Grid, Progress, Typography } from '@nav/shared/components';
+import { Button, Fade, Grid, Progress, Typography } from '@nav/shared/components';
 import { Frame288LoadType, MeterGroup } from '@nav/shared/models/meter';
 import * as routes from '@nav/shared/routes';
 import { Theme } from '@nav/shared/styles';
 import LoadGraph from './LoadGraph';
 import MetersTable from './MetersTable';
 
-
-/** ============================ Types ===================================== */
-type MeterGroupProps = RouteComponentProps<{
-  id: string;
-}>;
 
 /** ============================ Styles ==================================== */
 const useStyles = createUseStyles((theme: Theme) => ({
@@ -46,30 +41,34 @@ const DetailsSection: React.FC = () => (
   </div>
 );
 
-const BackButton = withRouter(({ history }) => {
+const BackButton = () => {
+  const history = useHistory();
   return (
     <Button icon onClick={goBack} role="back-button">
       <ArrowBack />
     </Button>
   );
-  
+ 
+  /** ============================ Callbacks =============================== */
   function goBack () {
     history.push(routes.load);
   }
-});
+};
 
-const MeterGroupPage: React.FC<MeterGroupProps> = ({ match }) => {
+const MeterGroupPage: React.FC = () => {
   const [meterGroup, setMeterGroup] = useState<MeterGroup | null>(null);
   const [graphDataType, setGraphDataType] = useState<Frame288LoadType>('average');
   const classes = useStyles();
+  const { id } = useParams();
   
   useEffect(() => {
-    api.getMeterGroup(match.params.id, { types: [graphDataType] })
+    if (!id) return;
+    api.getMeterGroup(id, { types: [graphDataType] })
       .then(res => setMeterGroup(res));
-  }, [match.params.id, graphDataType]);
+  }, [id, graphDataType]);
   
   return (
-    <AppContainer>
+    <>
       <div className={classes.header}>
         <BackButton />
         <Typography variant="h6">
@@ -102,9 +101,10 @@ const MeterGroupPage: React.FC<MeterGroupProps> = ({ match }) => {
           <Progress circular />
         </Fade>
       )}
-    </AppContainer>
+    </>
   );
   
+  /** ============================ Callbacks =============================== */
   function changeGraphType (newType: Frame288LoadType) {
     setGraphDataType(newType);
   }
