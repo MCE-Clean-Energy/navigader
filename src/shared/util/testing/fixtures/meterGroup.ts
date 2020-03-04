@@ -23,26 +23,28 @@ function meterGroupToRawMeterGroup (meterGroupProps: Partial<MeterGroup> = {}): 
     data            : getObjProperty(meterGroupProps, 'data', defaultMeterGroup.data),
     id              : getObjProperty(meterGroupProps, 'id', defaultMeterGroup.id),
     meter_count     : getObjProperty(meterGroupProps, 'numMeters', defaultMeterGroup.meter_count),
-    meter_group_type: getObjProperty(meterGroupProps, 'groupType', defaultMeterGroup.meter_group_type),
+    object_type     : getObjProperty(meterGroupProps, 'groupType', defaultMeterGroup.object_type),
     meters          : getObjProperty(meterGroupProps, 'meterIds', defaultMeterGroup.meters),
     name            : getObjProperty(meterGroupProps, 'name', defaultMeterGroup.name),
-    originfile: {
-      filename      : getObjProperty(meterGroupProps, 'fileName', defaultMeterGroup.originfile.filename),
-      owners: [],
+    metadata: {
+      expected_meter_count: getObjProperty(meterGroupProps, 'numMetersExpected', defaultMeterGroup.metadata.expected_meter_count),
+      filename            : getObjProperty(meterGroupProps, 'fileName', defaultMeterGroup.metadata.filename),
+      owners              : []
     }
   };
 }
 
 function rawMeterGroupToMeterGroup (rawMeterGroupProps: Partial<RawMeterGroup> = {}): MeterGroup {
   return {
-    created  : getObjProperty(rawMeterGroupProps, 'created_at', defaultMeterGroup.created_at),
-    data     : getObjProperty(rawMeterGroupProps, 'data', defaultMeterGroup.data),
-    fileName : getObjProperty(rawMeterGroupProps.originfile || defaultMeterGroup.originfile, 'filename', defaultMeterGroup.originfile.filename),
-    id       : getObjProperty(rawMeterGroupProps, 'id', defaultMeterGroup.id),
-    name     : getObjProperty(rawMeterGroupProps, 'name', defaultMeterGroup.name),
-    numMeters: getObjProperty(rawMeterGroupProps, 'meter_count', defaultMeterGroup.meter_count),
-    groupType: getObjProperty(rawMeterGroupProps, 'meter_group_type', defaultMeterGroup.meter_group_type),
-    meterIds : getObjProperty(rawMeterGroupProps, 'meters', defaultMeterGroup.meters)
+    created          : getObjProperty(rawMeterGroupProps, 'created_at', defaultMeterGroup.created_at),
+    data             : getObjProperty(rawMeterGroupProps, 'data', defaultMeterGroup.data),
+    fileName         : getObjProperty(rawMeterGroupProps.metadata || defaultMeterGroup.metadata, 'filename', defaultMeterGroup.metadata.filename),
+    groupType        : getObjProperty(rawMeterGroupProps, 'object_type', defaultMeterGroup.object_type),
+    id               : getObjProperty(rawMeterGroupProps, 'id', defaultMeterGroup.id),
+    meterIds         : getObjProperty(rawMeterGroupProps, 'meters', defaultMeterGroup.meters),
+    name             : getObjProperty(rawMeterGroupProps, 'name', defaultMeterGroup.name),
+    numMeters        : getObjProperty(rawMeterGroupProps, 'meter_count', defaultMeterGroup.meter_count),
+    numMetersExpected: getObjProperty(rawMeterGroupProps.metadata || defaultMeterGroup.metadata, 'expected_meter_count', defaultMeterGroup.metadata.expected_meter_count)
   };
 }
 
@@ -50,8 +52,9 @@ function rawMeterGroupToMeterGroup (rawMeterGroupProps: Partial<RawMeterGroup> =
 const defaultMeterGroup: RawMeterGroup = {
   "id": "35b9919c-b7f9-4d28-8cf0-ac61bb9036d2",
   "created_at": "2020-02-12T20:05:05.695388",
-  "meter_group_type": "originfile",
-  "originfile": {
+  "object_type": "OriginFile",
+  "metadata": {
+    "expected_meter_count": 797,
     "filename": "origin_files/nem_e6_60min.csv",
     "owners": []
   },

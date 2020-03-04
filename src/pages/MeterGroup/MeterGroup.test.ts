@@ -49,7 +49,7 @@ describe('Meter Group Page', () => {
     test('Meter group name is rendered', async () => {
       const { getByText } = setupRouter('/load/group/2');
       
-      const expectedFileName = rawMeterGroup.originfile.filename.replace(/origin_files\//, '');
+      const expectedFileName = rawMeterGroup.metadata.filename.replace(/origin_files\//, '');
       await waitForElement(() => getByText(expectedFileName));
     });
   });

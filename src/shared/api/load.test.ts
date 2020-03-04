@@ -12,6 +12,6 @@ describe('`getMeters` method', () => {
     expect(mockFn).toHaveBeenCalledTimes(1);
     
     const callArgs = mockFn.mock.calls[0];
-    expect(callArgs[0]).toEqual('/beo/v1/load/meter/?data_types=default&meter_groups=1');
+    expect(callArgs[0]).toContain('/v1/load/meter/?data_types=default&meter_groups=1');
   })
 });

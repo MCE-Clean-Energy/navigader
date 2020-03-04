@@ -7,11 +7,13 @@ describe('`parseMeterGroup` method', () => {
   const meterGroup = fixtures.makeRawMeterGroup({
     created: 'Yesterday',
     data: {},
-    fileName: 'myFile',
+    fileName: 'myFile.csv',
     id: 'abcd',
-    groupType: 'originfile',
+    groupType: 'OriginFile',
     meterIds: [],
-    numMeters: 0
+    name: 'My File',
+    numMeters: 0,
+    numMetersExpected: 0
   });
   
   test('Successfully parses meter groups', () => {
@@ -20,24 +22,28 @@ describe('`parseMeterGroup` method', () => {
       created_at: 'Yesterday',
       data: {},
       id: 'abcd',
-      meter_group_type: 'originfile',
+      metadata: {
+        expected_meter_count: 0,
+        filename: 'myFile.csv',
+        owners: []
+      },
       meter_count: 0,
       meters: [],
-      originfile: {
-        filename: 'myFile',
-        owners: []
-      }
+      name: 'My File',
+      object_type: 'OriginFile',
     });
     
     // Assert parsing works as expected
     expect(utils.parseMeterGroup(meterGroup)).toEqual({
       created: 'Yesterday',
       data: {},
-      fileName: 'myFile',
+      fileName: 'myFile.csv',
       id: 'abcd',
-      groupType: 'originfile',
+      groupType: 'OriginFile',
       meterIds: [],
-      numMeters: 0
+      name: 'My File',
+      numMeters: 0,
+      numMetersExpected: 0
     })
   });
 });
