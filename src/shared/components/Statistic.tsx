@@ -3,8 +3,8 @@
  */
 import * as React from 'react';
 import padEnd from 'lodash/padEnd';
-import { createUseStyles } from 'react-jss';
 
+import { makeStylesHook } from '@nav/shared/styles';
 import { Typography } from './Typography';
 
 
@@ -32,7 +32,7 @@ type NumberProps = FormatConfig & {
 }
 
 /** ============================ Styles ==================================== */
-const useStyles = createUseStyles({
+const useStyles = makeStylesHook(() => ({
   prefix: {
     display: 'inline-block',
     marginRight: 4
@@ -44,7 +44,7 @@ const useStyles = createUseStyles({
   title: {
     marginBottom: 4
   }
-});
+}));
 
 /** ============================ Components ===================================== */
 const StatisticNumber: React.FC<NumberProps> = props => {

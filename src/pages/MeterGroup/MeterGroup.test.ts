@@ -4,7 +4,11 @@ import { fixtures, setupRouter } from '@nav/shared/util/testing';
 
 
 describe('Meter Group Page', () => {
-  const rawMeterGroup = fixtures.makeRawMeterGroup();
+  const groupName = 'Test group';
+  const rawMeterGroup = fixtures.makeRawMeterGroup({
+    name: groupName
+  });
+  
   beforeEach(() => {
     fetchMock.resetMocks();
     
@@ -48,9 +52,7 @@ describe('Meter Group Page', () => {
   describe('Header',  () => {
     test('Meter group name is rendered', async () => {
       const { getByText } = setupRouter('/load/group/2');
-      
-      const expectedFileName = rawMeterGroup.metadata.filename.replace(/origin_files\//, '');
-      await waitForElement(() => getByText(expectedFileName));
+      await waitForElement(() => getByText(groupName));
     });
   });
 });

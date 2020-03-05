@@ -1,8 +1,8 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
 
 import { Theme } from '@nav/shared/styles';
-import { Container } from '../Container';
 import * as Flex from '../Flex';
 import { AppBar } from './AppBar';
 import { SideDrawer } from './SideDrawer';
@@ -14,12 +14,18 @@ const useStyles = makeStyles((theme: Theme) =>
     appBarSpacer: {
       ...theme.mixins.toolbar,
     },
+    center: {
+      display: 'flex',
+      flexDirection: 'column'
+    },
     container: {
       boxSizing: 'border-box',
+      display: 'flex',
       height: '100vh',
       overflow: 'auto'
     },
     content: {
+      flexGrow: 1,
       padding: `${theme.spacing(3)}px 0`
     }
   })
@@ -33,12 +39,12 @@ export const AppContainer: React.FC = ({ children }) => {
       <AppBar />
       <SideDrawer />
       <Flex.Item className={classes.container} grow>
-        <Container>
+        <Container className={classes.center}>
           <div className={classes.appBarSpacer} />
-          <div className={classes.content}>
+          <Flex.Container alignItems="stretch" className={classes.content} direction="column" justifyContent="flex-start">
             {/** Actual page content */}
             {children}
-          </div>
+          </Flex.Container>
         </Container>
       </Flex.Item>
     </Flex.Container>

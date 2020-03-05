@@ -16,7 +16,7 @@ export async function login (email: string, password: string): Promise<Response>
         if (res.status === 200) {
           // Store the token
           setCookie('authToken', response.key);
-          window.location.assign(routes.dashboard);
+          window.location.assign(routes.dashboard.base);
         }
       });
       

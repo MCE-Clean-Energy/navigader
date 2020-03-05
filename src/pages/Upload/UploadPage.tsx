@@ -1,13 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { createUseStyles } from 'react-jss';
 
 import * as api from '@nav/shared/api';
 import {
-  Alert, Button, Card, Checkbox, Flex, Progress, TextField, Typography
+  Alert, Button, Card, Checkbox, Flex, PageHeader, Progress, TextField, Typography
 } from '@nav/shared/components';
 import * as routes from '@nav/shared/routes';
-import { Theme } from '@nav/shared/styles';
+import { makeStylesHook } from '@nav/shared/styles';
 
 
 /** ============================ Types ===================================== */
@@ -19,13 +18,13 @@ type FileCardProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = createUseStyles((theme: Theme) => ({
+const useStyles = makeStylesHook(() => ({
   fileUpload: {
     display: 'none'
   }
 }));
 
-const useFileCardStyles = createUseStyles((theme: Theme) => ({
+const useFileCardStyles = makeStylesHook(theme => ({
   card: {
     marginTop: theme.spacing(2)
   },
@@ -142,8 +141,11 @@ const UploadPage: React.FC = () => {
   
   return (
     <>
-      <Typography useDiv variant="h4">Upload</Typography>
-      <Button color="primary" onClick={openFileSelector}>Select File</Button>
+      <PageHeader title="Upload" />
+      
+      <div>
+        <Button color="primary" onClick={openFileSelector}>Select File</Button>
+      </div>
       
       {/** Deliberately hidden input. This is controlled programmatically */}
       <input

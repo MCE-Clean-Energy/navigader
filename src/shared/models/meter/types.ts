@@ -50,8 +50,8 @@ export type Meter = {
 };
 
 /** ============================ Meter Group Types ========================= */
-type MeterGroupType = 'OriginFile';
-export type RawMeterGroup = {
+// Raw meter groups
+type RawMeterGroupCommon = {
   created_at: string;
   data: MeterDataField;
   id: string;
@@ -63,17 +63,42 @@ export type RawMeterGroup = {
   meter_count: number;
   meters: string[];
   name: string | null;
-  object_type: MeterGroupType;
-}
+};
 
-export type MeterGroup = {
+export type RawOriginFileMeterGroup = RawMeterGroupCommon & {
+  object_type: 'OriginFile';
+  metadata: {
+    expected_meter_count: number | null;
+    filename: string;
+    owners: any[];
+  };
+};
+
+export type RawCustomerClusterMeterGroup = RawMeterGroupCommon & {
+  object_type: 'CustomerCluster';
+  metadata: {};
+};
+
+// Parsed meter groups
+type MeterGroupCommon = {
   created: string;
   data: MeterDataField;
-  fileName: string;
-  groupType: MeterGroupType;
   id: string;
   name: string | null;
   numMeters: number;
   numMetersExpected: number | null;
   meterIds: string[]
 };
+
+export type OriginFileMeterGroup = MeterGroupCommon & {
+  groupType: RawOriginFileMeterGroup['object_type'];
+  fileName: string;
+  numMetersExpected: number | null;
+}
+
+export type CustomerClusterMeterGroup = MeterGroupCommon & {
+  groupType: RawCustomerClusterMeterGroup['object_type'];
+};
+
+export type RawMeterGroup = RawOriginFileMeterGroup | RawCustomerClusterMeterGroup;
+export type MeterGroup = OriginFileMeterGroup | CustomerClusterMeterGroup;

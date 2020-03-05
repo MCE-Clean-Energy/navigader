@@ -95,15 +95,43 @@ export function hasDataField <T extends LoadType>(
  * @param {RawMeterGroup} rawMeterGroup - The raw meter group object obtained from the back-end
  */
 export function parseMeterGroup (rawMeterGroup: RawMeterGroup): MeterGroup {
-  return {
+  const commonFields = {
     created: rawMeterGroup.created_at,
     data: rawMeterGroup.data,
-    fileName: rawMeterGroup.metadata.filename.replace(/origin_files\//, ''),
-    groupType: rawMeterGroup.object_type,
     id: rawMeterGroup.id,
     meterIds: rawMeterGroup.meters,
     name: rawMeterGroup.name,
     numMeters: rawMeterGroup.meter_count,
     numMetersExpected: rawMeterGroup.metadata.expected_meter_count
   };
+  
+  switch (rawMeterGroup.object_type) {
+    case 'OriginFile':
+      return {
+        ...commonFields,
+        groupType: 'OriginFile',
+        fileName: rawMeterGroup.metadata.filename.replace(/origin_files\//, ''),
+        numMetersExpected: rawMeterGroup.metadata.expected_meter_count
+      };
+    case 'CustomerCluster':
+      return {
+        ...commonFields,
+        groupType: 'CustomerCluster'
+      };
+  }
+}
+
+/**
+ * Returns a display name for the given meter group
+ *
+ * @param {MeterGroup} meterGroup: the meter group object to display
+ */
+export function getMeterGroupDisplayName (meterGroup: MeterGroup): string {
+  switch (meterGroup.groupType) {
+    case 'OriginFile':
+      return meterGroup.name || meterGroup.fileName;
+    case 'CustomerCluster':
+      // TODO: How do we represent a customer cluster without a name?
+      return meterGroup.name || '';
+  }
 }

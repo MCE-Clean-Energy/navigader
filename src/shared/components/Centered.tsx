@@ -1,17 +1,18 @@
 import React from 'react';
-import { createUseStyles } from 'react-jss';
 import classNames from 'classnames';
+
+import { makeStylesHook } from '@nav/shared/styles';
 
 
 /** ============================ Types ===================================== */
 type CenteredProps = React.HTMLAttributes<HTMLDivElement>;
 
 /** ============================ Styles ==================================== */
-const useStyles = createUseStyles({
+const useStyles = makeStylesHook(() => ({
   wrapper: {
     textAlign: 'center'
   }
-});
+}));
 
 /** ============================ Components ================================ */
 export const Centered: React.FC<CenteredProps> = ({ className, ...rest }) => {

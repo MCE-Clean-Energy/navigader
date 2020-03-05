@@ -1,0 +1,43 @@
+import * as React from 'react';
+import MuiChip from '@material-ui/core/Chip';
+
+import { makeStylesHook } from '@nav/shared/styles';
+import { omitFalsey } from '@nav/shared/util';
+import { Icon, ValidIcon } from './Icon';
+
+
+/** ============================ Types ===================================== */
+type ChipProps = {
+  color?: 'primary' | 'secondary' | 'default';
+  icon?: ValidIcon;
+  label: string;
+  onClick?: () => void;
+};
+
+/** ============================ Styles ==================================== */
+const useStyles = makeStylesHook(theme => ({
+  chip: {
+    boxShadow: theme.shadows[3]
+  }
+}));
+
+/** ============================ Components ================================ */
+export const Chip: React.FC<ChipProps> = (props) => {
+  const {
+    color = 'default',
+    icon,
+    ...rest
+  } = props;
+  
+  const classes = useStyles();
+  const chipProps = omitFalsey({
+    className: classes.chip,
+    color,
+    icon: icon ? <Icon name={icon} /> : null,
+    ...rest
+  });
+  
+  return (
+    <MuiChip {...chipProps} />
+  );
+};
