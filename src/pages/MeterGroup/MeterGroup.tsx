@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { createUseStyles } from 'react-jss';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 
 import * as api from '@nav/shared/api';
 import { Button, Fade, Grid, Progress, Typography } from '@nav/shared/components';
-import { Frame288LoadType, MeterGroup } from '@nav/shared/models/meter';
+import { Frame288LoadType, getMeterGroupDisplayName, MeterGroup } from '@nav/shared/models/meter';
 import * as routes from '@nav/shared/routes';
-import { Theme } from '@nav/shared/styles';
+import { makeStylesHook } from '@nav/shared/styles';
 import LoadGraph from './LoadGraph';
 import MetersTable from './MetersTable';
 
 
 /** ============================ Styles ==================================== */
-const useStyles = createUseStyles((theme: Theme) => ({
+const useStyles = makeStylesHook(theme => ({
   header: {
     alignItems: 'center',
     display: 'flex',
@@ -72,7 +71,7 @@ const MeterGroupPage: React.FC = () => {
       <div className={classes.header}>
         <BackButton />
         <Typography variant="h6">
-          {meterGroup && meterGroup.fileName}
+          {meterGroup && getMeterGroupDisplayName(meterGroup)}
         </Typography>
       </div>
       

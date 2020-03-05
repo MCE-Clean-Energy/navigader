@@ -1,9 +1,8 @@
-import React from 'react';
-import { createUseStyles } from 'react-jss';
+import * as React from 'react';
 import omit from 'lodash/omit';
 import classNames from 'classnames';
 
-import { primaryColor, secondaryColor } from '../../styles';
+import { makeStylesHook } from '@nav/shared/styles';
 
 
 /** ============================ Types ===================================== */
@@ -25,25 +24,26 @@ const defaultProps: GradientProps = {
 
 /** ============================ Styles ==================================== */
 // Styles are exported so they can be used as a mixin elsewhere
-export const useGradientStyles = createUseStyles({
+export const useGradientStyles = makeStylesHook<GradientProps>(theme => ({
   // The props are default-initialized to `defaultProps` because, when used as a mixin elsewhere in
   // the application, the `Gradient` component's `defaultProps` attribute is not present
-  root: (props: GradientProps = defaultProps) => {
-    const startColor = props.invert ? secondaryColor : primaryColor;
-    const endColor = props.invert ? primaryColor : secondaryColor;
-    const lengthDimension = props.orientation === 'vertical' ? 'height' : 'width';
-    const orientation = props.orientation === 'vertical' ? '0deg' : '90deg';
+  root: (props= defaultProps) => {
+    const combinedProps = { ...defaultProps, ...props };
+    const startColor = combinedProps.invert ? theme.palette.secondary : theme.palette.primary;
+    const endColor = combinedProps.invert ? theme.palette.primary : theme.palette.secondary;
+    const lengthDimension = combinedProps.orientation === 'vertical' ? 'height' : 'width';
+    const orientation = combinedProps.orientation === 'vertical' ? '0deg' : '90deg';
     return {
-      backgroundColor: secondaryColor,
+      backgroundColor: theme.palette.secondary.main,
       background: `linear-gradient(
         ${orientation},
-        ${startColor} ${props.startPercent}%,
-        ${endColor} ${props.finishPercent}%
+        ${startColor.main} ${combinedProps.startPercent}%,
+        ${endColor.main} ${combinedProps.finishPercent}%
       )`,
-      [lengthDimension]: props.length
+      [lengthDimension]: combinedProps.length
     };
   }
-});
+}));
 
 /** ============================ Components ================================ */
 export const Gradient: React.FC<GradientProps> = ({ className, ...rest }) => {

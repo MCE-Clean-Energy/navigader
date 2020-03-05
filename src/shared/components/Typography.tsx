@@ -1,8 +1,8 @@
 import React from 'react';
-import { createUseStyles } from 'react-jss';
 import MuiTypography, { TypographyProps as MuiTypographyProps } from '@material-ui/core/Typography';
 import classNames from 'classnames';
 
+import { makeStylesHook } from '@nav/shared/styles';
 import { printWarning } from '@nav/shared/util';
 
 
@@ -36,11 +36,11 @@ const getOpacity = (emphasis?: Emphasis) => {
   }
 };
 
-const useStyles = createUseStyles({
-  text: (emphasis: Emphasis) => ({
-    opacity: getOpacity(emphasis)
+const useStyles = makeStylesHook<TypographyProps>(() => ({
+  text: props => ({
+    opacity: getOpacity(props.emphasis)
   })
-});
+}));
 
 /** ============================ Components ================================ */
 export const Typography: React.FC<TypographyProps> = (props) => {
@@ -54,7 +54,7 @@ export const Typography: React.FC<TypographyProps> = (props) => {
     useDiv = false,
     variant = 'body1'
   } = props;
-  const classes = useStyles(emphasis);
+  const classes = useStyles({ emphasis });
   const spanClasses = classNames(className, classes.text);
   
   // If the component is provided both the `useDiv` and `component` props, we will print a warning

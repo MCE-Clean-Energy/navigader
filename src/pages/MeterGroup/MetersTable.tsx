@@ -1,10 +1,9 @@
-import React from 'react';
-import { createUseStyles } from 'react-jss';
+import * as React from 'react';
 
 import * as api from '@nav/shared/api';
 import { Table, TableState } from '@nav/shared/components';
 import { Meter, MeterGroup } from '@nav/shared/models/meter';
-import { Theme } from '@nav/shared/styles';
+import { makeStylesHook } from '@nav/shared/styles';
 import { PaginationSet } from '@nav/shared/types';
 
 
@@ -14,7 +13,7 @@ type MetersTableProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = createUseStyles((theme: Theme) => ({
+const useStyles = makeStylesHook(() => ({
   tableContainer: {
     maxHeight: 500
   }

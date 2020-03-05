@@ -26,10 +26,10 @@ export const AppRoutes: React.FC = () =>
             <Route path={routes.meterGroup(':id')} component={MeterGroupPage} />
             <Route path={routes.load} component={LoadPage} />
             <Route path={routes.upload} component={UploadPage} />
-            <Route path={routes.dashboard} component={DashboardPage} />
+            <Route path={routes.dashboard.base} component={DashboardPage} />
           
             {/** Route of last resort */}
-            <Redirect to={routes.dashboard} />
+            <Redirect to={routes.dashboard.base} />
           </Switch>
         </AppContainer>
       </AuthenticatedRoute>

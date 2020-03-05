@@ -93,7 +93,7 @@ export const SideDrawer: React.FC = () => {
       <div className={classes.appBarSpacer} />
       <Flex.Container alignItems="stretch" className={classes.flexContainer} direction="column">
         <Flex.Item grow>
-          <DrawerButton linkTo={routes.dashboard}>Dashboard</DrawerButton>
+          <DrawerButton linkTo={routes.dashboard.base}>Dashboard</DrawerButton>
           <DrawerButton linkTo={routes.load}>Load</DrawerButton>
           <DrawerButton linkTo={routes.upload}>Upload</DrawerButton>
         </Flex.Item>

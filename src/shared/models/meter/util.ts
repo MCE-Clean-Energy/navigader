@@ -8,7 +8,6 @@ import {
   MeterDataField,
   MeterGroup,
   RawMeterGroup,
-  RawCustomerMeter,
   RawMeter
 } from './types';
 
@@ -19,26 +18,16 @@ import {
  * @param {RawMeter} meter - The raw meter object obtained from the back-end.
  */
 export function parseMeter (meter: RawMeter): Meter {
-  const meterInfo = isCustomerMeter(meter) ? meter.customermeter : meter.referencemeter;
   return {
     data: { ...meter.data, computedValues: {} },
     id: meter.id,
     metaData: {
       meterGroupIds: meter.meter_groups,
-      saId: meterInfo.sa_id,
-      ratePlan: meterInfo.rate_plan_name,
-      type: meter.meter_type
+      saId: meter.metadata.sa_id,
+      ratePlan: meter.metadata.rate_plan_name,
+      type: meter.object_type
     }
   };
-}
-
-/**
- * Type guard for the RawCustomerMeter type
- *
- * @param {Meter} meter - The meter to type check
- */
-export function isCustomerMeter (meter: RawMeter): meter is RawCustomerMeter {
-  return (meter as RawCustomerMeter).customermeter !== null;
 }
 
 /**
@@ -106,14 +95,42 @@ export function hasDataField <T extends LoadType>(
  * @param {RawMeterGroup} rawMeterGroup - The raw meter group object obtained from the back-end
  */
 export function parseMeterGroup (rawMeterGroup: RawMeterGroup): MeterGroup {
-  return {
+  const commonFields = {
     created: rawMeterGroup.created_at,
     data: rawMeterGroup.data,
-    fileName: rawMeterGroup.originfile.filename.replace(/origin_files\//, ''),
-    groupType: rawMeterGroup.meter_group_type,
     id: rawMeterGroup.id,
     meterIds: rawMeterGroup.meters,
     name: rawMeterGroup.name,
     numMeters: rawMeterGroup.meter_count,
   };
+  
+  switch (rawMeterGroup.object_type) {
+    case 'OriginFile':
+      return {
+        ...commonFields,
+        groupType: 'OriginFile',
+        fileName: rawMeterGroup.metadata.filename.replace(/origin_files\//, ''),
+        numMetersExpected: rawMeterGroup.metadata.expected_meter_count
+      };
+    case 'CustomerCluster':
+      return {
+        ...commonFields,
+        groupType: 'CustomerCluster'
+      };
+  }
+}
+
+/**
+ * Returns a display name for the given meter group
+ *
+ * @param {MeterGroup} meterGroup: the meter group object to display
+ */
+export function getMeterGroupDisplayName (meterGroup: MeterGroup): string {
+  switch (meterGroup.groupType) {
+    case 'OriginFile':
+      return meterGroup.name || meterGroup.fileName;
+    case 'CustomerCluster':
+      // TODO: How do we represent a customer cluster without a name?
+      return meterGroup.name || '';
+  }
 }

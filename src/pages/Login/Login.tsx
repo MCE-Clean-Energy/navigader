@@ -1,13 +1,13 @@
 import React, { FormEvent, useState } from 'react';
-import { createUseStyles } from 'react-jss';
 import classNames from 'classnames';
 
 import * as api from '@nav/shared/api';
 import { Button, Card, Flex, Branding, TextField, Typography } from '@nav/shared/components';
+import { makeStylesHook } from '@nav/shared/styles';
 
 
 /** ============================ Styles ==================================== */
-const useStyles = createUseStyles({
+const useStyles = makeStylesHook(() => ({
   container: {
     height: '100vh'
   },
@@ -17,9 +17,9 @@ const useStyles = createUseStyles({
   navigader: {
     letterSpacing: 25
   }
-});
+}));
 
-const useLoginCardStyles = createUseStyles({
+const useLoginCardStyles = makeStylesHook(() => ({
   loginCard: {
     width: '50%'
   },
@@ -32,13 +32,13 @@ const useLoginCardStyles = createUseStyles({
   loginForm: {
     marginTop: '3rem'
   }
-});
+}));
 
-const useSpacerStyles = createUseStyles({
+const useSpacerStyles = makeStylesHook(() => ({
   spacer: {
     marginTop: '1rem'
   }
-});
+}));
 
 /** ============================ Components ================================ */
 const Spacer: React.FC = () => {
@@ -120,7 +120,12 @@ const LoginPage: React.FC = () => {
   
   return (
     <Flex.Container alignItems="stretch" className={classes.container}>
-      <Flex.Container className={gradientClasses} direction="column" justifyContent="center">
+      <Flex.Container
+        alignItems="center"
+        className={gradientClasses}
+        direction="column"
+        justifyContent="center"
+      >
         <Typography variant="h2" className={classes.navigader}>
           NAVIGADER
         </Typography>

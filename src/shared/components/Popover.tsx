@@ -1,8 +1,7 @@
 import React from 'react';
 import MuiPopover from '@material-ui/core/Popover';
 
-import { Theme } from '@nav/shared/styles';
-import { useTheme } from 'react-jss';
+import { Theme, useTheme } from '@nav/shared/styles';
 
 
 /** ============================ Types ===================================== */
@@ -23,7 +22,7 @@ type PopoverProps = {
 
 /** ============================ Components ================================ */
 export const Popover: React.FC<PopoverProps> = (props) => {
-  const theme = useTheme() as Theme;
+  const theme = useTheme();
   const {
     anchorOrigin = { vertical: 'bottom', horizontal: 'center' } as PopoverOrigin,
     transformOrigin = { vertical: 'top', horizontal: 'center' } as PopoverOrigin,
@@ -53,7 +52,7 @@ export const Popover: React.FC<PopoverProps> = (props) => {
  *
  * @param {PopoverOrigin} anchorOrigin: the argument describing the relative positioning between the
  *   anchor and the  Paper element
- * @param {Theme} theme: the theme object provided by `react-jss`
+ * @param {Theme} theme: the theme object
  */
 function getPaperTransform (anchorOrigin: PopoverOrigin, theme: Theme): React.CSSProperties {
   const { horizontal, vertical } = anchorOrigin;

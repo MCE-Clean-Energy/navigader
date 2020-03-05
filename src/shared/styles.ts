@@ -1,6 +1,11 @@
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
+import useTheme from '@material-ui/core/styles/useTheme';
+import createStyles from '@material-ui/styles/createStyles';
+import makeStyles from '@material-ui/styles/makeStyles';
+import { ClassNameMap, StyleRules } from '@material-ui/styles/withStyles';
 
 
+/** ============================ Theme ===================================== */
 export const primaryColor = '#EC0B88';
 export const secondaryColor = '#F8B367';
 
@@ -17,3 +22,13 @@ const theme = createMuiTheme({
 
 export default theme;
 export type Theme = typeof theme;
+export { useTheme };
+
+/** ============================ Styles Hook =============================== */
+export function makeStylesHook<Props extends {} = {}, ClassKey extends string = string> (
+  styles: (theme: Theme) => StyleRules<Props, ClassKey>
+): (props?: Props) => ClassNameMap<ClassKey> {
+  return makeStyles<Theme>(
+    createStyles(styles)
+  );
+}

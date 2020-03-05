@@ -24,35 +24,19 @@ export type LoadTypeMap = {
   [K in Frame288LoadType]: Frame288;
 };
 
+type MeterType = 'CustomerMeter' | 'ReferenceMeter';
 export type MeterDataField = Partial<LoadTypeMap>
-
-type CustomerMeter = {
-  meter_type: 'customermeter';
-  customermeter: {
-    sa_id: number;
-    rate_plan_name: string;
-    state: string;
-  };
-}
-
-type ReferenceMeter = {
-  meter_type: 'referencemeter';
-  referencemeter: {
-    sa_id: number;
-    rate_plan_name: string;
-    state: string;
-  };
-};
-
-type RawMeterCommon = {
+export type RawMeter = {
   data: MeterDataField;
   id: string;
+  metadata: {
+    sa_id: number;
+    rate_plan_name: string;
+    state: string;
+  };
   meter_groups: MeterGroup['id'][];
-}
-
-export type RawCustomerMeter = RawMeterCommon & CustomerMeter;
-export type RawReferenceMeter = RawMeterCommon & ReferenceMeter;
-export type RawMeter = RawCustomerMeter | RawReferenceMeter;
+  object_type: MeterType;
+};
 
 export type Meter = {
   data: MeterDataField & ComputedValues;
@@ -66,28 +50,49 @@ export type Meter = {
 };
 
 /** ============================ Meter Group Types ========================= */
-type MeterGroupType = 'originfile';
-export type RawMeterGroup = {
+// Raw meter groups
+type RawMeterGroupCommon = {
   created_at: string;
   data: MeterDataField;
   id: string;
   meter_count: number;
-  meter_group_type: MeterGroupType;
   meters: string[];
-  name: string;
-  originfile: {
+  name: string | null;
+};
+
+export type RawOriginFileMeterGroup = RawMeterGroupCommon & {
+  object_type: 'OriginFile';
+  metadata: {
+    expected_meter_count: number | null;
     filename: string;
     owners: any[];
   };
-}
+};
 
-export type MeterGroup = {
+export type RawCustomerClusterMeterGroup = RawMeterGroupCommon & {
+  object_type: 'CustomerCluster';
+  metadata: {};
+};
+
+// Parsed meter groups
+type MeterGroupCommon = {
   created: string;
   data: MeterDataField;
-  fileName: string;
-  groupType: MeterGroupType;
   id: string;
-  name: string;
+  name: string | null;
   numMeters: number;
   meterIds: string[]
 };
+
+export type OriginFileMeterGroup = MeterGroupCommon & {
+  groupType: RawOriginFileMeterGroup['object_type'];
+  fileName: string;
+  numMetersExpected: number | null;
+}
+
+export type CustomerClusterMeterGroup = MeterGroupCommon & {
+  groupType: RawCustomerClusterMeterGroup['object_type'];
+};
+
+export type RawMeterGroup = RawOriginFileMeterGroup | RawCustomerClusterMeterGroup;
+export type MeterGroup = OriginFileMeterGroup | CustomerClusterMeterGroup;

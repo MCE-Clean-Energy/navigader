@@ -1,7 +1,8 @@
 import React from 'react';
-import { createUseStyles } from 'react-jss';
 import MuiCard from '@material-ui/core/Card';
 import classNames from 'classnames';
+
+import { makeStylesHook } from '@nav/shared/styles';
 
 
 /** ============================ Types ===================================== */
@@ -14,11 +15,11 @@ type CardProps = React.HTMLAttributes<HTMLDivElement> & {
 }
 
 /** ============================ Styles ==================================== */
-const useStyles = createUseStyles({
-  card: (props: CardProps) => ({
+const useStyles = makeStylesHook<CardProps>(() => ({
+  card: props => ({
     padding: props.padding
   })
-});
+}));
 
 /** ============================ Components ================================ */
 export const Card: React.FC<CardProps> = ({ className, styleOverrides, ...rest }) => {

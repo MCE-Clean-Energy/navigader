@@ -1,10 +1,10 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { createUseStyles } from 'react-jss';
 
 import { Card, Grid, Frame288Graph, Statistic, Typography } from '@nav/shared/components';
-import { hasDataField, MeterGroup } from '@nav/shared/models/meter';
+import { getMeterGroupDisplayName, hasDataField, MeterGroup } from '@nav/shared/models/meter';
 import * as routes from '@nav/shared/routes';
+import { makeStylesHook } from '@nav/shared/styles';
 import { dateFormatter } from '@nav/shared/util';
 
 
@@ -14,11 +14,11 @@ type MeterGroupCardProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useMeterGroupCardStyles = createUseStyles({
+const useMeterGroupCardStyles = makeStylesHook(() => ({
   card: {
     cursor: 'pointer'
   }
-});
+}));
 
 /** ============================ Components ================================ */
 export const MeterGroupCard: React.FC<MeterGroupCardProps> = ({ meterGroup}) => {
@@ -32,7 +32,7 @@ export const MeterGroupCard: React.FC<MeterGroupCardProps> = ({ meterGroup}) => 
   
   return (
     <Card raised className={classes.card} onClick={viewMeterGroup}>
-      <Typography variant="h6">{meterGroup.name || meterGroup.fileName}</Typography>
+      <Typography variant="h6">{getMeterGroupDisplayName(meterGroup)}</Typography>
       {graph}
       <Grid>
         <Grid.Item>

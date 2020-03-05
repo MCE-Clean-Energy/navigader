@@ -1,7 +1,7 @@
 import React from 'react';
-import { createUseStyles } from 'react-jss';
 
 import logo from '@nav/shared/images/logo.png';
+import { makeStylesHook } from '@nav/shared/styles';
 
 
 /** ============================ Types ===================================== */
@@ -10,11 +10,11 @@ type LogoProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = createUseStyles({
-  logo: (props: LogoProps) => ({
+const useStyles = makeStylesHook<LogoProps>(() => ({
+  logo: props => ({
     width: props.width
   })
-});
+}));
 
 /** ============================ Components ================================ */
 export const Logo: React.FC<LogoProps> = (props) => {

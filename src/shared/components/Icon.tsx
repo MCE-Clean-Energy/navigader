@@ -1,9 +1,10 @@
 import React from 'react';
 import AddIcon from '@material-ui/icons/Add';
+import DoneIcon from '@material-ui/icons/Done';
 
 
 /** ============================ Types ===================================== */
-export type ValidIcon = 'add';
+export type ValidIcon = 'checkMark' | 'plus';
 export type IconProps = {
   name: ValidIcon;
   size?: 'small' | 'medium' | 'large';
@@ -20,5 +21,6 @@ export const Icon: React.FC<IconProps> = ({ name, size, ...rest }) => {
  * Maps a valid icon name to the corresponding icon component
  */
 const iconMap = {
-  add: AddIcon
+  plus: AddIcon,
+  checkMark: DoneIcon,
 };

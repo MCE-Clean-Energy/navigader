@@ -1,6 +1,5 @@
 import React from 'react';
 import pick from 'lodash/pick';
-import { createUseStyles } from 'react-jss';
 import MuiPaper from '@material-ui/core/Paper';
 import MuiTable from '@material-ui/core/Table';
 import MuiTableBody from '@material-ui/core/TableBody';
@@ -10,9 +9,10 @@ import MuiTableHead from '@material-ui/core/TableHead';
 import MuiTableRow from '@material-ui/core/TableRow';
 
 import { Flex, Progress, Typography } from '@nav/shared/components';
-import { Theme } from '@nav/shared/styles';
+import { makeStylesHook } from '@nav/shared/styles';
 import { PaginationSet } from '@nav/shared/types';
 import { TablePagination, TableState } from './Pagination';
+import { makeCancelableAsync } from '../../util';
 
 
 /** ============================ Types ===================================== */
@@ -47,7 +47,7 @@ type DataState<T> = {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = createUseStyles((theme: Theme) => ({
+const useStyles = makeStylesHook(theme => ({
   header: {
     // Provides the proper height for the toolbar
     ...theme.mixins.toolbar
@@ -78,25 +78,17 @@ export function Table <T>(props: TableProps<T>) {
   const { currentPage, rowsPerPage } = tableState;
   
   // Load data
-  React.useEffect(() => {
-    let didCancel = false;
-    
+  React.useEffect(makeCancelableAsync(() => {
     setLoading(true);
-    dataFn(tableState).then((paginationSet) => {
-      if (!didCancel) {
-        setLoading(false);
-        setDataState(pick(paginationSet, 'data', 'count'));
-      }
-    });
-    
-    return () => {
-      didCancel = true;
-    };
-  }, [dataFn, tableState]);
+    return dataFn(tableState)
+  }, (paginationSet) => {
+    setLoading(false);
+    setDataState(pick(paginationSet, 'data', 'count'));
+  }), [dataFn, tableState]);
 
   return (
     <div>
-      <Flex.Container className={classes.header}>
+      <Flex.Container alignItems="center" className={classes.header} justifyContent="space-between">
         <Typography variant="h6">{title}</Typography>
         {data && count && (
           <TablePagination

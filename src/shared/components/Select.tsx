@@ -1,5 +1,4 @@
 import React from 'react';
-import { createUseStyles } from 'react-jss';
 import identity from 'lodash/identity';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -7,7 +6,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MuiSelect from '@material-ui/core/Select';
 import useTheme from '@material-ui/core/styles/useTheme';
 
-import { Theme } from '@nav/shared/styles';
+import { makeStylesHook } from '@nav/shared/styles';
 import { randomString } from '@nav/shared/util';
 
 
@@ -48,7 +47,7 @@ const MenuProps = {
   },
 };
 
-const useStyles = createUseStyles((theme: Theme) => ({
+const useStyles = makeStylesHook(theme => ({
   option: {
     fontWeight: theme.typography.fontWeightRegular
   },
