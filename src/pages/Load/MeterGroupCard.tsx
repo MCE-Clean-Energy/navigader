@@ -27,7 +27,7 @@ export const MeterGroupCard: React.FC<MeterGroupCardProps> = ({ meterGroup}) => 
   
   // Render the graph if we've loaded the average data
   const graph = hasDataField(meterGroup.data, 'average')
-    ? <Frame288Graph data={meterGroup.data.average} height={200} />
+    ? <Frame288Graph data={meterGroup.data.average} loadType="average" />
     : null;
   
   return (

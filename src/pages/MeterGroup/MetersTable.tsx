@@ -22,6 +22,17 @@ const useStyles = makeStylesHook(() => ({
 /** ============================ Components ================================ */
 const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
   const classes = useStyles();
+  const getMeters = React.useCallback(
+    async (state: TableState): Promise<PaginationSet<Meter>> => {
+      return await api.getMeters({
+        meterGroupId,
+        page: state.currentPage + 1,
+        pageSize: state.rowsPerPage,
+        types: 'default'
+      });
+    },
+    [meterGroupId]
+  );
   
   // TODO: virtualize the table
   return (
@@ -33,7 +44,7 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
       stickyHeader
       title="Meters"
     >
-      {(meters) =>
+      {meters =>
         <>
           <Table.Head>
             <Table.Row>
@@ -53,15 +64,6 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
       }
     </Table>
   );
-  
-  async function getMeters (state: TableState): Promise<PaginationSet<Meter>> {
-    return await api.getMeters({
-      meterGroupId,
-      page: state.currentPage + 1,
-      pageSize: state.rowsPerPage,
-      types: 'default'
-    });
-  }
 };
 
 /** ============================ Exports =================================== */

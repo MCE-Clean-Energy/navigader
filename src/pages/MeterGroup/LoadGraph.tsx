@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import { Card, Grid, Frame288Graph, Radio } from '@nav/shared/components';
 import { Frame288LoadType, hasDataField, MeterGroup } from '@nav/shared/models/meter';
@@ -33,7 +33,8 @@ const LoadGraph: React.FC<LoadGraphProps> = ({ dataType, meterGroup, months }) =
     return null;
   }
   
-  return <Frame288Graph data={meterGroup.data[dataType]} height={200} months={months} width={300} />;
+  const data = meterGroup.data[dataType];
+  return <Frame288Graph data={data} loadType={dataType} months={months} />;
 };
 
 const LoadGraphCard: React.FC<LoadGraphCardProps> = ({ changeType, dataType, meterGroup }) => {
