@@ -128,3 +128,12 @@ function getRequestHeaders (contentType: ContentType | null) {
     })
   );
 }
+
+/**
+ * Checks if a response has a 20x response code, indicating the request succeeded.
+ *
+ * @param {Response} response: the response to evaluate
+ */
+export function succeeded (response: Response) {
+  return response.status >= 200 && response.status <= 300;
+}
