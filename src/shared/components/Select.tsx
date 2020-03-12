@@ -1,5 +1,7 @@
-import React from 'react';
+import * as React from 'react';
 import identity from 'lodash/identity';
+import isUndefined from 'lodash/isUndefined';
+import noop from 'lodash/noop';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -12,22 +14,23 @@ import { randomString } from '@nav/shared/util';
 
 /** ============================ Types ===================================== */
 type SelectCommonProps<T> = {
+  className?: string;
   id?: string;
   label?: string;
   options: T[];
-  renderOption?: (option: T) => React.ReactNode;
+  renderOption?: ((option: T) => React.ReactNode) | keyof T;
 };
 
 type MultiSelectProps<T> = {
   multiple: true;
   onChange?: (value: T[]) => void;
-  value?: T[];
+  value: T[] | undefined;
 }
 
 type SingleSelectProps<T> = {
-  multiple: false;
+  multiple?: false;
   onChange?: (value: T) => void;
-  value?: T;
+  value: T | undefined;
 }
 
 type SelectProps<T> = React.PropsWithChildren<
@@ -36,22 +39,14 @@ type SelectProps<T> = React.PropsWithChildren<
 >;
 
 /** ============================ Styles ==================================== */
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
-
 const useStyles = makeStylesHook(theme => ({
+  formControl: {
+    minWidth: 120
+  },
   option: {
     fontWeight: theme.typography.fontWeightRegular
   },
-  selectdOption: {
+  selectedOption: {
     fontWeight: theme.typography.fontWeightMedium
   }
 }));
@@ -61,8 +56,9 @@ export function Select <T>(props: SelectProps<T>) {
   const {
     id = randomString(),
     label,
+    multiple,
     options,
-    onChange,
+    onChange = noop,
     renderOption = identity,
     value,
     ...rest
@@ -75,30 +71,43 @@ export function Select <T>(props: SelectProps<T>) {
     inputLabel = <InputLabel id={id}>{label}</InputLabel>;
   }
   
+  const unselectedValue = '';
+  const selectedValues = props.multiple
+    ? isUndefined(props.value) ? unselectedValue : props.value.map(v => options.indexOf(v))
+    : isUndefined(props.value) ? unselectedValue : options.indexOf(props.value);
+  
   const selectProps = {
     labelId: label ? id : undefined,
-    MenuProps: MenuProps,
+    multiple,
     onChange: handleChange,
-    value,
+    value: selectedValues,
     ...rest
   };
   
   return (
-    <FormControl>
+    <FormControl className={classes.formControl}>
       {inputLabel}
       <MuiSelect {...selectProps}>
         {options.map((option, i) =>
           <MenuItem key={i} value={i} className={getStyles(option)}>
-            {renderOption(option)}
+            {
+              typeof renderOption === 'function'
+                ? renderOption(option)
+                : option[renderOption]
+            }
           </MenuItem>
         )}
       </MuiSelect>
     </FormControl>
   );
   
+  /** ============================ Callbacks =============================== */
   function handleChange (event: React.ChangeEvent<{ name?: string; value: unknown; }>) {
-    if (onChange) {
-      onChange(event.target.value as T & T[]);
+    const index = +(event.target.value as string);
+    if (!props.multiple) {
+      onChange(props.options[index]);
+    } else {
+      // TODO: support multi-select
     }
   }
   
@@ -108,7 +117,7 @@ export function Select <T>(props: SelectProps<T>) {
       : value === option;
     
     return isSelected
-      ? classes.selectdOption
+      ? classes.selectedOption
       : classes.option;
   }
 }

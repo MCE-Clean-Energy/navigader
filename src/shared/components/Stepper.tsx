@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import MuiStep from '@material-ui/core/Step';
 import MuiStepLabel from '@material-ui/core/StepLabel';
 import MuiStepper from '@material-ui/core/Stepper';

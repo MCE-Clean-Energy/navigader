@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import MuiPopover from '@material-ui/core/Popover';
 
 import { Theme, useTheme } from '@nav/shared/styles';

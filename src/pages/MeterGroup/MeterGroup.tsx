@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import ArrowBack from '@material-ui/icons/ArrowBack';
 
 import * as api from '@nav/shared/api';
 import { Button, Fade, Grid, Progress, Typography } from '@nav/shared/components';
@@ -42,11 +41,7 @@ const DetailsSection: React.FC = () => (
 
 const BackButton = () => {
   const history = useHistory();
-  return (
-    <Button icon onClick={goBack} role="back-button">
-      <ArrowBack />
-    </Button>
-  );
+  return <Button icon="back" onClick={goBack} role="back-button" />;
  
   /** ============================ Callbacks =============================== */
   function goBack () {
@@ -55,12 +50,12 @@ const BackButton = () => {
 };
 
 const MeterGroupPage: React.FC = () => {
-  const [meterGroup, setMeterGroup] = useState<MeterGroup | null>(null);
-  const [graphDataType, setGraphDataType] = useState<Frame288LoadType>('average');
+  const [meterGroup, setMeterGroup] = React.useState<MeterGroup | null>(null);
+  const [graphDataType, setGraphDataType] = React.useState<Frame288LoadType>('average');
   const classes = useStyles();
   const { id } = useParams();
   
-  useEffect(() => {
+  React.useEffect(() => {
     if (!id) return;
     api.getMeterGroup(id, { types: [graphDataType] })
       .then(res => setMeterGroup(res));

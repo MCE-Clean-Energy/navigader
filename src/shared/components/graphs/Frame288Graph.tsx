@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import ContainerDimensions, { Dimensions } from 'react-container-dimensions';
 import {
   DomainPropType, VictoryAxis, VictoryChart, VictoryLabel, VictoryLine, VictoryTheme,
@@ -99,11 +99,11 @@ const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
             axisLabelComponent={<VictoryLabel dy={-30} />}
           />
           
-          {formattedData.map((monthData, monthIndex) =>
+          {monthIndices.map((monthIndex, arrayIndex) =>
             <VictoryLine
-              data={monthData}
+              data={formattedData[arrayIndex]}
               key={monthIndex}
-              labels={() => getMonthName(monthIndex + 1)}
+              labels={() => getMonthName(monthIndex)}
               labelComponent={<VictoryTooltip />}
               style={lineStyle}
             />

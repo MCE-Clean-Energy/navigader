@@ -1,3 +1,4 @@
+import * as React from 'react';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import useTheme from '@material-ui/core/styles/useTheme';
 import createStyles from '@material-ui/styles/createStyles';
@@ -9,7 +10,23 @@ import { ClassNameMap, StyleRules } from '@material-ui/styles/withStyles';
 export const primaryColor = '#EC0B88';
 export const secondaryColor = '#F8B367';
 
+// Extend the default theme
+declare module '@material-ui/core/styles/createMixins' {
+  type TransitionBounds = [any, any];
+  interface Mixins {
+    transition: {
+      (property: string, activated: boolean, bounds: TransitionBounds): React.CSSProperties
+    }
+  }
+}
+
 const theme = createMuiTheme({
+  mixins: {
+    transition: (property, activated, bounds) => ({
+      transition: `${property} 0.25s`,
+      [property]: activated ? bounds[0] : bounds[1]
+    })
+  },
   palette: {
     primary: {
       main: primaryColor

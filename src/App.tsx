@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { BrowserRouter as Router, Switch, Redirect, Route, RouteProps } from 'react-router-dom';
 
 import { AppContainer, ThemeProvider } from '@nav/shared/components';

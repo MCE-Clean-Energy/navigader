@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import MuiGrid from '@material-ui/core/Grid';
 
 

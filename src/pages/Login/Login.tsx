@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react';
+import * as React from 'react';
 import classNames from 'classnames';
 
 import * as api from '@nav/shared/api';
@@ -50,9 +50,9 @@ const LoginCard: React.FC = () => {
   const classes = useLoginCardStyles();
   
   // Component state
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(false);
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [error, setError] = React.useState(false);
   
   return (
     <Card className={classes.loginCard} raised>
@@ -99,7 +99,7 @@ const LoginCard: React.FC = () => {
    * @param event: FormEvent
    *   The event object
    */
-  async function onSubmit (event: FormEvent) {
+  async function onSubmit (event: React.FormEvent) {
     setError(false);
     
     event.preventDefault();

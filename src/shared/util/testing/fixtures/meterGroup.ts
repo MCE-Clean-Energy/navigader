@@ -1,10 +1,25 @@
 import {
-  OriginFileMeterGroup, RawOriginFileMeterGroup
+  CustomerClusterMeterGroup,
+  OriginFileMeterGroup, RawCustomerClusterMeterGroup, RawOriginFileMeterGroup
 } from '@nav/shared/models/meter';
 
 
 /** ============================ Fixture creators ========================== */
-export function makeRawMeterGroup (meterGroupProps?: Partial<OriginFileMeterGroup>): RawOriginFileMeterGroup {
+export function makeRawCustomerCluster (customerClusterProps?: Partial<CustomerClusterMeterGroup>): RawCustomerClusterMeterGroup {
+  // Temporarily dress up the customer cluster as an origin file
+  const originFile = meterGroupToRawMeterGroup({ ...customerClusterProps, groupType: 'OriginFile' });
+  
+  debugger;
+  
+  // Convert back to a customer cluster
+  return {
+    ...originFile,
+    metadata: {},
+    object_type: 'CustomerCluster'
+  };
+}
+
+export function makeRawOriginFile (meterGroupProps?: Partial<OriginFileMeterGroup>): RawOriginFileMeterGroup {
   return meterGroupToRawMeterGroup(meterGroupProps);
 }
 

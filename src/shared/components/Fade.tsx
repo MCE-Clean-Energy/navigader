@@ -1,11 +1,11 @@
-import React, { CSSProperties } from 'react';
+import * as React from 'react';
 import MuiFade from '@material-ui/core/Fade';
 
 
 /** ============================ Types ===================================== */
 type FadeProps = {
   in: boolean;
-  style?: CSSProperties;
+  style?: React.CSSProperties;
   unmountOnExit?: boolean;
 };
 

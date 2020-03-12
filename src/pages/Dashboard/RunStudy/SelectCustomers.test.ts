@@ -1,17 +1,17 @@
 import { fireEvent, waitForElement } from '@testing-library/react'
 
 import * as routes from '@nav/shared/routes';
-import { fixtures, setupRouter } from '@nav/shared/util/testing';
+import { fixtures, renderAppRoute } from '@nav/shared/util/testing';
 
 
 describe('"Select Customers" page', () => {
-  const rawMeterGroup1 = fixtures.makeRawMeterGroup({
+  const rawMeterGroup1 = fixtures.makeRawOriginFile({
     id: '1',
     numMeters: 20,
     name: 'My meters'
   });
   
-  const rawMeterGroup2 = fixtures.makeRawMeterGroup({
+  const rawMeterGroup2 = fixtures.makeRawOriginFile({
     id: '2',
     numMeters: 322,
     name: 'Residential customers'
@@ -36,7 +36,7 @@ describe('"Select Customers" page', () => {
   });
   
   test('Proper number of chips are rendered', async () => {
-    const { getAllByTestId } = setupRouter(routes.dashboard.runStudy.selectCustomers);
+    const { getAllByTestId } = renderAppRoute(routes.dashboard.runStudy.selectCustomers);
     
     // Wait for the fetch response
     await waitForElement(() => getAllByTestId('meter-group-chip'));
@@ -51,7 +51,7 @@ describe('"Select Customers" page', () => {
   });
   
   test('Selecting a meter group updates the meter count', async () => {
-    const { getAllByTestId, getByText } = setupRouter(routes.dashboard.runStudy.selectCustomers);
+    const { getAllByTestId, getByText } = renderAppRoute(routes.dashboard.runStudy.selectCustomers);
     
     // Wait for the fetch response
     await waitForElement(() => getAllByTestId('meter-group-chip'));

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import MuiCard from '@material-ui/core/Card';
 import classNames from 'classnames';
 

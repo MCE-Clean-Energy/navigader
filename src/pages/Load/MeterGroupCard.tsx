@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { Card, Grid, Frame288Graph, Statistic, Typography } from '@nav/shared/components';

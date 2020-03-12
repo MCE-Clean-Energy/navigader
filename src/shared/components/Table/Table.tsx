@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import pick from 'lodash/pick';
 import MuiPaper from '@material-ui/core/Paper';
 import MuiTable from '@material-ui/core/Table';

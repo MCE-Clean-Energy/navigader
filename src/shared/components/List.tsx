@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import MuiList from '@material-ui/core/List';
 import MuiListItem from '@material-ui/core/ListItem';
 import MuiListItemIcon from '@material-ui/core/ListItemIcon';

@@ -2,16 +2,19 @@ import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { Button, Flex } from '@nav/shared/components';
-import { stepPaths } from './util';
+import { DERSelection, stepPaths, validateDerSelections } from './util';
 
 
 /** ============================ Types ===================================== */
 type StepActionProps = {
   activeStep: number;
+  
+  // Props needed for validation
+  selectedDers: Partial<DERSelection>[]
 }
 
 /** ============================ Components ================================ */
-const StepActions: React.FC<StepActionProps> = ({ activeStep }) => {
+const StepActions: React.FC<StepActionProps> = ({ activeStep, selectedDers }) => {
   const history = useHistory();
   const prevButton = activeStep === 0
     ? null
@@ -19,7 +22,14 @@ const StepActions: React.FC<StepActionProps> = ({ activeStep }) => {
   
   const nextButtonText = activeStep === 2 ? 'Run Study' : 'Next';
   const nextButtonCb = activeStep === 2 ? runStudy : goForward;
-  const nextButton = <Button color="primary" onClick={nextButtonCb}>{nextButtonText}</Button>;
+  const nextButton =
+    <Button
+      color="primary"
+      disabled={disableNext()}
+      onClick={nextButtonCb}
+    >
+      {nextButtonText}
+    </Button>;
   
   return (
     <Flex.Container justifyContent="space-between">
@@ -41,6 +51,18 @@ const StepActions: React.FC<StepActionProps> = ({ activeStep }) => {
   
   function runStudy () {
     console.log('Running study...');
+  }
+  
+  /**
+   * Performs validation on the current step.
+   *   - On the "DER Selection" page, at least one DER must be selected and filled out
+   */
+  function disableNext () {
+    if (activeStep === 0) {
+      return !validateDerSelections(selectedDers);
+    } else {
+      return false;
+    }
   }
 };
 

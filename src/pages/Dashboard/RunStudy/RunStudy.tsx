@@ -1,8 +1,9 @@
-import React from 'react';
+import * as React from 'react';
 import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
 
-import { getMeterGroups } from '@nav/shared/api';
+import { getDerConfigurations, getDerStrategies, getMeterGroups } from '@nav/shared/api';
 import { Button, Flex, PageHeader, Stepper } from '@nav/shared/components';
+import { BatteryConfiguration, BatteryStrategy } from '@nav/shared/models/der';
 import { MeterGroup } from '@nav/shared/models/meter';
 import * as routes from '@nav/shared/routes';
 import { makeStylesHook } from '@nav/shared/styles';
@@ -12,6 +13,7 @@ import SelectCustomers from './SelectCustomers';
 import SelectDERs from './SelectDERs';
 import StepActions from './StepActions';
 import { stepPaths } from './util';
+import { DERSelection } from './util';
 
 
 /** ============================ Styles ==================================== */
@@ -30,10 +32,26 @@ const RunStudyPage: React.FC = () => {
   // All state for the page is handled here
   const [meterGroups, setMeterGroups] = React.useState<MeterGroup[] | null>(null);
   const [selectedMeterGroupIds, setSelectedMeterGroupIds] = React.useState<string[]>([]);
+  const [selectedDers, setSelectedDers] = React.useState<Partial<DERSelection>[]>([{}]);
+  const [derConfigurations, setDERConfigurations] = React.useState<BatteryConfiguration[]>([]);
+  const [derStrategies, setDERStrategies] = React.useState<BatteryStrategy[]>([]);
   
+  // Load meter groups
   React.useEffect(makeCancelableAsync(
     () => getMeterGroups(),
     res => setMeterGroups(res.data)
+  ), []);
+  
+  // Load DER configurations
+  React.useEffect(makeCancelableAsync(
+    () => getDerConfigurations({ data: true }),
+    res => setDERConfigurations(res.data)
+  ), []);
+  
+  // Load DER strategies
+  React.useEffect(makeCancelableAsync(
+    () => getDerStrategies({ data: true }),
+    res => setDERStrategies(res.data)
   ), []);
   
   const stepLabels = ['Select DERs', 'Select Customers', 'Review'];
@@ -64,12 +82,22 @@ const RunStudyPage: React.FC = () => {
               />
             }
           />
-          <Route path={routes.dashboard.runStudy.selectDers} component={SelectDERs} />
+          <Route
+            path={routes.dashboard.runStudy.selectDers}
+            render={() =>
+              <SelectDERs
+                derConfigurations={derConfigurations}
+                derStrategies={derStrategies}
+                selectedDers={selectedDers}
+                updateDerSelections={setSelectedDers}
+              />
+            }
+          />
         </Switch>
       </Flex.Container>
       
       <Flex.Item>
-        <StepActions activeStep={activeStep} />
+        <StepActions activeStep={activeStep} selectedDers={selectedDers} />
       </Flex.Item>
     </>
   );

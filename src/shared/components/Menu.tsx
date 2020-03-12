@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import MuiMenu from '@material-ui/core/Menu';
 import MuiMenuItem from '@material-ui/core/MenuItem';
 

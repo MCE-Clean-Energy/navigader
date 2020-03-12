@@ -1,18 +1,19 @@
-import React, { ButtonHTMLAttributes } from 'react';
+import * as React from 'react';
 import omit from 'lodash/omit';
 import MuiButton from '@material-ui/core/Button';
 import MuiFab from '@material-ui/core/Fab';
 import MuiIconButton from '@material-ui/core/IconButton';
 
-import { Icon, IconProps } from './Icon';
+import { Icon, IconProps, ValidIcon } from './Icon';
 
 
 /** ============================ Types ===================================== */
-type BaseButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
+type BaseButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 type ButtonProps = React.HTMLAttributes<HTMLButtonElement> & {
   color?: 'primary' | 'secondary';
   disabled?: boolean;
-  icon?: boolean;
+  icon?: ValidIcon;
+  size?: 'small' | 'large';
 } & Pick<BaseButtonProps, 'type'>;
 
 type TextButtonProps = Omit<ButtonProps, 'type'>;
@@ -24,17 +25,31 @@ type Button = React.FC<ButtonProps> & {
 
 /** ============================ Components ================================ */
 export const Button: Button = ({ icon, ...rest }) => {
-  return icon
-    ? <MuiIconButton {...rest} />
-    : <MuiButton variant="contained" {...rest} />;
+  const noChildren = React.Children.count(rest.children) === 0;
+  
+  // Render an icon-button if there's an icon but no children
+  if (icon && noChildren) {
+    return (
+      <MuiIconButton {...omit(rest, 'size')}>
+        <Icon name={icon} />
+      </MuiIconButton>
+    );
+  }
+  
+  return (
+    <MuiButton
+      startIcon={icon ? <Icon name={icon} /> : null}
+      variant="contained"
+      {...rest}
+    />
+  );
 };
 
 Button.Fab = ({ name, ...rest }) => {
   const fabProps = omit(rest, 'children');
-  const iconProps = { name };
   return (
     <MuiFab {...fabProps}>
-      <Icon {...iconProps} />
+      <Icon name={name} />
     </MuiFab>
   );
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import logo from '@nav/shared/images/logo.png';
 import { makeStylesHook } from '@nav/shared/styles';

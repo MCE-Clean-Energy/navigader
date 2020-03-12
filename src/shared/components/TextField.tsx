@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import * as React from 'react';
 import MuiTextField, { TextFieldProps as MuiTextFieldProps } from '@material-ui/core/TextField';
 
 
@@ -12,7 +12,7 @@ type TextFieldProps = {
   id: string;
   label?: string;
   name?: string;
-  onChange?: (e: ChangeEvent<HTMLInputElement>) => void,
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void,
   outlined?: boolean;
   type?: string;
 }

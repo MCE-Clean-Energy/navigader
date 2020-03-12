@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 
 import { Button, PageHeader } from '@nav/shared/components';
@@ -18,7 +18,7 @@ const DashboardPage: React.FC = () => {
   
   /** ============================ Callbacks =============================== */
   function runStudy () {
-    history.push(routes.dashboard.runStudy.selectCustomers);
+    history.push(routes.dashboard.runStudy.selectDers);
   }
 };
 

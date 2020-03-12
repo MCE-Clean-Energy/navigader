@@ -100,9 +100,8 @@ export function parseMeterGroup (rawMeterGroup: RawMeterGroup): MeterGroup {
     data: rawMeterGroup.data,
     id: rawMeterGroup.id,
     meterIds: rawMeterGroup.meters,
-    name: rawMeterGroup.name,
+    name: rawMeterGroup.name || null,
     numMeters: rawMeterGroup.meter_count,
-    numMetersExpected: rawMeterGroup.metadata.expected_meter_count
   };
   
   switch (rawMeterGroup.object_type) {

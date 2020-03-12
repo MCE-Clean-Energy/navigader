@@ -1,11 +1,11 @@
 import { fireEvent, waitForElement } from '@testing-library/react'
 
-import { fixtures, setupRouter } from '@nav/shared/util/testing';
+import { fixtures, renderAppRoute } from '@nav/shared/util/testing';
 
 
 describe('Meter Group Page', () => {
   const groupName = 'Test group';
-  const rawMeterGroup = fixtures.makeRawMeterGroup({
+  const rawMeterGroup = fixtures.makeRawOriginFile({
     name: groupName
   });
   
@@ -38,7 +38,7 @@ describe('Meter Group Page', () => {
   
   describe('Back button', () => {
     test('Clicking the back button returns you to the load page', async () => {
-      const { getByRole, getByText } = setupRouter('/load/group/2');
+      const { getByRole, getByText } = renderAppRoute('/load/group/2');
       
       // Click on the back button
       expect(getByRole('back-button')).toBeInTheDocument();
@@ -51,7 +51,7 @@ describe('Meter Group Page', () => {
   
   describe('Header',  () => {
     test('Meter group name is rendered', async () => {
-      const { getByText } = setupRouter('/load/group/2');
+      const { getByText } = renderAppRoute('/load/group/2');
       await waitForElement(() => getByText(groupName));
     });
   });

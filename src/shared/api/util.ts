@@ -1,3 +1,5 @@
+import identity from 'lodash/identity';
+
 import { PaginationSet, PaginationSetRaw } from '@nav/shared/types';
 import { getCookie, omitFalsey } from '@nav/shared/util';
 
@@ -104,11 +106,11 @@ export function appendId (route: string) {
  *
  * @param {PaginationSetRaw} paginationSet - The raw server response to parse
  * @param {Function} [parseFn] - A function that parses an individual result from its raw version
- *   to its parsed version.
+ *   to its parsed version. Defaults to the identity function
  */
 export function parsePaginationSet <T, K>(
   paginationSet: PaginationSetRaw<T>,
-  parseFn: (result: T) => K
+  parseFn: (result: T) => K = identity
 ): PaginationSet<K> {
   return {
     count: paginationSet.count,

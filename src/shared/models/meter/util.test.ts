@@ -4,21 +4,29 @@ import * as utils from './util';
 
 /** ============================ Tests ===================================== */
 describe('`parseMeterGroup` method', () => {
-  const meterGroup = fixtures.makeRawMeterGroup({
+  const originFile = fixtures.makeRawOriginFile({
     created: 'Yesterday',
     data: {},
     fileName: 'myFile.csv',
     id: 'abcd',
-    groupType: 'OriginFile',
     meterIds: [],
     name: 'My File',
     numMeters: 0,
     numMetersExpected: 0
   });
   
-  test('Successfully parses meter groups', () => {
+  const customerCluster = fixtures.makeRawCustomerCluster({
+    created: 'Yesterday',
+    data: {},
+    id: 'abcd',
+    meterIds: [],
+    name: '',
+    numMeters: 0,
+  });
+  
+  it('Successfully parses origin files', () => {
     // Assert the meter group is unparsed
-    expect(meterGroup).toEqual({
+    expect(originFile).toEqual({
       created_at: 'Yesterday',
       data: {},
       id: 'abcd',
@@ -34,7 +42,7 @@ describe('`parseMeterGroup` method', () => {
     });
     
     // Assert parsing works as expected
-    expect(utils.parseMeterGroup(meterGroup)).toEqual({
+    expect(utils.parseMeterGroup(originFile)).toEqual({
       created: 'Yesterday',
       data: {},
       fileName: 'myFile.csv',
@@ -44,6 +52,31 @@ describe('`parseMeterGroup` method', () => {
       name: 'My File',
       numMeters: 0,
       numMetersExpected: 0
-    })
+    });
+  });
+  
+  it('Successfully parses customer clusters', () => {
+    // Assert the meter group is unparsed
+    expect(customerCluster).toEqual({
+      created_at: 'Yesterday',
+      data: {},
+      id: 'abcd',
+      metadata: {},
+      meter_count: 0,
+      meters: [],
+      name: '',
+      object_type: 'CustomerCluster',
+    });
+    
+    // Assert parsing works as expected
+    expect(utils.parseMeterGroup(customerCluster)).toEqual({
+      created: 'Yesterday',
+      data: {},
+      id: 'abcd',
+      groupType: 'CustomerCluster',
+      meterIds: [],
+      name: null,
+      numMeters: 0,
+    });
   });
 });

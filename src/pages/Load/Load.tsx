@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 
 import * as api from '@nav/shared/api';
@@ -11,10 +11,10 @@ import { MeterGroupCard } from './MeterGroupCard';
 
 /** ============================ Components ================================ */
 const LoadPage = () => {
-  const [meterGroups, setMeterGroups] = useState([] as MeterGroup[]);
+  const [meterGroups, setMeterGroups] = React.useState([] as MeterGroup[]);
   const history = useHistory();
   
-  useEffect(makeCancelableAsync(
+  React.useEffect(makeCancelableAsync(
     () => api.getMeterGroups({ types: 'average' }),
     res => setMeterGroups(res.data)
   ), []);

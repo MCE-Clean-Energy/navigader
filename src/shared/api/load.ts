@@ -2,23 +2,15 @@ import {
   appendId, getRequest, parsePaginationSet, makeFormPost,
 } from '@nav/shared/api/util';
 import {
-  LoadType,
-  Meter,
-  MeterGroup,
-  parseMeter,
-  parseMeterGroup,
-  RawMeter,
-  RawMeterGroup
+  LoadType, Meter, MeterGroup, parseMeter, parseMeterGroup, RawMeter, RawMeterGroup
 } from '@nav/shared/models/meter';
-import { PaginationSet, PaginationSetRaw, RowsPerPageOption } from '@nav/shared/types';
+import { PaginationQueryParams, PaginationSet, PaginationSetRaw } from '@nav/shared/types';
 
 
 /** ============================ Types ===================================== */
-type MeterQueryParams = Partial<{
+type MeterQueryParams = Partial<PaginationQueryParams & {
   end: Date;
   meterGroupId: MeterGroup['id'];
-  page: number;
-  pageSize: RowsPerPageOption,
   start: Date;
   types: LoadType | LoadType[];
 }>;
