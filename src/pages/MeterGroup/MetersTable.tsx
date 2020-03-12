@@ -27,8 +27,7 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
       return await api.getMeters({
         meterGroupId,
         page: state.currentPage + 1,
-        pageSize: state.rowsPerPage,
-        types: 'default'
+        pageSize: state.rowsPerPage
       });
     },
     [meterGroupId]
