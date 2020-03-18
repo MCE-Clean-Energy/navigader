@@ -5,6 +5,7 @@ import MuiAlertTitle from '@material-ui/lab/AlertTitle';
 
 /** ============================ Types ===================================== */
 type AlertProps = {
+  onClose?: () => void;
   title?: React.ReactNode;
   type: 'error' | 'warning' | 'info' | 'success';
 };

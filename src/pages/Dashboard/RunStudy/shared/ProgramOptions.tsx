@@ -1,11 +1,10 @@
 import * as React from 'react';
 import find from 'lodash/find';
 
-import { Flex } from '@nav/shared/components';
+import { Flex, Select } from '@nav/shared/components';
 import { BatteryConfiguration, BatteryStrategy } from '@nav/shared/models/der';
 import { makeStylesHook } from '@nav/shared/styles';
-import { Select } from '@nav/shared/components';
-import { DERSelection } from '../util';
+import { DERSelection } from './util';
 
 
 /** ============================ Types ===================================== */
@@ -18,7 +17,6 @@ type ProgramOptionsProps = {
 
 // Makes the "configurations" and "strategies" types non-required. When those resources are still
 // loading, we will not render any program options
-type p = Partial<Pick<ProgramOptionsProps, 'configurations' | 'strategies'>>;
 type LoadedProps = 'configurations' | 'strategies';
 type ProgramOptionsWhileLoadingProps =
   | Omit<ProgramOptionsProps, LoadedProps>

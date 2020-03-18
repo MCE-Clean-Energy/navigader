@@ -1,6 +1,6 @@
 import { appendId, getRequest, parsePaginationSet } from '@nav/shared/api/util';
 import { BatteryConfiguration, BatteryStrategy } from '@nav/shared/models/der';
-import { PaginationQueryParams, PaginationSet, PaginationSetRaw } from '@nav/shared/types';
+import { PaginationQueryParams, PaginationSet, RawPaginationSet } from '@nav/shared/types';
 
 
 /** ============================ Types ===================================== */
@@ -10,7 +10,7 @@ type DerConfigurationQueryParams = Partial<PaginationQueryParams & { data: boole
 export async function getDerConfigurations (
   queryParams?: DerConfigurationQueryParams
 ): Promise<PaginationSet<BatteryConfiguration>> {
-  const response: PaginationSetRaw<BatteryConfiguration> =
+  const response: RawPaginationSet<BatteryConfiguration> =
     await getRequest(
       routes.configuration(),
       makeQueryParams(queryParams)
@@ -22,7 +22,7 @@ export async function getDerConfigurations (
 export async function getDerStrategies (
   queryParams?: DerConfigurationQueryParams
 ): Promise<PaginationSet<BatteryStrategy>> {
-  const response: PaginationSetRaw<BatteryStrategy> =
+  const response: RawPaginationSet<BatteryStrategy> =
     await getRequest(
       routes.strategy(),
       makeQueryParams(queryParams)

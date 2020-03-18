@@ -16,7 +16,7 @@ type TextColor =
   | 'textSecondary'
   | 'error';
 
-type TypographyProps = {
+export type TypographyProps = {
   className?: string;
   color?: TextColor;
   component?: React.ElementType;

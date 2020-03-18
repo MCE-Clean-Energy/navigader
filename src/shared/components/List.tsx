@@ -38,7 +38,7 @@ export const List: ListExport = Object.assign(React.forwardRef<
   any,
   ListProps
 >((props, ref) => <MuiList ref={ref} {...props} />),
-  { Item: ListItem});
+  { Item: ListItem });
 
 ListItem.Icon = ListItemIcon;
 ListItem.Text = ListItemText;

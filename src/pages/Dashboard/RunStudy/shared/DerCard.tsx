@@ -1,31 +1,29 @@
 import * as React from 'react';
 
-import { Button, Card, Flex, Select } from '@nav/shared/components';
+import { Button, Card, Flex, Select, Statistic } from '@nav/shared/components';
 import { BatteryConfiguration, BatteryStrategy } from '@nav/shared/models/der';
 import { makeStylesHook } from '@nav/shared/styles';
-import { DERSelection } from '../util';
 import { ProgramOptions } from './ProgramOptions';
+import { DERSelection } from './util';
+import find from 'lodash/find';
 
 
 /** ============================ Types ===================================== */
-type SelectDERsProps = {
-  derConfigurations?: BatteryConfiguration[];
-  derStrategies?: BatteryStrategy[];
-  selectedDers: Partial<DERSelection>[];
-  updateDerSelections: (ders: Partial<DERSelection>[]) => void;
-};
-
-type DERCardProps = {
+type DerCardReadOnlyProps = {
   configurations?: BatteryConfiguration[];
-  delete: () => void;
   der: Partial<DERSelection>;
   numDers: number;
   strategies?: BatteryStrategy[];
+  
+};
+
+type DerCardProps = DerCardReadOnlyProps & {
+  delete: () => void;
   update: (der: Partial<DERSelection>) => void;
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook<DERCardProps>(theme => ({
+const useStyles = makeStylesHook<DerCardReadOnlyProps>(theme => ({
   derCard: {
     marginBottom: theme.spacing(2)
   },
@@ -53,7 +51,7 @@ const useStyles = makeStylesHook<DERCardProps>(theme => ({
 }));
 
 /** ============================ Components ================================ */
-const DERCard: React.FC<DERCardProps> = (props) => {
+export const DerCard: React.FC<DerCardProps> = (props) => {
   const classes = useStyles(props);
   
   return (
@@ -72,7 +70,7 @@ const DERCard: React.FC<DERCardProps> = (props) => {
         <ProgramOptions {...props} />
         
         <Flex.Item className={classes.deleteIconContainer}>
-          <Button className={classes.deleteIcon} icon="trash" onClick={deleteDer} />
+          <Button className={classes.deleteIcon} icon="trash" onClick={deleteDer}/>
         </Flex.Item>
       </Flex.Container>
     </Card>
@@ -103,56 +101,31 @@ const DERCard: React.FC<DERCardProps> = (props) => {
   }
 };
 
-const SelectDERs: React.FC<SelectDERsProps> = (props) => {
-  const { derConfigurations, derStrategies, selectedDers, updateDerSelections } = props;
+export const DerCardReadOnly: React.FC<DerCardReadOnlyProps> = (props) => {
+  const { configurations, der, strategies } = props;
+  const classes = useStyles(props);
+  
+  // Get selected configuration and strategy
+  const configuration = find(configurations, { id: der.configurationId });
+  const strategy = find(strategies, { id: der.strategyId });
+  
   return (
-    <div>
-      {selectedDers.map((selectedDer, index) =>
-        <DERCard
-          configurations={derConfigurations}
-          delete={removeSelection.bind(null, index)}
-          der={selectedDer}
-          key={index}
-          numDers={selectedDers.length}
-          strategies={derStrategies}
-          update={(der: Partial<DERSelection>) => updateDer(index, der)}
-        />
-      )}
-      <Button color="secondary" icon="plus" onClick={addDer} size="small">Add DER</Button>
-    </div>
+    <Card className={classes.derCard} raised>
+      <Flex.Container className={classes.flexContainer}>
+        <Flex.Item>
+          <Statistic title="Type" value={der.type} variant="subtitle2" />
+        </Flex.Item>
+        
+        <Flex.Item>
+          {configuration &&
+            <Statistic title="Configuration" value={configuration.name} variant="subtitle2" />
+          }
+        </Flex.Item>
+        
+        <Flex.Item>
+          {strategy && <Statistic title="Strategy" value={strategy.name} variant="subtitle2" />}
+        </Flex.Item>
+      </Flex.Container>
+    </Card>
   );
-  
-  /** ============================ Callbacks =============================== */
-  function addDer () {
-    updateDerSelections([...selectedDers, {}]);
-  }
-  
-  /**
-   * Deletes the DER selection at the provided index
-   *
-   * @param {number} index: the array index of the DER to remove
-   */
-  function removeSelection (index: number) {
-    updateDerSelections([
-      ...selectedDers.slice(0, index),
-      ...selectedDers.slice(index + 1)
-    ]);
-  }
-  
-  /**
-   * Updates the attributes of a DER
-   *
-   * @param {number} index: the array index of the DER to update
-   * @param {DERSelection} der: the new attributes of the DER
-   */
-  function updateDer (index: number, der: Partial<DERSelection>) {
-    updateDerSelections([
-      ...selectedDers.slice(0, index),
-      { ...selectedDers[index], ...der },
-      ...selectedDers.slice(index + 1)
-    ]);
-  }
 };
-
-/** ============================ Exports =================================== */
-export default SelectDERs;

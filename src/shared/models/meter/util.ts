@@ -10,6 +10,7 @@ import {
   RawMeterGroup,
   RawMeter
 } from './types';
+import { parseNavigaderObject } from '../../util/parseNavigaderObject';
 
 
 /**
@@ -96,11 +97,8 @@ export function hasDataField <T extends LoadType>(
  */
 export function parseMeterGroup (rawMeterGroup: RawMeterGroup): MeterGroup {
   const commonFields = {
-    created: rawMeterGroup.created_at,
-    data: rawMeterGroup.data,
-    id: rawMeterGroup.id,
+    ...parseNavigaderObject(rawMeterGroup),
     meterIds: rawMeterGroup.meters,
-    name: rawMeterGroup.name || null,
     numMeters: rawMeterGroup.meter_count,
   };
   
@@ -108,14 +106,14 @@ export function parseMeterGroup (rawMeterGroup: RawMeterGroup): MeterGroup {
     case 'OriginFile':
       return {
         ...commonFields,
-        groupType: 'OriginFile',
+        objectType: 'OriginFile',
         fileName: rawMeterGroup.metadata.filename.replace(/origin_files\//, ''),
         numMetersExpected: rawMeterGroup.metadata.expected_meter_count
       };
     case 'CustomerCluster':
       return {
         ...commonFields,
-        groupType: 'CustomerCluster'
+        objectType: 'CustomerCluster'
       };
   }
 }
@@ -126,7 +124,7 @@ export function parseMeterGroup (rawMeterGroup: RawMeterGroup): MeterGroup {
  * @param {MeterGroup} meterGroup: the meter group object to display
  */
 export function getMeterGroupDisplayName (meterGroup: MeterGroup): string {
-  switch (meterGroup.groupType) {
+  switch (meterGroup.objectType) {
     case 'OriginFile':
       return meterGroup.name || meterGroup.fileName;
     case 'CustomerCluster':

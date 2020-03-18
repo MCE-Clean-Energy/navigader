@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Switch } from 'react-router-dom';
 import { render } from '@testing-library/react';
 
 import { AppRoutes } from '../../../App';
+import { ThemeProvider } from '@nav/shared/components';
 
 
 export const renderAppRoute = (startingPage?: string) => {
@@ -19,23 +20,25 @@ export const renderAppRoute = (startingPage?: string) => {
   );
 };
 
-type RenderParameters = Parameters<typeof render>;
-export const renderRouterDependentComponent = (Element: RenderParameters[0], options?: RenderParameters[1]) => {
+/**
+ * Renders a React Element wrapped in some context-providers that many components in the application
+ * rely upon in order to render
+ *
+ * @param {ReactElement} Element: the Element to render
+ */
+export const renderContextDependentComponent = (Element: React.ReactElement) => {
   // setup a DOM element as a render target
   const container = document.createElement('div');
   document.body.appendChild(container);
   
-  const renderOptions = {
-    container,
-    ...options
-  };
-  
   return render(
     <MemoryRouter initialEntries={['testingPath']}>
-      <Switch>
-        <Route path="testingPath" render={() => Element} />
-      </Switch>
+      <ThemeProvider>
+        <Switch>
+          <Route path="testingPath" render={() => Element} />
+        </Switch>
+      </ThemeProvider>
     </MemoryRouter>,
-    renderOptions
+    { container }
   );
 };

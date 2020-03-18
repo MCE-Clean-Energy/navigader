@@ -12,12 +12,14 @@ import Review from './Review';
 import SelectCustomers from './SelectCustomers';
 import SelectDERs from './SelectDERs';
 import StepActions from './StepActions';
-import { stepPaths } from './util';
-import { DERSelection } from './util';
+import { DERSelection, stepPaths } from './shared';
 
 
 /** ============================ Styles ==================================== */
 const useStyles = makeStylesHook(theme => ({
+  stepActions: {
+    marginTop: theme.spacing(1)
+  },
   stepper: {
     marginBottom: theme.spacing(3)
   }
@@ -35,6 +37,7 @@ const RunStudyPage: React.FC = () => {
   const [selectedDers, setSelectedDers] = React.useState<Partial<DERSelection>[]>([{}]);
   const [derConfigurations, setDERConfigurations] = React.useState<BatteryConfiguration[]>([]);
   const [derStrategies, setDERStrategies] = React.useState<BatteryStrategy[]>([]);
+  const [studyName, setStudyName] = React.useState<string | null>(null);
   
   // Load meter groups
   React.useEffect(makeCancelableAsync(
@@ -70,7 +73,17 @@ const RunStudyPage: React.FC = () => {
         <Switch>
           <Route
             path={routes.dashboard.runStudy.review}
-            render={() => <Review meterGroups={meterGroups} />}
+            render={() =>
+              <Review
+                derConfigurations={derConfigurations}
+                derStrategies={derStrategies}
+                meterGroups={meterGroups}
+                selectedDers={selectedDers}
+                selectedMeterGroupIds={selectedMeterGroupIds}
+                studyName={studyName}
+                updateStudyName={setStudyName}
+              />
+            }
           />
           <Route
             path={routes.dashboard.runStudy.selectCustomers}
@@ -96,8 +109,14 @@ const RunStudyPage: React.FC = () => {
         </Switch>
       </Flex.Container>
       
-      <Flex.Item>
-        <StepActions activeStep={activeStep} selectedDers={selectedDers} />
+      <Flex.Item className={classes.stepActions}>
+        <StepActions
+          activeStep={activeStep}
+          meterGroups={meterGroups}
+          selectedDers={selectedDers}
+          selectedMeterGroupIds={selectedMeterGroupIds}
+          studyName={studyName}
+        />
       </Flex.Item>
     </>
   );

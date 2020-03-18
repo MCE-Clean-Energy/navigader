@@ -25,6 +25,7 @@ export * from './Popover';
 export * from './Progress';
 export * from './Radio';
 export * from './Select';
+export * from './Snackbar';
 export * from './Statistic';
 export * from './Stepper';
 export * from './Table';

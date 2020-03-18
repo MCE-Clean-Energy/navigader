@@ -4,7 +4,7 @@ import {
 import {
   LoadType, Meter, MeterGroup, parseMeter, parseMeterGroup, RawMeter, RawMeterGroup
 } from '@nav/shared/models/meter';
-import { PaginationQueryParams, PaginationSet, PaginationSetRaw } from '@nav/shared/types';
+import { PaginationQueryParams, PaginationSet, RawPaginationSet } from '@nav/shared/types';
 
 
 /** ============================ Types ===================================== */
@@ -21,7 +21,7 @@ type MeterGroupQueryParams = Omit<MeterQueryParams, 'meterGroupId'>;
 export async function getMeterGroups (
   queryParams?: MeterGroupQueryParams
 ): Promise<PaginationSet<MeterGroup>> {
-  const response: PaginationSetRaw<RawMeterGroup> =
+  const response: RawPaginationSet<RawMeterGroup> =
     await getRequest(
       routes.meterGroup(),
       makeQueryParams(queryParams)
@@ -73,7 +73,7 @@ export async function getMeter (id: string, queryParams?: MeterQueryParams) {
 export async function getMeters (
   queryParams?: MeterQueryParams
 ): Promise<PaginationSet<Meter>> {
-  const response: PaginationSetRaw<RawMeter> =
+  const response: RawPaginationSet<RawMeter> =
     await getRequest(
       routes.meter(),
       makeQueryParams(queryParams)

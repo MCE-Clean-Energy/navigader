@@ -1,4 +1,4 @@
-import { omitFalsey, } from './omitFalsey';
+import { omitFalsey } from './omitFalsey';
 
 
 describe('`omitFalsey` method', () => {

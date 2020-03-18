@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { BrowserRouter as Router, Switch, Redirect, Route, RouteProps } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 
-import { AppContainer, ThemeProvider } from '@nav/shared/components';
+import { Alert, AppContainer, Snackbar, ThemeProvider } from '@nav/shared/components';
 import * as routes from '@nav/shared/routes';
+import { slices } from '@nav/shared/store';
 import { getCookie } from '@nav/shared/util';
 import DashboardPage from './pages/Dashboard';
 import LoadPage from './pages/Load';
@@ -12,6 +14,26 @@ import UploadPage from './pages/Upload';
 
 
 /** ============================ Components ================================ */
+const AppSnackbar: React.FC = () => {
+  const { msg, open, type } = useSelector(slices.ui.selectSnackbar);
+  const dispatch = useDispatch();
+  
+  return (
+    <Snackbar
+      autoHideDuration={6000}
+      onClose={handleClose}
+      open={open}
+    >
+      {msg && type && <Alert onClose={handleClose} type={type}>{msg}</Alert>}
+    </Snackbar>
+  );
+  
+  /** ============================ Callbacks =============================== */
+  function handleClose () {
+    dispatch(slices.ui.closeSnackbar());
+  }
+};
+
 /**
  * This is separated from the `App` component so that we can provide a different router inside
  * tests. This enables us to test that we transition from page to page successfully.
@@ -34,6 +56,7 @@ export const AppRoutes: React.FC = () =>
         </AppContainer>
       </AuthenticatedRoute>
     </Switch>
+    <AppSnackbar />
   </ThemeProvider>;
 
 /**

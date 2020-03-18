@@ -5,7 +5,7 @@ import * as React from 'react';
 import padEnd from 'lodash/padEnd';
 
 import { makeStylesHook } from '@nav/shared/styles';
-import { Typography } from './Typography';
+import { Typography, TypographyProps } from './Typography';
 
 
 /** ============================ Types ===================================== */
@@ -25,6 +25,7 @@ type StatisticProps = FormatConfig & {
   value?: ValueType;
   valueRender?: (node: React.ReactNode) => React.ReactNode;
   valueStyle?: React.CSSProperties;
+  variant?: TypographyProps['variant']
 }
 
 type NumberProps = FormatConfig & {
@@ -89,7 +90,8 @@ export const Statistic: React.FC<StatisticProps> = (props) => {
     title,
     valueRender,
     prefix,
-    suffix
+    suffix,
+    variant = 'h5'
   } = props;
 
   let valueNode: React.ReactNode = <StatisticNumber {...props} value={value} />;
@@ -111,7 +113,7 @@ export const Statistic: React.FC<StatisticProps> = (props) => {
           </Typography>
         </div>
       )}
-      <Typography style={valueStyle} variant="h5">
+      <Typography style={valueStyle} variant={variant}>
         {prefix && <span className={classes.prefix}>{prefix}</span>}
         {valueNode}
         {suffix && <span className={classes.suffix}>{suffix}</span>}

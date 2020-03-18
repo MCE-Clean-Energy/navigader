@@ -1,4 +1,4 @@
-import { MonthIndex, NavigaderObject } from '@nav/shared/types';
+import { MonthIndex, NavigaderObject, RawNavigaderObject } from '@nav/shared/types';
 
 /** ============================ Meter Types =============================== */
 export type Frame288LoadType = 'total' | 'average' | 'maximum' | 'minimum' | 'count';
@@ -51,7 +51,7 @@ export type Meter = {
 
 /** ============================ Meter Group Types ========================= */
 // Raw meter groups
-export type RawOriginFileMeterGroup = NavigaderObject<'OriginFile', MeterDataField> & {
+export type RawOriginFileMeterGroup = RawNavigaderObject<'OriginFile', MeterDataField> & {
   metadata: {
     expected_meter_count: number | null;
     filename: string;
@@ -61,7 +61,7 @@ export type RawOriginFileMeterGroup = NavigaderObject<'OriginFile', MeterDataFie
   meters: string[];
 };
 
-export type RawCustomerClusterMeterGroup = NavigaderObject<'CustomerCluster', MeterDataField> & {
+export type RawCustomerClusterMeterGroup = RawNavigaderObject<'CustomerCluster', MeterDataField> & {
   metadata: {};
   meter_count: number;
   meters: string[];
@@ -69,23 +69,19 @@ export type RawCustomerClusterMeterGroup = NavigaderObject<'CustomerCluster', Me
 
 // Parsed meter groups
 type MeterGroupCommon = {
-  created: string;
-  data: MeterDataField;
-  id: string;
-  name: string | null;
   numMeters: number;
   meterIds: string[]
 };
 
-export type OriginFileMeterGroup = MeterGroupCommon & {
-  groupType: RawOriginFileMeterGroup['object_type'];
-  fileName: string;
-  numMetersExpected: number | null;
-}
+export type OriginFileMeterGroup =
+  NavigaderObject<'OriginFile', MeterDataField> &
+  MeterGroupCommon &
+  {
+    fileName: string;
+    numMetersExpected: number | null;
+  };
 
-export type CustomerClusterMeterGroup = MeterGroupCommon & {
-  groupType: RawCustomerClusterMeterGroup['object_type'];
-};
+export type CustomerClusterMeterGroup = NavigaderObject<'CustomerCluster'> & MeterGroupCommon;
 
 export type RawMeterGroup = RawOriginFileMeterGroup | RawCustomerClusterMeterGroup;
 export type MeterGroup = OriginFileMeterGroup | CustomerClusterMeterGroup;

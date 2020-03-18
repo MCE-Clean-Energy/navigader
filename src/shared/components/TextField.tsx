@@ -5,16 +5,20 @@ import MuiTextField, { TextFieldProps as MuiTextFieldProps } from '@material-ui/
 /** ============================ Types ===================================== */
 type TextFieldProps = {
   autoComplete?: string;
+  autoFocus?: boolean;
   className?: string;
   color?: 'primary' | 'secondary';
   error?: boolean;
+  fullWidth?: boolean;
   helperText?: string | null;
   id: string;
   label?: string;
   name?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void,
   outlined?: boolean;
+  tabIndex?: number;
   type?: string;
+  value?: string;
 }
 
 /** ============================ Components ================================ */

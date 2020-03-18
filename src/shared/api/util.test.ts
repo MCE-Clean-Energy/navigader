@@ -1,4 +1,4 @@
-import { PaginationSetRaw } from '@nav/shared/types';
+import { RawPaginationSet } from '@nav/shared/types';
 import * as utils from './util';
 
 
@@ -53,7 +53,7 @@ describe('`getRequest` method', () => {
 
 describe('`parsePaginationSet` method', () => {
   type Coordinate = { x: number, y: number };
-  const paginationData: PaginationSetRaw<Coordinate> = {
+  const paginationData: RawPaginationSet<Coordinate> = {
     count: 3,
     previous: null,
     next: 'URL to next page',

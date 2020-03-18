@@ -1,13 +1,13 @@
 import * as React from 'react';
 
-import { renderRouterDependentComponent } from '@nav/shared/util/testing';
+import { renderContextDependentComponent } from '@nav/shared/util/testing';
 import StepActions from './StepActions';
 import { DERSelection } from './util';
 
 
 describe('`Step Actions` component', () => {
   it('disables "Next" button on DER Selection page when no DER selections', () => {
-    const { getByRole } = renderRouterDependentComponent(
+    const { getByRole } = renderContextDependentComponent(
       <StepActions activeStep={0} selectedDers={[]} />
     );
     
@@ -21,7 +21,7 @@ describe('`Step Actions` component', () => {
     const derNoStrategy: Partial<DERSelection> = { configurationId: 'a', type: 'Battery' };
     
     [derNoType, derNoConfiguration, derNoStrategy].forEach((partialDer) => {
-      const { getByRole } = renderRouterDependentComponent(
+      const { getByRole } = renderContextDependentComponent(
         <StepActions activeStep={0} selectedDers={[partialDer]} />
       );
       
@@ -37,7 +37,7 @@ describe('`Step Actions` component', () => {
       type: 'Battery'
     };
     
-    const { getByRole } = renderRouterDependentComponent(
+    const { getByRole } = renderContextDependentComponent(
       <StepActions activeStep={0} selectedDers={[validDer]} />
     );
     
