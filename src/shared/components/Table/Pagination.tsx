@@ -12,13 +12,17 @@ export type TableState = {
 
 type TablePaginationProps = TableState & {
   // The number of data in the full table; this is used to show the count
-  count: number;
+  count: number | null;
   updateTableState: (state: TableState) => void;
 };
 
 /** ============================ Components ================================ */
 export const TablePagination: React.FC<TablePaginationProps> = (props) => {
   const { count, currentPage, rowsPerPage, updateTableState } = props;
+  
+  if (count === null || count === 0) {
+    return null;
+  }
   
   return (
     <MuiTablePagination

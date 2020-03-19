@@ -1,4 +1,4 @@
-import { appendId, getRequest, parsePaginationSet } from '@nav/shared/api/util';
+import { appendId, beoRoute, getRequest, parsePaginationSet } from '@nav/shared/api/util';
 import { BatteryConfiguration, BatteryStrategy } from '@nav/shared/models/der';
 import { PaginationQueryParams, PaginationSet, RawPaginationSet } from '@nav/shared/types';
 
@@ -32,7 +32,7 @@ export async function getDerStrategies (
 }
 
 /** ============================ Helpers =================================== */
-const baseRoute = (rest: string) => `${process.env.REACT_APP_BEO_URI}/v1/der/${rest}`;
+const baseRoute = (rest: string) => beoRoute.v1(`der/${rest}`);
 const routes = {
   configuration: appendId(baseRoute('configuration')),
   simulation: appendId(baseRoute('simulation')),

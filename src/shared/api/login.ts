@@ -1,6 +1,6 @@
 import * as routes from '@nav/shared/routes';
 import { setCookie } from '@nav/shared/util';
-import { postRequest } from './util';
+import { beoRoute, postRequest } from './util';
 
 
 /** ============================ Types ===================================== */
@@ -10,7 +10,7 @@ type LoginResponse = {
 
 /** ============================ API Methods =============================== */
 export async function login (email: string, password: string): Promise<Response> {
-  return postRequest(`${process.env.REACT_APP_BEO_URI}/rest-auth/login/`, { email, password })
+  return postRequest(beoRoute.restAuth('login/'), { email, password })
     .then(res => {
       res.json().then((response: LoginResponse) => {
         if (res.status === 200) {

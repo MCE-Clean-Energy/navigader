@@ -1,4 +1,5 @@
 # Set up environment variables
+export REACT_APP_ENV=staging;
 export REACT_APP_BEO_URI=https://api-staging.navigader.com;
 
 # Run the build

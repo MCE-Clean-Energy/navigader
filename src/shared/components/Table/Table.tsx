@@ -17,9 +17,10 @@ import { makeCancelableAsync } from '../../util';
 
 /** ============================ Types ===================================== */
 type TableProps<T> = React.TableHTMLAttributes<HTMLTableElement> & {
-  children: (data: T[]) => React.ReactNode;
+  children: (data: T[], emptyRow: React.ReactNode) => React.ReactNode;
   containerClassName?: string;
   dataFn: (state: TableState) => Promise<PaginationSet<T>>;
+  ifEmpty?: React.ReactNode;
   raised?: boolean;
   stickyHeader?: boolean;
   title?: string;
@@ -60,7 +61,7 @@ const useStyles = makeStylesHook(theme => ({
 /** ============================ Components ================================ */
 const TableRaiser: React.FC = (props) => <MuiPaper elevation={8} {...props} />;
 export function Table <T>(props: TableProps<T>) {
-  const { children, dataFn, containerClassName, raised, title, ...rest } = props;
+  const { children, dataFn, containerClassName, ifEmpty, raised, title, ...rest } = props;
   const classes = useStyles();
   
   // State
@@ -85,23 +86,32 @@ export function Table <T>(props: TableProps<T>) {
     setLoading(false);
     setDataState(pick(paginationSet, 'data', 'count'));
   }), [dataFn, tableState]);
+  
+  // If the data has loaded and there are none, render the `ifEmpty` row
+  const emptyRow = count === 0 && ifEmpty
+    ? (
+      <Table.Row>
+        <Table.Cell>{ifEmpty}</Table.Cell>
+      </Table.Row>
+    )
+    : null;
 
   return (
     <div>
       <Flex.Container alignItems="center" className={classes.header} justifyContent="space-between">
         <Typography variant="h6">{title}</Typography>
-        {data && count && (
+        {data &&
           <TablePagination
             count={count}
             currentPage={currentPage}
             rowsPerPage={rowsPerPage}
             updateTableState={updateTableState}
           />
-        )}
+        }
       </Flex.Container>
       <MuiTableContainer className={containerClassName} component={raised ? TableRaiser : MuiPaper}>
         <MuiTable {...rest}>
-          {children(data || [])}
+          {children(data || [], emptyRow)}
         </MuiTable>
       </MuiTableContainer>
       {loading ? <Progress /> : <div className={classes.progressBarSpacer} />}

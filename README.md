@@ -13,6 +13,8 @@ npm run install
 
 Building the application requires a `.env` file to specify certain environment variables:
 
+- `REACT_APP_ENV`: a simple representation of the current environment. Typicall `prod` or
+ `staging` or `local` 
 - `REACT_APP_BEO_URI`: the URI of the `beo_datastore` backend that will be serving data to the
  front end. This should omit a trailing `/`.
 

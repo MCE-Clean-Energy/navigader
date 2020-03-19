@@ -139,3 +139,9 @@ function getRequestHeaders (contentType: ContentType | null) {
 export function succeeded (response: Response) {
   return response.status >= 200 && response.status <= 300;
 }
+
+const beoUri = process.env.REACT_APP_BEO_URI;
+export const beoRoute = {
+  restAuth: (rest: string) => `${beoUri}/rest-auth/${rest}`,
+  v1: (rest: string) => `${beoUri}/v1/${rest}`
+};

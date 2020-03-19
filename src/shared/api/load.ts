@@ -1,5 +1,5 @@
 import {
-  appendId, getRequest, parsePaginationSet, makeFormPost,
+  appendId, beoRoute, getRequest, parsePaginationSet, makeFormPost
 } from '@nav/shared/api/util';
 import {
   LoadType, Meter, MeterGroup, parseMeter, parseMeterGroup, RawMeter, RawMeterGroup
@@ -84,7 +84,7 @@ export async function getMeters (
 }
 
 /** ============================ Helpers =================================== */
-const baseRoute = (rest: string) => `${process.env.REACT_APP_BEO_URI}/v1/load/${rest}`;
+const baseRoute = (rest: string) => beoRoute.v1(`load/${rest}`);
 const routes = {
   meter: appendId(baseRoute('meter')),
   meterGroup: appendId(baseRoute('meter_group')),
