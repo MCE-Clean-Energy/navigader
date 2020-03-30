@@ -1,15 +1,15 @@
 import * as React from 'react';
 import MuiTextField, { TextFieldProps as MuiTextFieldProps } from '@material-ui/core/TextField';
 
+import { Paper, PaperProps } from './Paper';
+
 
 /** ============================ Types ===================================== */
-type TextFieldProps = {
+type TextFieldProps = PaperProps & {
   autoComplete?: string;
   autoFocus?: boolean;
-  className?: string;
   color?: 'primary' | 'secondary';
   error?: boolean;
-  fullWidth?: boolean;
   helperText?: string | null;
   id: string;
   label?: string;
@@ -22,13 +22,18 @@ type TextFieldProps = {
 }
 
 /** ============================ Components ================================ */
-export const TextField: React.FC<TextFieldProps> = ({ outlined, ...rest }) => {
+export const TextField: React.FC<TextFieldProps> = (props) => {
+  const { className, elevation = 0, outlined, ...rest } = props;
   const textFieldProps: MuiTextFieldProps = {
     ...rest,
     variant: outlined ? 'outlined' : 'standard'
   };
   
-  return <MuiTextField autoComplete="off" {...textFieldProps} />;
+  return (
+    <Paper elevation={elevation} className={className}>
+      <MuiTextField autoComplete="off" {...textFieldProps} fullWidth />
+    </Paper>
+  );
 };
 
 TextField.defaultProps = {

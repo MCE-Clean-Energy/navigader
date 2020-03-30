@@ -1,11 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import uiReducer from './slices/ui';
+import * as slices from './slices';
 
 
 /** ============================ Store ===================================== */
 export default configureStore({
   reducer: {
-    ui: uiReducer
+    models: slices.models.reducer,
+    ui: slices.ui.reducer
   }
 });

@@ -4,7 +4,7 @@ import { fixtures } from '@nav/shared/util/testing';
 import * as util from './util';
 
 
-describe('RunStudy utilities', () => {
+describe('CreateScenario utilities', () => {
   describe('validateCustomerSelections method', () => {
     const emptyMeterGroups = range(10).map(() => fixtures.makeMeterGroup({ numMeters: 0 }));
     

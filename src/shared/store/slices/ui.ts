@@ -1,6 +1,6 @@
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
 
-import { RootState, UiSlice} from '../types';
+import { RootState, UiSlice } from '../types';
 
 
 /** ============================ Types ===================================== */
@@ -19,7 +19,7 @@ const slice = createSlice({
   initialState: {
     snackbar: {
       open: false
-    },
+    }
   } as UiSlice,
   reducers: {
     setMessage: (state, action: PayloadAction<SetMessagePayload>) => {
@@ -32,7 +32,7 @@ const slice = createSlice({
     closeSnackbar: state => {
       state.snackbar.open = false;
     }
-  },
+  }
 });
 
 /**
@@ -46,6 +46,6 @@ export const closeSnackbar = () => (dispatch: Dispatch) => {
 };
 
 /** ============================ Exports =================================== */
+export const { reducer } = slice;
 export const { clearMessage, setMessage } = slice.actions;
 export const selectSnackbar = (state: RootState) => state.ui.snackbar;
-export default slice.reducer;

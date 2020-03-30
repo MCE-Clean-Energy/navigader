@@ -4,13 +4,13 @@ import * as utils from './util';
 
 /** ============================ Tests ===================================== */
 describe('`appendId` method', () => {
-  test('Appends a / when no id is provided', () => {
+  it('Appends a / when no id is provided', () => {
     const uriFactory = utils.appendId('myRoute');
     const uri = uriFactory();
     expect(uri).toEqual('myRoute/');
   });
   
-  test('Appends the ID correctly when provided', () => {
+  it('Appends the ID correctly when provided', () => {
     const uriFactory = utils.appendId('myRoute');
     const uriNumeric = uriFactory(1);
     const uuid = '5eec8ec9-8f01-48b6-bc84-8042ed6ec3e1';
@@ -26,7 +26,7 @@ describe('`getRequest` method', () => {
   beforeEach(() => { mockFn = jest.spyOn(window, 'fetch') });
   afterEach(() => mockFn.mockRestore());
   
-  test('Appends primitive query params as expected', () => {
+  it('Appends primitive query params as expected', () => {
     utils.getRequest('myRoute', { param1: 'abc', param2: 3 });
     expect(mockFn).toHaveBeenCalledTimes(1);
     
@@ -34,7 +34,7 @@ describe('`getRequest` method', () => {
     expect(callArgs[0]).toEqual('myRoute?param1=abc&param2=3');
   });
   
-  test('Appends array query params as expected', () => {
+  it('Appends array query params as expected', () => {
     utils.getRequest('myRoute', { param1: ['a', 'b', 'c'] });
     expect(mockFn).toHaveBeenCalledTimes(1);
     
@@ -43,7 +43,45 @@ describe('`getRequest` method', () => {
     expect(callArgs[0]).toEqual(expectedValue);
   });
   
-  test('Provides route as given if no query params provided', () => {
+  describe('`dynamic-rest` special parameters', () => {
+    it('Handles `includes` and `excludes` as expected', () => {
+      utils.getRequest('myRoute', {
+        exclude: 'ders.*',
+        include: ['ders.configuration', 'meter_groups.*', 'meters.rate_plan']
+      });
+      expect(mockFn).toHaveBeenCalledTimes(1);
+      
+      const callArgs = mockFn.mock.calls[0];
+      const expectedValue = 'myRoute?' +
+        'exclude[]=ders.*&' +
+        'include[]=ders.configuration&' +
+        'include[]=meter_groups.*&' +
+        'include[]=meters.rate_plan';
+      
+      expect(callArgs[0]).toEqual(expectedValue);
+    });
+    
+    it('Handles `filter` as expected', () => {
+      utils.getRequest('myRoute', {
+        filter: {
+          meter_group: 123,
+          'scenario.name': 'my-scenario',
+          bad_param: undefined
+        }
+      });
+      
+      expect(mockFn).toHaveBeenCalledTimes(1);
+      
+      const callArgs = mockFn.mock.calls[0];
+      const expectedValue = 'myRoute?' +
+        'filter{meter_group}=123&' +
+        'filter{scenario.name}=my-scenario';
+      
+      expect(callArgs[0]).toEqual(expectedValue);
+    });
+  });
+  
+  it('Provides route as given if no query params provided', () => {
     utils.getRequest('myRoute');
     expect(mockFn).toHaveBeenCalledTimes(1);
     const callArgs = mockFn.mock.calls[0];
@@ -53,10 +91,8 @@ describe('`getRequest` method', () => {
 
 describe('`parsePaginationSet` method', () => {
   type Coordinate = { x: number, y: number };
-  const paginationData: RawPaginationSet<Coordinate> = {
+  const paginationSetFlat: RawPaginationSet<Coordinate[]> = {
     count: 3,
-    previous: null,
-    next: 'URL to next page',
     results: [
       { x: 1, y: 2 },
       { x: 2, y: 3 },
@@ -64,20 +100,39 @@ describe('`parsePaginationSet` method', () => {
     ]
   };
   
-  const invertCoord = (coord: Coordinate): Coordinate => ({
-    y: coord.x,
-    x: coord.y
+  const paginationSetNested: RawPaginationSet<{ coordinates: Coordinate[] }> = {
+    count: 3,
+    results: {
+      coordinates: [
+        { x: 1, y: 2 },
+        { x: 2, y: 3 },
+        { x: 3, y: 4 }
+      ]
+    }
+  };
+  
+  const invertCoord = ({ x, y }: Coordinate): Coordinate => ({ y: x, x: y });
+  
+  it('Parses schema input with no parse function correctly', () => {
+    const parsed = utils.parsePaginationSet(paginationSetNested, 'coordinates');
+    
+    expect(parsed.count).toEqual(paginationSetNested.count);
+    for (let i = 0; i < parsed.data.length; i++) {
+      expect(parsed.data[i].x).toEqual(paginationSetNested.results.coordinates[i].x);
+      expect(parsed.data[i].y).toEqual(paginationSetNested.results.coordinates[i].y);
+    }
   });
   
-  test('Parses the input correctly', () => {
-    const parsed = utils.parsePaginationSet(paginationData, invertCoord);
+  it('Parses schema input with parse function correctly', () => {
+    const parsed = utils.parsePaginationSet(
+      paginationSetNested,
+      ({ coordinates }) => coordinates.map(invertCoord)
+    );
     
-    expect(parsed.count).toEqual(paginationData.count);
-    expect(parsed.hasPrevious).toEqual(false);
-    expect(parsed.hasNext).toEqual(true);
-    
+    expect(parsed.count).toEqual(paginationSetNested.count);
     for (let i = 0; i < parsed.data.length; i++) {
-      expect(parsed.data[i].x).toEqual(paginationData.results[i].y);
+      expect(parsed.data[i].x).toEqual(paginationSetNested.results.coordinates[i].y);
+      expect(parsed.data[i].y).toEqual(paginationSetNested.results.coordinates[i].x);
     }
   });
 });

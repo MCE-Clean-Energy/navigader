@@ -2,36 +2,47 @@ import { omitFalsey } from './omitFalsey';
 
 
 describe('`omitFalsey` method', () => {
-  test('catches `false` values', () => {
-    expect(omitFalsey(makeTestData(false))).toEqual(expectedOutput);
+  it('catches `false` values', () => {
+    expect(omitFalsey(makeObjectTestData(false))).toEqual(expectedObjectOutput);
+    expect(omitFalsey(makeArrayTestData(false))).toEqual(expectedArrayOutput);
   });
   
-  test('catches `null` values', () => {
-    expect(omitFalsey(makeTestData(null))).toEqual(expectedOutput);
+  it('catches `null` values', () => {
+    expect(omitFalsey(makeObjectTestData(null))).toEqual(expectedObjectOutput);
+    expect(omitFalsey(makeArrayTestData(null))).toEqual(expectedArrayOutput);
   });
   
-  test('catches `undefined` values', () => {
-    expect(omitFalsey(makeTestData(undefined))).toEqual(expectedOutput);
+  it('catches `undefined` values', () => {
+    expect(omitFalsey(makeObjectTestData(undefined))).toEqual(expectedObjectOutput);
+    expect(omitFalsey(makeArrayTestData(undefined))).toEqual(expectedArrayOutput);
   });
   
-  test('catches `0` values', () => {
-    expect(omitFalsey(makeTestData(0))).toEqual(expectedOutput);
+  it('catches `0` values', () => {
+    expect(omitFalsey(makeObjectTestData(0))).toEqual(expectedObjectOutput);
+    expect(omitFalsey(makeArrayTestData(0))).toEqual(expectedArrayOutput);
   });
   
-  test('catches empty string values', () => {
-    expect(omitFalsey(makeTestData(''))).toEqual(expectedOutput);
+  it('catches empty string values', () => {
+    expect(omitFalsey(makeObjectTestData(''))).toEqual(expectedObjectOutput);
+    expect(omitFalsey(makeArrayTestData(''))).toEqual(expectedArrayOutput);
   });
 });
 
-const expectedOutput = {
+const expectedObjectOutput = {
   abcd: 'abcd',
   number: 456,
   array: []
 };
 
-function makeTestData (falseyVal: any) {
+const expectedArrayOutput = ['abcd', 456, []];
+
+function makeObjectTestData (falseyVal: any) {
   return {
-    ...expectedOutput,
+    ...expectedObjectOutput,
     badValue: falseyVal
   }
+}
+
+function makeArrayTestData (falseyVal: any) {
+  return [...expectedArrayOutput, falseyVal];
 }

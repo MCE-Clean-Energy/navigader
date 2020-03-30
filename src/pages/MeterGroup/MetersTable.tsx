@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import * as api from '@nav/shared/api';
-import { Table, TableState } from '@nav/shared/components';
+import { Table, PaginationState } from '@nav/shared/components';
 import { Meter, MeterGroup } from '@nav/shared/models/meter';
 import { makeStylesHook } from '@nav/shared/styles';
 import { PaginationSet } from '@nav/shared/types';
@@ -23,7 +23,7 @@ const useStyles = makeStylesHook(() => ({
 const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
   const classes = useStyles();
   const getMeters = React.useCallback(
-    async (state: TableState): Promise<PaginationSet<Meter>> => {
+    async (state: PaginationState): Promise<PaginationSet<Meter>> => {
       return await api.getMeters({
         meterGroupId,
         page: state.currentPage + 1,
@@ -54,8 +54,8 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
           <Table.Body>
             {meters.map(meter =>
               <Table.Row key={meter.id}>
-                <Table.Cell useTh>{meter.metaData.saId}</Table.Cell>
-                <Table.Cell>{meter.metaData.ratePlan}</Table.Cell>
+                <Table.Cell useTh>{meter.metadata.sa_id}</Table.Cell>
+                <Table.Cell>{meter.metadata.rate_plan_name}</Table.Cell>
               </Table.Row>
             )}
           </Table.Body>

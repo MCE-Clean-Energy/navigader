@@ -17,8 +17,8 @@ type ReviewProps = {
   meterGroups: MeterGroup[] | null;
   selectedDers: Partial<DERSelection>[];
   selectedMeterGroupIds: string[];
-  studyName: string | null;
-  updateStudyName: (name: string | null) => void;
+  scenarioName: string | null;
+  updateScenarioName: (name: string | null) => void;
 };
 
 /** ============================ Styles ==================================== */
@@ -38,7 +38,7 @@ const sectionHeadingUseStyles = makeStylesHook(theme => ({
 }));
 
 const reviewUseStyles = makeStylesHook(theme => ({
-  studyName: {
+  scenarioName: {
     marginTop: theme.spacing(3),
     width: '50%'
   }
@@ -63,7 +63,7 @@ const SelectedCustomers: React.FC<ReviewProps> = (props) => {
           return (
             <Card raised>
               <Typography variant="body1">
-                None selected. <Link to={routes.dashboard.runStudy.selectCustomers}>Add customers</Link>
+                None selected. <Link to={routes.dashboard.createScenario.selectCustomers}>Add customers</Link>
               </Typography>
             </Card>
           );
@@ -107,7 +107,7 @@ const SelectedDers: React.FC<ReviewProps> = (props) => {
           return (
             <Card raised>
               <Typography variant="body1">
-                None selected. <Link to={routes.dashboard.runStudy.selectDers}>Add DERs</Link>
+                None selected. <Link to={routes.dashboard.createScenario.selectDers}>Add DERs</Link>
               </Typography>
             </Card>
           );
@@ -145,13 +145,13 @@ const Review: React.FC<ReviewProps> = (props) => {
       
       <TextField
         autoFocus
-        className={classes.studyName}
-        id="study-name"
-        label="Study Name"
+        className={classes.scenarioName}
+        id="scenario-name"
+        label="Scenario Name"
         onChange={handleNameChange}
         outlined
         tabIndex={1}
-        value={props.studyName || ''}
+        value={props.scenarioName || ''}
       />
     </>
   );
@@ -159,7 +159,7 @@ const Review: React.FC<ReviewProps> = (props) => {
   /** ============================ Callbacks =============================== */
   function handleNameChange (event: React.ChangeEvent<HTMLInputElement>) {
     const newName = event.target.value;
-    props.updateStudyName(newName === '' ? null : newName);
+    props.updateScenarioName(newName === '' ? null : newName);
   }
 };
 

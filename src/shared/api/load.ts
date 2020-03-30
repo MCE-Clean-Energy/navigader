@@ -1,8 +1,8 @@
 import {
-  appendId, beoRoute, getRequest, parsePaginationSet, makeFormPost
+  appendId, beoRoute, getRequest, parsePaginationSet, makeFormPost, makePaginationQueryParams
 } from '@nav/shared/api/util';
 import {
-  LoadType, Meter, MeterGroup, parseMeter, parseMeterGroup, RawMeter, RawMeterGroup
+  LoadType, MeterGroup, parseMeterGroup, Meter, RawMeterGroup
 } from '@nav/shared/models/meter';
 import { PaginationQueryParams, PaginationSet, RawPaginationSet } from '@nav/shared/types';
 
@@ -21,66 +21,53 @@ type MeterGroupQueryParams = Omit<MeterQueryParams, 'meterGroupId'>;
 export async function getMeterGroups (
   queryParams?: MeterGroupQueryParams
 ): Promise<PaginationSet<MeterGroup>> {
-  const response: RawPaginationSet<RawMeterGroup> =
+  const response: RawPaginationSet<{ meter_groups: RawMeterGroup[] }> =
     await getRequest(
       routes.meterGroup(),
       makeQueryParams(queryParams)
     ).then(res => res.json());
   
-  return parsePaginationSet(response, parseMeterGroup);
+  return parsePaginationSet(
+    response,
+    ({ meter_groups }) => meter_groups.map(parseMeterGroup)
+  );
 }
 
 export async function getMeterGroup (
   uuid: string,
   queryParams?: MeterGroupQueryParams
 ) {
-  const response: RawMeterGroup =
+  const response: Record<'meter_group', RawMeterGroup> =
     await getRequest(
       routes.meterGroup(uuid),
       makeQueryParams(queryParams)
     ).then(res => res.json());
   
   // Parse the meter group results
-  return parseMeterGroup(response);
+  return parseMeterGroup(response.meter_group);
 }
 
-export async function postOriginFile (
-  file: File,
-  name: string
-) {
-  // TODO: Provide the correct LSE ID
+export async function postOriginFile (file: File, name: string) {
   return await makeFormPost(
     routes.originFile,
     {
       file,
-      name,
-      load_serving_entity_id: 1
+      name
     }
   );
-}
-
-export async function getMeter (id: string, queryParams?: MeterQueryParams) {
-  const response: RawMeter =
-    await getRequest(
-      routes.meter(id),
-      makeQueryParams(queryParams)
-    ).then(res => res.json());
-  
-  // Parse the meter results
-  return parseMeter(response);
 }
 
 export async function getMeters (
   queryParams?: MeterQueryParams
 ): Promise<PaginationSet<Meter>> {
-  const response: RawPaginationSet<RawMeter> =
+  const response: RawPaginationSet<{ meters: Meter[] }> =
     await getRequest(
       routes.meter(),
       makeQueryParams(queryParams)
     ).then(res => res.json());
   
   // Parse the meter results
-  return parsePaginationSet(response, parseMeter);
+  return parsePaginationSet(response, 'meters');
 }
 
 /** ============================ Helpers =================================== */
@@ -92,13 +79,12 @@ const routes = {
 };
 
 function makeQueryParams (queryParams?: MeterQueryParams) {
-  if (!queryParams) return null;
+  if (!queryParams) return;
   return {
+    ...makePaginationQueryParams(queryParams),
     data_types: queryParams.types,
     end_limit: queryParams.end,
-    meter_groups: queryParams.meterGroupId,
-    page: queryParams.page,
-    page_size: queryParams.pageSize,
+    filter: { meter_groups: queryParams.meterGroupId },
     start: queryParams.start
   };
 }

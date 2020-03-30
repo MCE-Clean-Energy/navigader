@@ -2,10 +2,11 @@ import * as React from 'react';
 import { BrowserRouter as Router, Switch, Redirect, Route, RouteProps } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
+import { getDerConfigurations, getDerStrategies } from '@nav/shared/api';
 import { Alert, AppContainer, Snackbar, ThemeProvider } from '@nav/shared/components';
 import * as routes from '@nav/shared/routes';
 import { slices } from '@nav/shared/store';
-import { getCookie } from '@nav/shared/util';
+import { userIsAuthenticated } from '@nav/shared/models/user';
 import DashboardPage from './pages/Dashboard';
 import LoadPage from './pages/Load';
 import LoginPage from './pages/Login';
@@ -63,12 +64,11 @@ export const AppRoutes: React.FC = () =>
  * A wrapper for <Route> that redirects to the login screen if the user isn't authenticated.
  */
 const AuthenticatedRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
-  const userAuthenticated = getCookie('authToken') !== undefined;
   return (
     <Route
       {...rest}
       render={({ location }) =>
-        userAuthenticated ? children : (
+        userIsAuthenticated() ? children : (
           <Redirect
             to={{
               pathname: routes.login,
@@ -80,11 +80,43 @@ const AuthenticatedRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
     />
   );
 };
+
+/**
+ * The application's root component. This component is not rendered by tests
+ */
+const App: React.FC = () => {
+  const dispatch = useDispatch();
   
-const App: React.FC = () =>
-  <Router>
-    <AppRoutes />
-  </Router>;
+  // Load DER configurations
+  React.useEffect(() => {
+    if (!userIsAuthenticated()) return;
+    getDerConfigurations({ include: 'data', pageSize: 100 })
+      .then((derConfigurations) => {
+        dispatch(
+          // TODO: this is only loading the first page of configurations. We should load all of them
+          slices.models.setDerConfigurations(derConfigurations.data)
+        );
+      });
+  });
+  
+  // Load DER strategies
+  React.useEffect(() => {
+    if (!userIsAuthenticated()) return;
+    getDerStrategies({ include: 'data', pageSize: 100 })
+      .then((derStrategies) => {
+        dispatch(
+          // TODO: this is only loading the first page of strategies. We should load all of them
+          slices.models.setDerStrategies(derStrategies.data)
+        );
+      });
+  });
+  
+  return (
+    <Router>
+      <AppRoutes />
+    </Router>
+  );
+};
 
 /** ============================ Exports =================================== */
 export default App;

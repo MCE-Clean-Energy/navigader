@@ -11,7 +11,6 @@ export function parseNavigaderObject <Type extends string>(
 ): NavigaderObject<Type> {
   return {
     created: obj.created_at,
-    data: obj.data,
     id: obj.id,
     objectType: obj.object_type,
     name: obj.name

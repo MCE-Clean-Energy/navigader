@@ -5,7 +5,7 @@ import { Theme, useTheme } from '@nav/shared/styles';
 
 
 /** ============================ Types ===================================== */
-type PopoverOrigin = {
+export type PopoverOrigin = {
   vertical: 'top' | 'center' | 'bottom';
   horizontal: 'left' | 'center' | 'right';
 };

@@ -9,8 +9,6 @@ export function makeRawCustomerCluster (customerClusterProps?: Partial<CustomerC
   // Temporarily dress up the customer cluster as an origin file
   const originFile = meterGroupToRawMeterGroup({ ...customerClusterProps, objectType: 'OriginFile' });
   
-  debugger;
-  
   // Convert back to a customer cluster
   return {
     ...originFile,

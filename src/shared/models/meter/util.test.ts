@@ -47,7 +47,7 @@ describe('`parseMeterGroup` method', () => {
       data: {},
       fileName: 'myFile.csv',
       id: 'abcd',
-      groupType: 'OriginFile',
+      objectType: 'OriginFile',
       meterIds: [],
       name: 'My File',
       numMeters: 0,
@@ -73,9 +73,9 @@ describe('`parseMeterGroup` method', () => {
       created: 'Yesterday',
       data: {},
       id: 'abcd',
-      groupType: 'CustomerCluster',
+      objectType: 'CustomerCluster',
       meterIds: [],
-      name: null,
+      name: '',
       numMeters: 0,
     });
   });

@@ -4,6 +4,9 @@ import MuiListItem from '@material-ui/core/ListItem';
 import MuiListItemIcon from '@material-ui/core/ListItemIcon';
 import MuiListItemText from '@material-ui/core/ListItemText';
 
+import { printWarning } from '@nav/shared/util';
+import { Icon, ValidIcon } from './Icon';
+
 
 /** ============================ Types ===================================== */
 type ListProps = React.HTMLAttributes<HTMLUListElement> & {
@@ -15,7 +18,8 @@ type ListItemProps = {
   selected?: boolean;
 };
 type ListItemIconProps = {
-  children: React.ReactElement;
+  children?: React.ReactElement;
+  icon?: ValidIcon;
 };
 
 type ListItemText = React.FC;
@@ -30,7 +34,29 @@ type ListExport = React.ForwardRefExoticComponent<ListProps> & {
 
 /** ============================ Components ================================ */
 const ListItem: ListItem = props => <MuiListItem button {...props}  />;
-const ListItemIcon: ListItemIcon = props => <MuiListItemIcon {...props} />;
+const ListItemIcon: ListItemIcon = (props) => {
+  const { children, icon } = props;
+  
+  // Only one of the `icon` and `label` props should be provided
+  const hasBoth = Boolean(children && icon);
+  const hasNeither = !Boolean(children || icon);
+  if (hasBoth || hasNeither) {
+    printWarning('`Menu` component expects one of `icon` or `label` prop');
+  }
+  
+  if (icon) {
+    return (
+      <MuiListItemIcon>
+        <Icon name={icon}/>
+      </MuiListItemIcon>
+    );
+  } else if (children) {
+    return <MuiListItemIcon>{children}</MuiListItemIcon>;
+  } else {
+    return null;
+  }
+};
+
 const ListItemText: ListItemText = ({ children}) =>
   <MuiListItemText primary={children} />;
 

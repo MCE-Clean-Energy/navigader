@@ -15,20 +15,26 @@ describe('Meter Group Page', () => {
     // Set up URLs to mock
     fetchMock.mockResponse(async (req) => {
       if (req.url.match(/v1\/load\/meter_group\/\d+/)) {
-        return JSON.stringify(rawMeterGroup);
+        return JSON.stringify({
+          meter_group: rawMeterGroup
+        });
       } else if (req.url.match(/v1\/load\/meter_group/)) {
         return JSON.stringify({
           count: 1,
           next: null,
           previous: null,
-          results: [rawMeterGroup]
+          results: {
+            meter_groups: [rawMeterGroup]
+          }
         });
       } else if (req.url.match(/v1\/load\/meter/)) {
         return JSON.stringify({
           count: 1,
           next: null,
           previous: null,
-          results: [fixtures.meter]
+          results: {
+            meters: [fixtures.meter]
+          }
         });
       } else {
         return "default mock response";
@@ -37,7 +43,7 @@ describe('Meter Group Page', () => {
   });
   
   describe('Back button', () => {
-    test('Clicking the back button returns you to the load page', async () => {
+    it('Clicking the back button returns you to the load page', async () => {
       const { getByRole, getByText } = renderAppRoute('/load/group/2');
       
       // Click on the back button
@@ -50,7 +56,7 @@ describe('Meter Group Page', () => {
   });
   
   describe('Header',  () => {
-    test('Meter group name is rendered', async () => {
+    it('Meter group name is rendered', async () => {
       const { getByText } = renderAppRoute('/load/group/2');
       await waitForElement(() => getByText(groupName));
     });

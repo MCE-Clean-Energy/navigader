@@ -7,16 +7,16 @@ import { MeterGroup } from '@nav/shared/models/meter';
 
 // Order of steps
 export const stepPaths = [
-  routes.dashboard.runStudy.selectDers,
-  routes.dashboard.runStudy.selectCustomers,
-  routes.dashboard.runStudy.review
+  routes.dashboard.createScenario.selectDers,
+  routes.dashboard.createScenario.selectCustomers,
+  routes.dashboard.createScenario.review
 ];
 
 // Indices of steps
 export const stepNumbers = {
-  selectDers: stepPaths.indexOf(routes.dashboard.runStudy.selectDers),
-  selectCustomers: stepPaths.indexOf(routes.dashboard.runStudy.selectCustomers),
-  review: stepPaths.indexOf(routes.dashboard.runStudy.review),
+  selectDers: stepPaths.indexOf(routes.dashboard.createScenario.selectDers),
+  selectCustomers: stepPaths.indexOf(routes.dashboard.createScenario.selectCustomers),
+  review: stepPaths.indexOf(routes.dashboard.createScenario.review),
 };
 
 export type DERSelection = {

@@ -7,7 +7,7 @@ import {
 import flatten from 'lodash/flatten';
 import range from 'lodash/range';
 
-import { Frame288, Frame288LoadType } from '@nav/shared/models/meter';
+import { Frame288LoadType, Frame288Numeric } from '@nav/shared/models/meter';
 import { primaryColor } from '@nav/shared/styles';
 import { MonthIndex } from '@nav/shared/types';
 import { getMonthName } from '@nav/shared/util';
@@ -16,7 +16,7 @@ import { getMonthName } from '@nav/shared/util';
 /** ============================ Types ===================================== */
 export type Frame288MonthsOption = MonthIndex[] | 'all';
 type Frame288GraphProps = {
-  data: Frame288;
+  data: Frame288Numeric;
   height?: number;
   loadType: Frame288LoadType;
   months?: Frame288MonthsOption;

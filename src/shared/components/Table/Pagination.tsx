@@ -2,23 +2,21 @@ import * as React from 'react';
 import MuiTablePagination from '@material-ui/core/TablePagination';
 
 import { RowsPerPageOption } from '@nav/shared/types';
+import { PaginationState } from './util';
 
 
 /** ============================ Types ===================================== */
-export type TableState = {
-  currentPage: number;
-  rowsPerPage: RowsPerPageOption;
-};
-
-type TablePaginationProps = TableState & {
+type TablePaginationProps = {
   // The number of data in the full table; this is used to show the count
   count: number | null;
-  updateTableState: (state: TableState) => void;
+  paginationState: PaginationState;
+  updatePaginationState: (state: PaginationState) => void;
 };
 
 /** ============================ Components ================================ */
 export const TablePagination: React.FC<TablePaginationProps> = (props) => {
-  const { count, currentPage, rowsPerPage, updateTableState } = props;
+  const { count, paginationState, updatePaginationState } = props;
+  const { currentPage, rowsPerPage } = paginationState;
   
   if (count === null || count === 0) {
     return null;
@@ -37,16 +35,16 @@ export const TablePagination: React.FC<TablePaginationProps> = (props) => {
   );
   
   function changeRowsPerPage (event: React.ChangeEvent<HTMLInputElement>) {
-    updateTableState({
+    updatePaginationState({
       currentPage: 0,
-      rowsPerPage: +event.target.value as RowsPerPageOption
+      rowsPerPage: +event.target.value as RowsPerPageOption,
     });
   }
   
   function changePage (event: React.MouseEvent<HTMLButtonElement> | null, page: number) {
-    updateTableState({
+    updatePaginationState({
       currentPage: page,
-      rowsPerPage
+      rowsPerPage,
     });
   }
 };

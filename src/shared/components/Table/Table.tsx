@@ -8,19 +8,21 @@ import MuiTableContainer from '@material-ui/core/TableContainer';
 import MuiTableHead from '@material-ui/core/TableHead';
 import MuiTableRow from '@material-ui/core/TableRow';
 
-import { Flex, Progress, Typography } from '@nav/shared/components';
+import { Checkbox, Flex, Progress, Typography } from '@nav/shared/components';
 import { makeStylesHook } from '@nav/shared/styles';
 import { PaginationSet } from '@nav/shared/types';
-import { TablePagination, TableState } from './Pagination';
-import { makeCancelableAsync } from '../../util';
+import { makeCancelableAsync } from '@nav/shared/util';
+import { TablePagination } from './Pagination';
+import { PaginationState, TableContext } from './util';
 
 
 /** ============================ Types ===================================== */
-type TableProps<T> = React.TableHTMLAttributes<HTMLTableElement> & {
-  children: (data: T[], emptyRow: React.ReactNode) => React.ReactNode;
+type TableProps<T> = {
+  children: (data: T[], emptyRow: React.ReactElement | null) => React.ReactElement;
   containerClassName?: string;
-  dataFn: (state: TableState) => Promise<PaginationSet<T>>;
+  dataFn: (state: PaginationState) => Promise<PaginationSet<T>>;
   ifEmpty?: React.ReactNode;
+  onSelect?: (selections: T[]) => void;
   raised?: boolean;
   stickyHeader?: boolean;
   title?: string;
@@ -33,9 +35,15 @@ type TableCellProps = {
   useTh?: boolean;
 };
 
-type TableBodyProps = {};
 type TableHeadProps = {};
-type TableRowProps = {};
+type TableBodyProps = {};
+
+type TableRowProps = {
+  // These props should be provided manually-- they are provided by the `TableHead` and `TableBody`
+  // components
+  _selected?: boolean;
+  _onChange?: (checked: boolean) => void;
+};
 
 type TableBody = React.FC<TableBodyProps>;
 type TableCell = React.FC<TableCellProps>;
@@ -61,31 +69,41 @@ const useStyles = makeStylesHook(theme => ({
 /** ============================ Components ================================ */
 const TableRaiser: React.FC = (props) => <MuiPaper elevation={8} {...props} />;
 export function Table <T>(props: TableProps<T>) {
-  const { children, dataFn, containerClassName, ifEmpty, raised, title, ...rest } = props;
+  const {
+    children,
+    dataFn,
+    containerClassName,
+    ifEmpty,
+    onSelect,
+    raised,
+    title,
+    ...rest
+  } = props;
+  
   const classes = useStyles();
   
   // State
   const [loading, setLoading] = React.useState(true);
+  const [selections, setSelections] = React.useState<Set<number>>(new Set());
   const [dataState, setDataState] = React.useState<DataState<T>>({
     data: null,
     count: null
   });
-  const [tableState, setTableState] = React.useState<TableState>({
+  const [paginationState, setPaginationState] = React.useState<PaginationState>({
     currentPage: 0,
     rowsPerPage: 20
   });
   
   const { data, count } = dataState;
-  const { currentPage, rowsPerPage } = tableState;
   
   // Load data
   React.useEffect(makeCancelableAsync(() => {
     setLoading(true);
-    return dataFn(tableState)
+    return dataFn(paginationState)
   }, (paginationSet) => {
     setLoading(false);
     setDataState(pick(paginationSet, 'data', 'count'));
-  }), [dataFn, tableState]);
+  }), [dataFn, paginationState]);
   
   // If the data has loaded and there are none, render the `ifEmpty` row
   const emptyRow = count === 0 && ifEmpty
@@ -95,6 +113,15 @@ export function Table <T>(props: TableProps<T>) {
       </Table.Row>
     )
     : null;
+  
+  // Build context for child component tree
+  const tableContext = {
+    allSelected: data !== null && data.length === selections.size,
+    selectable: Boolean(onSelect),
+    selections: selections,
+    toggleAllSelections,
+    toggleRowSelection
+  };
 
   return (
     <div>
@@ -103,15 +130,16 @@ export function Table <T>(props: TableProps<T>) {
         {data &&
           <TablePagination
             count={count}
-            currentPage={currentPage}
-            rowsPerPage={rowsPerPage}
-            updateTableState={updateTableState}
+            paginationState={paginationState}
+            updatePaginationState={updatePaginationState}
           />
         }
       </Flex.Container>
       <MuiTableContainer className={containerClassName} component={raised ? TableRaiser : MuiPaper}>
         <MuiTable {...rest}>
-          {children(data || [], emptyRow)}
+          <TableContext.Provider value={tableContext}>
+            {children(data || [], emptyRow)}
+          </TableContext.Provider>
         </MuiTable>
       </MuiTableContainer>
       {loading ? <Progress /> : <div className={classes.progressBarSpacer} />}
@@ -119,14 +147,119 @@ export function Table <T>(props: TableProps<T>) {
   );
   
   /** ============================ Callbacks =============================== */
-  function updateTableState (newState: TableState) {
-    setTableState(newState);
+  function updatePaginationState (newState: PaginationState) {
+    setPaginationState(newState);
+    updateSelections(new Set());
+  }
+  
+  /**
+   * Called when the header's selection checkbox changes state
+   *
+   * @param {boolean} selectAll: true if the checkbox is now checked (i.e. if all rows ought to
+   *   become selected)
+   */
+  function toggleAllSelections (selectAll: boolean) {
+    // Can't do anything without data
+    if (!data) return;
+    if (selectAll) {
+      updateSelections(new Set(data.map((d, i) => i)));
+    } else {
+      updateSelections(new Set());
+    }
+  }
+  
+  /**
+   * Called when a row's selection checkbox changes state
+   *
+   * @param {number} rowIndex: the index of the row whose selection state is toggling
+   * @param {boolean} checked: true if the checkbox is now checked (i.e. if the row is now selected)
+   */
+  function toggleRowSelection (rowIndex: number, checked: boolean) {
+    const newSelections = new Set(selections);
+    
+    if (checked) newSelections.add(rowIndex);
+    else newSelections.delete(rowIndex);
+    
+    updateSelections(newSelections);
+  }
+  
+  /**
+   * Updates the selection state and calls the `onSelect` callback if provided
+   *
+   * @param {Set<number>} indices: the row indices of the now-selected data
+   */
+  function updateSelections (indices: Set<number>) {
+    setSelections(indices);
+    
+    if (data && onSelect) {
+      // Map the indices to the actual data
+      onSelect([...indices].map(index => data[index]));
+    }
   }
 }
 
-const TableBody: TableBody = props => <MuiTableBody {...props} />;
-const TableHead: TableHead = props => <MuiTableHead {...props} />;
-const TableRow: TableRow = props => <MuiTableRow {...props} />;
+const TableBody: TableBody = (props) => {
+  const { selections, toggleRowSelection } = React.useContext(TableContext);
+  
+  // Keeps track of the index of each row. This is augmented once per table row in the loop
+  let rowIndex = 0;
+  
+  return (
+    <MuiTableBody>
+      {React.Children.map(props.children, (child) => {
+        // If the child is not a valid element or if it isn't a table row component, return
+        // unchanged
+        if (!React.isValidElement(child) || child.type !== Table.Row) return child;
+        
+        // Augment the row index
+        const index = rowIndex++;
+        return React.cloneElement<TableRowProps>(child, {
+          _onChange: (checked: boolean) => toggleRowSelection(index, checked),
+          _selected: selections.has(index)
+        });
+      })}
+    </MuiTableBody>
+  );
+};
+
+const TableHead: TableHead = (props) => {
+  const { allSelected, toggleAllSelections } = React.useContext(TableContext);
+  return (
+    <MuiTableHead>
+      {React.isValidElement(props.children)
+        ? React.cloneElement<TableRowProps>(props.children, {
+          _onChange: toggleAllSelections,
+          _selected: allSelected
+        })
+        : props.children
+      }
+    </MuiTableHead>
+  );
+};
+
+const TableRow: TableRow = (props) => {
+  const { children, _selected, _onChange } = props;
+  const { selectable } = React.useContext(TableContext);
+  
+  // If the row is selectable, add in a checkbox to the front of the row
+  let checkboxCell = null;
+  if (selectable) {
+    // The `onChange` callback depends on the cell's context
+    checkboxCell = (
+      <Table.Cell>
+        <Checkbox checked={_selected} onChange={_onChange} />
+      </Table.Cell>
+    );
+  }
+  
+  return (
+    <MuiTableRow>
+      {checkboxCell}
+      {children}
+    </MuiTableRow>
+  );
+};
+
 const TableCell: TableCell = ({ useTh, ...rest }) => {
   const tableProps = { ...rest };
   

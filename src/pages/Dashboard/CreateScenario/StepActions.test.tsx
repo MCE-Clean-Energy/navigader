@@ -1,14 +1,20 @@
 import * as React from 'react';
 
 import { renderContextDependentComponent } from '@nav/shared/util/testing';
+import { DERSelection } from './shared';
 import StepActions from './StepActions';
-import { DERSelection } from './util';
 
 
 describe('`Step Actions` component', () => {
   it('disables "Next" button on DER Selection page when no DER selections', () => {
     const { getByRole } = renderContextDependentComponent(
-      <StepActions activeStep={0} selectedDers={[]} />
+      <StepActions
+        activeStep={0}
+        meterGroups={null}
+        scenarioName={null}
+        selectedDers={[]}
+        selectedMeterGroupIds={[]}
+      />
     );
     
     const button = getByRole('button') as HTMLButtonElement;
@@ -22,7 +28,13 @@ describe('`Step Actions` component', () => {
     
     [derNoType, derNoConfiguration, derNoStrategy].forEach((partialDer) => {
       const { getByRole } = renderContextDependentComponent(
-        <StepActions activeStep={0} selectedDers={[partialDer]} />
+        <StepActions
+          activeStep={0}
+          meterGroups={null}
+          scenarioName={null}
+          selectedDers={[]}
+          selectedMeterGroupIds={[]}
+        />
       );
       
       const button = getByRole('button') as HTMLButtonElement;
@@ -38,7 +50,13 @@ describe('`Step Actions` component', () => {
     };
     
     const { getByRole } = renderContextDependentComponent(
-      <StepActions activeStep={0} selectedDers={[validDer]} />
+      <StepActions
+        activeStep={0}
+        meterGroups={null}
+        scenarioName={null}
+        selectedDers={[validDer]}
+        selectedMeterGroupIds={[]}
+      />
     );
     
     const button = getByRole('button') as HTMLButtonElement;

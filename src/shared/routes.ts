@@ -5,11 +5,11 @@
 /** ============================ Dashboard Routes ========================== */
 export const dashboard = {
   base: '/dashboard',
-  runStudy: {
-    get base            () { return `${dashboard.base}/run-study`; },
-    get selectCustomers () { return `${dashboard.runStudy.base}/select-customers`},
-    get selectDers      () { return `${dashboard.runStudy.base}/select-ders`},
-    get review          () { return `${dashboard.runStudy.base}/review`}
+  createScenario: {
+    get base            () { return `${dashboard.base}/create-scenario`; },
+    get selectCustomers () { return `${dashboard.createScenario.base}/select-customers`},
+    get selectDers      () { return `${dashboard.createScenario.base}/select-ders`},
+    get review          () { return `${dashboard.createScenario.base}/review`}
   }
 };
 

@@ -1,34 +1,38 @@
-import { appendId, beoRoute, getRequest, parsePaginationSet } from '@nav/shared/api/util';
+import {
+  appendId, beoRoute, getRequest, makePaginationQueryParams, parsePaginationSet
+} from '@nav/shared/api/util';
 import { BatteryConfiguration, BatteryStrategy } from '@nav/shared/models/der';
-import { PaginationQueryParams, PaginationSet, RawPaginationSet } from '@nav/shared/types';
+import {
+  DynamicRestParams, PaginationQueryParams, PaginationSet, RawPaginationSet
+} from '@nav/shared/types';
 
 
 /** ============================ Types ===================================== */
-type DerConfigurationQueryParams = Partial<PaginationQueryParams & { data: boolean; }>;
+type DerQueryParams = Partial<PaginationQueryParams & DynamicRestParams>;
 
 /** ============================ API Methods =============================== */
 export async function getDerConfigurations (
-  queryParams?: DerConfigurationQueryParams
+  queryParams?: DerQueryParams
 ): Promise<PaginationSet<BatteryConfiguration>> {
-  const response: RawPaginationSet<BatteryConfiguration> =
+  const response: RawPaginationSet<{ der_configurations: BatteryConfiguration[] }> =
     await getRequest(
       routes.configuration(),
       makeQueryParams(queryParams)
     ).then(res => res.json());
   
-  return parsePaginationSet(response);
+  return parsePaginationSet(response, 'der_configurations');
 }
 
 export async function getDerStrategies (
-  queryParams?: DerConfigurationQueryParams
+  queryParams?: DerQueryParams
 ): Promise<PaginationSet<BatteryStrategy>> {
-  const response: RawPaginationSet<BatteryStrategy> =
+  const response: RawPaginationSet<{ der_strategies: BatteryStrategy[] }> =
     await getRequest(
       routes.strategy(),
       makeQueryParams(queryParams)
     ).then(res => res.json());
   
-  return parsePaginationSet(response);
+  return parsePaginationSet(response, 'der_strategies');
 }
 
 /** ============================ Helpers =================================== */
@@ -39,11 +43,10 @@ const routes = {
   strategy: appendId(baseRoute('strategy'))
 };
 
-function makeQueryParams (queryParams?: DerConfigurationQueryParams) {
-  if (!queryParams) return null;
+function makeQueryParams (queryParams?: DerQueryParams) {
+  if (!queryParams) return;
   return {
-    data: queryParams.data,
-    page: queryParams.page,
-    page_size: queryParams.pageSize
+    ...makePaginationQueryParams(queryParams),
+    include: queryParams.include
   };
 }

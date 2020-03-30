@@ -1,6 +1,4 @@
-import identity from 'lodash/identity';
-
-import { PaginationSet, RawPaginationSet } from '@nav/shared/types';
+import { PaginationQueryParams, PaginationSet, RawPaginationSet } from '@nav/shared/types';
 import { getCookie, omitFalsey } from '@nav/shared/util';
 
 
@@ -14,14 +12,15 @@ type Stringable = {
   toString(): string;
 }
 
-type QueryParams = {
-  // Note that this should really just be `Stringable`. However, there will be many times when
-  // some query parameters are optional. With `--strictNullChecks` turned on, Typescript
-  // automatically converts optional properties to `type | undefined`, and so when such query
-  // parameter objects are passed along to the utility method the typechecker throws an error if
-  // we omit the `| undefined` here.
-  [x: string]: Stringable | undefined;
-}
+// Note that this should really just be `Stringable`. However, there will be many times when
+// some query parameters are optional. With `--strictNullChecks` turned on, Typescript
+// automatically converts optional properties to `type | undefined`, and so when such query
+// parameter objects are passed along to the utility method the typechecker throws an error if
+// we omit the `| undefined` here.
+type QueryObject = Record<string, Stringable | undefined>;
+type QueryParams = QueryObject & {
+  filter?: QueryObject;
+};
 
 type ContentType = 'application/json' | 'multipart/form-data';
 
@@ -55,32 +54,13 @@ export function makeFormPost (route: string, formFields: object) {
   
   return fetch(route, {
     body: formData,
-    headers: getRequestHeaders(null),
+    headers: getRequestHeaders(),
     method: 'POST'
   });
 }
 
-export function getRequest (route: string, queryParams?: QueryParams | null) {
-  let completeRoute = route;
-  if (queryParams) {
-    const queryString = Object.entries(queryParams)
-      .map(([key, value]) => {
-        // Again, this filtering step should not be necessary. This is only here to provide a
-        // typeguard so that `value.toString` is allowed. See note above.
-        if (typeof value === 'undefined') return null;
-        return [
-          encodeURIComponent(key),
-          encodeURIComponent(value.toString())
-        ].join('=');
-      })
-      // Remove the `null` values produced above
-      .filter(value => !!value)
-      .join('&');
-
-    completeRoute = completeRoute.concat(`?${queryString}`);
-  }
-  
-  return makeJsonRequest('GET', completeRoute);
+export function getRequest (route: string, queryParams?: QueryParams) {
+  return makeJsonRequest('GET', route.concat(makeQueryString(queryParams)));
 }
 
 export function postRequest (route: string, body: object) {
@@ -102,25 +82,64 @@ export function appendId (route: string) {
 
 /**
  * Parses a raw pagination set (the raw response from the back end for a paginated endpoint) into a
+ * parsed pagination set. If there's no need to parse the data (e.g. if there are no sideload data)
+ * then passing a string under which the results are nested is sufficient
+ *
+ * @param {RawPaginationSet} paginationSet: the raw server response to parse
+ * @param {string} resultsKey: they key under which the data array lies
+ */
+export function parsePaginationSet <ResultsKey extends string, Datum>(
+  paginationSet: RawPaginationSet<Record<ResultsKey, Datum[]>>,
+  resultsKey: ResultsKey
+): PaginationSet<Datum>;
+
+/**
+ * Parses a raw pagination set (the raw response from the back end for a paginated endpoint) into a
  * parsed pagination set.
  *
- * @param {RawPaginationSet} paginationSet - The raw server response to parse
- * @param {Function} [parseFn] - A function that parses an individual result from its raw version
+ * @param {RawPaginationSet} paginationSet: the raw server response to parse
+ * @param {Function} [parseFn]: a function that parses an individual result from its raw version
  *   to its parsed version. Defaults to the identity function
  */
-export function parsePaginationSet <T, K>(
-  paginationSet: RawPaginationSet<T>,
-  parseFn: (result: T) => K = identity
-): PaginationSet<K> {
+export function parsePaginationSet <RawSchema, Datum>(
+  paginationSet: RawPaginationSet<RawSchema>,
+  parseFn: (schema: RawSchema) => Datum[]
+): PaginationSet<Datum>;
+
+export function parsePaginationSet <RawSchema, ResultsKey extends string, Datum>(
+  paginationSet: any,
+  parseFnOrResultsKey?: any
+): any {
+  const isArray = Array.isArray(paginationSet.results);
+  
+  // If the results are not array-like, a parse function or results key must be provided
+  if (!(isArray || parseFnOrResultsKey)) {
+    throw Error('`parsePaginationSet` called incorrectly');
+  }
+  
+  let data;
+  if (isArray) {
+    data = typeof parseFnOrResultsKey === 'function'
+      ? paginationSet.results.map(parseFnOrResultsKey)
+      : paginationSet.results;
+  } else if (typeof parseFnOrResultsKey === 'function') {
+    data = parseFnOrResultsKey(paginationSet.results);
+  } else {
+    data = paginationSet.results[parseFnOrResultsKey];
+  }
+  
   return {
     count: paginationSet.count,
-    hasNext: typeof paginationSet.next === 'string',
-    hasPrevious: typeof paginationSet.previous === 'string',
-    data: paginationSet.results.map(parseFn)
+    data
   };
 }
 
-function getRequestHeaders (contentType: ContentType | null) {
+/**
+ * Produces the headers to send with a request
+ *
+ * @param {ContentType} contentType: the value for the 'Content-Type` header
+ */
+function getRequestHeaders (contentType?: ContentType) {
   const authToken = getCookie('authToken');
   return new Headers(
     omitFalsey({
@@ -131,17 +150,65 @@ function getRequestHeaders (contentType: ContentType | null) {
   );
 }
 
-/**
- * Checks if a response has a 20x response code, indicating the request succeeded.
- *
- * @param {Response} response: the response to evaluate
- */
-export function succeeded (response: Response) {
-  return response.status >= 200 && response.status <= 300;
-}
-
 const beoUri = process.env.REACT_APP_BEO_URI;
 export const beoRoute = {
   restAuth: (rest: string) => `${beoUri}/rest-auth/${rest}`,
   v1: (rest: string) => `${beoUri}/v1/${rest}`
 };
+
+/**
+ * Produces the querystring for a request, given an object representing the key-value pairs to
+ * include in the querystring.
+ *
+ * @param {QueryParams} qs: the object of key-value pairs that should be converted into a
+ *   querystring
+ */
+function makeQueryString (qs?: QueryParams): string {
+  if (!qs) return '';
+  
+  const queryString = Object.entries(omitFalsey(qs))
+    .map(([key, value]) => {
+      let paramKey = key;
+      let paramValue = value.toString();
+      
+      // Special cases for dynamic-rest
+      if (['include', 'exclude'].includes(key)) {
+        paramKey = `${key}[]`;
+        
+        if (Array.isArray(value)) {
+          return value
+            .map(v => [paramKey, encodeURIComponent(v)].join('='))
+            .join('&');
+        }
+      } else if (key === 'filter') {
+        // Each of the filters gets its own `filter` query parameter
+        return Object.entries(omitFalsey(value))
+          .map(([key, value]) =>
+            [
+              `filter{${key}}`,
+              encodeURIComponent(value.toString())
+            ].join('=')
+          ).join('&');
+      }
+      
+      return [paramKey, encodeURIComponent(paramValue)].join('=');
+    })
+    .join('&');
+  
+  return queryString.length === 0
+    ? ''
+    : `?${queryString}`;
+}
+
+/**
+ * Produces query parameters for pagination queries
+ *
+ * @param {PaginationQueryParams} queryParams: object with `page` and `pageSize`
+ */
+export function makePaginationQueryParams (queryParams?: Partial<PaginationQueryParams>) {
+  if (!queryParams) return {};
+  return {
+    page: queryParams.page,
+    page_size: queryParams.pageSize
+  };
+}

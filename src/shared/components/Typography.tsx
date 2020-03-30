@@ -16,7 +16,7 @@ type TextColor =
   | 'textSecondary'
   | 'error';
 
-export type TypographyProps = {
+export type TypographyProps = React.HTMLAttributes<HTMLSpanElement> & {
   className?: string;
   color?: TextColor;
   component?: React.ElementType;
@@ -52,7 +52,8 @@ export const Typography: React.FC<TypographyProps> = (props) => {
     emphasis = 'normal',
     style,
     useDiv = false,
-    variant = 'body1'
+    variant = 'body1',
+    ...rest
   } = props;
   const classes = useStyles({ emphasis });
   const spanClasses = classNames(className, classes.text);
@@ -71,7 +72,8 @@ export const Typography: React.FC<TypographyProps> = (props) => {
     color,
     component: 'span',
     style,
-    variant
+    variant,
+    ...rest
   };
   
   return (

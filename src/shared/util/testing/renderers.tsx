@@ -1,10 +1,12 @@
 import * as React from 'react';
+import { Provider } from 'react-redux';
 import { MemoryRouterProps } from 'react-router';
 import { MemoryRouter, Route, Switch } from 'react-router-dom';
 import { render } from '@testing-library/react';
 
-import { AppRoutes } from '../../../App';
 import { ThemeProvider } from '@nav/shared/components';
+import store from '@nav/shared/store';
+import { AppRoutes } from '../../../App';
 
 
 export const renderAppRoute = (startingPage?: string) => {
@@ -14,9 +16,11 @@ export const renderAppRoute = (startingPage?: string) => {
   }
   
   return render(
-    <MemoryRouter {...routerProps}>
-      <AppRoutes />
-    </MemoryRouter>
+    <Provider store={store}>
+      <MemoryRouter {...routerProps}>
+        <AppRoutes />
+      </MemoryRouter>
+    </Provider>
   );
 };
 
@@ -32,13 +36,15 @@ export const renderContextDependentComponent = (Element: React.ReactElement) => 
   document.body.appendChild(container);
   
   return render(
-    <MemoryRouter initialEntries={['testingPath']}>
-      <ThemeProvider>
-        <Switch>
-          <Route path="testingPath" render={() => Element} />
-        </Switch>
-      </ThemeProvider>
-    </MemoryRouter>,
+    <Provider store={store}>
+      <MemoryRouter initialEntries={['testingPath']}>
+        <ThemeProvider>
+          <Switch>
+            <Route path="testingPath" render={() => Element} />
+          </Switch>
+        </ThemeProvider>
+      </MemoryRouter>
+    </Provider>,
     { container }
   );
 };

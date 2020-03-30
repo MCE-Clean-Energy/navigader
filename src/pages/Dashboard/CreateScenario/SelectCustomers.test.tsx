@@ -1,6 +1,6 @@
 import * as React from 'react';
 import map from 'lodash/map';
-import { fireEvent, waitForElement } from '@testing-library/react'
+import { fireEvent } from '@testing-library/react'
 
 import { fixtures, renderContextDependentComponent } from '@nav/shared/util/testing';
 import SelectCustomers from './SelectCustomers';

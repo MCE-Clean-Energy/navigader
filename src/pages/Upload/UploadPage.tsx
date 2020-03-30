@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 
 import * as api from '@nav/shared/api';
-import { succeeded } from '@nav/shared/api/util';
 import {
   Alert, Button, Card, Checkbox, Flex, PageHeader, Progress, TextField, Typography
 } from '@nav/shared/components';
@@ -191,7 +190,7 @@ const UploadPage: React.FC = () => {
     try {
       setUploadStatus('uploading');
       const response = await api.postOriginFile(file, name);
-      setUploadStatus(succeeded(response) ? 'success' : 'failure');
+      setUploadStatus(response.ok ? 'success' : 'failure');
     } catch (e) {
       setUploadStatus('failure');
     }

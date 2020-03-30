@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
       flexDirection: 'column'
     },
     container: {
+      backgroundColor: '#F8F9FD',
       boxSizing: 'border-box',
       display: 'flex',
       height: '100vh',

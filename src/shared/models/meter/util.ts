@@ -1,79 +1,9 @@
 import every from 'lodash/every';
 import isArray from 'lodash/isArray';
-import {
-  ComputedValueTypes,
-  LoadType,
-  LoadTypeMap,
-  Meter,
-  MeterDataField,
-  MeterGroup,
-  RawMeterGroup,
-  RawMeter
-} from './types';
-import { parseNavigaderObject } from '../../util/parseNavigaderObject';
 
+import { parseNavigaderObject } from '@nav/shared/util';
+import { LoadType, LoadTypeMap, MeterDataField, MeterGroup, RawMeterGroup } from './types';
 
-/**
- * Basic parsing function for converting a RawMeter into a Meter
- *
- * @param {RawMeter} meter - The raw meter object obtained from the back-end.
- */
-export function parseMeter (meter: RawMeter): Meter {
-  return {
-    data: { ...meter.data, computedValues: {} },
-    id: meter.id,
-    metaData: {
-      meterGroupIds: meter.meter_groups,
-      saId: meter.metadata.sa_id,
-      ratePlan: meter.metadata.rate_plan_name,
-      type: meter.object_type
-    }
-  };
-}
-
-/**
- * Produces a computed value using meter data. If the value has been computed before, the value will
- * be reused. If it hasn't been computed yet, it is computed and returned.
- *
- * @param {Meter} meter - The meter to compute the value on
- * @param {key of ComputedValueTypes} computedValue - The computed value to get
- */
-export function getComputedValue <
-  K extends keyof ComputedValueTypes
-  >(meter: Meter, computedValue: K) {
-  const { computedValues } = meter.data;
-  
-  // If the value has been computed already, return it
-  if (computedValues.hasOwnProperty(computedValue)) {
-    return computedValues[computedValue];
-  }
-  
-  // Don't have it-- compute it
-  switch (computedValue) {
-    case 'maxKw': {
-      if (hasDataField(meter.data, 'default')) {
-        return setComputedValue(meter, 'maxKw', Math.max(...meter.data.default.kw));
-      }
-      return null;
-    }
-    default: return null;
-  }
-}
-
-/**
- * Sets and returns a computed value on a meter
- *
- * @param {Meter} meter - The meter to set the computed value on
- * @param {key of ComputedValueTypes} valueName - The name of the computed value being set
- * @param {ComputedValueTypes[valueName]} value - The value to set
- */
-function setComputedValue <
-  K extends keyof ComputedValueTypes
-  >(meter: Meter, valueName: K, value: ComputedValueTypes[K])
-{
-  meter.data.computedValues[valueName] = value;
-  return value;
-}
 
 /**
  * A type guard for checking that the meter has a particular data field or fields.
@@ -98,6 +28,7 @@ export function hasDataField <T extends LoadType>(
 export function parseMeterGroup (rawMeterGroup: RawMeterGroup): MeterGroup {
   const commonFields = {
     ...parseNavigaderObject(rawMeterGroup),
+    data: rawMeterGroup.data,
     meterIds: rawMeterGroup.meters,
     numMeters: rawMeterGroup.meter_count,
   };
