@@ -1,5 +1,4 @@
 import * as React from 'react';
-import pick from 'lodash/pick';
 import MuiPaper from '@material-ui/core/Paper';
 import MuiTable from '@material-ui/core/Table';
 import MuiTableBody from '@material-ui/core/TableBody';
@@ -9,18 +8,20 @@ import MuiTableHead from '@material-ui/core/TableHead';
 import MuiTableRow from '@material-ui/core/TableRow';
 
 import { Checkbox, Flex, Progress, Typography } from '@nav/shared/components';
+import { RootState, useTableSelector } from '@nav/shared/store';
 import { makeStylesHook } from '@nav/shared/styles';
-import { PaginationSet } from '@nav/shared/types';
+import { IdType, ObjectWithId, PaginationSet } from '@nav/shared/types';
 import { makeCancelableAsync } from '@nav/shared/util';
 import { TablePagination } from './Pagination';
 import { PaginationState, TableContext } from './util';
 
 
 /** ============================ Types ===================================== */
-type TableProps<T> = {
+type TableProps<T extends ObjectWithId> = {
   children: (data: T[], emptyRow: React.ReactElement | null) => React.ReactElement;
   containerClassName?: string;
   dataFn: (state: PaginationState) => Promise<PaginationSet<T>>;
+  dataSelector: (state: RootState) => T[];
   ifEmpty?: React.ReactNode;
   onSelect?: (selections: T[]) => void;
   raised?: boolean;
@@ -50,8 +51,8 @@ type TableCell = React.FC<TableCellProps>;
 type TableHead = React.FC<TableHeadProps>;
 type TableRow = React.FC<TableRowProps>;
 
-type DataState<T> = {
-  data: T[] | null;
+type DataState = {
+  dataIds: IdType[] | null;
   count: number | null;
 };
 
@@ -68,10 +69,11 @@ const useStyles = makeStylesHook(theme => ({
 
 /** ============================ Components ================================ */
 const TableRaiser: React.FC = (props) => <MuiPaper elevation={8} {...props} />;
-export function Table <T>(props: TableProps<T>) {
+export function Table <T extends ObjectWithId>(props: TableProps<T>) {
   const {
     children,
     dataFn,
+    dataSelector,
     containerClassName,
     ifEmpty,
     onSelect,
@@ -85,8 +87,8 @@ export function Table <T>(props: TableProps<T>) {
   // State
   const [loading, setLoading] = React.useState(true);
   const [selections, setSelections] = React.useState<Set<number>>(new Set());
-  const [dataState, setDataState] = React.useState<DataState<T>>({
-    data: null,
+  const [dataState, setDataState] = React.useState<DataState>({
+    dataIds: null,
     count: null
   });
   const [paginationState, setPaginationState] = React.useState<PaginationState>({
@@ -94,16 +96,21 @@ export function Table <T>(props: TableProps<T>) {
     rowsPerPage: 20
   });
   
-  const { data, count } = dataState;
-  
   // Load data
   React.useEffect(makeCancelableAsync(() => {
     setLoading(true);
     return dataFn(paginationState)
   }, (paginationSet) => {
     setLoading(false);
-    setDataState(pick(paginationSet, 'data', 'count'));
+    setDataState({
+      count: paginationSet.count,
+      dataIds: paginationSet.data.map(datum => datum.id)
+    });
   }), [dataFn, paginationState]);
+  
+  // Get the data from the store using the IDs
+  const { dataIds, count } = dataState;
+  const data = useTableSelector(dataSelector, dataIds);
   
   // If the data has loaded and there are none, render the `ifEmpty` row
   const emptyRow = count === 0 && ifEmpty
@@ -116,7 +123,7 @@ export function Table <T>(props: TableProps<T>) {
   
   // Build context for child component tree
   const tableContext = {
-    allSelected: data !== null && data.length === selections.size,
+    allSelected: data.length > 0 && data.length === selections.size,
     selectable: Boolean(onSelect),
     selections: selections,
     toggleAllSelections,

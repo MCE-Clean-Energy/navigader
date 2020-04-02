@@ -12,11 +12,13 @@ import { Icon, ValidIcon } from './Icon';
 type ListProps = React.HTMLAttributes<HTMLUListElement> & {
   dense?: boolean;
 };
-type ListItemProps = {
+
+type ListItemProps = React.PropsWithChildren<{
   className?: string;
   onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
   selected?: boolean;
-};
+}>;
+
 type ListItemIconProps = {
   children?: React.ReactElement;
   icon?: ValidIcon;
@@ -24,17 +26,17 @@ type ListItemIconProps = {
 
 type ListItemText = React.FC;
 type ListItemIcon = React.FC<ListItemIconProps>;
-type ListItem = React.FC<ListItemProps> & {
+type ListItem = React.ForwardRefExoticComponent<ListItemProps> & {
   Icon: ListItemIcon;
   Text: ListItemText;
 };
+
 type ListExport = React.ForwardRefExoticComponent<ListProps> & {
   Item: ListItem;
 };
 
 /** ============================ Components ================================ */
-const ListItem: ListItem = props => <MuiListItem button {...props}  />;
-const ListItemIcon: ListItemIcon = (props) => {
+const ListItemIcon: ListItemIcon = (props, ref) => {
   const { children, icon } = props;
   
   // Only one of the `icon` and `label` props should be provided
@@ -60,11 +62,19 @@ const ListItemIcon: ListItemIcon = (props) => {
 const ListItemText: ListItemText = ({ children}) =>
   <MuiListItemText primary={children} />;
 
-export const List: ListExport = Object.assign(React.forwardRef<
-  any,
-  ListProps
->((props, ref) => <MuiList ref={ref} {...props} />),
-  { Item: ListItem });
+const ListItem: ListItem = Object.assign(
+  React.forwardRef<HTMLDivElement, ListItemProps>(
+    (props, ref) => <MuiListItem button ref={ref} {...props}  />
+  ), {
+    Icon: ListItemIcon,
+    Text: ListItemText
+  }
+);
 
-ListItem.Icon = ListItemIcon;
-ListItem.Text = ListItemText;
+export const List: ListExport = Object.assign(
+  React.forwardRef<HTMLUListElement, ListProps>(
+    (props, ref) => <MuiList ref={ref} {...props} />
+  ), {
+    Item: ListItem
+  }
+);

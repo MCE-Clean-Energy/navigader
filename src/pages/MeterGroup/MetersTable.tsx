@@ -1,8 +1,10 @@
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 
 import * as api from '@nav/shared/api';
 import { Table, PaginationState } from '@nav/shared/components';
 import { Meter, MeterGroup } from '@nav/shared/models/meter';
+import { selectModels, setModels } from '@nav/shared/store/slices/models';
 import { makeStylesHook } from '@nav/shared/styles';
 import { PaginationSet } from '@nav/shared/types';
 
@@ -22,15 +24,21 @@ const useStyles = makeStylesHook(() => ({
 /** ============================ Components ================================ */
 const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  
   const getMeters = React.useCallback(
     async (state: PaginationState): Promise<PaginationSet<Meter>> => {
-      return await api.getMeters({
+      const response = await api.getMeters({
         meterGroupId,
         page: state.currentPage + 1,
         pageSize: state.rowsPerPage
       });
+      
+      // Add the models to the store and yield the pagination results
+      dispatch(setModels({ meters: response.data }));
+      return response;
     },
-    [meterGroupId]
+    [meterGroupId, dispatch]
   );
   
   // TODO: virtualize the table
@@ -38,6 +46,7 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
     <Table
       aria-label="meter table"
       dataFn={getMeters}
+      dataSelector={selectModels('meters')}
       containerClassName={classes.tableContainer}
       raised
       stickyHeader

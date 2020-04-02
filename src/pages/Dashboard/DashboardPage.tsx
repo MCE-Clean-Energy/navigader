@@ -1,15 +1,18 @@
 import * as React from 'react';
 import { Link, Route, Switch, useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 import * as api from '@nav/shared/api';
 import {
-  Button, Icon, List, Menu, PageHeader, PaginationState, Statistic, Table, Typography
+  Button, Divider, Icon, List, Menu, PageHeader, PaginationState, Statistic, Table, Typography
 } from '@nav/shared/components';
 import { Scenario } from '@nav/shared/models/scenario';
 import * as routes from '@nav/shared/routes';
+import { selectModels, setModels } from '@nav/shared/store/slices/models';
 import { dateFormatter } from '@nav/shared/util';
 import CreateScenario from './CreateScenario'
 import { makeStylesHook } from '@nav/shared/styles';
+import RenameDialog from './RenameDialog';
 
 
 /** ============================ Styles ==================================== */
@@ -22,18 +25,24 @@ const useStyles = makeStylesHook(theme => ({
 /** ============================ Components ================================ */
 const DashboardPage: React.FC = () => {
   const [selections, setSelections] = React.useState<Scenario[]>([]);
+  const [renameScenario, setRenameScenario] = React.useState<Scenario>();
   const history = useHistory();
   const classes = useStyles();
+  const dispatch = useDispatch();
   
   const getScenarios = React.useCallback(
     async (state: PaginationState) => {
-      return await api.getScenarios<'der' | 'meter_group'>({
+      const response = await api.getScenarios({
         include: ['ders', 'meter_groups'],
         page: state.currentPage + 1,
         pageSize: state.rowsPerPage
       });
+      
+      // Add the models to the store and yield the pagination results
+      dispatch(setModels({ scenarios: response.data }));
+      return response
     },
-    []
+    [dispatch]
   );
   
   return (
@@ -58,6 +67,7 @@ const DashboardPage: React.FC = () => {
       <Table
         aria-label="scenarios table"
         dataFn={getScenarios}
+        dataSelector={selectModels('scenarios')}
         ifEmpty={(
           <Typography>
             No scenarios have been created. <Link to={routes.dashboard.createScenario.selectDers}>Create one.</Link>
@@ -89,24 +99,30 @@ const DashboardPage: React.FC = () => {
               {scenarios.map(scenario =>
                 <Table.Row key={scenario.id}>
                   <Table.Cell useTh>{scenario.name}</Table.Cell>
-                  <Table.Cell>{dateFormatter(scenario.created)}</Table.Cell>
+                  <Table.Cell>{dateFormatter(scenario.created_at)}</Table.Cell>
                   <Table.Cell>
-                    {scenario.meter_group.name} ({scenario.meter_group.numMeters})
+                    {scenario.meter_group &&
+                      <span>{scenario.meter_group.name} ({scenario.meter_group.numMeters})</span>
+                    }
                   </Table.Cell>
                   <Table.Cell>
                     {getDerIcon(scenario)}
-                    <Statistic
-                      title="Configuration"
-                      value={scenario.der.der_configuration.name}
-                      variant="subtitle2"
-                    />
+                    {scenario.der &&
+                      <Statistic
+                        title="Configuration"
+                        value={scenario.der.der_configuration.name}
+                        variant="subtitle2"
+                      />
+                    }
                   </Table.Cell>
                   <Table.Cell>
-                    <Statistic
-                      title="Strategy"
-                      value={scenario.der.der_strategy.name}
-                      variant="subtitle2"
-                    />
+                    {scenario.der &&
+                      <Statistic
+                        title="Strategy"
+                        value={scenario.der.der_strategy.name}
+                        variant="subtitle2"
+                      />
+                    }
                   </Table.Cell>
                   <Table.Cell />
                   <Table.Cell />
@@ -114,17 +130,19 @@ const DashboardPage: React.FC = () => {
                   <Table.Cell>{getScenarioStatus(scenario)}</Table.Cell>
                   <Table.Cell>
                     <Menu icon="verticalDots">
-                      <List dense>
-                        <List.Item onClick={() => {}}>
-                          <List.Item.Icon icon="plus" />
-                          <List.Item.Text>View</List.Item.Text>
-                        </List.Item>
-                        
-                        <List.Item onClick={() => {}}>
-                          <List.Item.Icon icon="trash" />
-                          <List.Item.Text>Archive</List.Item.Text>
-                        </List.Item>
-                      </List>
+                      <List.Item onClick={() => {}}>
+                        <List.Item.Icon icon="plus" />
+                        <List.Item.Text>View</List.Item.Text>
+                      </List.Item>
+                      <List.Item onClick={() => openRenameScenarioDialog(scenario)}>
+                        <List.Item.Icon icon="pencil" />
+                        <List.Item.Text>Rename</List.Item.Text>
+                      </List.Item>
+                      <Divider />
+                      <List.Item onClick={() => {}}>
+                        <List.Item.Icon icon="trash" />
+                        <List.Item.Text>Archive</List.Item.Text>
+                      </List.Item>
                     </Menu>
                   </Table.Cell>
                 </Table.Row>
@@ -133,6 +151,13 @@ const DashboardPage: React.FC = () => {
           </>
         }
       </Table>
+      
+      {renameScenario &&
+        <RenameDialog
+          onClose={() => setRenameScenario(undefined)}
+          scenario={renameScenario}
+        />
+      }
     </>
   );
   
@@ -143,6 +168,10 @@ const DashboardPage: React.FC = () => {
   
   function compareScenarios () {
     alert('Comparison feature has not been implemented yet');
+  }
+  
+  function openRenameScenarioDialog (scenario: Scenario) {
+    setRenameScenario(scenario);
   }
 };
 

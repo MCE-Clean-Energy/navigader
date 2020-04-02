@@ -14,7 +14,7 @@ type TextFieldProps = PaperProps & {
   id: string;
   label?: string;
   name?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void,
+  onChange?: (value: string, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void,
   outlined?: boolean;
   tabIndex?: number;
   type?: string;
@@ -23,9 +23,10 @@ type TextFieldProps = PaperProps & {
 
 /** ============================ Components ================================ */
 export const TextField: React.FC<TextFieldProps> = (props) => {
-  const { className, elevation = 0, outlined, ...rest } = props;
+  const { className, elevation = 0, onChange, outlined, ...rest } = props;
   const textFieldProps: MuiTextFieldProps = {
     ...rest,
+    onChange: e => onChange && onChange(e.target.value, e),
     variant: outlined ? 'outlined' : 'standard'
   };
   

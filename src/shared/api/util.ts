@@ -7,7 +7,7 @@ import { getCookie, omitFalsey } from '@nav/shared/util';
  * Needless to say, this is not a complete set of HTTP method types. It is the set of the ones used
  * in the NavigaDER application.
  */
-type HttpMethodType = 'GET' | 'POST';
+type HttpMethodType = 'GET' | 'PATCH' | 'POST';
 type Stringable = {
   toString(): string;
 }
@@ -65,6 +65,10 @@ export function getRequest (route: string, queryParams?: QueryParams) {
 
 export function postRequest (route: string, body: object) {
   return makeJsonRequest('POST', route, JSON.stringify(body));
+}
+
+export function patchRequest (route: string, body: object) {
+  return makeJsonRequest('PATCH', route, JSON.stringify(body));
 }
 
 /** ============================ Helpers =============================== */

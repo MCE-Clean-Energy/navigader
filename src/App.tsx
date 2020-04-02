@@ -90,11 +90,11 @@ const App: React.FC = () => {
   // Load DER configurations
   React.useEffect(() => {
     if (!userIsAuthenticated()) return;
+    // TODO: this is only loading the first page of configurations. We should load all of them
     getDerConfigurations({ include: 'data', pageSize: 100 })
       .then((derConfigurations) => {
         dispatch(
-          // TODO: this is only loading the first page of configurations. We should load all of them
-          slices.models.setDerConfigurations(derConfigurations.data)
+          slices.models.setModels({ derConfigurations: derConfigurations.data })
         );
       });
   });
@@ -102,11 +102,11 @@ const App: React.FC = () => {
   // Load DER strategies
   React.useEffect(() => {
     if (!userIsAuthenticated()) return;
+    // TODO: this is only loading the first page of strategies. We should load all of them
     getDerStrategies({ include: 'data', pageSize: 100 })
       .then((derStrategies) => {
         dispatch(
-          // TODO: this is only loading the first page of strategies. We should load all of them
-          slices.models.setDerStrategies(derStrategies.data)
+          slices.models.setModels({ derStrategies: derStrategies.data })
         );
       });
   });

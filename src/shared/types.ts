@@ -23,13 +23,6 @@ export type DynamicRestParams = {
 
 /** ============================ Common Schema ============================= */
 export type NavigaderObject<Type extends string> = {
-  created: string;
-  id: string;
-  name: string;
-  objectType: Type;
-};
-
-export type RawNavigaderObject<Type extends string> = {
   created_at: string;
   id: string;
   name: string;
@@ -75,3 +68,7 @@ type KeyIntersection<TypeA, TypeB extends string> = Exclude<
   // As well as those that appear in TypeB but not TypeA
   Exclude<TypeB, keyof TypeA>
 >;
+
+// Used in places where a generic `id` field is expected
+export type IdType = string | number;
+export type ObjectWithId = { id: IdType };

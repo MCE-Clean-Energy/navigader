@@ -32,8 +32,8 @@ const CreateScenarioPage: React.FC = () => {
   const history = useHistory();
   const location = useLocation();
   const classes = useStyles();
-  const derConfigurations = useSelector(slices.models.selectDerConfigurations);
-  const derStrategies = useSelector(slices.models.selectDerStrategies);
+  const derConfigurations = useSelector(slices.models.selectModels('derConfigurations'));
+  const derStrategies = useSelector(slices.models.selectModels('derStrategies'));
   
   // All state for the page is handled here
   const [meterGroups, setMeterGroups] = React.useState<MeterGroup[] | null>(null);

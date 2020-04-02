@@ -1,10 +1,8 @@
 import * as React from 'react';
 import MuiMenu from '@material-ui/core/Menu';
-import MuiMenuItem from '@material-ui/core/MenuItem';
 
-import { Button, PopoverOrigin, ValidIcon } from '@nav/shared/components';
+import { Button, List, PopoverOrigin, ValidIcon } from '@nav/shared/components';
 import { printWarning, randomString } from '@nav/shared/util';
-import { AriaAttributes } from 'react';
 
 
 /** ============================ Types ===================================== */
@@ -15,13 +13,8 @@ type MenuProps = {
   transformOrigin?: PopoverOrigin;
 };
 
-type MenuItemProps = {
-  className?: string;
-};
-
-type MenuItem = React.FC<MenuItemProps>;
 type MenuExport = React.FC<MenuProps> & {
-  Item: MenuItem;
+  Item: typeof List.Item;
 };
 
 /** ============================ Components ================================ */
@@ -46,7 +39,7 @@ export const Menu: MenuExport = (props) => {
   
   const menuOpenerProps = {
     'aria-controls': menuId,
-    'aria-haspopup': 'true' as AriaAttributes['aria-haspopup'],
+    'aria-haspopup': 'true' as React.AriaAttributes['aria-haspopup'],
     onClick: handleClick
   };
   
@@ -79,5 +72,4 @@ export const Menu: MenuExport = (props) => {
   }
 };
 
-const MenuItem: MenuItem = props => <MuiMenuItem {...props}  />;
-Menu.Item = MenuItem;
+Menu.Item = List.Item;

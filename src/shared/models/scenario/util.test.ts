@@ -29,9 +29,8 @@ describe('Scenario model utilities', () => {
         der_simulation_count: 1,
         der_simulations: ['abc'],
         expected_der_simulation_count: 1,
-        metadata: null,
+        metadata: undefined,
         meter_count: 1,
-        meter_group: null,
         meters: ['def'],
         progress: {
           is_complete: true,
@@ -39,7 +38,7 @@ describe('Scenario model utilities', () => {
         },
         
         // TODO: test `parseReport` method
-        report: null
+        report: undefined
       })
     });
   })

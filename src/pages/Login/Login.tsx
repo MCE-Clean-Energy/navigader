@@ -66,7 +66,7 @@ const LoginCard: React.FC = () => {
             id="email"
             label="E-mail address"
             name="email"
-            onChange={e => setEmail(e.target.value)}
+            onChange={setEmail}
             outlined
           />
           
@@ -80,7 +80,7 @@ const LoginCard: React.FC = () => {
             id="outlined-secondary"
             label="Password"
             name="password"
-            onChange={e => setPassword(e.target.value)}
+            onChange={setPassword}
             outlined
             type="password"
           />

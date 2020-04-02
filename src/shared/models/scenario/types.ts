@@ -1,7 +1,7 @@
 import { BatteryConfiguration, BatteryStrategy } from '@nav/shared/models/der';
 import { MeterGroup } from '@nav/shared/models/meter';
 import {
-  DeferrableFields, NavigaderObject, PandasFrame, RawNavigaderObject, RawPandasFrame
+  DeferrableFields, NavigaderObject, PandasFrame, RawPandasFrame
 } from '@nav/shared/types';
 
 
@@ -41,7 +41,7 @@ type ScenarioMetadata = {
 
 export type RawScenario<T extends DeferrableScenarioFields = never> =
   DeferrableFields<
-    RawNavigaderObject<'SingleScenarioStudy'> &
+    NavigaderObject<'SingleScenarioStudy'> &
     ScenarioCommon &
     {
       ders: [DerInfo];

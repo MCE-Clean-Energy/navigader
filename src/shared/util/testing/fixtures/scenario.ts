@@ -58,8 +58,8 @@ const defaultRawScenario: RawScenario = {
 const defaultScenario: Scenario = {
   id: '9071c48a-d5d3-48d0-83da-c06863e8682a',
   name: 'Default Scenario',
-  created: '2020-03-26T00:13:25.451606',
-  objectType: 'SingleScenarioStudy',
+  created_at: '2020-03-26T00:13:25.451606',
+  object_type: 'SingleScenarioStudy',
   der: {
     der_configuration: {
       id: '5a263b58-3dda-4b2d-95d4-eae17fd5d6bc',

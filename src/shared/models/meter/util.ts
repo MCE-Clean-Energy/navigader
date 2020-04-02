@@ -1,7 +1,7 @@
 import every from 'lodash/every';
 import isArray from 'lodash/isArray';
+import pick from 'lodash/pick';
 
-import { parseNavigaderObject } from '@nav/shared/util';
 import { LoadType, LoadTypeMap, MeterDataField, MeterGroup, RawMeterGroup } from './types';
 
 
@@ -27,7 +27,7 @@ export function hasDataField <T extends LoadType>(
  */
 export function parseMeterGroup (rawMeterGroup: RawMeterGroup): MeterGroup {
   const commonFields = {
-    ...parseNavigaderObject(rawMeterGroup),
+    ...pick(rawMeterGroup, 'created_at', 'id', 'name'),
     data: rawMeterGroup.data,
     meterIds: rawMeterGroup.meters,
     numMeters: rawMeterGroup.meter_count,
@@ -37,14 +37,14 @@ export function parseMeterGroup (rawMeterGroup: RawMeterGroup): MeterGroup {
     case 'OriginFile':
       return {
         ...commonFields,
-        objectType: 'OriginFile',
+        object_type: 'OriginFile',
         fileName: rawMeterGroup.metadata.filename.replace(/origin_files\//, ''),
         numMetersExpected: rawMeterGroup.metadata.expected_meter_count
       };
     case 'CustomerCluster':
       return {
         ...commonFields,
-        objectType: 'CustomerCluster'
+        object_type: 'CustomerCluster'
       };
   }
 }
@@ -55,7 +55,7 @@ export function parseMeterGroup (rawMeterGroup: RawMeterGroup): MeterGroup {
  * @param {MeterGroup} meterGroup: the meter group object to display
  */
 export function getMeterGroupDisplayName (meterGroup: MeterGroup): string {
-  switch (meterGroup.objectType) {
+  switch (meterGroup.object_type) {
     case 'OriginFile':
       return meterGroup.name || meterGroup.fileName;
     case 'CustomerCluster':

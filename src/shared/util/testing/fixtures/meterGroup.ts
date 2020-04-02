@@ -7,7 +7,7 @@ import {
 /** ============================ Fixture creators ========================== */
 export function makeRawCustomerCluster (customerClusterProps?: Partial<CustomerClusterMeterGroup>): RawCustomerClusterMeterGroup {
   // Temporarily dress up the customer cluster as an origin file
-  const originFile = meterGroupToRawMeterGroup({ ...customerClusterProps, objectType: 'OriginFile' });
+  const originFile = meterGroupToRawMeterGroup({ ...customerClusterProps, object_type: 'OriginFile' });
   
   // Convert back to a customer cluster
   return {
@@ -34,11 +34,11 @@ function getObjProperty <T extends object>(obj: T, prop: keyof T, ifNotPresent: 
 
 function meterGroupToRawMeterGroup (meterGroupProps: Partial<OriginFileMeterGroup> = {}): RawOriginFileMeterGroup {
   return {
-    created_at      : getObjProperty(meterGroupProps, 'created', defaultOriginFile.created_at),
+    created_at      : getObjProperty(meterGroupProps, 'created_at', defaultOriginFile.created_at),
     data            : getObjProperty(meterGroupProps, 'data', defaultOriginFile.data),
     id              : getObjProperty(meterGroupProps, 'id', defaultOriginFile.id),
     meter_count     : getObjProperty(meterGroupProps, 'numMeters', defaultOriginFile.meter_count),
-    object_type     : getObjProperty(meterGroupProps, 'objectType', defaultOriginFile.object_type),
+    object_type     : getObjProperty(meterGroupProps, 'object_type', defaultOriginFile.object_type),
     meters          : getObjProperty(meterGroupProps, 'meterIds', defaultOriginFile.meters),
     name            : getObjProperty(meterGroupProps, 'name', defaultOriginFile.name),
     metadata: {
@@ -51,10 +51,10 @@ function meterGroupToRawMeterGroup (meterGroupProps: Partial<OriginFileMeterGrou
 
 function rawMeterGroupToMeterGroup (rawMeterGroupProps: Partial<RawOriginFileMeterGroup> = {}): OriginFileMeterGroup {
   return {
-    created          : getObjProperty(rawMeterGroupProps, 'created_at', defaultOriginFile.created_at),
+    created_at       : getObjProperty(rawMeterGroupProps, 'created_at', defaultOriginFile.created_at),
     data             : getObjProperty(rawMeterGroupProps, 'data', defaultOriginFile.data),
     fileName         : getObjProperty(rawMeterGroupProps.metadata || defaultOriginFile.metadata, 'filename', defaultOriginFile.metadata.filename),
-    objectType       : getObjProperty(rawMeterGroupProps, 'object_type', defaultOriginFile.object_type),
+    object_type      : getObjProperty(rawMeterGroupProps, 'object_type', defaultOriginFile.object_type),
     id               : getObjProperty(rawMeterGroupProps, 'id', defaultOriginFile.id),
     meterIds         : getObjProperty(rawMeterGroupProps, 'meters', defaultOriginFile.meters),
     name             : getObjProperty(rawMeterGroupProps, 'name', defaultOriginFile.name),

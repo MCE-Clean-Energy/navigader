@@ -40,7 +40,7 @@ export const MeterGroupCard: React.FC<MeterGroupCardProps> = ({ meterGroup}) => 
         </Grid.Item>
         <Grid.Item span={1} />
         <Grid.Item>
-          <Statistic title="Uploaded" value={dateFormatter(meterGroup.created)} />
+          <Statistic title="Uploaded" value={dateFormatter(meterGroup.created_at)} />
         </Grid.Item>
       </Grid>
     </Card>

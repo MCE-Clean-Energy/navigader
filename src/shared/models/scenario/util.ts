@@ -1,10 +1,10 @@
 import omit from 'lodash/omit';
+import pick from 'lodash/pick';
 
-import { parseNavigaderObject, parsePandasFrame } from '@nav/shared/util';
+import { parsePandasFrame } from '@nav/shared/util';
 import {
   RawScenarioReport, ScenarioReport, RawScenario, Scenario, DeferrableScenarioFields
 } from './types';
-
 
 /**
  * Basic parsing function for converting a RawScenario into a Scenario
@@ -20,7 +20,7 @@ export function parseScenario <T extends DeferrableScenarioFields>(
 
   // @ts-ignore: for some reason TS says this is unassignable to a Scenario...
   return {
-    ...parseNavigaderObject(scenario),
+    ...pick(scenario, 'created_at', 'id', 'name', 'object_type'),
     der: scenario.ders ? scenario.ders[0] : undefined,
     der_simulation_count: scenario.der_simulation_count,
     der_simulations: scenario.der_simulations,

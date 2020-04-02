@@ -4,7 +4,6 @@ export * from './getMonthName';
 export * from './isProduction';
 export * from './makeCancelableAsync';
 export * from './omitFalsey';
-export * from './parseNavigaderObject';
 export * from './parsePandasFrame';
 export * from './printWarning';
 export * from './randomString';

@@ -157,8 +157,7 @@ const Review: React.FC<ReviewProps> = (props) => {
   );
   
   /** ============================ Callbacks =============================== */
-  function handleNameChange (event: React.ChangeEvent<HTMLInputElement>) {
-    const newName = event.target.value;
+  function handleNameChange (newName: string) {
     props.updateScenarioName(newName === '' ? null : newName);
   }
 };

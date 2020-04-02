@@ -1,4 +1,4 @@
-import { MonthIndex, NavigaderObject, RawNavigaderObject } from '@nav/shared/types';
+import { MonthIndex, NavigaderObject } from '@nav/shared/types';
 
 /** ============================ Meter Types =============================== */
 export type Frame288LoadType = 'total' | 'average' | 'maximum' | 'minimum' | 'count';
@@ -38,7 +38,7 @@ type RawMeterGroupCommon = {
   meters: string[];
 };
 
-export type RawOriginFileMeterGroup = RawNavigaderObject<'OriginFile'> & RawMeterGroupCommon & {
+export type RawOriginFileMeterGroup = NavigaderObject<'OriginFile'> & RawMeterGroupCommon & {
   metadata: {
     expected_meter_count: number | null;
     filename: string;
@@ -47,7 +47,7 @@ export type RawOriginFileMeterGroup = RawNavigaderObject<'OriginFile'> & RawMete
 };
 
 export type RawCustomerClusterMeterGroup =
-  RawNavigaderObject<'CustomerCluster'> &
+  NavigaderObject<'CustomerCluster'> &
   RawMeterGroupCommon &
   { metadata: {}; };
 

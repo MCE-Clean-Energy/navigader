@@ -118,8 +118,8 @@ const FileCard: React.FC<FileCardProps> = ({ file, startUpload, status }) => {
   );
   
   /** ============================ Callbacks =============================== */
-  function handleNameChange (event: React.ChangeEvent<HTMLInputElement>) {
-    setFileName(event.target.value);
+  function handleNameChange (newName: string) {
+    setFileName(newName);
   }
   
   function handleUploadClick () {

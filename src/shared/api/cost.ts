@@ -1,14 +1,13 @@
 import find from 'lodash/find';
 
 import { parseMeterGroup, RawMeterGroup } from '@nav/shared/models/meter';
-import {
-  parseScenario, RawScenario, Scenario, DeferrableScenarioFields
-} from '@nav/shared/models/scenario';
+import { parseScenario, RawScenario, Scenario } from '@nav/shared/models/scenario';
 import {
   DynamicRestParams, PaginationQueryParams, PaginationSet, RawPaginationSet
 } from '@nav/shared/types';
 import {
-  appendId, beoRoute, getRequest, makePaginationQueryParams, parsePaginationSet, postRequest
+  appendId, beoRoute, getRequest, makePaginationQueryParams, parsePaginationSet, patchRequest,
+  postRequest
 } from './util';
 
 
@@ -19,12 +18,12 @@ type DerSelection = {
 };
 
 type ScenarioQueryParams = Partial<PaginationQueryParams & DynamicRestParams & {
-  type: Scenario['objectType'];
+  type: Scenario['object_type'];
 }>;
 
-type ScenariosResponse<T extends DeferrableScenarioFields> = {
+type ScenariosResponse = {
   meter_groups?: RawMeterGroup[];
-  studies: RawScenario<T>[];
+  studies: RawScenario[];
 };
 
 /** ============================ API Methods =============================== */
@@ -52,12 +51,12 @@ export async function postStudy (
  *
  * @param {ScenarioQueryParams} queryParams: parameters for filtering the result set
  */
-export async function getScenarios<IncludedFields extends DeferrableScenarioFields>(
+export async function getScenarios(
   queryParams?: ScenarioQueryParams
-): Promise<PaginationSet<Scenario<IncludedFields>>> {
-  const response: RawPaginationSet<ScenariosResponse<IncludedFields>> =
+): Promise<PaginationSet<Scenario>> {
+  const response: RawPaginationSet<ScenariosResponse> =
     await getRequest(
-      routes.getScenarios(),
+      routes.scenarios(),
       makeQueryParams({
         ...queryParams,
         type: 'SingleScenarioStudy'
@@ -70,7 +69,7 @@ export async function getScenarios<IncludedFields extends DeferrableScenarioFiel
     ({ meter_groups, studies: scenarios }) =>
       scenarios.map((scenario) => {
         // Mix in the meter group
-        let meterGroup = null;
+        let meterGroup;
         if (scenario.meter_groups && scenario.meter_groups.length > 0) {
           const scenarioMeterGroup = find(meter_groups, { id: scenario.meter_groups[0] });
           if (scenarioMeterGroup) {
@@ -86,10 +85,17 @@ export async function getScenarios<IncludedFields extends DeferrableScenarioFiel
   );
 }
 
+export async function patchScenario (scenarioId: string, updates: Partial<Scenario>) {
+  return await patchRequest(
+    routes.scenarios(scenarioId),
+    updates
+  );
+}
+
 /** ============================ Helpers =================================== */
 const baseRoute = (rest: string) => beoRoute.v1(`cost/${rest}`);
 const routes = {
-  getScenarios: appendId(baseRoute('study')),
+  scenarios: appendId(baseRoute('study')),
   postStudy: baseRoute('multiple_scenario_study/')
 };
 
