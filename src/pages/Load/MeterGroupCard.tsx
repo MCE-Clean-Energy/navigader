@@ -5,7 +5,7 @@ import { Card, Grid, Frame288Graph, Statistic, Typography } from '@nav/shared/co
 import { getMeterGroupDisplayName, hasDataField, MeterGroup } from '@nav/shared/models/meter';
 import * as routes from '@nav/shared/routes';
 import { makeStylesHook } from '@nav/shared/styles';
-import { dateFormatter } from '@nav/shared/util';
+import { formatters } from '@nav/shared/util';
 
 
 /** ============================ Types ===================================== */
@@ -40,7 +40,7 @@ export const MeterGroupCard: React.FC<MeterGroupCardProps> = ({ meterGroup}) => 
         </Grid.Item>
         <Grid.Item span={1} />
         <Grid.Item>
-          <Statistic title="Uploaded" value={dateFormatter(meterGroup.created_at)} />
+          <Statistic title="Uploaded" value={formatters.standardDate(meterGroup.created_at)} />
         </Grid.Item>
       </Grid>
     </Card>

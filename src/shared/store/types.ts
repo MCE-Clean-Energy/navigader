@@ -1,4 +1,4 @@
-import { BatteryConfiguration, BatteryStrategy } from '@nav/shared/models/der';
+import { BatteryConfiguration, BatteryStrategy, BatterySimulation } from '@nav/shared/models/der';
 import { Meter } from '@nav/shared/models/meter';
 import { Scenario } from '@nav/shared/models/scenario';
 
@@ -6,6 +6,7 @@ import { Scenario } from '@nav/shared/models/scenario';
 /** ============================ Slices ==================================== */
 export type ModelsSlice = {
   derConfigurations: BatteryConfiguration[];
+  derSimulations: BatterySimulation[];
   derStrategies: BatteryStrategy[];
   meters: Meter[];
   scenarios: Scenario[];

@@ -1,18 +1,16 @@
 import {
-  appendId, beoRoute, getRequest, parsePaginationSet, makeFormPost, makePaginationQueryParams
-} from '@nav/shared/api/util';
-import {
   LoadType, MeterGroup, parseMeterGroup, Meter, RawMeterGroup
 } from '@nav/shared/models/meter';
-import { PaginationQueryParams, PaginationSet, RawPaginationSet } from '@nav/shared/types';
+import {
+  appendId, beoRoute, getRequest, makeFormPost, parsePaginationSet, PaginationQueryParams,
+  PaginationSet, RawPaginationSet, equals_
+} from './util';
 
 
 /** ============================ Types ===================================== */
 type MeterQueryParams = Partial<PaginationQueryParams & {
-  end: Date;
+  data_types: LoadType | LoadType[];
   meterGroupId: MeterGroup['id'];
-  start: Date;
-  types: LoadType | LoadType[];
 }>;
 
 type MeterGroupQueryParams = Omit<MeterQueryParams, 'meterGroupId'>;
@@ -24,7 +22,7 @@ export async function getMeterGroups (
   const response: RawPaginationSet<{ meter_groups: RawMeterGroup[] }> =
     await getRequest(
       routes.meterGroup(),
-      makeQueryParams(queryParams)
+      queryParams
     ).then(res => res.json());
   
   return parsePaginationSet(
@@ -40,7 +38,7 @@ export async function getMeterGroup (
   const response: Record<'meter_group', RawMeterGroup> =
     await getRequest(
       routes.meterGroup(uuid),
-      makeQueryParams(queryParams)
+      queryParams
     ).then(res => res.json());
   
   // Parse the meter group results
@@ -63,7 +61,12 @@ export async function getMeters (
   const response: RawPaginationSet<{ meters: Meter[] }> =
     await getRequest(
       routes.meter(),
-      makeQueryParams(queryParams)
+      {
+        ...queryParams,
+        filter: {
+          meter_groups: equals_(queryParams?.meterGroupId)
+        }
+      }
     ).then(res => res.json());
   
   // Parse the meter results
@@ -77,14 +80,3 @@ const routes = {
   meterGroup: appendId(baseRoute('meter_group')),
   originFile: baseRoute('origin_file/')
 };
-
-function makeQueryParams (queryParams?: MeterQueryParams) {
-  if (!queryParams) return;
-  return {
-    ...makePaginationQueryParams(queryParams),
-    data_types: queryParams.types,
-    end_limit: queryParams.end,
-    filter: { meter_groups: queryParams.meterGroupId },
-    start: queryParams.start
-  };
-}

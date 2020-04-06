@@ -1,7 +1,7 @@
 import * as React from 'react';
 import MuiTablePagination from '@material-ui/core/TablePagination';
 
-import { RowsPerPageOption } from '@nav/shared/types';
+import { RowsPerPageOption } from '@nav/shared/api/util';
 import { PaginationState } from './util';
 
 

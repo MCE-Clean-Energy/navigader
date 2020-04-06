@@ -1,1 +1,1 @@
-export { default } from './MeterGroup';
+export * from './MeterGroup';

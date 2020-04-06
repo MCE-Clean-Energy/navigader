@@ -1,6 +1,7 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
+import 'url-search-params-polyfill';
 
 import App from './App';
 import store from './shared/store';

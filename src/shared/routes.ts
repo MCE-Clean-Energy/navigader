@@ -13,7 +13,13 @@ export const dashboard = {
   }
 };
 
+/** ============================ Scenario Routes =========================== */
+export const scenario = (id: string) => `/scenario/${id}`;
+scenario.compare = '/scenario/compare/';
+
+/** ============================ Other Routes ============================== */
 export const login = '/login';
 export const load = '/load';
 export const meterGroup = (id: string) => `/load/group/${id}`;
 export const upload = '/upload';
+

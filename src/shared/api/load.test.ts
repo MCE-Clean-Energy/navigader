@@ -8,7 +8,7 @@ describe('`getMeters` method', () => {
   afterEach(() => mockFn.mockRestore());
   
   it('Constructs the URI correctly', () => {
-    getMeters({ meterGroupId: '1', types: ['default'] });
+    getMeters({ meterGroupId: '1', data_types: ['default'] });
     expect(mockFn).toHaveBeenCalledTimes(1);
     
     const callArgs = mockFn.mock.calls[0];

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import isEmpty from 'lodash/isEmpty';
 import MuiPaper from '@material-ui/core/Paper';
 import MuiTable from '@material-ui/core/Table';
 import MuiTableBody from '@material-ui/core/TableBody';
@@ -7,18 +8,23 @@ import MuiTableContainer from '@material-ui/core/TableContainer';
 import MuiTableHead from '@material-ui/core/TableHead';
 import MuiTableRow from '@material-ui/core/TableRow';
 
+import { PaginationSet } from '@nav/shared/api/util';
 import { Checkbox, Flex, Progress, Typography } from '@nav/shared/components';
-import { RootState, useTableSelector } from '@nav/shared/store';
+import { RootState } from '@nav/shared/store';
 import { makeStylesHook } from '@nav/shared/styles';
-import { IdType, ObjectWithId, PaginationSet } from '@nav/shared/types';
-import { makeCancelableAsync } from '@nav/shared/util';
+import { IdType, ObjectWithId} from '@nav/shared/types';
+import { hooks, makeCancelableAsync } from '@nav/shared/util';
 import { TablePagination } from './Pagination';
 import { PaginationState, TableContext } from './util';
 
 
 /** ============================ Types ===================================== */
+type EmptyRowProps = React.PropsWithChildren<{
+  colSpan: number;
+}>;
+
 type TableProps<T extends ObjectWithId> = {
-  children: (data: T[], emptyRow: React.ReactElement | null) => React.ReactElement;
+  children: (data: T[], emptyRow: React.FC<EmptyRowProps>) => React.ReactElement;
   containerClassName?: string;
   dataFn: (state: PaginationState) => Promise<PaginationSet<T>>;
   dataSelector: (state: RootState) => T[];
@@ -31,6 +37,7 @@ type TableProps<T extends ObjectWithId> = {
 
 type TableCellProps = {
   align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
+  colSpan?: number;
   // For accessibility, a table's first column is set to be a <th> element, with a scope of "row".
   // This enables screen readers to identify a cell's value by its row and column name.
   useTh?: boolean;
@@ -75,9 +82,8 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     dataFn,
     dataSelector,
     containerClassName,
-    ifEmpty,
     onSelect,
-    raised,
+    raised = false,
     title,
     ...rest
   } = props;
@@ -110,21 +116,13 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
   
   // Get the data from the store using the IDs
   const { dataIds, count } = dataState;
-  const data = useTableSelector(dataSelector, dataIds);
-  
-  // If the data has loaded and there are none, render the `ifEmpty` row
-  const emptyRow = count === 0 && ifEmpty
-    ? (
-      <Table.Row>
-        <Table.Cell>{ifEmpty}</Table.Cell>
-      </Table.Row>
-    )
-    : null;
+  const data = hooks.useTableSelector(dataSelector, dataIds);
   
   // Build context for child component tree
+  const loadedData = !loading && !isEmpty(data);
   const tableContext = {
     allSelected: data.length > 0 && data.length === selections.size,
-    selectable: Boolean(onSelect),
+    selectable: Boolean(onSelect) && loadedData,
     selections: selections,
     toggleAllSelections,
     toggleRowSelection
@@ -145,7 +143,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
       <MuiTableContainer className={containerClassName} component={raised ? TableRaiser : MuiPaper}>
         <MuiTable {...rest}>
           <TableContext.Provider value={tableContext}>
-            {children(data || [], emptyRow)}
+            {children(data || [], EmptyRow)}
           </TableContext.Provider>
         </MuiTable>
       </MuiTableContainer>
@@ -154,6 +152,15 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
   );
   
   /** ============================ Callbacks =============================== */
+  function EmptyRow (props: EmptyRowProps) {
+    if (count !== 0) return null;
+    return (
+      <Table.Row>
+        <Table.Cell {...props} />
+      </Table.Row>
+    );
+  }
+  
   function updatePaginationState (newState: PaginationState) {
     setPaginationState(newState);
     updateSelections(new Set());
@@ -267,7 +274,7 @@ const TableRow: TableRow = (props) => {
   );
 };
 
-const TableCell: TableCell = ({ useTh, ...rest }) => {
+const TableCell: TableCell = ({ useTh = false, ...rest }) => {
   const tableProps = { ...rest };
   
   if (useTh) {
@@ -278,14 +285,6 @@ const TableCell: TableCell = ({ useTh, ...rest }) => {
   }
   
   return <MuiTableCell {...tableProps} />;
-};
-
-Table.defaultProps = {
-  raised: false
-};
-
-TableCell.defaultProps = {
-  useTh: false
 };
 
 /** ============================ Exports =================================== */

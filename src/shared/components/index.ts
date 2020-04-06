@@ -19,6 +19,7 @@ export * from './graphs';
 export * from './Grid';
 export * from './HoverText';
 export * from './Icon';
+export * from './Link';
 export * from './List';
 export * from './Menu';
 export * from './Padding';

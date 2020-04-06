@@ -1,5 +1,7 @@
-import { Frame288 } from '@nav/shared/models/meter';
-import { DeferrableFields2, NavigaderObject } from '@nav/shared/types';
+import { DeferrableFields } from '@nav/shared/api/util';
+import { Frame288, MeterDataField } from '@nav/shared/models/meter';
+import { ScenarioReportFields } from '@nav/shared/models/scenario';
+import { NavigaderObject } from '@nav/shared/types';
 
 
 export type DerType = 'Battery' | 'Solar Panel';
@@ -13,12 +15,15 @@ type DerConfigurationDeferrableFields = {
   };
 };
 
-export type BatteryConfiguration<K extends keyof DerConfigurationDeferrableFields = never> =
-  DeferrableFields2<
-    NavigaderObject<'BatteryConfiguration'> & { der_type: 'Battery'; },
-    DerConfigurationDeferrableFields,
-    K
-  >;
+type DerCommonFields = {
+  der_type: 'Battery';
+  name: string;
+}
+
+export type BatteryConfiguration = DeferrableFields<
+  NavigaderObject<'BatteryConfiguration'> & DerCommonFields,
+  DerConfigurationDeferrableFields
+>;
 
 type Frame288BatteryStrategy = Frame288<number | 'inf' | '-inf'>;
 type DerStrategyDeferredFields = {
@@ -28,9 +33,21 @@ type DerStrategyDeferredFields = {
   };
 };
 
-export type BatteryStrategy<K extends keyof DerStrategyDeferredFields = never> =
-  DeferrableFields2<
-    NavigaderObject<'BatteryStrategy'> & { der_type: 'Battery'; },
-    DerStrategyDeferredFields,
-    K
-  >;
+export type BatteryStrategy = DeferrableFields<
+  NavigaderObject<'BatteryStrategy'> & DerCommonFields,
+  DerStrategyDeferredFields
+>;
+
+/** ============================ DER Simulations =========================== */
+export type BatterySimulation = NavigaderObject<'StoredBatterySimulation'> & {
+  data: MeterDataField;
+  der_columns: string[];
+  der_configuration: string;
+  der_strategy: string;
+  end_limit: string;
+  meter: string;
+  start: string;
+  
+  // This isn't included in the server response, must be loaded separately with the scenario
+  report?: ScenarioReportFields
+};

@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import * as api from '@nav/shared/api';
-import { Button, Fade, Grid, Progress, Typography } from '@nav/shared/components';
+import { Fade, Grid, PageHeader, Progress, Typography } from '@nav/shared/components';
 import { Frame288LoadType, getMeterGroupDisplayName, MeterGroup } from '@nav/shared/models/meter';
 import * as routes from '@nav/shared/routes';
 import { makeStylesHook } from '@nav/shared/styles';
@@ -12,14 +12,6 @@ import MetersTable from './MetersTable';
 
 /** ============================ Styles ==================================== */
 const useStyles = makeStylesHook(theme => ({
-  header: {
-    alignItems: 'center',
-    display: 'flex',
-    marginBottom: theme.spacing(2),
-    '& > button': {
-      marginRight: theme.spacing(2)
-    }
-  },
   tableWrapper: {
     marginTop: theme.spacing(3)
   }
@@ -39,17 +31,7 @@ const DetailsSection: React.FC = () => (
   </div>
 );
 
-const BackButton = () => {
-  const history = useHistory();
-  return <Button icon="back" onClick={goBack} role="back-button" />;
- 
-  /** ============================ Callbacks =============================== */
-  function goBack () {
-    history.push(routes.load);
-  }
-};
-
-const MeterGroupPage: React.FC = () => {
+export const MeterGroupPage: React.FC = () => {
   const [meterGroup, setMeterGroup] = React.useState<MeterGroup | null>(null);
   const [graphDataType, setGraphDataType] = React.useState<Frame288LoadType>('average');
   const classes = useStyles();
@@ -57,18 +39,22 @@ const MeterGroupPage: React.FC = () => {
   
   React.useEffect(() => {
     if (!id) return;
-    api.getMeterGroup(id, { types: [graphDataType] })
+    api.getMeterGroup(id, { data_types: graphDataType })
       .then(res => setMeterGroup(res));
   }, [id, graphDataType]);
   
   return (
     <>
-      <div className={classes.header}>
-        <BackButton />
-        <Typography variant="h6">
-          {meterGroup && getMeterGroupDisplayName(meterGroup)}
-        </Typography>
-      </div>
+      <PageHeader
+          breadcrumbs={[
+            ['Customer Groups', routes.load],
+            [
+              getMeterGroupDisplayName(meterGroup) || 'Customer Group',
+              routes.dashboard.createScenario.review
+            ]
+          ]}
+          title={getMeterGroupDisplayName(meterGroup)}
+        />
       
       {meterGroup ? (
         <Grid>
@@ -103,6 +89,3 @@ const MeterGroupPage: React.FC = () => {
     setGraphDataType(newType);
   }
 };
-
-/** ============================ Exports =================================== */
-export default MeterGroupPage;

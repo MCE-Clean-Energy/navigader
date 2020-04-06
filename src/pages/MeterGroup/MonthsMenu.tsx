@@ -5,7 +5,7 @@ import without from 'lodash/without';
 import { Checkbox, Divider, List, Menu } from '@nav/shared/components';
 import { Frame288MonthsOption } from '@nav/shared/components/graphs/Frame288Graph';
 import { MonthIndex } from '@nav/shared/types';
-import { getMonthName } from '@nav/shared/util';
+import { formatters } from '@nav/shared/util';
 
 
 /** ============================ Types ===================================== */
@@ -39,7 +39,7 @@ const MonthsMenu: React.FC<MonthsMenuProps> = ({ selectedMonths, changeMonths })
               <List.Item.Icon>
                 <Checkbox checked={isSelected(monthIndex)} />
               </List.Item.Icon>
-              <List.Item.Text>{getMonthName(monthIndex)}</List.Item.Text>
+              <List.Item.Text>{formatters.getMonthName(monthIndex)}</List.Item.Text>
             </List.Item>
           )}
         </List>

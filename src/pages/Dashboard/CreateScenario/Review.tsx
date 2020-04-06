@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import find from 'lodash/find';
 
-import { Card, Flex, Grid, TextField, Typography } from '@nav/shared/components';
+import { Card, Flex, Grid, Link, TextField, Typography } from '@nav/shared/components';
 import { MeterGroup } from '@nav/shared/models/meter';
 import { makeStylesHook } from '@nav/shared/styles';
 import * as routes from '@nav/shared/routes';

@@ -7,11 +7,7 @@ import { Alert, AppContainer, Snackbar, ThemeProvider } from '@nav/shared/compon
 import * as routes from '@nav/shared/routes';
 import { slices } from '@nav/shared/store';
 import { userIsAuthenticated } from '@nav/shared/models/user';
-import DashboardPage from './pages/Dashboard';
-import LoadPage from './pages/Load';
-import LoginPage from './pages/Login';
-import MeterGroupPage from './pages/MeterGroup';
-import UploadPage from './pages/Upload';
+import * as pages from './pages';
 
 
 /** ============================ Components ================================ */
@@ -42,14 +38,16 @@ const AppSnackbar: React.FC = () => {
 export const AppRoutes: React.FC = () =>
   <ThemeProvider>
     <Switch>
-      <Route path={routes.login} component={LoginPage} />
+      <Route path={routes.login} component={pages.LoginPage} />
       <AuthenticatedRoute>
         <AppContainer>
           <Switch>
-            <Route path={routes.meterGroup(':id')} component={MeterGroupPage} />
-            <Route path={routes.load} component={LoadPage} />
-            <Route path={routes.upload} component={UploadPage} />
-            <Route path={routes.dashboard.base} component={DashboardPage} />
+            <Route path={routes.meterGroup(':id')} component={pages.MeterGroupPage} />
+            <Route path={routes.load} component={pages.LoadPage} />
+            <Route path={routes.upload} component={pages.UploadPage} />
+            <Route path={routes.dashboard.base} component={pages.DashboardPage} />
+            <Route path={routes.scenario(':id')} component={pages.ScenarioPage} />
+            <Route path={routes.scenario.compare} component={pages.CompareScenariosPage} />
           
             {/** Route of last resort */}
             <Redirect to={routes.dashboard.base} />
@@ -91,10 +89,10 @@ const App: React.FC = () => {
   React.useEffect(() => {
     if (!userIsAuthenticated()) return;
     // TODO: this is only loading the first page of configurations. We should load all of them
-    getDerConfigurations({ include: 'data', pageSize: 100 })
+    getDerConfigurations({ include: 'data', page_size: 100 })
       .then((derConfigurations) => {
         dispatch(
-          slices.models.setModels({ derConfigurations: derConfigurations.data })
+          slices.models.updateModels(derConfigurations.data)
         );
       });
   });
@@ -103,10 +101,10 @@ const App: React.FC = () => {
   React.useEffect(() => {
     if (!userIsAuthenticated()) return;
     // TODO: this is only loading the first page of strategies. We should load all of them
-    getDerStrategies({ include: 'data', pageSize: 100 })
+    getDerStrategies({ include: 'data', page_size: 100 })
       .then((derStrategies) => {
         dispatch(
-          slices.models.setModels({ derStrategies: derStrategies.data })
+          slices.models.updateModels(derStrategies.data)
         );
       });
   });

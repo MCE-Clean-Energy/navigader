@@ -2,6 +2,7 @@ import every from 'lodash/every';
 import isArray from 'lodash/isArray';
 import pick from 'lodash/pick';
 
+import { typeGuards } from '@nav/shared/util';
 import { LoadType, LoadTypeMap, MeterDataField, MeterGroup, RawMeterGroup } from './types';
 
 
@@ -52,9 +53,11 @@ export function parseMeterGroup (rawMeterGroup: RawMeterGroup): MeterGroup {
 /**
  * Returns a display name for the given meter group
  *
- * @param {MeterGroup} meterGroup: the meter group object to display
+ * @param {MeterGroup} meterGroup: the meter group object to display. The overload that accepts
+ *   undefined is there to enable usage in situations where the meter group is optional
  */
-export function getMeterGroupDisplayName (meterGroup: MeterGroup): string {
+export function getMeterGroupDisplayName (meterGroup: any) {
+  if (!typeGuards.isMeterGroup(meterGroup)) return '';
   switch (meterGroup.object_type) {
     case 'OriginFile':
       return meterGroup.name || meterGroup.fileName;

@@ -9,6 +9,7 @@ import { printWarning } from '@nav/shared/util';
 /** ============================ Types ===================================== */
 type Emphasis = 'normal' | 'secondary' | 'disabled';
 type TextColor =
+  | 'inherit'
   | 'initial'
   | 'primary'
   | 'secondary'

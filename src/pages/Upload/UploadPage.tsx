@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 
 import * as api from '@nav/shared/api';
 import {
-  Alert, Button, Card, Checkbox, Flex, PageHeader, Progress, TextField, Typography
+  Alert, Button, Card, Checkbox, Flex, Link, PageHeader, Progress, TextField, Typography
 } from '@nav/shared/components';
 import * as routes from '@nav/shared/routes';
 import { makeStylesHook } from '@nav/shared/styles';
@@ -133,7 +132,7 @@ const FileCard: React.FC<FileCardProps> = ({ file, startUpload, status }) => {
   }
 };
 
-const UploadPage: React.FC = () => {
+export const UploadPage: React.FC = () => {
   const [file, setFile] = React.useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = React.useState<UploadingStatus>('not started');
   const fileUpload = React.useRef<HTMLInputElement>(null);
@@ -231,6 +230,3 @@ function statusAllowsUpload (status: UploadingStatus) {
   const uploadableStatuses: UploadingStatus[] = ['not started', 'failure'];
   return uploadableStatuses.includes(status);
 }
-
-/** ============================ Exports =================================== */
-export default UploadPage;

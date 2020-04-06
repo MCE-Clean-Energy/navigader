@@ -36,6 +36,7 @@ type RawMeterGroupCommon = {
   data: MeterDataField;
   meter_count: number;
   meters: string[];
+  name: string;
 };
 
 export type RawOriginFileMeterGroup = NavigaderObject<'OriginFile'> & RawMeterGroupCommon & {
@@ -55,7 +56,8 @@ export type RawCustomerClusterMeterGroup =
 type MeterGroupCommon = {
   data: MeterDataField;
   numMeters: number;
-  meterIds: string[]
+  meterIds: string[];
+  name: string;
 };
 
 export type OriginFileMeterGroup =

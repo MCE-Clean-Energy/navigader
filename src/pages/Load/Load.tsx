@@ -10,20 +10,20 @@ import { MeterGroupCard } from './MeterGroupCard';
 
 
 /** ============================ Components ================================ */
-const LoadPage = () => {
+export const LoadPage = () => {
   const [meterGroups, setMeterGroups] = React.useState([] as MeterGroup[]);
   const history = useHistory();
   
   React.useEffect(makeCancelableAsync(
-    () => api.getMeterGroups({ types: 'average' }),
+    () => api.getMeterGroups({ data_types: 'average' }),
     res => setMeterGroups(res.data)
   ), []);
 
   return (
     <>
       <PageHeader
-        title="Uploaded Files"
         actions={<Button color="secondary" onClick={goToUpload}>Add File</Button>}
+        title="Uploaded Files"
       />
       <Grid>
         {meterGroups.map(meterGroup =>
@@ -40,6 +40,3 @@ const LoadPage = () => {
     history.push(routes.upload);
   }
 };
-
-/** ============================ Exports =================================== */
-export default LoadPage;

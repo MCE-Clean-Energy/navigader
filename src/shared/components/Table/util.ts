@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { RowsPerPageOption } from '@nav/shared/types';
+import { RowsPerPageOption } from '@nav/shared/api/util';
 import { isProduction } from '@nav/shared/util';
 
 

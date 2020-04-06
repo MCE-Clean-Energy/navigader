@@ -57,6 +57,10 @@ const CreateScenarioPage: React.FC = () => {
       <Flex.Container direction="column" grow>
         <PageHeader
           actions={<Button color="secondary" onClick={cancel}>Cancel</Button>}
+          breadcrumbs={[
+            ['Dashboard', routes.dashboard.base],
+            ['Create Scenario', routes.dashboard.createScenario.review]
+          ]}
           title="Create Scenario"
         />
         <Stepper activeStep={activeStep} className={classes.stepper} steps={stepLabels} />

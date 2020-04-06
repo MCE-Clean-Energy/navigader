@@ -1,38 +1,66 @@
+import omit from 'lodash/omit';
+
+import { BatteryConfiguration, BatteryStrategy, BatterySimulation } from '@nav/shared/models/der';
+import { LoadType, MeterGroup } from '@nav/shared/models/meter';
 import {
-  appendId, beoRoute, getRequest, makePaginationQueryParams, parsePaginationSet
-} from '@nav/shared/api/util';
-import { BatteryConfiguration, BatteryStrategy } from '@nav/shared/models/der';
-import {
-  DynamicRestParams, PaginationQueryParams, PaginationSet, RawPaginationSet
-} from '@nav/shared/types';
+  appendId, beoRoute, DynamicRestParams, equals_, getRequest, PaginationQueryParams, PaginationSet,
+  parsePaginationSet, RawPaginationSet
+} from './util';
 
 
 /** ============================ Types ===================================== */
-type DerQueryParams = Partial<PaginationQueryParams & DynamicRestParams>;
+type DerQueryOptions = Partial<PaginationQueryParams & DynamicRestParams>;
+
+type DerSimulationQueryOptions = Partial<PaginationQueryParams & {
+  derConfiguration: BatteryConfiguration['id'];
+  derStrategy: BatteryStrategy['id'];
+  meterGroup: MeterGroup['id'];
+  data_types: LoadType | LoadType[];
+}>;
 
 /** ============================ API Methods =============================== */
 export async function getDerConfigurations (
-  queryParams?: DerQueryParams
+  queryParams?: DerQueryOptions
 ): Promise<PaginationSet<BatteryConfiguration>> {
   const response: RawPaginationSet<{ der_configurations: BatteryConfiguration[] }> =
     await getRequest(
       routes.configuration(),
-      makeQueryParams(queryParams)
+      queryParams
     ).then(res => res.json());
   
   return parsePaginationSet(response, 'der_configurations');
 }
 
 export async function getDerStrategies (
-  queryParams?: DerQueryParams
+  queryParams?: DerQueryOptions
 ): Promise<PaginationSet<BatteryStrategy>> {
   const response: RawPaginationSet<{ der_strategies: BatteryStrategy[] }> =
     await getRequest(
       routes.strategy(),
-      makeQueryParams(queryParams)
+      queryParams
     ).then(res => res.json());
   
   return parsePaginationSet(response, 'der_strategies');
+}
+
+export async function getDerSimulations (
+  queryOptions?: DerSimulationQueryOptions
+): Promise<PaginationSet<BatterySimulation>> {
+  // Make the request
+  const response: RawPaginationSet<{ der_simulations: BatterySimulation[] }> =
+    await getRequest(
+      routes.simulation(),
+      {
+        ...omit(queryOptions, ['derConfiguration', 'derStrategy', 'meterGroup']),
+        filter: {
+          der_configuration: equals_(queryOptions?.derConfiguration),
+          der_strategy: equals_(queryOptions?.derStrategy),
+          'meter.meter_groups.id': equals_(queryOptions?.meterGroup)
+        }
+      }
+    ).then(res => res.json());
+  
+  return parsePaginationSet(response, 'der_simulations');
 }
 
 /** ============================ Helpers =================================== */
@@ -42,11 +70,3 @@ const routes = {
   simulation: appendId(baseRoute('simulation')),
   strategy: appendId(baseRoute('strategy'))
 };
-
-function makeQueryParams (queryParams?: DerQueryParams) {
-  if (!queryParams) return;
-  return {
-    ...makePaginationQueryParams(queryParams),
-    include: queryParams.include
-  };
-}

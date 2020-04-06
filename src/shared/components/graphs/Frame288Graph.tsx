@@ -10,7 +10,7 @@ import range from 'lodash/range';
 import { Frame288LoadType, Frame288Numeric } from '@nav/shared/models/meter';
 import { primaryColor } from '@nav/shared/styles';
 import { MonthIndex } from '@nav/shared/types';
-import { getMonthName } from '@nav/shared/util';
+import { formatters } from '@nav/shared/util';
 
 
 /** ============================ Types ===================================== */
@@ -103,7 +103,7 @@ const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
             <VictoryLine
               data={formattedData[arrayIndex]}
               key={monthIndex}
-              labels={() => getMonthName(monthIndex)}
+              labels={() => formatters.getMonthName(monthIndex)}
               labelComponent={<VictoryTooltip />}
               style={lineStyle}
             />

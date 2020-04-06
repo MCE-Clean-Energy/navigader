@@ -101,17 +101,23 @@ const LoginCard: React.FC = () => {
    */
   async function onSubmit (event: React.FormEvent) {
     setError(false);
-    
     event.preventDefault();
-    const response = await api.login(email, password);
     
-    if (response.status !== 200) {
+    let response;
+    try {
+      response = await api.login(email, password);
+    } catch (e) {
+      setError(true);
+      return;
+    }
+
+    if (!response.ok) {
       setError(true);
     }
   }
 };
 
-const LoginPage: React.FC = () => {
+export const LoginPage: React.FC = () => {
   const classes = useStyles();
   const gradientClasses = classNames(
     classes.gradient,
@@ -135,6 +141,3 @@ const LoginPage: React.FC = () => {
     </Flex.Container>
   );
 };
-
-/** ============================ Exports =================================== */
-export default LoginPage;

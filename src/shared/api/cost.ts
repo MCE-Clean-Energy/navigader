@@ -3,11 +3,9 @@ import find from 'lodash/find';
 import { parseMeterGroup, RawMeterGroup } from '@nav/shared/models/meter';
 import { parseScenario, RawScenario, Scenario } from '@nav/shared/models/scenario';
 import {
-  DynamicRestParams, PaginationQueryParams, PaginationSet, RawPaginationSet
-} from '@nav/shared/types';
-import {
-  appendId, beoRoute, getRequest, makePaginationQueryParams, parsePaginationSet, patchRequest,
-  postRequest
+  appendId, beoRoute, DynamicRestParams, getRequest,
+  PaginationQueryParams, PaginationSet, parsePaginationSet, patchRequest, postRequest,
+  RawPaginationSet
 } from './util';
 
 
@@ -17,14 +15,24 @@ type DerSelection = {
   strategyId: string;
 };
 
-type ScenarioQueryParams = Partial<PaginationQueryParams & DynamicRestParams & {
+// GET /study/
+type GetScenariosQueryOptions = Partial<PaginationQueryParams & DynamicRestParams & {
+  ids: Array<Scenario['id']>;
   type: Scenario['object_type'];
 }>;
 
-type ScenariosResponse = {
+type GetScenariosResponse = {
   meter_groups?: RawMeterGroup[];
   studies: RawScenario[];
 };
+
+// GET /study/:id
+type GetScenarioResponse = {
+  meter_groups?: [RawMeterGroup];
+  study: RawScenario;
+};
+
+type GetScenarioQueryOptions = Partial<DynamicRestParams>;
 
 /** ============================ API Methods =============================== */
 export async function postStudy (
@@ -46,42 +54,27 @@ export async function postStudy (
 }
 
 /**
- * Loads scenario objects, either `SingleScenarioScenario` or `MultipleScenarioScenario`. The `ScenarioType`
- * generic type must be set to one of those two types.
+ * Loads scenario objects, either `SingleScenarioScenario` or `MultipleScenarioScenario`.
  *
- * @param {ScenarioQueryParams} queryParams: parameters for filtering the result set
+ * @param {GetScenariosQueryOptions} queryParams: parameters for filtering the result set
  */
-export async function getScenarios(
-  queryParams?: ScenarioQueryParams
+export async function getScenarios (
+  queryParams?: GetScenariosQueryOptions
 ): Promise<PaginationSet<Scenario>> {
-  const response: RawPaginationSet<ScenariosResponse> =
+  const response: RawPaginationSet<GetScenariosResponse> =
     await getRequest(
       routes.scenarios(),
-      makeQueryParams({
+      {
         ...queryParams,
-        type: 'SingleScenarioStudy'
-      })
+        object_type: 'SingleScenarioStudy'
+      }
     ).then(res => res.json());
   
   // Parse the meter results
   return parsePaginationSet(
     response,
     ({ meter_groups, studies: scenarios }) =>
-      scenarios.map((scenario) => {
-        // Mix in the meter group
-        let meterGroup;
-        if (scenario.meter_groups && scenario.meter_groups.length > 0) {
-          const scenarioMeterGroup = find(meter_groups, { id: scenario.meter_groups[0] });
-          if (scenarioMeterGroup) {
-            meterGroup = parseMeterGroup(scenarioMeterGroup);
-          }
-        }
-        
-        return {
-          ...parseScenario(scenario),
-          meter_group: meterGroup
-        };
-      })
+      scenarios.map(scenario => compileScenario(scenario, meter_groups))
   );
 }
 
@@ -92,6 +85,16 @@ export async function patchScenario (scenarioId: string, updates: Partial<Scenar
   );
 }
 
+export async function getScenario (id: string, options?: GetScenarioQueryOptions) {
+  const response: GetScenarioResponse =
+    await getRequest(
+      routes.scenarios(id),
+      options
+    ).then(res => res.json());
+  
+  return compileScenario(response.study, response.meter_groups);
+}
+
 /** ============================ Helpers =================================== */
 const baseRoute = (rest: string) => beoRoute.v1(`cost/${rest}`);
 const routes = {
@@ -99,11 +102,28 @@ const routes = {
   postStudy: baseRoute('multiple_scenario_study/')
 };
 
-function makeQueryParams (queryParams?: ScenarioQueryParams) {
-  if (!queryParams) return;
+/**
+ * Takes a raw scenario and array of raw meter groups and compiles the parsed scenario for use in
+ * the application
+ *
+ * @param {RawScenario} scenario: the server-supplied scenario object
+ * @param {RawMeterGroup} meterGroups: the server-supplied meter group objects
+ */
+function compileScenario (
+  scenario: RawScenario,
+  meterGroups?: RawMeterGroup[]
+): Scenario {
+  // Mix in the meter group
+  let meterGroup;
+  if (scenario.meter_groups && scenario.meter_groups.length > 0) {
+    const scenarioMeterGroup = find(meterGroups, { id: scenario.meter_groups[0] });
+    if (scenarioMeterGroup) {
+      meterGroup = parseMeterGroup(scenarioMeterGroup);
+    }
+  }
+  
   return {
-    ...makePaginationQueryParams(queryParams),
-    include: queryParams.include,
-    object_type: queryParams.type,
+    ...parseScenario(scenario),
+    meter_group: meterGroup
   };
 }

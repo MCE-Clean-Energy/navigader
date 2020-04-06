@@ -1,15 +1,15 @@
 import * as React from 'react';
-import { Link, Route, Switch, useHistory } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 import * as api from '@nav/shared/api';
 import {
-  Button, Divider, Icon, List, Menu, PageHeader, PaginationState, Statistic, Table, Typography
+  Button, Divider, Flex, Icon, Link, List, Menu, PageHeader, PaginationState, Table, Typography
 } from '@nav/shared/components';
 import { Scenario } from '@nav/shared/models/scenario';
 import * as routes from '@nav/shared/routes';
-import { selectModels, setModels } from '@nav/shared/store/slices/models';
-import { dateFormatter } from '@nav/shared/util';
+import { selectModels, updateModels } from '@nav/shared/store/slices/models';
+import { formatters } from '@nav/shared/util';
 import CreateScenario from './CreateScenario'
 import { makeStylesHook } from '@nav/shared/styles';
 import RenameDialog from './RenameDialog';
@@ -23,7 +23,7 @@ const useStyles = makeStylesHook(theme => ({
 }));
 
 /** ============================ Components ================================ */
-const DashboardPage: React.FC = () => {
+const ScenariosTable: React.FC = () => {
   const [selections, setSelections] = React.useState<Scenario[]>([]);
   const [renameScenario, setRenameScenario] = React.useState<Scenario>();
   const history = useHistory();
@@ -33,13 +33,13 @@ const DashboardPage: React.FC = () => {
   const getScenarios = React.useCallback(
     async (state: PaginationState) => {
       const response = await api.getScenarios({
-        include: ['ders', 'meter_groups'],
+        include: ['ders', 'meter_groups', 'report_summary'],
         page: state.currentPage + 1,
-        pageSize: state.rowsPerPage
+        page_size: state.rowsPerPage
       });
       
       // Add the models to the store and yield the pagination results
-      dispatch(setModels({ scenarios: response.data }));
+      dispatch(updateModels(response.data));
       return response
     },
     [dispatch]
@@ -68,17 +68,12 @@ const DashboardPage: React.FC = () => {
         aria-label="scenarios table"
         dataFn={getScenarios}
         dataSelector={selectModels('scenarios')}
-        ifEmpty={(
-          <Typography>
-            No scenarios have been created. <Link to={routes.dashboard.createScenario.selectDers}>Create one.</Link>
-          </Typography>
-        )}
         onSelect={(scenarios: Scenario[]) => setSelections(scenarios)}
         raised
         stickyHeader
         title="Scenarios"
       >
-        {(scenarios, emptyRow) =>
+        {(scenarios, EmptyRow) =>
           <>
             <Table.Head>
               <Table.Row>
@@ -88,49 +83,57 @@ const DashboardPage: React.FC = () => {
                 <Table.Cell>DER</Table.Cell>
                 <Table.Cell>Program Strategy</Table.Cell>
                 <Table.Cell>CCA Bill ($/year)</Table.Cell>
-                <Table.Cell>GHG (tCO<sub>2</sub>/year)</Table.Cell>
+                <Table.Cell>CNS 2022 Delta (tCO<sub>2</sub>/year)</Table.Cell>
                 <Table.Cell>RA (MW/year)</Table.Cell>
                 <Table.Cell>Status</Table.Cell>
                 <Table.Cell />
               </Table.Row>
             </Table.Head>
             <Table.Body>
-              {emptyRow}
+              {/** Only renders if there's no data */}
+              <EmptyRow colSpan={10}>
+                <Typography>
+                  No scenarios have been created. <Link to={routes.dashboard.createScenario.selectDers}>Create one.</Link>
+                </Typography>
+              </EmptyRow>
+              
               {scenarios.map(scenario =>
                 <Table.Row key={scenario.id}>
                   <Table.Cell useTh>{scenario.name}</Table.Cell>
-                  <Table.Cell>{dateFormatter(scenario.created_at)}</Table.Cell>
+                  <Table.Cell>{formatters.standardDate(scenario.created_at)}</Table.Cell>
                   <Table.Cell>
                     {scenario.meter_group &&
                       <span>{scenario.meter_group.name} ({scenario.meter_group.numMeters})</span>
                     }
                   </Table.Cell>
                   <Table.Cell>
-                    {getDerIcon(scenario)}
                     {scenario.der &&
-                      <Statistic
-                        title="Configuration"
-                        value={scenario.der.der_configuration.name}
-                        variant="subtitle2"
-                      />
+                      <Flex.Container alignItems="center">
+                        <Flex.Item>
+                          {getDerIcon(scenario)}
+                        </Flex.Item>
+                        <Flex.Item>
+                          {scenario.der && scenario.der.der_configuration.name}
+                        </Flex.Item>
+                      </Flex.Container>
                     }
                   </Table.Cell>
                   <Table.Cell>
-                    {scenario.der &&
-                      <Statistic
-                        title="Strategy"
-                        value={scenario.der.der_strategy.name}
-                        variant="subtitle2"
-                      />
-                    }
+                    {scenario.der && scenario.der.der_strategy.name}
                   </Table.Cell>
-                  <Table.Cell />
-                  <Table.Cell />
-                  <Table.Cell />
+                  <Table.Cell>
+                    {formatters.maxDecimals(scenario.report_summary?.BillDelta, 2)}
+                  </Table.Cell>
+                  <Table.Cell>
+                    {formatters.maxDecimals(scenario.report_summary?.CleanNetShort2022Delta, 2)}
+                  </Table.Cell>
+                  <Table.Cell>
+                    N/A
+                  </Table.Cell>
                   <Table.Cell>{getScenarioStatus(scenario)}</Table.Cell>
                   <Table.Cell>
                     <Menu icon="verticalDots">
-                      <List.Item onClick={() => {}}>
+                      <List.Item onClick={() => viewScenario(scenario.id)}>
                         <List.Item.Icon icon="plus" />
                         <List.Item.Text>View</List.Item.Text>
                       </List.Item>
@@ -139,7 +142,7 @@ const DashboardPage: React.FC = () => {
                         <List.Item.Text>Rename</List.Item.Text>
                       </List.Item>
                       <Divider />
-                      <List.Item onClick={() => {}}>
+                      <List.Item onClick={() => archiveScenario(scenario.id)}>
                         <List.Item.Icon icon="trash" />
                         <List.Item.Text>Archive</List.Item.Text>
                       </List.Item>
@@ -173,12 +176,20 @@ const DashboardPage: React.FC = () => {
   function openRenameScenarioDialog (scenario: Scenario) {
     setRenameScenario(scenario);
   }
+
+  function viewScenario (scenarioId: string) {
+    history.push(routes.scenario(scenarioId));
+  }
+  
+  function archiveScenario (scenarioId: string) {
+    alert('Scenario archiving has not been implemented yet');
+  }
 };
 
-const DashboardRouter = () =>
+export const DashboardPage = () =>
   <Switch>
     <Route path={routes.dashboard.createScenario.base} component={CreateScenario} />
-    <Route exact path={routes.dashboard.base} component={DashboardPage} />
+    <Route exact path={routes.dashboard.base} component={ScenariosTable} />
   </Switch>;
 
 
@@ -209,6 +220,3 @@ function getDerIcon (scenario: Scenario) {
     return null;
   }
 }
-
-/** ============================ Exports =================================== */
-export default DashboardRouter;

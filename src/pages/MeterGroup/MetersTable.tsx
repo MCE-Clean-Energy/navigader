@@ -3,10 +3,9 @@ import { useDispatch } from 'react-redux';
 
 import * as api from '@nav/shared/api';
 import { Table, PaginationState } from '@nav/shared/components';
-import { Meter, MeterGroup } from '@nav/shared/models/meter';
-import { selectModels, setModels } from '@nav/shared/store/slices/models';
+import { MeterGroup } from '@nav/shared/models/meter';
+import { selectModels, updateModels } from '@nav/shared/store/slices/models';
 import { makeStylesHook } from '@nav/shared/styles';
-import { PaginationSet } from '@nav/shared/types';
 
 
 /** ============================ Types ===================================== */
@@ -27,15 +26,15 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
   const dispatch = useDispatch();
   
   const getMeters = React.useCallback(
-    async (state: PaginationState): Promise<PaginationSet<Meter>> => {
+    async (state: PaginationState) => {
       const response = await api.getMeters({
         meterGroupId,
         page: state.currentPage + 1,
-        pageSize: state.rowsPerPage
+        page_size: state.rowsPerPage
       });
       
       // Add the models to the store and yield the pagination results
-      dispatch(setModels({ meters: response.data }));
+      dispatch(updateModels(response.data));
       return response;
     },
     [meterGroupId, dispatch]

@@ -3,22 +3,21 @@ import pick from 'lodash/pick';
 
 import { parsePandasFrame } from '@nav/shared/util';
 import {
-  RawScenarioReport, ScenarioReport, RawScenario, Scenario, DeferrableScenarioFields
+  RawScenarioReport, ScenarioReport, RawScenario, Scenario
 } from './types';
+
 
 /**
  * Basic parsing function for converting a RawScenario into a Scenario
  *
  * @param {RawScenario} scenario - The raw scenario object to parse
  */
-export function parseScenario <T extends DeferrableScenarioFields>(
-  scenario: RawScenario<T>
-): Scenario<T> {
+export function parseScenario (scenario: RawScenario): Scenario {
   const percentComplete = parseFloat(
     (scenario.der_simulation_count / scenario.expected_der_simulation_count * 100).toFixed(1)
   );
-
-  // @ts-ignore: for some reason TS says this is unassignable to a Scenario...
+  
+  const reportSummary = scenario.report_summary ? scenario.report_summary[0] : undefined;
   return {
     ...pick(scenario, 'created_at', 'id', 'name', 'object_type'),
     der: scenario.ders ? scenario.ders[0] : undefined,
@@ -32,16 +31,34 @@ export function parseScenario <T extends DeferrableScenarioFields>(
       is_complete: percentComplete === 100,
       percent_complete: percentComplete
     },
-    report: parseReport(scenario.report)
+    report: parseReport(scenario.report),
+    report_summary: reportSummary
   };
 }
 
-function parseReport (report?: RawScenarioReport) {
+function parseReport (report?: RawScenarioReport): ScenarioReport | undefined {
   if (!report) return;
-  
   const parsed = parsePandasFrame(report);
+  
+  // For every simulation ID in the report, gather the values associated with that ID from the
+  // other columns and compile them into an object
+  const rows = Object.fromEntries(parsed.ID.map((simulationId, rowIndex) => {
+    const simulationFields = Object.entries(parsed).map(
+      ([column, values]) => {
+        const rowValue = values[rowIndex];
+        const columnName = column === 'SA ID' ? 'SA_ID' : column;
+        return [columnName, rowValue];
+      }
+    );
+    
+    return [simulationId, Object.fromEntries(simulationFields)];
+  }));
+  
   return {
-    ...omit(parsed, 'report'),
-    sa_id: parsed['SA ID']
-  } as ScenarioReport;
+    columns: {
+      ...omit(parsed, 'SA ID'),
+      SA_ID: parsed['SA ID']
+    },
+    rows
+  };
 }
