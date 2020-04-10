@@ -15,7 +15,13 @@ export const dashboard = {
 
 /** ============================ Scenario Routes =========================== */
 export const scenario = (id: string) => `/scenario/${id}`;
-scenario.compare = '/scenario/compare/';
+scenario.compare = (ids?: string[]) => {
+  const qs = ids && ids.length
+    ? `?ids=${ids.join(',')}`
+    : '';
+    
+  return `/scenario/compare/${qs}`;
+};
 
 /** ============================ Other Routes ============================== */
 export const login = '/login';

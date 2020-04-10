@@ -58,3 +58,31 @@ export function getMonthName (monthIndex: number) {
 export function standardDate (date: DateType): string {
   return moment(date).format('MMM D, YYYY');
 }
+
+/**
+ * Pluralizes a word based on the `count` parameter
+ *
+ * @param {string} singularForm: the singular form of the word. This will be returned if `count`
+ *   is equal to 1
+ * @param {number} count: the number used for the inflection
+ * @param {string} [pluralForm]: the manually provided plural form. If not provided, this will
+ *   be inferred according to rules described below
+ */
+export function pluralize (singularForm: string, count: number, pluralForm?: string) {
+  if (count === 1) return singularForm;
+  
+  // The plural form is determined crudely. If the word ends in `y`, its plural form will end
+  // with `ies`. Otherwise the plural form is inferred to be the singular form plus `s`. Many
+  // English words will fail here (e.g. `octopus` --> `octopi`). For such cases we have the
+  // `pluralForm` fallback
+  if (pluralForm) return pluralForm;
+  
+  const endsInYRegex =  /^(?<wordMinusY>[a-zA-Z]+)y$/;
+  const match = singularForm.match(endsInYRegex);
+  
+  if (match && match.groups) {
+    return match.groups.wordMinusY + 'ies';
+  } else {
+    return singularForm + 's';
+  }
+}

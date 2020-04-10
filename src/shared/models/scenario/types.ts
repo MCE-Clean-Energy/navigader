@@ -120,4 +120,4 @@ type ScenarioReportSummaryFields = Omit<
 >;
 
 type RawScenarioReportSummary = { 0: ScenarioReportSummaryFields };
-type ScenarioReportSummary = ScenarioReportSummaryFields;
+export type ScenarioReportSummary = ScenarioReportSummaryFields;

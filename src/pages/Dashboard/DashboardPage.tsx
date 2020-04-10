@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Route, Switch, useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { Route, Switch, useHistory } from 'react-router-dom';
+import map from 'lodash/map';
 
 import * as api from '@nav/shared/api';
 import {
@@ -170,7 +171,7 @@ const ScenariosTable: React.FC = () => {
   }
   
   function compareScenarios () {
-    alert('Comparison feature has not been implemented yet');
+    history.push(routes.scenario.compare(map(selections, 'id')));
   }
   
   function openRenameScenarioDialog (scenario: Scenario) {

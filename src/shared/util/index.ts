@@ -6,6 +6,7 @@ import * as typeGuards from './typeGuards';
 export * from './cookies';
 export * from './isProduction';
 export * from './makeCancelableAsync';
+export * from './math';
 export * from './omitFalsey';
 export * from './parsePandasFrame';
 export * from './printWarning';
