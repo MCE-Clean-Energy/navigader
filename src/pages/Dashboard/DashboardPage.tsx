@@ -10,11 +10,21 @@ import {
 import { Scenario } from '@nav/shared/models/scenario';
 import * as routes from '@nav/shared/routes';
 import { selectModels, updateModels } from '@nav/shared/store/slices/models';
-import { formatters } from '@nav/shared/util';
+import { formatters, makeCancelableAsync } from '@nav/shared/util';
 import CreateScenario from './CreateScenario'
 import { makeStylesHook } from '@nav/shared/styles';
 import RenameDialog from './RenameDialog';
 
+
+/** ============================ Types ===================================== */
+type EmptyTableRowProps = {
+  numMeterGroups?: number;
+};
+
+type PageHeaderActionsProps = {
+  numMeterGroups?: number;
+  selections: Scenario[];
+};
 
 /** ============================ Styles ==================================== */
 const useStyles = makeStylesHook(theme => ({
@@ -24,11 +34,74 @@ const useStyles = makeStylesHook(theme => ({
 }));
 
 /** ============================ Components ================================ */
+/**
+ * Links to the "Upload" page if no meter groups have been created yet. Otherwise links to the
+ * "Create Scenario" workflow
+ */
+const EmptyTableRow: React.FC<EmptyTableRowProps> = ({ numMeterGroups }) => {
+  let rowContent: React.ReactFragment;
+  if (numMeterGroups === 0) {
+    rowContent =
+      <>
+        <span>No "Item 17" customer data has been uploaded.</span>
+        &nbsp;
+        <Link to={routes.upload}>Visit the upload page?</Link>
+      </>
+  } else {
+    rowContent =
+      <>
+        <span>No scenarios have been created.</span>
+        &nbsp;
+        <Link to={routes.dashboard.createScenario.selectDers}>Create one.</Link>
+      </>
+  }
+  
+  return <Typography>{rowContent}</Typography>;
+};
+
+const PageHeaderActions: React.FC<PageHeaderActionsProps> = (props) => {
+  const { numMeterGroups, selections } = props;
+  const history = useHistory();
+  const classes = useStyles();
+  
+  if (typeof numMeterGroups === 'undefined') return null;
+  if (numMeterGroups === 0) {
+    return <Button color="secondary" onClick={goToUpload}>Upload Data</Button>;
+  }
+  
+  return (
+    <>
+      <Button
+        className={classes.compareButton}
+        color="secondary"
+        disabled={selections.length < 2}
+        onClick={compareScenarios}
+      >
+        Compare Scenarios
+      </Button>
+      <Button color="secondary" onClick={createScenario}>Create Scenario</Button>
+    </>
+  );
+  
+  /** ============================ Callbacks =============================== */
+  function compareScenarios () {
+    history.push(routes.scenario.compare(map(selections, 'id')));
+  }
+  
+  function createScenario () {
+    history.push(routes.dashboard.createScenario.selectDers);
+  }
+  
+  function goToUpload () {
+    history.push(routes.upload);
+  }
+};
+
 const ScenariosTable: React.FC = () => {
   const [selections, setSelections] = React.useState<Scenario[]>([]);
   const [renameScenario, setRenameScenario] = React.useState<Scenario>();
+  const [numMeterGroups, setNumMeterGroups] = React.useState<number>();
   const history = useHistory();
-  const classes = useStyles();
   const dispatch = useDispatch();
   
   const getScenarios = React.useCallback(
@@ -46,22 +119,18 @@ const ScenariosTable: React.FC = () => {
     [dispatch]
   );
   
+  // Check if there are any meter groups-- if not, we link to the upload page
+  React.useEffect(
+    makeCancelableAsync(
+      async () => api.getMeterGroups(),
+      res => setNumMeterGroups(res.count)
+    )
+  );
+  
   return (
     <>
       <PageHeader
-        actions={
-          <>
-            <Button
-              className={classes.compareButton}
-              color="secondary"
-              disabled={selections.length < 2}
-              onClick={compareScenarios}
-            >
-              Compare Scenarios
-            </Button>
-            <Button color="secondary" onClick={createScenario}>Create Scenario</Button>
-          </>
-        }
+        actions={<PageHeaderActions numMeterGroups={numMeterGroups} selections={selections} />}
         title="Dashboard"
       />
       
@@ -93,9 +162,7 @@ const ScenariosTable: React.FC = () => {
             <Table.Body>
               {/** Only renders if there's no data */}
               <EmptyRow colSpan={10}>
-                <Typography>
-                  No scenarios have been created. <Link to={routes.dashboard.createScenario.selectDers}>Create one.</Link>
-                </Typography>
+                <EmptyTableRow numMeterGroups={numMeterGroups} />
               </EmptyRow>
               
               {scenarios.map(scenario =>
@@ -166,14 +233,6 @@ const ScenariosTable: React.FC = () => {
   );
   
   /** ============================ Callbacks =============================== */
-  function createScenario () {
-    history.push(routes.dashboard.createScenario.selectDers);
-  }
-  
-  function compareScenarios () {
-    history.push(routes.scenario.compare(map(selections, 'id')));
-  }
-  
   function openRenameScenarioDialog (scenario: Scenario) {
     setRenameScenario(scenario);
   }

@@ -148,9 +148,17 @@ const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (props) 
     const sizeValue = scenarioDatum ? scenarioDatum.sizeValue : datum.sizeValue;
     
     // Determine the size value suffix
-    const sizeSuffix = sizing === SizingOption.CohortSize
-      ? formatters.pluralize('customer', sizeValue)
-      : formatters.pluralize('ton', sizeValue) + ' CO2/year';
+    let sizeSuffix;
+    switch (sizing) {
+      case SizingOption.CohortSize:
+        sizeSuffix = formatters.pluralize('customer', sizeValue);
+        break;
+      case SizingOption.GHGImpactPerCustomer:
+        sizeSuffix = formatters.pluralize('ton', sizeValue) + ' CO2/year per customer';
+        break;
+      case SizingOption.BillImpactPerCustomer:
+        sizeSuffix = '$/year per customer';
+    }
     
     return [
       datum.name,
