@@ -16,6 +16,7 @@ const defaultRawScenario: RawScenario = {
   name: 'Default Scenario',
   created_at: '2020-03-26T00:13:25.451606',
   object_type: 'SingleScenarioStudy',
+  data: {},
   ders: [
     {
       der_configuration: {
@@ -60,6 +61,7 @@ const defaultScenario: Scenario = {
   name: 'Default Scenario',
   created_at: '2020-03-26T00:13:25.451606',
   object_type: 'SingleScenarioStudy',
+  data: {},
   der: {
     der_configuration: {
       id: '5a263b58-3dda-4b2d-95d4-eae17fd5d6bc',

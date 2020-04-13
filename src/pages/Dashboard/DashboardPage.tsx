@@ -31,7 +31,7 @@ const useStyles = makeStylesHook(theme => ({
   compareButton: {
     marginRight: theme.spacing(2)
   }
-}), 'ScenariosTable');
+}), 'PageHeaderActions');
 
 /** ============================ Components ================================ */
 /**

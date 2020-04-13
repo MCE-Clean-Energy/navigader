@@ -40,7 +40,7 @@ const lineStyle = {
 };
 
 /** ============================ Components ================================ */
-const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
+export const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
   const { data, height, loadType, months = 'all' } = props;
   
   // Convert Frame288 to an array of objects
@@ -157,6 +157,3 @@ export function scaleData (min: number, max: number): ScaleInfo {
     };
   }
 }
-
-/** ============================ Exports =================================== */
-export default Frame288Graph;

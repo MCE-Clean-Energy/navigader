@@ -86,3 +86,12 @@ export function pluralize (singularForm: string, count: number, pluralForm?: str
     return singularForm + 's';
   }
 }
+
+/**
+ * Capitalizes a string by making the first character uppercase and the rest lowercase
+ *
+ * @param {string} str: the string to capitalize
+ */
+export function capitalize (str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}

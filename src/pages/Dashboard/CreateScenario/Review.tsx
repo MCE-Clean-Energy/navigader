@@ -65,6 +65,7 @@ const SelectedCustomers: React.FC<ReviewProps> = (props) => {
             className={classes.meterGroupChip}
             color="primary"
             icon="checkMark"
+            key={meterGroupId}
             meterGroup={find(meterGroups, { id: meterGroupId })}
             showCount
           />

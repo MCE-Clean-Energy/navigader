@@ -3,9 +3,9 @@ import range from 'lodash/range';
 import without from 'lodash/without';
 
 import { Checkbox, Divider, List, Menu } from '@nav/shared/components';
-import { Frame288MonthsOption } from '@nav/shared/components/graphs/Frame288Graph';
 import { MonthIndex } from '@nav/shared/types';
 import { formatters } from '@nav/shared/util';
+import { Frame288MonthsOption } from './Frame288Graph';
 
 
 /** ============================ Types ===================================== */
@@ -15,7 +15,7 @@ type MonthsMenuProps = {
 };
 
 /** ============================ Components ================================ */
-const MonthsMenu: React.FC<MonthsMenuProps> = ({ selectedMonths, changeMonths }) => {
+export const MonthsMenu: React.FC<MonthsMenuProps> = ({ selectedMonths, changeMonths }) => {
   const monthOptions = range(1, 13) as MonthIndex[];
   return (
     <div>
@@ -71,7 +71,3 @@ const MonthsMenu: React.FC<MonthsMenuProps> = ({ selectedMonths, changeMonths })
     changeMonths(selectedMonths === 'all' ? [] : 'all');
   }
 };
-
-/** ============================ Exports =================================== */
-export default MonthsMenu;
-

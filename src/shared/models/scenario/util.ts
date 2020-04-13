@@ -19,7 +19,7 @@ export function parseScenario (scenario: RawScenario): Scenario {
   
   const reportSummary = scenario.report_summary ? scenario.report_summary[0] : undefined;
   return {
-    ...pick(scenario, 'created_at', 'id', 'name', 'object_type'),
+    ...pick(scenario, 'created_at', 'data', 'id', 'name', 'object_type'),
     der: scenario.ders ? scenario.ders[0] : undefined,
     der_simulation_count: scenario.der_simulation_count,
     der_simulations: scenario.der_simulations,

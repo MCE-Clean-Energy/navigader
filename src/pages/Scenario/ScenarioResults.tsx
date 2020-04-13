@@ -4,10 +4,11 @@ import { useHistory, useParams } from 'react-router-dom';
 
 import * as api from '@nav/shared/api';
 import {
-  DERCard, Flex, MeterGroupChip, PageHeader, PaginationState, Table
+  Card, DERCard, Flex, Frame288Graph, Frame288MonthsOption, LoadTypeMenu, MeterGroupChip,
+  MonthsMenu, PageHeader, PaginationState, Progress, Table, Typography
 } from '@nav/shared/components';
 import { BatteryConfiguration, BatteryStrategy } from '@nav/shared/models/der';
-import { MeterGroup } from '@nav/shared/models/meter';
+import { Frame288LoadType, Frame288Numeric, MeterGroup } from '@nav/shared/models/meter';
 import { Scenario, ScenarioReport } from '@nav/shared/models/scenario';
 import * as routes from '@nav/shared/routes';
 import { selectModels, updateModels } from '@nav/shared/store/slices/models';
@@ -25,12 +26,53 @@ type SimulationsTableProps = {
   report: ScenarioReport;
 };
 
+type ScenarioProp = {
+  scenario: Scenario;
+};
+
+type LoadingModalProps = {
+  loading: boolean;
+}
+
 /** ============================ Styles ==================================== */
 const useStyles = makeStylesHook(theme => ({
   meterGroup: {
     marginLeft: theme.spacing(3)
   }
 }), 'ScenarioResultsPage');
+
+const useModalStyles = makeStylesHook<LoadingModalProps>(theme => ({
+  modal: props => ({
+    background: 'rgba(0, 0, 0, 0.3)',
+    left: 0,
+    height: '100%',
+    opacity: props.loading ? 1 : 0,
+    position: 'absolute',
+    top: 0,
+    transition: theme.transitions.create('opacity', {
+      duration: theme.transitions.duration.standard
+    }),
+    width: '100%'
+  })
+}), 'ScenarioResultsLoadingModal');
+
+const useScenarioGraphStyles = makeStylesHook(theme => ({
+  headingSpacer: {
+    height: 32
+  },
+  loadGraphCard: {
+    // Height of the circular progress component plus 5px padding
+    minHeight: 50,
+    overflow: 'visible',
+    position: 'relative'
+  },
+  loadTypeMenu: {
+    marginTop: theme.spacing(1)
+  },
+  scenarioGraphs: {
+    marginTop: theme.spacing(3)
+  }
+}), 'ScenarioGraph');
 
 /** ============================ Components ================================ */
 const SimulationsTable: React.FC<SimulationsTableProps> = ({ filterParams, report }) => {
@@ -95,16 +137,128 @@ const SimulationsTable: React.FC<SimulationsTableProps> = ({ filterParams, repor
   );
 };
 
-export const ScenarioResultsPage: React.FC = () => {
-  const [scenario, setScenario] = React.useState<Scenario | null>(null);
-  const classes = useStyles();
-  const { id } = useParams();
+const ScenarioContext: React.FC<ScenarioProp> = ({ scenario }) => {
   const history = useHistory();
+  const classes = useStyles();
+  
+  return (
+    <Flex.Container alignItems="center">
+      <Flex.Item>
+        {scenario &&
+          <DERCard
+            configuration={scenario.der?.der_configuration}
+            strategy={scenario.der?.der_strategy}
+          />
+        }
+      </Flex.Item>
+      <Flex.Item className={classes.meterGroup}>
+        <MeterGroupChip
+          meterGroup={scenario?.meter_group}
+          onClick={goToMeterGroup}
+          showCount
+        />
+      </Flex.Item>
+    </Flex.Container>
+  );
+  
+  /** ============================ Callbacks =============================== */
+  function goToMeterGroup () {
+    if (!scenario || !scenario.meter_group) return;
+    history.push(routes.meterGroup(scenario.meter_group.id));
+  }
+};
+
+const LoadingModal: React.FC<LoadingModalProps> = (props) => {
+  const classes = useModalStyles(props);
+  return (
+    <Flex.Container alignItems="center" className={classes.modal} justifyContent="center">
+      <Progress circular />
+    </Flex.Container>
+  );
+};
+
+const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
+  const { meter_group } = scenario;
+  const classes = useScenarioGraphStyles();
+
+  // State
+  const [loadType, setLoadType] = React.useState<Frame288LoadType>('average');
+  const [meterGroupData, setMeterGroupData] = React.useState<Frame288Numeric>();
+  const [meterGroupLoading, setMeterGroupLoading] = React.useState(false);
+  const [simulationData, setSimulationData] = React.useState<Frame288Numeric>();
+  const [simulationLoading, setSimulationLoading] = React.useState(false);
+  const [selectedMonths, setMonths] = React.useState<Frame288MonthsOption>('all');
+
+  // Load the meter group data
+  React.useEffect(
+    makeCancelableAsync(
+      async () => {
+        if (!meter_group?.id) return;
+        setMeterGroupLoading(true);
+        return api.getMeterGroup(meter_group.id, { data_types: loadType });
+      }, (res) => {
+        setMeterGroupData(res?.data[loadType]);
+        setMeterGroupLoading(false);
+      }
+    ), [meter_group?.id, loadType]
+  );
+  
+  // Load the simulation data
+  React.useEffect(
+    makeCancelableAsync(
+      async () => {
+        setSimulationLoading(true);
+        return api.getScenario(scenario.id, { data_types: loadType });
+      },
+      res => {
+        setSimulationData(res.data[loadType]);
+        setSimulationLoading(false);
+      }
+    ), [scenario.id, loadType]
+  );
+  
+  const graphWidth = 43;
+  return (
+    <Flex.Container className={classes.scenarioGraphs} justifyContent="space-between">
+      <Flex.Item basis={10}>
+        <div className={classes.headingSpacer} />
+        <MonthsMenu selectedMonths={selectedMonths} changeMonths={setMonths} />
+        <LoadTypeMenu
+          changeType={setLoadType}
+          className={classes.loadTypeMenu}
+          selectedType={loadType}
+        />
+      </Flex.Item>
+      <Flex.Item basis={graphWidth}>
+        <Typography useDiv variant="h6">Initial Load</Typography>
+        <Card className={classes.loadGraphCard} raised>
+          {meterGroupData &&
+            <Frame288Graph data={meterGroupData} loadType={loadType} months={selectedMonths} />
+          }
+          <LoadingModal loading={meterGroupLoading} />
+        </Card>
+      </Flex.Item>
+      <Flex.Item basis={graphWidth}>
+        <Typography useDiv variant="h6">Simulated Load</Typography>
+        <Card className={classes.loadGraphCard} raised>
+          {simulationData &&
+            <Frame288Graph data={simulationData} loadType={loadType} months={selectedMonths} />
+          }
+          <LoadingModal loading={simulationLoading} />
+        </Card>
+      </Flex.Item>
+    </Flex.Container>
+  )
+};
+
+export const ScenarioResultsPage: React.FC = () => {
+  const [scenario, setScenario] = React.useState<Scenario>();
+  const { id } = useParams();
   
   // Loads the scenario
   React.useEffect(
     makeCancelableAsync(async () => {
-      if (!id) return null;
+      if (!id) return;
       return api.getScenario(id, { include: ['ders', 'meter_groups', 'report'] });
     }, res => setScenario(res)),
     [id]
@@ -119,23 +273,9 @@ export const ScenarioResultsPage: React.FC = () => {
         ]}
         title={scenario ? scenario.name : 'Scenario Loading...'}
       />
-      <Flex.Container alignItems="center">
-        <Flex.Item>
-          {scenario &&
-            <DERCard
-              configuration={scenario.der?.der_configuration}
-              strategy={scenario.der?.der_strategy}
-            />
-          }
-        </Flex.Item>
-        <Flex.Item className={classes.meterGroup}>
-          <MeterGroupChip
-            meterGroup={scenario?.meter_group}
-            onClick={goToMeterGroup}
-            showCount
-          />
-        </Flex.Item>
-      </Flex.Container>
+      
+      {scenario && <ScenarioContext scenario={scenario} />}
+      {scenario && <ScenarioGraphs scenario={scenario} />}
       {scenario && scenario.meter_group && scenario.report &&
         <SimulationsTable
           filterParams={{
@@ -148,10 +288,4 @@ export const ScenarioResultsPage: React.FC = () => {
       }
     </>
   );
-  
-  /** ============================ Callbacks =============================== */
-  function goToMeterGroup () {
-    if (!scenario || !scenario.meter_group) return;
-    history.push(routes.meterGroup(scenario.meter_group.id));
-  }
 };

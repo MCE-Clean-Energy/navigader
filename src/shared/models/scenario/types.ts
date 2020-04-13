@@ -1,6 +1,6 @@
 import { DeferrableFields } from '@nav/shared/api/util';
 import { BatteryConfiguration, BatteryStrategy } from '@nav/shared/models/der';
-import { MeterGroup } from '@nav/shared/models/meter';
+import { LoadTypeMap, MeterGroup } from '@nav/shared/models/meter';
 import { NavigaderObject, PandasFrame, RawPandasFrame } from '@nav/shared/types';
 
 
@@ -11,6 +11,7 @@ export type DerInfo = {
 };
 
 type ScenarioCommon = {
+  data: Partial<LoadTypeMap>;
   der_simulation_count: number;
   expected_der_simulation_count: number;
   metadata: ScenarioMetadata;

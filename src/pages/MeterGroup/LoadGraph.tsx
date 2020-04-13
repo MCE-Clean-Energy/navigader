@@ -1,9 +1,10 @@
 import * as React from 'react';
 
-import { Card, Grid, Frame288Graph, Radio } from '@nav/shared/components';
+import {
+  Card, Grid, Frame288Graph, Frame288MonthsOption, MonthsMenu, LoadTypeMenu
+} from '@nav/shared/components';
 import { Frame288LoadType, hasDataField, MeterGroup } from '@nav/shared/models/meter';
-import { Frame288MonthsOption } from '@nav/shared/components/graphs/Frame288Graph';
-import MonthsMenu from './MonthsMenu';
+import { makeStylesHook } from '@nav/shared/styles';
 
 
 /** ============================ Types ===================================== */
@@ -21,10 +22,15 @@ type LoadGraphCardProps = LoadGraphCommonProps & {
 };
 
 /** ============================ Styles ==================================== */
-const cardStyles = {
-  // Makes the graph tooltips visible
-  overflow: 'visible'
-};
+const useStyles = makeStylesHook(theme => ({
+  card: {
+    // Makes the graph tooltips visible
+    overflow: 'visible'
+  },
+  loadTypeMenu: {
+    marginTop: theme.spacing(1)
+  }
+}), 'NavigaderCard');
 
 /** ============================ Components ================================ */
 const LoadGraph: React.FC<LoadGraphProps> = ({ dataType, meterGroup, months }) => {
@@ -39,19 +45,17 @@ const LoadGraph: React.FC<LoadGraphProps> = ({ dataType, meterGroup, months }) =
 
 const LoadGraphCard: React.FC<LoadGraphCardProps> = ({ changeType, dataType, meterGroup }) => {
   const [selectedMonths, setMonths] = React.useState<Frame288MonthsOption>('all');
+  const classes = useStyles();
   return (
-    <Card raised styleOverrides={cardStyles}>
+    <Card className={classes.card} raised>
       <Grid>
         <Grid.Item span={2}>
-          <Radio.Group aria-label="graph view" value={dataType} onChange={changeMode}>
-            <Radio value="total" label="Total" />
-            <Radio value="average" label="Average" />
-            <Radio value="maximum" label="Maximum" />
-            <Radio value="minimum" label="Minimum" />
-            <Radio value="count" label="Count" />
-          </Radio.Group>
-          
           <MonthsMenu selectedMonths={selectedMonths} changeMonths={setMonths} />
+          <LoadTypeMenu
+            changeType={changeType}
+            className={classes.loadTypeMenu}
+            selectedType={dataType}
+          />
         </Grid.Item>
 
         <Grid.Item span={10}>
@@ -60,10 +64,6 @@ const LoadGraphCard: React.FC<LoadGraphCardProps> = ({ changeType, dataType, met
       </Grid>
     </Card>
   );
-  
-  function changeMode (event: React.ChangeEvent, value: string) {
-    changeType(value as Frame288LoadType);
-  }
 };
 
 /** ============================ Exports =================================== */

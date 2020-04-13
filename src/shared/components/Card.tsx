@@ -11,7 +11,6 @@ type CardProps = React.HTMLAttributes<HTMLDivElement> & {
   
   // style props
   padding?: number | string;
-  styleOverrides?: React.CSSProperties
 }
 
 /** ============================ Styles ==================================== */
@@ -22,10 +21,9 @@ const useStyles = makeStylesHook<CardProps>(() => ({
 }), 'NavigaderCard');
 
 /** ============================ Components ================================ */
-export const Card: React.FC<CardProps> = ({ className, styleOverrides, ...rest }) => {
-  const classes = useStyles(rest);
-  const cardClasses = classNames(className, classes.card);
-  return <MuiCard className={cardClasses} style={styleOverrides} {...rest} />;
+export const Card: React.FC<CardProps> = ({ className, ...rest }) => {
+  const classes = classNames(className, useStyles(rest).card);
+  return <MuiCard className={classes} {...rest} />;
 };
 
 Card.defaultProps = {

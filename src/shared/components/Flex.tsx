@@ -8,8 +8,9 @@ import { makeStylesHook } from '@nav/shared/styles';
 
 /** ============================ Types ===================================== */
 type FlexItemProps = React.HTMLAttributes<HTMLDivElement> & {
-  textAlign?: 'right' | 'left';
+  basis?: number;
   grow?: boolean | number;
+  textAlign?: 'right' | 'left';
 }
 
 type AlignItemsValue = 'center' | 'stretch';
@@ -43,7 +44,8 @@ export const Container: React.FC<FlexContainerProps> = (props) => {
     className
   );
   
-  const childProps = omit(rest, 'alignItems', 'grow', 'justifyContent', 'textAlign', 'wrap');
+  const childProps = omit(rest, 'alignItems', 'basis', 'grow', 'justifyContent', 'textAlign', 'wrap');
+  
   return <div className={classes} {...childProps} />;
 };
 
@@ -51,7 +53,7 @@ export const Item: React.FC<FlexItemProps> = (props) => {
   const { className, ...rest } = props;
   const classes = useItemStyles(props);
   const itemClasses = classNames(classes.flexItem, className);
-  const childProps = omit(rest, 'textAlign', 'grow');
+  const childProps = omit(rest, 'alignItems', 'basis', 'grow', 'justifyContent', 'textAlign', 'wrap');
   return <div className={itemClasses} {...childProps} />
 };
 
@@ -73,6 +75,9 @@ function getFlexContainerStyles (props: FlexContainerProps): CreateCSSProperties
 
 function getFlexItemStyles (props: FlexItemProps): CreateCSSProperties {
   return {
+    flexBasis: props.basis
+      ? `${props.basis}%`
+      : undefined,
     flexGrow: props.grow
       ? props.grow === true
         ? 1
