@@ -19,7 +19,7 @@ const useStyles = makeStylesHook<CardProps>(() => ({
   card: props => ({
     padding: props.padding
   })
-}));
+}), 'NavigaderCard');
 
 /** ============================ Components ================================ */
 export const Card: React.FC<CardProps> = ({ className, styleOverrides, ...rest }) => {

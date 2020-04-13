@@ -30,7 +30,7 @@ const useStyles = makeStylesHook(theme => ({
   strategySelect: {
     maxWidth: 300
   }
-}));
+}), 'ProgramOptions');
 
 /** ============================ Components ================================ */
 const BatteryOptions: React.FC<ProgramOptionsProps> = (props) => {

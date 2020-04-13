@@ -42,7 +42,7 @@ const LoadGraphCard: React.FC<LoadGraphCardProps> = ({ changeType, dataType, met
   return (
     <Card raised styleOverrides={cardStyles}>
       <Grid>
-        <Grid.Item span={3}>
+        <Grid.Item span={2}>
           <Radio.Group aria-label="graph view" value={dataType} onChange={changeMode}>
             <Radio value="total" label="Total" />
             <Radio value="average" label="Average" />
@@ -54,7 +54,7 @@ const LoadGraphCard: React.FC<LoadGraphCardProps> = ({ changeType, dataType, met
           <MonthsMenu selectedMonths={selectedMonths} changeMonths={setMonths} />
         </Grid.Item>
 
-        <Grid.Item span={9}>
+        <Grid.Item span={10}>
           <LoadGraph dataType={dataType} meterGroup={meterGroup} months={selectedMonths} />
         </Grid.Item>
       </Grid>

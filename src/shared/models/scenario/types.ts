@@ -41,7 +41,7 @@ export type RawScenario = DeferrableFields<
   }
 >;
 
-export type Scenario = DeferrableFields<
+export interface Scenario extends DeferrableFields<
   NavigaderObject<'SingleScenarioStudy'> &
   ScenarioCommon &
   {
@@ -60,7 +60,7 @@ export type Scenario = DeferrableFields<
     report: ScenarioReport;
     report_summary: ScenarioReportSummary;
   }
->;
+> {}
 
 /** ============================ Report ==================================== */
 type ScenarioReportFieldsCommon = {

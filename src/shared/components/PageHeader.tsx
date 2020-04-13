@@ -26,20 +26,20 @@ const useStyles = makeStylesHook(theme => ({
     marginBottom: theme.spacing(2),
     paddingTop: theme.spacing(2)
   }
-}));
+}), 'PageHeader');
 
 const useBreadcrumbStyles = makeStylesHook(theme => ({
   breadcrumbsWrapper: {
     height: 48,
     paddingTop: theme.spacing(1)
   }
-}));
+}), 'BreadCrumbs');
 
 const useBackButtonStyles = makeStylesHook(theme => ({
   backButton: {
     marginRight: theme.spacing(2)
   }
-}));
+}), 'BackButton');
 
 /** ============================ Components ================================ */
 const BackButton: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
@@ -61,10 +61,7 @@ const BackButton: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
  
   /** ============================ Callbacks =============================== */
   function goBack () {
-    // The back button shouldn't render if there's no last link, but this is required for
-    // type-checking to succeed
-    if (!lastLink) return;
-    history.push(lastLink[1]);
+    history.goBack();
   }
 };
 

@@ -7,7 +7,7 @@ import { Icon, ValidIcon } from './Icon';
 
 
 /** ============================ Types ===================================== */
-type ChipProps = {
+export type ChipProps = {
   color?: 'primary' | 'secondary' | 'default';
   icon?: ValidIcon;
   label: string;
@@ -19,7 +19,7 @@ const useStyles = makeStylesHook(theme => ({
   chip: {
     boxShadow: theme.shadows[3]
   }
-}));
+}), 'NavigaderChip');
 
 /** ============================ Components ================================ */
 export const Chip: React.FC<ChipProps> = (props) => {

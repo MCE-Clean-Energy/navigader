@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import { Button } from '@nav/shared/components';
+import { Button, Grid } from '@nav/shared/components';
 import { BatteryConfiguration, BatteryStrategy } from '@nav/shared/models/der';
-import { DerCard, DERSelection } from './shared';
+import { DerSelectionCard, DERSelection } from './shared';
 
 
 /** ============================ Types ===================================== */
@@ -17,20 +17,24 @@ type SelectDERsProps = {
 const SelectDERs: React.FC<SelectDERsProps> = (props) => {
   const { derConfigurations, derStrategies, selectedDers, updateDerSelections } = props;
   return (
-    <div>
-      {selectedDers.map((selectedDer, index) =>
-        <DerCard
-          configurations={derConfigurations}
-          delete={removeSelection.bind(null, index)}
-          der={selectedDer}
-          key={index}
-          numDers={selectedDers.length}
-          strategies={derStrategies}
-          update={(der: Partial<DERSelection>) => updateDer(index, der)}
-        />
-      )}
-      <Button color="secondary" icon="plus" onClick={addDer} size="small">Add DER</Button>
-    </div>
+    <Grid>
+      <Grid.Item span={12}>
+        {selectedDers.map((selectedDer, index) =>
+          <DerSelectionCard
+            configurations={derConfigurations}
+            delete={removeSelection.bind(null, index)}
+            der={selectedDer}
+            key={index}
+            numDers={selectedDers.length}
+            strategies={derStrategies}
+            update={(der: Partial<DERSelection>) => updateDer(index, der)}
+          />
+        )}
+      </Grid.Item>
+      <Grid.Item span={12}>
+        <Button color="secondary" icon="plus" onClick={addDer} size="small">Add DER</Button>
+      </Grid.Item>
+    </Grid>
   );
   
   /** ============================ Callbacks =============================== */

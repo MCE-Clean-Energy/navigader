@@ -21,7 +21,7 @@ const useStyles = makeStylesHook(() => ({
   fileUpload: {
     display: 'none'
   }
-}));
+}), 'UploadPage');
 
 const useFileCardStyles = makeStylesHook(theme => ({
   card: {
@@ -46,7 +46,7 @@ const useFileCardStyles = makeStylesHook(theme => ({
   uploadingStatus: {
     marginTop: theme.spacing(2)
   }
-}));
+}), 'UploadFileCard');
 
 /** ============================ Components ================================ */
 const FileCard: React.FC<FileCardProps> = ({ file, startUpload, status }) => {

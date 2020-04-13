@@ -1,15 +1,15 @@
 import * as React from 'react';
+import find from 'lodash/find';
 
-import { Button, Card, Flex, Select, Statistic } from '@nav/shared/components';
+import { Button, Card, DERCard, Flex, Select } from '@nav/shared/components';
 import { BatteryConfiguration, BatteryStrategy } from '@nav/shared/models/der';
 import { makeStylesHook } from '@nav/shared/styles';
 import { ProgramOptions } from './ProgramOptions';
 import { DERSelection } from './util';
-import find from 'lodash/find';
 
 
 /** ============================ Types ===================================== */
-type DerCardReadOnlyProps = {
+type DerSelectionCardReadOnlyProps = {
   configurations?: BatteryConfiguration[];
   der: Partial<DERSelection>;
   numDers: number;
@@ -17,15 +17,17 @@ type DerCardReadOnlyProps = {
   
 };
 
-type DerCardProps = DerCardReadOnlyProps & {
+type DerSelectionCardProps = DerSelectionCardReadOnlyProps & {
   delete: () => void;
   update: (der: Partial<DERSelection>) => void;
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook<DerCardReadOnlyProps>(theme => ({
+const useStyles = makeStylesHook<DerSelectionCardReadOnlyProps>(theme => ({
   derCard: {
-    marginBottom: theme.spacing(2)
+    '&:not(:last-of-type)': {
+      marginBottom: theme.spacing(2)
+    }
   },
   flexContainer: {
     '& > *': {
@@ -48,10 +50,10 @@ const useStyles = makeStylesHook<DerCardReadOnlyProps>(theme => ({
   typeSelect: {
     width: 200
   }
-}));
+}), 'CreatedScenario/DerCard');
 
 /** ============================ Components ================================ */
-export const DerCard: React.FC<DerCardProps> = (props) => {
+export const DerSelectionCard: React.FC<DerSelectionCardProps> = (props) => {
   const classes = useStyles(props);
   
   return (
@@ -62,7 +64,7 @@ export const DerCard: React.FC<DerCardProps> = (props) => {
             className={classes.typeSelect}
             label="DER Type"
             onChange={updateType}
-            options={['Battery', 'Solar Panel']}
+            options={['Battery']}
             value={props.der.type}
           />
         </Flex.Item>
@@ -101,31 +103,14 @@ export const DerCard: React.FC<DerCardProps> = (props) => {
   }
 };
 
-export const DerCardReadOnly: React.FC<DerCardReadOnlyProps> = (props) => {
+export const DerCardReadOnly: React.FC<DerSelectionCardReadOnlyProps> = (props) => {
   const { configurations, der, strategies } = props;
-  const classes = useStyles(props);
+  const classes = useStyles();
   
   // Get selected configuration and strategy
   const configuration = find(configurations, { id: der.configurationId });
   const strategy = find(strategies, { id: der.strategyId });
   
-  return (
-    <Card className={classes.derCard} raised>
-      <Flex.Container className={classes.flexContainer}>
-        <Flex.Item>
-          <Statistic title="Type" value={der.type} variant="subtitle2" />
-        </Flex.Item>
-        
-        <Flex.Item>
-          {configuration &&
-            <Statistic title="Configuration" value={configuration.name} variant="subtitle2" />
-          }
-        </Flex.Item>
-        
-        <Flex.Item>
-          {strategy && <Statistic title="Strategy" value={strategy.name} variant="subtitle2" />}
-        </Flex.Item>
-      </Flex.Container>
-    </Card>
-  );
+  if (!configuration || !strategy) return null;
+  return <DERCard className={classes.derCard} configuration={configuration} strategy={strategy} />;
 };

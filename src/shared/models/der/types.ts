@@ -20,10 +20,10 @@ type DerCommonFields = {
   name: string;
 }
 
-export type BatteryConfiguration = DeferrableFields<
+export interface BatteryConfiguration extends DeferrableFields<
   NavigaderObject<'BatteryConfiguration'> & DerCommonFields,
   DerConfigurationDeferrableFields
->;
+> {}
 
 type Frame288BatteryStrategy = Frame288<number | 'inf' | '-inf'>;
 type DerStrategyDeferredFields = {
@@ -33,10 +33,10 @@ type DerStrategyDeferredFields = {
   };
 };
 
-export type BatteryStrategy = DeferrableFields<
+export interface BatteryStrategy extends DeferrableFields<
   NavigaderObject<'BatteryStrategy'> & DerCommonFields,
   DerStrategyDeferredFields
->;
+> {}
 
 /** ============================ DER Simulations =========================== */
 export type BatterySimulation = NavigaderObject<'StoredBatterySimulation'> & {

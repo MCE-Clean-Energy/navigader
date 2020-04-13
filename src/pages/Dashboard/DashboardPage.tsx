@@ -5,7 +5,7 @@ import map from 'lodash/map';
 
 import * as api from '@nav/shared/api';
 import {
-  Button, Divider, Flex, Icon, Link, List, Menu, PageHeader, PaginationState, Table, Typography
+  Button, DERIcon, Flex, Link, List, Menu, PageHeader, PaginationState, Table, Typography
 } from '@nav/shared/components';
 import { Scenario } from '@nav/shared/models/scenario';
 import * as routes from '@nav/shared/routes';
@@ -31,7 +31,7 @@ const useStyles = makeStylesHook(theme => ({
   compareButton: {
     marginRight: theme.spacing(2)
   }
-}));
+}), 'ScenariosTable');
 
 /** ============================ Components ================================ */
 /**
@@ -178,10 +178,10 @@ const ScenariosTable: React.FC = () => {
                     {scenario.der &&
                       <Flex.Container alignItems="center">
                         <Flex.Item>
-                          {getDerIcon(scenario)}
+                          <DERIcon type={scenario.der.der_configuration.der_type} />
                         </Flex.Item>
                         <Flex.Item>
-                          {scenario.der && scenario.der.der_configuration.name}
+                          {scenario.der.der_configuration.name}
                         </Flex.Item>
                       </Flex.Container>
                     }
@@ -209,11 +209,13 @@ const ScenariosTable: React.FC = () => {
                         <List.Item.Icon icon="pencil" />
                         <List.Item.Text>Rename</List.Item.Text>
                       </List.Item>
-                      <Divider />
-                      <List.Item onClick={() => archiveScenario(scenario.id)}>
-                        <List.Item.Icon icon="trash" />
-                        <List.Item.Text>Archive</List.Item.Text>
-                      </List.Item>
+
+                      {/* TODO: introduce scenario archiving */}
+                      {/*<Divider />*/}
+                      {/*<List.Item onClick={() => archiveScenario(scenario.id)}>*/}
+                      {/*  <List.Item.Icon icon="trash" />*/}
+                      {/*  <List.Item.Text>Archive</List.Item.Text>*/}
+                      {/*</List.Item>*/}
                     </Menu>
                   </Table.Cell>
                 </Table.Row>
@@ -241,9 +243,9 @@ const ScenariosTable: React.FC = () => {
     history.push(routes.scenario(scenarioId));
   }
   
-  function archiveScenario (scenarioId: string) {
-    alert('Scenario archiving has not been implemented yet');
-  }
+  // function archiveScenario (scenarioId: string) {
+  //   alert('Scenario archiving has not been implemented yet');
+  // }
 };
 
 export const DashboardPage = () =>
@@ -264,19 +266,4 @@ function getScenarioStatus (scenario: Scenario) {
   return is_complete
     ? 'Done'
     : `${Math.floor(percent_complete)}%`;
-}
-
-/**
- * Returns an icon representing a scenario's DER
- *
- * @param {Scenario} scenario: the scenario to get the DER from
- */
-function getDerIcon (scenario: Scenario) {
-  const derType = scenario.der?.der_configuration.der_type;
-  
-  if (derType === 'Battery') {
-    return <Icon name="battery" />;
-  } else {
-    return null;
-  }
 }

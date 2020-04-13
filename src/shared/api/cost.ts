@@ -1,6 +1,6 @@
 import find from 'lodash/find';
 
-import { parseMeterGroup, RawMeterGroup } from '@nav/shared/models/meter';
+import { LoadType, parseMeterGroup, RawMeterGroup } from '@nav/shared/models/meter';
 import { parseScenario, RawScenario, Scenario } from '@nav/shared/models/scenario';
 import {
   appendId, beoRoute, DynamicRestParams, getRequest,
@@ -32,7 +32,9 @@ type GetScenarioResponse = {
   study: RawScenario;
 };
 
-type GetScenarioQueryOptions = Partial<DynamicRestParams>;
+type GetScenarioQueryOptions = Partial<DynamicRestParams> & {
+  data_types?: LoadType | LoadType[];
+};
 
 /** ============================ API Methods =============================== */
 export async function postStudy (

@@ -25,7 +25,7 @@ const useStyles = makeStylesHook(theme => ({
     backgroundColor: 'inherit',
     marginBottom: theme.spacing(3)
   }
-}));
+}), 'CreateScenario');
 
 /** ============================ Components ================================ */
 const CreateScenarioPage: React.FC = () => {

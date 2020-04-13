@@ -49,7 +49,7 @@ const useStyles = makeStylesHook(theme => ({
   selectedOption: {
     fontWeight: theme.typography.fontWeightMedium
   }
-}));
+}), 'NavigaderSelect');
 
 /** ============================ Components ================================ */
 export function Select <T>(props: SelectProps<T>) {

@@ -1,14 +1,17 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 import * as api from '@nav/shared/api';
-import { PageHeader, PaginationState, Table } from '@nav/shared/components';
+import {
+  DERCard, Flex, MeterGroupChip, PageHeader, PaginationState, Table
+} from '@nav/shared/components';
 import { BatteryConfiguration, BatteryStrategy } from '@nav/shared/models/der';
 import { MeterGroup } from '@nav/shared/models/meter';
 import { Scenario, ScenarioReport } from '@nav/shared/models/scenario';
 import * as routes from '@nav/shared/routes';
 import { selectModels, updateModels } from '@nav/shared/store/slices/models';
+import { makeStylesHook } from '@nav/shared/styles';
 import { formatters, makeCancelableAsync } from '@nav/shared/util';
 
 
@@ -21,6 +24,13 @@ type SimulationsTableProps = {
   };
   report: ScenarioReport;
 };
+
+/** ============================ Styles ==================================== */
+const useStyles = makeStylesHook(theme => ({
+  meterGroup: {
+    marginLeft: theme.spacing(3)
+  }
+}), 'ScenarioResultsPage');
 
 /** ============================ Components ================================ */
 const SimulationsTable: React.FC<SimulationsTableProps> = ({ filterParams, report }) => {
@@ -85,15 +95,17 @@ const SimulationsTable: React.FC<SimulationsTableProps> = ({ filterParams, repor
   );
 };
 
-export const ScenarioPage: React.FC = () => {
+export const ScenarioResultsPage: React.FC = () => {
   const [scenario, setScenario] = React.useState<Scenario | null>(null);
+  const classes = useStyles();
   const { id } = useParams();
+  const history = useHistory();
   
   // Loads the scenario
   React.useEffect(
     makeCancelableAsync(async () => {
       if (!id) return null;
-      return api.getScenario(id, { include: ['meter_groups', 'report'] });
+      return api.getScenario(id, { include: ['ders', 'meter_groups', 'report'] });
     }, res => setScenario(res)),
     [id]
   );
@@ -107,6 +119,23 @@ export const ScenarioPage: React.FC = () => {
         ]}
         title={scenario ? scenario.name : 'Scenario Loading...'}
       />
+      <Flex.Container alignItems="center">
+        <Flex.Item>
+          {scenario &&
+            <DERCard
+              configuration={scenario.der?.der_configuration}
+              strategy={scenario.der?.der_strategy}
+            />
+          }
+        </Flex.Item>
+        <Flex.Item className={classes.meterGroup}>
+          <MeterGroupChip
+            meterGroup={scenario?.meter_group}
+            onClick={goToMeterGroup}
+            showCount
+          />
+        </Flex.Item>
+      </Flex.Container>
       {scenario && scenario.meter_group && scenario.report &&
         <SimulationsTable
           filterParams={{
@@ -119,4 +148,10 @@ export const ScenarioPage: React.FC = () => {
       }
     </>
   );
+  
+  /** ============================ Callbacks =============================== */
+  function goToMeterGroup () {
+    if (!scenario || !scenario.meter_group) return;
+    history.push(routes.meterGroup(scenario.meter_group.id));
+  }
 };

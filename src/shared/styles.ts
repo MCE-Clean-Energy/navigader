@@ -43,9 +43,11 @@ export { useTheme };
 
 /** ============================ Styles Hook =============================== */
 export function makeStylesHook<Props extends {} = {}, ClassKey extends string = string> (
-  styles: (theme: Theme) => StyleRules<Props, ClassKey>
+  styles: (theme: Theme) => StyleRules<Props, ClassKey>,
+  name: string
 ): (props?: Props) => ClassNameMap<ClassKey> {
   return makeStyles<Theme>(
-    createStyles(styles)
+    createStyles(styles),
+    { name }
   );
 }

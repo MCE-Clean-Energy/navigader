@@ -52,6 +52,7 @@ const slice = createSlice({
 export const { reducer } = slice;
 export const { updateModels, updateModel } = slice.actions;
 
+/** ============================ Selectors ================================= */
 /**
  * A "selector creator" that accepts a type of model and returns a selector that will return the
  * models of that type

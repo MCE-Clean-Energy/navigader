@@ -2,10 +2,9 @@ import * as React from 'react';
 import find from 'lodash/find';
 import without from 'lodash/without';
 
-import { Flex } from '@nav/shared/components';
+import { Flex, MeterGroupChip } from '@nav/shared/components';
 import { MeterGroup } from '@nav/shared/models/meter';
 import { makeStylesHook } from '@nav/shared/styles';
-import { CustomerChip } from './shared';
 
 
 /** ============================ Types ===================================== */
@@ -25,8 +24,11 @@ const useStyles = makeStylesHook(theme => ({
   meterCount: {
     marginTop: 'auto',
     textAlign: 'right'
+  },
+  meterGroupChip: {
+    marginBottom: theme.spacing(2)
   }
-}));
+}), 'SelectCustomers');
 
 /** ============================ Components ================================ */
 const SelectCustomers: React.FC<SelectCustomersProps> = (props) => {
@@ -45,11 +47,14 @@ const SelectCustomers: React.FC<SelectCustomersProps> = (props) => {
         {meterGroups.map((meterGroup) => {
           const selected = selectedMeterGroupIds.includes(meterGroup.id);
           return (
-            <CustomerChip
+            <MeterGroupChip
+              className={classes.meterGroupChip}
+              color={selected ? 'primary' : 'secondary'}
+              data-testid="meter-group-chip"
+              icon={selected ? 'checkMark' : 'plus'}
               key={meterGroup.id}
               meterGroup={meterGroup}
-              selected={selected}
-              onClick={toggleMeterGroup}
+              onClick={toggleMeterGroup.bind(null, meterGroup.id)}
             />
           );
         })}

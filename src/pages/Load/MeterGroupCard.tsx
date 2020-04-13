@@ -14,15 +14,15 @@ type MeterGroupCardProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useMeterGroupCardStyles = makeStylesHook(() => ({
+const useStyles = makeStylesHook(() => ({
   card: {
     cursor: 'pointer'
   }
-}));
+}), 'MeterGroupCard');
 
 /** ============================ Components ================================ */
 export const MeterGroupCard: React.FC<MeterGroupCardProps> = ({ meterGroup}) => {
-  const classes = useMeterGroupCardStyles();
+  const classes = useStyles();
   const history = useHistory();
   
   // Render the graph if we've loaded the average data

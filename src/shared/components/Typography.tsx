@@ -41,7 +41,7 @@ const useStyles = makeStylesHook<TypographyProps>(() => ({
   text: props => ({
     opacity: getOpacity(props.emphasis)
   })
-}));
+}), 'NavigaderTypography');
 
 /** ============================ Components ================================ */
 export const Typography: React.FC<TypographyProps> = (props) => {

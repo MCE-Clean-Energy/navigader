@@ -17,7 +17,7 @@ const useStyles = makeStylesHook(() => ({
   navigader: {
     letterSpacing: 25
   }
-}));
+}), 'LoginPage');
 
 const useLoginCardStyles = makeStylesHook(() => ({
   loginCard: {
@@ -32,13 +32,13 @@ const useLoginCardStyles = makeStylesHook(() => ({
   loginForm: {
     marginTop: '3rem'
   }
-}));
+}), 'LoginCard');
 
 const useSpacerStyles = makeStylesHook(() => ({
   spacer: {
     marginTop: '1rem'
   }
-}));
+}), 'LoginSpacer');
 
 /** ============================ Components ================================ */
 const Spacer: React.FC = () => {

@@ -43,7 +43,7 @@ export const useGradientStyles = makeStylesHook<GradientProps>(theme => ({
       [lengthDimension]: combinedProps.length
     };
   }
-}));
+}), 'Gradient');
 
 /** ============================ Components ================================ */
 export const Gradient: React.FC<GradientProps> = ({ className, ...rest }) => {

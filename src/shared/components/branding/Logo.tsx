@@ -14,7 +14,7 @@ const useStyles = makeStylesHook<LogoProps>(() => ({
   logo: props => ({
     width: props.width
   })
-}));
+}), 'Logo');
 
 /** ============================ Components ================================ */
 export const Logo: React.FC<LogoProps> = (props) => {

@@ -12,7 +12,7 @@ const useStyles = makeStylesHook(() => ({
   wrapper: {
     textAlign: 'center'
   }
-}));
+}), 'NavigaderCentered');
 
 /** ============================ Components ================================ */
 export const Centered: React.FC<CenteredProps> = ({ className, ...rest }) => {

@@ -1,12 +1,12 @@
 import * as React from 'react';
 import find from 'lodash/find';
 
-import { Card, Flex, Grid, Link, TextField, Typography } from '@nav/shared/components';
-import { MeterGroup } from '@nav/shared/models/meter';
-import { makeStylesHook } from '@nav/shared/styles';
-import * as routes from '@nav/shared/routes';
+import { Card, Grid, Link, MeterGroupChip, TextField, Typography } from '@nav/shared/components';
 import { BatteryConfiguration, BatteryStrategy } from '@nav/shared/models/der';
-import { CustomerChip, DerCardReadOnly, DERSelection, validateDerSelections } from './shared';
+import { MeterGroup } from '@nav/shared/models/meter';
+import * as routes from '@nav/shared/routes';
+import { makeStylesHook } from '@nav/shared/styles';
+import { DerCardReadOnly, DERSelection, validateDerSelections } from './shared';
 
 
 /** ============================ Types ===================================== */
@@ -21,37 +21,29 @@ type ReviewProps = {
 };
 
 /** ============================ Styles ==================================== */
-const selectedCustomersUseStyles = makeStylesHook(theme => ({
-  customerRow: {
-    marginBottom: theme.spacing(2)
-  },
-  numMeters: {
-    marginLeft: theme.spacing(2)
-  }
-}));
-
-const sectionHeadingUseStyles = makeStylesHook(theme => ({
+const useSectionHeadingStyles = makeStylesHook(theme => ({
   heading: {
     marginBottom: theme.spacing(3)
   }
-}));
+}), 'SectionHeading');
 
-const reviewUseStyles = makeStylesHook(theme => ({
-  scenarioName: {
-    marginTop: theme.spacing(3),
-    width: '50%'
+const useSelectedCustomersStyles = makeStylesHook(theme => ({
+  meterGroupChip: {
+    '&:not(:last-of-type)': {
+      marginBottom: theme.spacing(2)
+    }
   }
-}));
+}), 'SelectedCustomers');
 
 /** ============================ Components ================================ */
 const SectionHeading: React.FC = ({ children }) => {
-  const classes = sectionHeadingUseStyles();
+  const classes = useSectionHeadingStyles();
   return <Typography className={classes.heading} useDiv variant="subtitle1">{children}</Typography>;
 };
 
 const SelectedCustomers: React.FC<ReviewProps> = (props) => {
   const { meterGroups, selectedMeterGroupIds } = props;
-  const classes = selectedCustomersUseStyles();
+  const classes = useSelectedCustomersStyles();
   return (
     <div>
       <SectionHeading>Selected Customers</SectionHeading>
@@ -68,27 +60,15 @@ const SelectedCustomers: React.FC<ReviewProps> = (props) => {
           );
         }
         
-        return selectedMeterGroupIds.map((meterGroupId) => {
-          const meterGroup = find(meterGroups, { id: meterGroupId });
-          if (!meterGroup) return null;
-          return (
-            <Flex.Container
-              alignItems="center"
-              className={classes.customerRow}
-              key={meterGroup.id}
-            >
-              <Flex.Item>
-                <CustomerChip meterGroup={meterGroup} selected />
-              </Flex.Item>
-              
-              <Flex.Item className={classes.numMeters}>
-                <Typography variant="body2">
-                  Number of meters: {meterGroup.numMeters}
-                </Typography>
-              </Flex.Item>
-            </Flex.Container>
-          );
-        });
+        return selectedMeterGroupIds.map((meterGroupId) =>
+          <MeterGroupChip
+            className={classes.meterGroupChip}
+            color="primary"
+            icon="checkMark"
+            meterGroup={find(meterGroups, { id: meterGroupId })}
+            showCount
+          />
+        );
       })()}
     </div>
   );
@@ -127,7 +107,6 @@ const SelectedDers: React.FC<ReviewProps> = (props) => {
 };
 
 const Review: React.FC<ReviewProps> = (props) => {
-  const classes = reviewUseStyles();
   return (
     <>
       <Grid>
@@ -140,18 +119,20 @@ const Review: React.FC<ReviewProps> = (props) => {
         <Grid.Item span={4}>
           <SelectedCustomers {...props} />
         </Grid.Item>
+        
+        <Grid.Item span={6}>
+          <TextField
+            autoFocus
+            id="scenario-name"
+            label="Scenario Name"
+            onChange={handleNameChange}
+            outlined
+            tabIndex={1}
+            value={props.scenarioName || ''}
+          />
+        </Grid.Item>
       </Grid>
       
-      <TextField
-        autoFocus
-        className={classes.scenarioName}
-        id="scenario-name"
-        label="Scenario Name"
-        onChange={handleNameChange}
-        outlined
-        tabIndex={1}
-        value={props.scenarioName || ''}
-      />
     </>
   );
   

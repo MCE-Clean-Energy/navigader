@@ -9,7 +9,7 @@ import { Typography, TypographyProps } from './Typography';
 
 
 /** ============================ Types ===================================== */
-type ValueType = number | string;
+type ValueType = number | string | React.ReactElement;
 type FormatConfig = {
   decimalSeparator?: string;
   groupSeparator?: string;
@@ -45,7 +45,7 @@ const useStyles = makeStylesHook(() => ({
   title: {
     marginBottom: 4
   }
-}));
+}), 'Statistic');
 
 /** ============================ Components ===================================== */
 const StatisticNumber: React.FC<NumberProps> = props => {
@@ -94,7 +94,10 @@ export const Statistic: React.FC<StatisticProps> = (props) => {
     variant = 'h5'
   } = props;
 
-  let valueNode: React.ReactNode = <StatisticNumber {...props} value={value} />;
+  let valueNode: React.ReactNode = typeof value === 'number'
+    ? <StatisticNumber {...props} value={value} />
+    : <span>{value}</span>;
+  
   if (valueRender) {
     valueNode = valueRender(valueNode);
   }

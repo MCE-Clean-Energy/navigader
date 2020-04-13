@@ -27,7 +27,7 @@ const useStyles = makeStylesHook(theme => ({
   popover: {
     pointerEvents: 'none'
   }
-}));
+}), 'NavigaderHoverText');
 
 /** ============================ Components ================================ */
 export const HoverText: React.FC<HoverTextProps> = (props) => {

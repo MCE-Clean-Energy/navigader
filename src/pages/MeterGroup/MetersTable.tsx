@@ -18,7 +18,7 @@ const useStyles = makeStylesHook(() => ({
   tableContainer: {
     maxHeight: 500
   }
-}));
+}), 'MetersTable');
 
 /** ============================ Components ================================ */
 const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {

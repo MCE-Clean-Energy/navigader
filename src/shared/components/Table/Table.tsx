@@ -72,7 +72,7 @@ const useStyles = makeStylesHook(theme => ({
   progressBarSpacer: {
     height: 4
   }
-}));
+}), 'NavigaderTable');
 
 /** ============================ Components ================================ */
 const TableRaiser: React.FC = (props) => <MuiPaper elevation={8} {...props} />;

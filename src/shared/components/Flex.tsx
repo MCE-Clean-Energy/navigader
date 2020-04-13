@@ -26,11 +26,11 @@ type FlexContainerProps = React.HTMLAttributes<HTMLDivElement> & FlexItemProps &
 /** ============================ Styles ==================================== */
 const useContainerStyles = makeStylesHook<FlexContainerProps>(() => ({
   flexContainer: getFlexContainerStyles
-}));
+}), 'FlexContainer');
 
 const useItemStyles = makeStylesHook<FlexItemProps>(() => ({
   flexItem: getFlexItemStyles
-}));
+}), 'FlexItem');
 
 /** ============================ Components ================================ */
 export const Container: React.FC<FlexContainerProps> = (props) => {

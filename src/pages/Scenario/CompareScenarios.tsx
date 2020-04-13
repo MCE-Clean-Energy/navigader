@@ -9,7 +9,7 @@ import pick from 'lodash/pick';
 
 import * as api from '@nav/shared/api';
 import { in_ } from '@nav/shared/api/util';
-import { Card, Flex, Grid, PageHeader, Select } from '@nav/shared/components';
+import { Card, Flex, Grid, PageHeader, Progress, Select } from '@nav/shared/components';
 import { MeterGroup } from '@nav/shared/models/meter';
 import { Scenario } from '@nav/shared/models/scenario';
 import * as routes from '@nav/shared/routes';
@@ -62,7 +62,7 @@ const useStyles = makeStylesHook(theme => ({
   tooltip: {
     ...theme.typography.body1
   }
-}));
+}), 'ScenarioComparisonChart');
 
 const scatterPointStyle = {
   fill: primaryColor,
@@ -197,7 +197,10 @@ export const CompareScenariosPage: React.FC = () => {
         ]}
         title="Compare Scenarios"
       />
-      {scenarios && <ScenarioComparisonChart scenarios={scenarios} />}
+      {scenarios
+        ? <ScenarioComparisonChart scenarios={scenarios} />
+        : <Progress circular />
+      }
     </>
   );
 };
