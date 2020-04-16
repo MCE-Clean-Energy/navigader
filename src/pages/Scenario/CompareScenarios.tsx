@@ -77,6 +77,10 @@ const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (props) 
   const [sizing, setSizing] = React.useState(SizingOption.CohortSize);
   const chartConfig = buildChartConfiguration(scenarios, sizing);
   
+  // The height is defined in the material theme, but the theme's type definition says the `chart`
+  // member is optional. Hence the `|| 350`.
+  const height = VictoryTheme.material.chart?.height || 350;
+  
   return (
     <Grid>
       <Grid.Item span={7}>
@@ -84,15 +88,19 @@ const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (props) 
           <ContainerDimensions>
             {({ width }: Dimensions) =>
               <VictoryChart
-                theme={VictoryTheme.material}
                 domain={chartConfig.domain}
                 domainPadding={LARGEST_RADIUS}
+                padding={CHART_MARGIN}
+                theme={VictoryTheme.material}
                 width={width}
               >
-                <VictoryAxis axisLabelComponent={<VictoryLabel dy={-20} />} label="Bill Delta ($/year)" />
                 <VictoryAxis
-                  axisLabelComponent={<VictoryLabel dy={-30} />}
-                  crossAxis={false}
+                  axisLabelComponent={<VictoryLabel dy={height/2 - CHART_MARGIN} />}
+                  label="Bill Delta ($/year)"
+                />
+                
+                <VictoryAxis
+                  axisLabelComponent={<VictoryLabel dy={-width/2 + CHART_MARGIN} />}
                   dependentAxis
                   label="GHG Delta (tCO2/year)"
                 />
@@ -221,7 +229,7 @@ function buildChartConfiguration (scenarios: Scenario[], sizingMethod: SizingOpt
   let yMax = -Infinity;
   
   // Get the size values up front-- the pixel sizes will be computed relative to one another
-  const sizeValues = scenarios.map(s => computeSize(s, sizingMethod));
+  const sizeValues = scenarios.map(s => Math.abs(computeSize(s, sizingMethod)));
   const sizeScale = d3.scaleSqrt()
     .domain([0, Math.max(...sizeValues)])
     .range([SMALLEST_RADIUS, LARGEST_RADIUS]);
@@ -253,11 +261,15 @@ function buildChartConfiguration (scenarios: Scenario[], sizingMethod: SizingOpt
     };
   }));
   
+  // To center the origin in the graph, the axes extend equally on both sides
+  const xMaxAbsolute = Math.max(Math.abs(xMin), Math.abs(xMax));
+  const yMaxAbsolute = Math.max(Math.abs(yMin), Math.abs(yMax));
+  
   return {
     data,
     domain: {
-      x: [xMin, xMax],
-      y: [yMin, yMax]
+      x: [-xMaxAbsolute, xMaxAbsolute],
+      y: [-yMaxAbsolute, yMaxAbsolute]
     }
   };
 }
@@ -281,6 +293,7 @@ function computeSize (scenario: Scenario, sizingMethod: SizingOption) {
   }
 }
 
-// Constants used in size normalization
+/** ============================ Constants ================================= */
 const SMALLEST_RADIUS = 3;
 const LARGEST_RADIUS = 30;
+const CHART_MARGIN = 30;
