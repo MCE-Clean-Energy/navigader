@@ -1,4 +1,4 @@
-import { clamp, lerp } from './math';
+import { clamp, lerp, percentOf } from './math';
 
 
 describe('`lerp` method', () => {
@@ -23,5 +23,19 @@ describe('`clamp` method', () => {
   
   it('returns the value unmodified if it falls within the range', () => {
     expect(clamp(4.8, 3, 8)).toEqual(4.8);
+  });
+});
+
+describe('`percentOf` method', () => {
+  it('handles when the denominator is 0', () => {
+    expect(percentOf(0, 0)).toEqual(Infinity);
+    expect(percentOf(1, 0)).toEqual(Infinity);
+  });
+  
+  it('returns percents properly', () => {
+    expect(percentOf(0, 1)).toEqual(0);
+    expect(percentOf(1, 2)).toEqual(50);
+    expect(percentOf(50.1, 100)).toEqual(50.1);
+    expect(percentOf(3.5, 2)).toEqual(175);
   });
 });

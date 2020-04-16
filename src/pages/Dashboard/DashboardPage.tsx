@@ -171,7 +171,7 @@ const ScenariosTable: React.FC = () => {
                   <Table.Cell>{formatters.standardDate(scenario.created_at)}</Table.Cell>
                   <Table.Cell>
                     {scenario.meter_group &&
-                      <span>{scenario.meter_group.name} ({scenario.meter_group.numMeters})</span>
+                      <span>{scenario.meter_group.name} ({scenario.meter_group.meter_count})</span>
                     }
                   </Table.Cell>
                   <Table.Cell>
@@ -200,7 +200,11 @@ const ScenariosTable: React.FC = () => {
                   </Table.Cell>
                   <Table.Cell>{getScenarioStatus(scenario)}</Table.Cell>
                   <Table.Cell>
-                    <Menu icon="verticalDots">
+                    <Menu
+                      anchorOrigin={{ vertical: 'center', horizontal: 'center'}}
+                      icon="verticalDots"
+                      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    >
                       <List.Item onClick={() => viewScenario(scenario.id)}>
                         <List.Item.Icon icon="plus" />
                         <List.Item.Text>View</List.Item.Text>

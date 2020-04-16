@@ -1,6 +1,4 @@
-import {
-  LoadType, MeterGroup, parseMeterGroup, Meter, RawMeterGroup
-} from '@nav/shared/models/meter';
+import { LoadType, parseMeterGroup, Meter, MeterGroup } from '@nav/shared/models/meter';
 import {
   appendId, beoRoute, getRequest, makeFormPost, parsePaginationSet, PaginationQueryParams,
   PaginationSet, RawPaginationSet, equals_
@@ -19,7 +17,7 @@ type MeterGroupQueryParams = Omit<MeterQueryParams, 'meterGroupId'>;
 export async function getMeterGroups (
   queryParams?: MeterGroupQueryParams
 ): Promise<PaginationSet<MeterGroup>> {
-  const response: RawPaginationSet<{ meter_groups: RawMeterGroup[] }> =
+  const response: RawPaginationSet<{ meter_groups: MeterGroup[] }> =
     await getRequest(
       routes.meterGroup(),
       queryParams
@@ -35,7 +33,7 @@ export async function getMeterGroup (
   uuid: string,
   queryParams?: MeterGroupQueryParams
 ) {
-  const response: Record<'meter_group', RawMeterGroup> =
+  const response: Record<'meter_group', MeterGroup> =
     await getRequest(
       routes.meterGroup(uuid),
       queryParams

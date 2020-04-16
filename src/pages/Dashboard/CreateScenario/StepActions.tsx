@@ -8,7 +8,7 @@ import { Button, Flex } from '@nav/shared/components';
 import { MeterGroup } from '@nav/shared/models/meter';
 import * as routes from '@nav/shared/routes';
 import { setMessage } from '@nav/shared/store/slices/ui';
-import { printWarning } from '@nav/shared/util';
+import { omitFalsey, printWarning } from '@nav/shared/util';
 import {
   DERSelection, stepPaths, stepNumbers, validateCustomerSelections, validateDerSelections
 } from './shared';
@@ -132,15 +132,10 @@ const StepActions: React.FC<StepActionProps> = (props) => {
 };
 
 /** ============================ Helpers =================================== */
-function getSelectedMeterGroups (meterGroups: MeterGroup[] | null, ids: string[]): MeterGroup[] {
-  if (meterGroups === null) return [];
-  return ids
-    .map(id => find(meterGroups, { id }))
-    .filter(meterGroupFilter);
-}
-
-function meterGroupFilter (meterGroup: MeterGroup | undefined): meterGroup is MeterGroup {
-  return meterGroup !== undefined;
+function getSelectedMeterGroups (meterGroups: MeterGroup[] | null, ids: string[]) {
+  return meterGroups === null
+    ? []
+    : omitFalsey(ids.map(id => find(meterGroups, { id })));
 }
 
 /** ============================ Exports =================================== */

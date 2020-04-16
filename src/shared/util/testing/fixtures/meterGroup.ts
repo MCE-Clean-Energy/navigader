@@ -1,28 +1,35 @@
-import {
-  CustomerClusterMeterGroup,
-  OriginFileMeterGroup, RawCustomerClusterMeterGroup, RawOriginFileMeterGroup
-} from '@nav/shared/models/meter';
+import { CustomerClusterMeterGroup, OriginFileMeterGroup } from '@nav/shared/models/meter';
 
 
 /** ============================ Fixture creators ========================== */
-export function makeRawCustomerCluster (customerClusterProps?: Partial<CustomerClusterMeterGroup>): RawCustomerClusterMeterGroup {
-  // Temporarily dress up the customer cluster as an origin file
-  const originFile = meterGroupToRawMeterGroup({ ...customerClusterProps, object_type: 'OriginFile' });
-  
-  // Convert back to a customer cluster
+export function makeCustomerCluster (customerClusterProps?: Partial<CustomerClusterMeterGroup>): CustomerClusterMeterGroup {
+  const mg = customerClusterProps || {};
   return {
-    ...originFile,
-    metadata: {},
-    object_type: 'CustomerCluster'
+    created_at: getObjProperty(mg, 'created_at', defaultOriginFile.created_at),
+    data: getObjProperty(mg, 'data', defaultOriginFile.data),
+    id: getObjProperty(mg, 'id', defaultOriginFile.id),
+    meter_count: getObjProperty(mg, 'meter_count', defaultOriginFile.meter_count),
+    object_type: "CustomerCluster",
+    meters: getObjProperty(mg, 'meters', defaultOriginFile.meters),
+    name: getObjProperty(mg, 'name', defaultOriginFile.name)
   };
 }
 
-export function makeRawOriginFile (meterGroupProps?: Partial<OriginFileMeterGroup>): RawOriginFileMeterGroup {
-  return meterGroupToRawMeterGroup(meterGroupProps);
-}
-
-export function makeMeterGroup (meterGroupProps?: Partial<OriginFileMeterGroup>): OriginFileMeterGroup {
-  return rawMeterGroupToMeterGroup(meterGroupToRawMeterGroup(meterGroupProps));
+export function makeOriginFile (meterGroupProps?: Partial<OriginFileMeterGroup>): OriginFileMeterGroup {
+  const mg = meterGroupProps || {};
+  return {
+    created_at: getObjProperty(mg, 'created_at', defaultOriginFile.created_at),
+    data: getObjProperty(mg, 'data', defaultOriginFile.data),
+    object_type: 'OriginFile',
+    id: getObjProperty(mg, 'id', defaultOriginFile.id),
+    meters: getObjProperty(mg, 'meters', defaultOriginFile.meters),
+    name: getObjProperty(mg, 'name', defaultOriginFile.name),
+    meter_count: getObjProperty(mg, 'meter_count', defaultOriginFile.meter_count),
+    metadata: {
+      expected_meter_count: getObjProperty(mg.metadata || defaultOriginFile.metadata, 'expected_meter_count', defaultOriginFile.metadata.expected_meter_count),
+      filename: getObjProperty(mg.metadata || defaultOriginFile.metadata, 'filename', defaultOriginFile.metadata.filename)
+    },
+  };
 }
 
 /** ============================ Helpers =================================== */
@@ -32,46 +39,14 @@ function getObjProperty <T extends object>(obj: T, prop: keyof T, ifNotPresent: 
   else return ifNotPresent;
 }
 
-function meterGroupToRawMeterGroup (meterGroupProps: Partial<OriginFileMeterGroup> = {}): RawOriginFileMeterGroup {
-  return {
-    created_at      : getObjProperty(meterGroupProps, 'created_at', defaultOriginFile.created_at),
-    data            : getObjProperty(meterGroupProps, 'data', defaultOriginFile.data),
-    id              : getObjProperty(meterGroupProps, 'id', defaultOriginFile.id),
-    meter_count     : getObjProperty(meterGroupProps, 'numMeters', defaultOriginFile.meter_count),
-    object_type     : getObjProperty(meterGroupProps, 'object_type', defaultOriginFile.object_type),
-    meters          : getObjProperty(meterGroupProps, 'meterIds', defaultOriginFile.meters),
-    name            : getObjProperty(meterGroupProps, 'name', defaultOriginFile.name),
-    metadata: {
-      expected_meter_count: getObjProperty(meterGroupProps, 'numMetersExpected', defaultOriginFile.metadata.expected_meter_count),
-      filename            : getObjProperty(meterGroupProps, 'fileName', defaultOriginFile.metadata.filename),
-      owners              : []
-    }
-  };
-}
-
-function rawMeterGroupToMeterGroup (rawMeterGroupProps: Partial<RawOriginFileMeterGroup> = {}): OriginFileMeterGroup {
-  return {
-    created_at       : getObjProperty(rawMeterGroupProps, 'created_at', defaultOriginFile.created_at),
-    data             : getObjProperty(rawMeterGroupProps, 'data', defaultOriginFile.data),
-    fileName         : getObjProperty(rawMeterGroupProps.metadata || defaultOriginFile.metadata, 'filename', defaultOriginFile.metadata.filename),
-    object_type      : getObjProperty(rawMeterGroupProps, 'object_type', defaultOriginFile.object_type),
-    id               : getObjProperty(rawMeterGroupProps, 'id', defaultOriginFile.id),
-    meterIds         : getObjProperty(rawMeterGroupProps, 'meters', defaultOriginFile.meters),
-    name             : getObjProperty(rawMeterGroupProps, 'name', defaultOriginFile.name),
-    numMeters        : getObjProperty(rawMeterGroupProps, 'meter_count', defaultOriginFile.meter_count),
-    numMetersExpected: getObjProperty(rawMeterGroupProps.metadata || defaultOriginFile.metadata, 'expected_meter_count', defaultOriginFile.metadata.expected_meter_count)
-  };
-}
-
 /** ============================ Fixture data ============================== */
-const defaultOriginFile: RawOriginFileMeterGroup = {
+const defaultOriginFile: OriginFileMeterGroup = {
   "id": "35b9919c-b7f9-4d28-8cf0-ac61bb9036d2",
   "created_at": "2020-02-12T20:05:05.695388",
   "object_type": "OriginFile",
   "metadata": {
     "expected_meter_count": 797,
-    "filename": "origin_files/nem_e6_60min.csv",
-    "owners": []
+    "filename": "origin_files/nem_e6_60min.csv"
   },
   "name": "NEM E6",
   "meter_count": 797,

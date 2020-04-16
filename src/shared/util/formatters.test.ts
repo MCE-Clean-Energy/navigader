@@ -1,10 +1,10 @@
-import { capitalize, maxDecimals, pluralize, standardDate } from './formatters';
+import { capitalize, maxDecimals, percentage, pluralize, standardDate } from './formatters';
 
 
 describe('`standardDate` formatter method', () => {
   it('formats ISO times correctly', () => {
-    const formatted = standardDate(janOne2020);
-    expect(formatted).toEqual('Jan 1, 2020');
+    const janOne2020 = '2020-01-01T10:00:00';
+    expect(standardDate(janOne2020)).toEqual('Jan 1, 2020');
   });
 });
 
@@ -50,5 +50,19 @@ describe('`capitalize` formatter method', () => {
   });
 });
 
-/** ============================ Fixtures ================================== */
-const janOne2020 = '2020-01-01T10:00:00';
+describe('`percentage` formatter method', () => {
+  it('handles when the denominator is 0', () => {
+    expect(percentage(0, 0)).toEqual('Infinity');
+    expect(percentage(1, 0)).toEqual('Infinity');
+    expect(percentage(0, 0, 2)).toEqual('Infinity');
+  });
+  
+  it('returns percents properly', () => {
+    expect(percentage(0, 1)).toEqual('0%');
+    expect(percentage(0, 1, 3)).toEqual('0%');
+    expect(percentage(1, 2)).toEqual('50%');
+    expect(percentage(50.1, 100)).toEqual('50%');
+    expect(percentage(50.1, 100, 1)).toEqual('50.1%');
+    expect(percentage(3.5, 2)).toEqual('175%');
+  });
+});

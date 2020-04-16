@@ -29,3 +29,18 @@ export function clamp (value: number, min: number, max: number) {
 export function lerp (amount: number, lower: number, upper: number) {
   return ((upper - lower) * amount) + lower;
 }
+
+/**
+ * Returns what percent of `denominator` the `numerator` is
+ *
+ *   ex: percentage(0, 5)    ==> 0
+ *   ex: percentage(1, 2)    ==> 50
+ *   ex: percentage(3.5, 2)  ==> 175
+ *
+ * @param {number} numerator: the X in "X is what percent of Y?"
+ * @param {number} denominator: the X in "Y is what percent of Y?"
+ */
+export function percentOf (numerator: number, denominator: number) {
+  if (denominator === 0) return Infinity;
+  return 100 * numerator / denominator;
+}

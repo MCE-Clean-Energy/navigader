@@ -36,7 +36,7 @@ export const MeterGroupCard: React.FC<MeterGroupCardProps> = ({ meterGroup}) => 
       {graph}
       <Grid>
         <Grid.Item>
-          <Statistic title="# of Meters" value={meterGroup.numMeters} />
+          <Statistic title="# of Meters" value={meterGroup.meter_count} />
         </Grid.Item>
         <Grid.Item span={1} />
         <Grid.Item>

@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { percentOf } from './math';
 
 
 /** ============================ Types ===================================== */
@@ -94,4 +95,22 @@ export function pluralize (singularForm: string, count: number, pluralForm?: str
  */
 export function capitalize (str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+/**
+ * Provided a numerator and a denominator, returns what percent of the denominator the numerator is.
+ *
+ *   ex: percentage(0, 5)    ==> 0%
+ *   ex: percentage(1, 2)    ==> 50%
+ *   ex: percentage(3.5, 2)  ==> 175%
+ *
+ * @param {number} numerator: the number the percent will be derived for
+ * @param {number} denominator: the number the percent will be derived from
+ * @param {number} [n = 0]: the number of digits to round to
+ */
+export function percentage (numerator: number, denominator: number, n: number = 0) {
+  const percent = percentOf(numerator, denominator);
+  return percent === Infinity
+    ? 'Infinity'
+    : maxDecimals(percent, n) + '%';
 }

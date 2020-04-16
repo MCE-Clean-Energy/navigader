@@ -9,6 +9,7 @@ import { Icon, ValidIcon } from './Icon';
 /** ============================ Types ===================================== */
 export type ChipProps = {
   color?: 'primary' | 'secondary' | 'default';
+  disabled?: boolean;
   icon?: ValidIcon;
   label: string;
   onClick?: () => void;
@@ -25,6 +26,7 @@ const useStyles = makeStylesHook(theme => ({
 export const Chip: React.FC<ChipProps> = (props) => {
   const {
     color = 'default',
+    disabled = false,
     icon,
     ...rest
   } = props;
@@ -33,6 +35,7 @@ export const Chip: React.FC<ChipProps> = (props) => {
   const chipProps = omitFalsey({
     className: classes.chip,
     color,
+    disabled,
     icon: icon ? <Icon name={icon} /> : null,
     ...rest
   });

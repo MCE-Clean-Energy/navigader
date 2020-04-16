@@ -37,4 +37,5 @@ export * from './Stepper';
 export * from './Table';
 export * from './TextField';
 export * from './ThemeProvider';
+export * from './Tooltip';
 export * from './Typography';

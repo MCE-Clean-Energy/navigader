@@ -34,33 +34,39 @@ const useItemStyles = makeStylesHook<FlexItemProps>(() => ({
 }), 'FlexItem');
 
 /** ============================ Components ================================ */
-export const Container: React.FC<FlexContainerProps> = (props) => {
-  const { className, ...rest } = props;
-  
-  // Compile all classes for the container
-  const classes = classNames(
-    useContainerStyles(props).flexContainer,
-    useItemStyles(props).flexItem,
-    className
-  );
-  
-  const childProps = omit(rest, 'alignItems', 'basis', 'grow', 'justifyContent', 'textAlign', 'wrap');
-  
-  return <div className={classes} {...childProps} />;
-};
+export const Container = React.forwardRef<HTMLDivElement, FlexContainerProps>(
+  (props, ref) => {
+    const { className, ...rest } = props;
+    
+    // Compile all classes for the container
+    const classes = classNames(
+      useContainerStyles(props).flexContainer,
+      useItemStyles(props).flexItem,
+      className
+    );
+    
+    const childProps = omit(rest, 'alignItems', 'basis', 'grow', 'justifyContent', 'textAlign', 'wrap');
+    
+    return <div {...childProps} className={classes} ref={ref} />;
+  }
+);
 
-export const Item: React.FC<FlexItemProps> = (props) => {
-  const { className, ...rest } = props;
-  const classes = useItemStyles(props);
-  const itemClasses = classNames(classes.flexItem, className);
-  const childProps = omit(rest, 'alignItems', 'basis', 'grow', 'justifyContent', 'textAlign', 'wrap');
-  return <div className={itemClasses} {...childProps} />
-};
-
+Container.displayName = 'FlexContainer';
 Container.defaultProps = {
   direction: 'row',
   wrap: false
 };
+
+export const Item = React.forwardRef<HTMLDivElement, FlexItemProps>(
+  (props, ref) => {
+    const { className, ...rest } = props;
+    const classes = classNames(useItemStyles(props).flexItem, className);
+    const childProps = omit(rest, 'alignItems', 'basis', 'grow', 'justifyContent', 'textAlign', 'wrap');
+    return <div {...childProps} className={classes} ref={ref} />
+  }
+);
+
+Item.displayName = 'FlexItem';
 
 /** ============================ Helpers =================================== */
 function getFlexContainerStyles (props: FlexContainerProps): CreateCSSProperties {

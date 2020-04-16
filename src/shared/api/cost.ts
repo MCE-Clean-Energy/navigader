@@ -1,6 +1,6 @@
 import find from 'lodash/find';
 
-import { LoadType, parseMeterGroup, RawMeterGroup } from '@nav/shared/models/meter';
+import { LoadType, parseMeterGroup, MeterGroup } from '@nav/shared/models/meter';
 import { parseScenario, RawScenario, Scenario } from '@nav/shared/models/scenario';
 import {
   appendId, beoRoute, DynamicRestParams, getRequest,
@@ -22,13 +22,13 @@ type GetScenariosQueryOptions = Partial<PaginationQueryParams & DynamicRestParam
 }>;
 
 type GetScenariosResponse = {
-  meter_groups?: RawMeterGroup[];
+  meter_groups?: MeterGroup[];
   studies: RawScenario[];
 };
 
 // GET /study/:id
 type GetScenarioResponse = {
-  meter_groups?: [RawMeterGroup];
+  meter_groups?: [MeterGroup];
   study: RawScenario;
 };
 
@@ -109,11 +109,11 @@ const routes = {
  * the application
  *
  * @param {RawScenario} scenario: the server-supplied scenario object
- * @param {RawMeterGroup} meterGroups: the server-supplied meter group objects
+ * @param {MeterGroup} meterGroups: the server-supplied meter group objects
  */
 function compileScenario (
   scenario: RawScenario,
-  meterGroups?: RawMeterGroup[]
+  meterGroups?: MeterGroup[]
 ): Scenario {
   // Mix in the meter group
   let meterGroup;

@@ -2,9 +2,10 @@ import * as React from 'react';
 import find from 'lodash/find';
 import without from 'lodash/without';
 
-import { Flex, MeterGroupChip } from '@nav/shared/components';
+import { Flex, MeterGroupChip, Tooltip, Typography } from '@nav/shared/components';
 import { MeterGroup } from '@nav/shared/models/meter';
 import { makeStylesHook } from '@nav/shared/styles';
+import { formatters, math } from '@nav/shared/util';
 
 
 /** ============================ Types ===================================== */
@@ -38,7 +39,7 @@ const SelectCustomers: React.FC<SelectCustomersProps> = (props) => {
   
   const selectedMeterCount = selectedMeterGroupIds.reduce((curCount, meterId) => {
     const meter = find(meterGroups, { id: meterId });
-    return meter ? meter.numMeters + curCount : curCount;
+    return meter ? meter.meter_count + curCount : curCount;
   }, 0);
   
   return (
@@ -46,7 +47,7 @@ const SelectCustomers: React.FC<SelectCustomersProps> = (props) => {
       <Flex.Container className={classes.chipContainer} justifyContent="center" wrap>
         {meterGroups.map((meterGroup) => {
           const selected = selectedMeterGroupIds.includes(meterGroup.id);
-          return (
+          const chip = (
             <MeterGroupChip
               className={classes.meterGroupChip}
               color={selected ? 'primary' : 'secondary'}
@@ -56,6 +57,39 @@ const SelectCustomers: React.FC<SelectCustomersProps> = (props) => {
               meterGroup={meterGroup}
               onClick={toggleMeterGroup.bind(null, meterGroup.id)}
             />
+          );
+          
+          // Customer clusters are always selectable
+          if (meterGroup.object_type === 'CustomerCluster') return chip;
+          
+          const { meter_count } = meterGroup;
+          const { expected_meter_count } = meterGroup.metadata;
+          
+          // If origin files have sufficiently finished ingesting, they are selectable. We don't
+          // require 100% completion in case a few meters fail to ingest.
+          const sufficientlyFinishedPercent = 95;
+          if (
+            typeof expected_meter_count === 'number' &&
+            math.percentOf(meter_count, expected_meter_count) > sufficientlyFinishedPercent
+          ) return chip;
+          
+          // Otherwise we will render a tooltip explaining why the meter group is disabled
+          const percentComplete = expected_meter_count === null
+            ? '0%'
+            : formatters.percentage(meter_count, expected_meter_count);
+          
+          const explanation = (
+            <Typography variant="body2">
+              This file has successfully uploaded but is still being processed. It is
+              currently {percentComplete} complete. You can run a scenario with this file once it
+              has finished processing.
+            </Typography>
+          );
+          
+          return (
+            <Tooltip key={meterGroup.id} title={explanation}>
+              {React.cloneElement(chip, { disabled: true })}
+            </Tooltip>
           );
         })}
       </Flex.Container>

@@ -1,4 +1,4 @@
-import { MonthIndex, NavigaderObject } from '@nav/shared/types';
+import { MonthIndex, NavigaderObject, Nullable } from '@nav/shared/types';
 
 /** ============================ Meter Types =============================== */
 export type Frame288LoadType = 'total' | 'average' | 'maximum' | 'minimum' | 'count';
@@ -32,43 +32,24 @@ export type Meter = {
 
 /** ============================ Meter Group Types ========================= */
 // Raw meter groups
-type RawMeterGroupCommon = {
+type MeterGroupCommon = {
   data: MeterDataField;
   meter_count: number;
   meters: string[];
   name: string;
 };
 
-export type RawOriginFileMeterGroup = NavigaderObject<'OriginFile'> & RawMeterGroupCommon & {
-  metadata: {
-    expected_meter_count: number | null;
-    filename: string;
-    owners: any[];
-  };
-};
-
-export type RawCustomerClusterMeterGroup =
-  NavigaderObject<'CustomerCluster'> &
-  RawMeterGroupCommon &
-  { metadata: {}; };
-
-// Parsed meter groups
-type MeterGroupCommon = {
-  data: MeterDataField;
-  numMeters: number;
-  meterIds: string[];
-  name: string;
-};
-
 export type OriginFileMeterGroup =
   NavigaderObject<'OriginFile'> &
-  MeterGroupCommon &
-  {
-    fileName: string;
-    numMetersExpected: number | null;
+  MeterGroupCommon & {
+    metadata: {
+      expected_meter_count: Nullable<number>;
+      filename: string;
+    };
   };
 
-export type CustomerClusterMeterGroup = NavigaderObject<'CustomerCluster'> & MeterGroupCommon;
+export type CustomerClusterMeterGroup =
+  NavigaderObject<'CustomerCluster'> &
+  MeterGroupCommon;
 
-export type RawMeterGroup = RawOriginFileMeterGroup | RawCustomerClusterMeterGroup;
 export type MeterGroup = OriginFileMeterGroup | CustomerClusterMeterGroup;

@@ -5,7 +5,7 @@ import { fixtures, renderAppRoute } from '@nav/shared/util/testing';
 
 describe('Meter Group Page', () => {
   const groupName = 'Test group';
-  const rawMeterGroup = fixtures.makeRawOriginFile({
+  const meterGroup = fixtures.makeOriginFile({
     name: groupName
   });
   
@@ -16,7 +16,7 @@ describe('Meter Group Page', () => {
     fetchMock.mockResponse(async (req) => {
       if (req.url.match(/v1\/load\/meter_group\/\d+/)) {
         return JSON.stringify({
-          meter_group: rawMeterGroup
+          meter_group: meterGroup
         });
       } else if (req.url.match(/v1\/load\/meter_group/)) {
         return JSON.stringify({
@@ -24,7 +24,7 @@ describe('Meter Group Page', () => {
           next: null,
           previous: null,
           results: {
-            meter_groups: [rawMeterGroup]
+            meter_groups: [meterGroup]
           }
         });
       } else if (req.url.match(/v1\/load\/meter/)) {

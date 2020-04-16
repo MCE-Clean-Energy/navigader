@@ -1,9 +1,8 @@
 import every from 'lodash/every';
 import isArray from 'lodash/isArray';
-import pick from 'lodash/pick';
 
 import { typeGuards } from '@nav/shared/util';
-import { LoadType, LoadTypeMap, MeterDataField, MeterGroup, RawMeterGroup } from './types';
+import { LoadType, LoadTypeMap, MeterDataField, MeterGroup } from './types';
 
 
 /**
@@ -22,32 +21,19 @@ export function hasDataField <T extends LoadType>(
 }
 
 /**
- * Basic parsing function for converting a RawMeterGroup into a MeterGroup
+ * Basic parsing function for meter groups
  *
- * @param {RawMeterGroup} rawMeterGroup - The raw meter group object obtained from the back-end
+ * @param {MeterGroup} meterGroup - The raw meter group object obtained from the back-end
  */
-export function parseMeterGroup (rawMeterGroup: RawMeterGroup): MeterGroup {
-  const commonFields = {
-    ...pick(rawMeterGroup, 'created_at', 'id', 'name'),
-    data: rawMeterGroup.data,
-    meterIds: rawMeterGroup.meters,
-    numMeters: rawMeterGroup.meter_count,
+export function parseMeterGroup (meterGroup: MeterGroup): MeterGroup {
+  if (meterGroup.object_type === 'CustomerCluster') return meterGroup;
+  return {
+    ...meterGroup,
+    metadata: {
+      ...meterGroup.metadata,
+      filename: meterGroup.metadata.filename.replace(/origin_files\//, '')
+    }
   };
-  
-  switch (rawMeterGroup.object_type) {
-    case 'OriginFile':
-      return {
-        ...commonFields,
-        object_type: 'OriginFile',
-        fileName: rawMeterGroup.metadata.filename.replace(/origin_files\//, ''),
-        numMetersExpected: rawMeterGroup.metadata.expected_meter_count
-      };
-    case 'CustomerCluster':
-      return {
-        ...commonFields,
-        object_type: 'CustomerCluster'
-      };
-  }
 }
 
 /**
@@ -60,7 +46,7 @@ export function getMeterGroupDisplayName (meterGroup: any) {
   if (!typeGuards.isMeterGroup(meterGroup)) return '';
   switch (meterGroup.object_type) {
     case 'OriginFile':
-      return meterGroup.name || meterGroup.fileName;
+      return meterGroup.name || meterGroup.metadata.filename;
     case 'CustomerCluster':
       // TODO: How do we represent a customer cluster without a name?
       return meterGroup.name || '';

@@ -7,13 +7,13 @@ import SelectCustomers from './SelectCustomers';
 
 
 describe('"Select Customers" page', () => {
-  const meterGroup1 = fixtures.makeMeterGroup({
+  const meterGroup1 = fixtures.makeOriginFile({
     id: '1',
     numMeters: 20,
     name: 'My meters'
   });
   
-  const meterGroup2 = fixtures.makeMeterGroup({
+  const meterGroup2 = fixtures.makeOriginFile({
     id: '2',
     numMeters: 322,
     name: 'Residential customers'
