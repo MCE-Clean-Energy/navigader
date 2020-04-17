@@ -52,5 +52,5 @@ export function validateDerSelections (ders: Partial<DERSelection>[]): ders is D
  */
 export function validateCustomerSelections (meterGroups: MeterGroup[]) {
   if (meterGroups.length === 0) return false;
-  return sumBy(meterGroups, 'numMeters') > 0;
+  return sumBy(meterGroups, 'meter_count') > 0;
 }
