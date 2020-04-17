@@ -2,7 +2,8 @@ import * as React from 'react';
 
 import * as api from '@nav/shared/api';
 import {
-  Alert, Button, Card, Checkbox, Flex, Link, PageHeader, Progress, TextField, Typography
+  Alert, Button, Card, Checkbox, ContactSupport, Flex, Link, PageHeader, Progress, TextField,
+  Typography
 } from '@nav/shared/components';
 import * as routes from '@nav/shared/routes';
 import { makeStylesHook } from '@nav/shared/styles';
@@ -107,7 +108,7 @@ const FileCard: React.FC<FileCardProps> = ({ file, startUpload, status }) => {
           {status === 'failure' &&
             <Alert title="Error" type="error">
               <Typography>
-                The upload failed. Please try again or contact support.
+                The upload failed. Please try again or <ContactSupport />.
               </Typography>
             </Alert>
           }

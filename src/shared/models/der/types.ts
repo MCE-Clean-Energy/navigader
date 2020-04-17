@@ -1,5 +1,5 @@
 import { DeferrableFields } from '@nav/shared/api/util';
-import { Frame288, MeterDataField } from '@nav/shared/models/meter';
+import { Frame288Type, MeterDataField } from '@nav/shared/models/meter';
 import { ScenarioReportFields } from '@nav/shared/models/scenario';
 import { NavigaderObject } from '@nav/shared/types';
 
@@ -25,7 +25,7 @@ export interface BatteryConfiguration extends DeferrableFields<
   DerConfigurationDeferrableFields
 > {}
 
-type Frame288BatteryStrategy = Frame288<number | 'inf' | '-inf'>;
+type Frame288BatteryStrategy = Frame288Type<number | 'inf' | '-inf'>;
 type DerStrategyDeferredFields = {
   data: {
     charge_schedule_frame: Frame288BatteryStrategy;

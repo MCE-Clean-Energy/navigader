@@ -1,7 +1,7 @@
-import { Frame288Numeric } from '@nav/shared/models/meter';
+import { Frame288NumericType } from '@nav/shared/models/meter';
 
 
-const frame288: Frame288Numeric = {
+const frame288: Frame288NumericType = {
   1: [
     1049.7197,
     874.4885,

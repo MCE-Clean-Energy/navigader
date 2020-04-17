@@ -4,10 +4,9 @@ import {
   DomainPropType, VictoryAxis, VictoryChart, VictoryLabel, VictoryLine, VictoryTheme,
   VictoryTooltip, VictoryVoronoiContainer
 } from 'victory';
-import flatten from 'lodash/flatten';
 import range from 'lodash/range';
 
-import { Frame288LoadType, Frame288Numeric } from '@nav/shared/models/meter';
+import { Frame288LoadType, Frame288Numeric, Frame288NumericType } from '@nav/shared/models/meter';
 import { primaryColor } from '@nav/shared/styles';
 import { MonthIndex } from '@nav/shared/types';
 import { formatters } from '@nav/shared/util';
@@ -16,10 +15,11 @@ import { formatters } from '@nav/shared/util';
 /** ============================ Types ===================================== */
 export type Frame288MonthsOption = MonthIndex[] | 'all';
 type Frame288GraphProps = {
-  data: Frame288Numeric;
+  data: Frame288Numeric | Frame288NumericType;
   height?: number;
   loadType: Frame288LoadType;
   months?: Frame288MonthsOption;
+  loadRange?: [number, number]
 };
 
 type ScaleInfo = {
@@ -41,7 +41,11 @@ const lineStyle = {
 
 /** ============================ Components ================================ */
 export const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
-  const { data, height, loadType, months = 'all' } = props;
+  const { data, height, loadRange, loadType, months = 'all' } = props;
+  
+  const frame = data instanceof Frame288Numeric
+    ? data
+    : new Frame288Numeric(data);
   
   // Convert Frame288 to an array of objects
   const allMonths = range(1, 13) as MonthIndex[];
@@ -53,9 +57,7 @@ export const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
   }
   
   // Scale the data
-  const allData = flatten(allMonths.map(i => data[i]));
-  const min = Math.min(...allData);
-  const max = Math.max(...allData);
+  const [min, max] = loadRange || frame.getRange();
   const { scale, units } = loadType === 'count'
     ? { scale: 1, units: 'kW' } as ScaleInfo
     : scaleData(min, max);
@@ -69,7 +71,7 @@ export const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
   
   const formattedData = monthIndices
     .map(monthIndex =>
-      data[monthIndex].map((value, i) => ({
+      frame.getMonth(monthIndex).map((value, i) => ({
         x: i,
         y: value / scale
       }))

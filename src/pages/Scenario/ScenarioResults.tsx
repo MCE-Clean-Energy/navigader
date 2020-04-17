@@ -197,7 +197,8 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
         setMeterGroupLoading(true);
         return api.getMeterGroup(meter_group.id, { data_types: loadType });
       }, (res) => {
-        setMeterGroupData(res?.data[loadType]);
+        const loadData = res?.data[loadType];
+        loadData && setMeterGroupData(new Frame288Numeric(loadData));
         setMeterGroupLoading(false);
       }
     ), [meter_group?.id, loadType]
@@ -211,13 +212,16 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
         return api.getScenario(scenario.id, { data_types: loadType });
       },
       res => {
-        setSimulationData(res.data[loadType]);
+        const loadData = res?.data[loadType];
+        loadData && setSimulationData(new Frame288Numeric(loadData));
         setSimulationLoading(false);
       }
     ), [scenario.id, loadType]
   );
   
   const graphWidth = 43;
+  const combinedLoadRange = getLoadRange();
+
   return (
     <Flex.Container className={classes.scenarioGraphs} justifyContent="space-between">
       <Flex.Item basis={10}>
@@ -233,7 +237,12 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
         <Typography useDiv variant="h6">Initial Load</Typography>
         <Card className={classes.loadGraphCard} raised>
           {meterGroupData &&
-            <Frame288Graph data={meterGroupData} loadType={loadType} months={selectedMonths} />
+            <Frame288Graph
+              data={meterGroupData}
+              loadRange={combinedLoadRange}
+              loadType={loadType}
+              months={selectedMonths}
+            />
           }
           <LoadingModal loading={meterGroupLoading} />
         </Card>
@@ -242,13 +251,36 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
         <Typography useDiv variant="h6">Simulated Load</Typography>
         <Card className={classes.loadGraphCard} raised>
           {simulationData &&
-            <Frame288Graph data={simulationData} loadType={loadType} months={selectedMonths} />
+            <Frame288Graph
+              data={simulationData}
+              loadRange={combinedLoadRange}
+              loadType={loadType}
+              months={selectedMonths}
+            />
           }
           <LoadingModal loading={simulationLoading} />
         </Card>
       </Flex.Item>
     </Flex.Container>
-  )
+  );
+  
+  /** ============================ Helpers ================================= */
+  /**
+   * Returns the minimum and maximum load values from both the meter group (initial) data and the
+   * simulation data. If one of the two is missing, returns the two values for the dataset that's
+   * present. If both are missing, returns `undefined`.
+   */
+  function getLoadRange (): [number, number] | undefined {
+    if (!meterGroupData && !simulationData) return undefined;
+    
+    const meterGroupRange = meterGroupData ? meterGroupData.getRange() : [Infinity, -Infinity];
+    const simulationRange = simulationData ? simulationData.getRange() : [Infinity, -Infinity];
+    
+    return [
+      Math.min(meterGroupRange[0], simulationRange[0]),
+      Math.max(meterGroupRange[1], simulationRange[1]),
+    ]
+  }
 };
 
 export const ScenarioResultsPage: React.FC = () => {

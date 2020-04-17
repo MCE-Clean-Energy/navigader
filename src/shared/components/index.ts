@@ -11,6 +11,7 @@ export * from './Card';
 export * from './Centered';
 export * from './Checkbox';
 export * from './Chip';
+export * from './ContactSupport';
 export * from './Container';
 export * from './DERComponents';
 export * from './Dialog';

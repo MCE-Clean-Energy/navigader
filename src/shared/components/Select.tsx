@@ -1,5 +1,4 @@
 import * as React from 'react';
-import identity from 'lodash/identity';
 import isUndefined from 'lodash/isUndefined';
 import noop from 'lodash/noop';
 import FormControl from '@material-ui/core/FormControl';
@@ -18,7 +17,8 @@ type SelectCommonProps<T> = {
   id?: string;
   label?: string;
   options: T[];
-  renderOption?: ((option: T) => React.ReactNode) | keyof T;
+  renderOption?: ((option: T) => string) | keyof T;
+  sorted?: boolean;
 };
 
 type MultiSelectProps<T> = {
@@ -59,7 +59,8 @@ export function Select <T>(props: SelectProps<T>) {
     multiple,
     options,
     onChange = noop,
-    renderOption = identity,
+    renderOption = (option: T) => option,
+    sorted = false,
     value,
     ...rest
   } = props;
@@ -84,17 +85,25 @@ export function Select <T>(props: SelectProps<T>) {
     ...rest
   };
   
+  // If requested, sort the options by their rendering value
+  const sortedOptions = sorted
+    ? [...options].sort((option1, option2) => {
+        const renderValue1 = getOptionRendering(option1);
+        const renderValue2 = getOptionRendering(option2);
+        
+        if (renderValue1 < renderValue2) return -1;
+        if (renderValue1 > renderValue2) return 1;
+        return 0;
+      })
+    : options;
+  
   return (
     <FormControl className={classes.formControl}>
       {inputLabel}
       <MuiSelect {...selectProps}>
-        {options.map((option, i) =>
+        {sortedOptions.map((option, i) =>
           <MenuItem key={i} value={i} className={getStyles(option)}>
-            {
-              typeof renderOption === 'function'
-                ? renderOption(option)
-                : option[renderOption]
-            }
+            {getOptionRendering(option)}
           </MenuItem>
         )}
       </MuiSelect>
@@ -119,5 +128,11 @@ export function Select <T>(props: SelectProps<T>) {
     return isSelected
       ? classes.selectedOption
       : classes.option;
+  }
+  
+  function getOptionRendering (option: T) {
+    return typeof renderOption === 'function'
+      ? renderOption(option)
+      : option[renderOption];
   }
 }

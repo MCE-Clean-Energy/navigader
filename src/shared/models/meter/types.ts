@@ -2,10 +2,10 @@ import { MonthIndex, NavigaderObject, Nullable } from '@nav/shared/types';
 
 /** ============================ Meter Types =============================== */
 export type Frame288LoadType = 'total' | 'average' | 'maximum' | 'minimum' | 'count';
-export type Frame288<T> = {
+export type Frame288Type<T> = {
   [P in MonthIndex]: T[];
 }
-export type Frame288Numeric = Frame288<number>;
+export type Frame288NumericType = Frame288Type<number>;
 
 export type LoadType = 'default' | Frame288LoadType;
 export type LoadTypeMap = {
@@ -14,7 +14,7 @@ export type LoadTypeMap = {
     kw: number[];
   };
 } & {
-  [K in Frame288LoadType]: Frame288Numeric;
+  [K in Frame288LoadType]: Frame288NumericType;
 };
 
 export type MeterDataField = Partial<LoadTypeMap>

@@ -48,6 +48,7 @@ const BatteryOptions: React.FC<ProgramOptionsProps> = (props) => {
           onChange={updateConfiguration}
           options={configurations}
           renderOption="name"
+          sorted
           value={configuration}
         />
       </Flex.Item>
@@ -59,6 +60,7 @@ const BatteryOptions: React.FC<ProgramOptionsProps> = (props) => {
           onChange={updateStrategy}
           options={strategies}
           renderOption="name"
+          sorted
           value={strategy}
         />
       </Flex.Item>

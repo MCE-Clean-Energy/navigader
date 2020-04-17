@@ -1,8 +1,11 @@
 import every from 'lodash/every';
+import flatten from 'lodash/flatten';
 import isArray from 'lodash/isArray';
+import range from 'lodash/range';
 
+import { MonthIndex } from '@nav/shared/types';
 import { typeGuards } from '@nav/shared/util';
-import { LoadType, LoadTypeMap, MeterDataField, MeterGroup } from './types';
+import { Frame288NumericType, LoadType, LoadTypeMap, MeterDataField, MeterGroup } from './types';
 
 
 /**
@@ -50,5 +53,53 @@ export function getMeterGroupDisplayName (meterGroup: any) {
     case 'CustomerCluster':
       // TODO: How do we represent a customer cluster without a name?
       return meterGroup.name || '';
+  }
+}
+
+export class Frame288Numeric {
+  static months = range(1, 13) as MonthIndex[];
+  readonly flattened: number[];
+  readonly frame: Frame288NumericType;
+
+  constructor (frame: Frame288NumericType) {
+    this.frame = frame;
+    this.flattened = flatten(Frame288Numeric.months.map(i => this.frame[i]));
+  }
+  
+  /**
+   * Returns an array of the minimum and maximum values in the dataset
+   */
+  getRange () {
+    return [this.getMin(), this.getMax()];
+  }
+  
+  /**
+   * Computes the maximum value in the frame
+   */
+  getMax () {
+    return Math.max(...this.flattened);
+  }
+  
+  /**
+   * Computes the minimum value in the frame
+   */
+  getMin () {
+    return Math.min(...this.flattened);
+  }
+  
+  /**
+   * Accesses the frame's data for a given month
+   *
+   * @param {MonthIndex} month: the index of the month (integer between 1 and 12, inclusive)
+   */
+  getMonth (month: MonthIndex) {
+    return this.frame[month];
+  }
+  
+  /**
+   * Returns a flat array of all values in the frame
+   */
+  flatten () {
+    return this.flattened;
   }
 }
