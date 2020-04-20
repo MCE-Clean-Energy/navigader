@@ -12,7 +12,7 @@ type LinkProps = {
 
 /** ============================ Components ================================ */
 export const Link: React.FC<LinkProps> = (props) => {
-  return <MuiLink {...props} component={RouterLink} />;
+  return <MuiLink {...props} component={RouterLink} underline="hover" />;
 };
 
 Link.defaultProps = {

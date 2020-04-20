@@ -156,7 +156,7 @@ const ScenariosTable: React.FC = () => {
                 <Table.Cell>CNS 2022 Delta (tCO<sub>2</sub>/year)</Table.Cell>
                 <Table.Cell>RA (MW/year)</Table.Cell>
                 <Table.Cell>Status</Table.Cell>
-                <Table.Cell />
+                <Table.Cell>Menu</Table.Cell>
               </Table.Row>
             </Table.Head>
             <Table.Body>
@@ -167,7 +167,11 @@ const ScenariosTable: React.FC = () => {
               
               {scenarios.map(scenario =>
                 <Table.Row key={scenario.id}>
-                  <Table.Cell useTh>{scenario.name}</Table.Cell>
+                  <Table.Cell useTh>
+                    <Link to={routes.scenario(scenario.id)}>
+                      {scenario.name}
+                    </Link>
+                  </Table.Cell>
                   <Table.Cell>{formatters.standardDate(scenario.created_at)}</Table.Cell>
                   <Table.Cell>
                     {scenario.meter_group &&
