@@ -40,7 +40,7 @@ function makeFilterQueryParams (
   
   // Each of the filters gets its own `filter` query parameter
   const queryParamPairs: QueryParamPair[] = [];
-  Object.entries(omitFalsey(filterClauses))
+  Object.entries(filterClauses)
     .forEach(([field, filterClause]) => {
       if (filterClause.operation === 'in') {
         // Every value in the `IN` clause gets its own query parameter
@@ -119,7 +119,7 @@ export const in_ = (values?: Array<QueryStringPrimitive>) => ({
   value: values
 }) as FilterInClause;
 
-export const equals_ = (value?: QueryStringPrimitive) => ({
+export const equals_ = (value: QueryStringPrimitive) => ({
   operation: 'equals',
   value
 }) as FilterEqualClause;

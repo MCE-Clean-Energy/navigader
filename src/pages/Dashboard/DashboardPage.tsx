@@ -122,7 +122,7 @@ const ScenariosTable: React.FC = () => {
   // Check if there are any meter groups-- if not, we link to the upload page
   React.useEffect(
     makeCancelableAsync(
-      async () => api.getMeterGroups(),
+      async () => api.getMeterGroups({ page: 1, page_size: 1 }),
       res => setNumMeterGroups(res.count)
     )
   );

@@ -4,8 +4,8 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import Drawer from '@material-ui/core/Drawer';
 
-import * as routes from '../../routes';
-import { primaryColor, Theme } from '../../styles';
+import * as routes from '@nav/shared/routes';
+import { primaryColor, Theme } from '@nav/shared/styles';
 import { Centered } from '../Centered';
 import * as Flex from '../Flex';
 

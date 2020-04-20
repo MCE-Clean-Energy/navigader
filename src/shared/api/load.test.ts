@@ -1,17 +1,23 @@
+import { assertHasQueryParams, makePaginationResponse } from '@nav/shared/util/testing';
 import { getMeters } from './load';
 
 
 describe('`getMeters` method', () => {
-  let mockFn: jest.SpyInstance;
-  
-  beforeEach(() => mockFn = jest.spyOn(window, 'fetch'));
-  afterEach(() => mockFn.mockRestore());
+  beforeEach(() => {
+    fetchMock.resetMocks();
+    fetchMock.mockResponse(async () => makePaginationResponse({
+      meters: []
+    }));
+  });
   
   it('Constructs the URI correctly', () => {
     getMeters({ meterGroupId: '1', data_types: ['default'] });
-    expect(mockFn).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
     
-    const callArgs = mockFn.mock.calls[0];
-    expect(callArgs[0]).toContain('/v1/load/meter/?data_types=default&filter{meter_groups}=1');
-  })
+    const callArgs = fetchMock.mock.calls[0];
+    assertHasQueryParams(callArgs[0] as string, [
+      ['data_types', 'default'],
+      ['filter{meter_groups}', '1']
+    ]);
+  });
 });

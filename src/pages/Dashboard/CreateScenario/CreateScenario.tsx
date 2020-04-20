@@ -43,7 +43,7 @@ const CreateScenarioPage: React.FC = () => {
   
   // Load meter groups
   React.useEffect(makeCancelableAsync(
-    () => getMeterGroups(),
+    () => getMeterGroups({ page: 1, page_size: 100 }),
     res => setMeterGroups(res.data)
   ), []);
   

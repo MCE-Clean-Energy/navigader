@@ -45,6 +45,7 @@ export const MeterGroupChip = React.forwardRef<HTMLDivElement, MeterGroupChipPro
         <Flex.Item>
           <Chip
             color={color}
+            data-testid="meter-group-chip"
             disabled={disabled}
             icon={icon}
             label={getMeterGroupDisplayName(meterGroup)}

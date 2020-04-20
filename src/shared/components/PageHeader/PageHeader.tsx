@@ -5,8 +5,8 @@ import findLast from 'lodash/findLast';
 
 import { Button, Link } from '@nav/shared/components';
 import { makeStylesHook } from '@nav/shared/styles';
-import * as Flex from './Flex';
-import { Typography } from './Typography';
+import * as Flex from '../Flex';
+import { Typography } from '../Typography';
 
 
 /** ============================ Types ===================================== */
@@ -112,7 +112,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ actions, breadcrumbs, ti
       <Breadcrumbs breadcrumbs={breadcrumbs}/>
       <Flex.Container className={classes.header} justifyContent="space-between">
         <Flex.Item>
-          <Typography variant="h4">
+          <Typography data-testid="page-header" variant="h4">
             {title}
           </Typography>
         </Flex.Item>

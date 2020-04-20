@@ -3,25 +3,23 @@ import omit from 'lodash/omit';
 import { BatteryConfiguration, BatteryStrategy, BatterySimulation } from '@nav/shared/models/der';
 import { LoadType, MeterGroup } from '@nav/shared/models/meter';
 import {
-  appendId, beoRoute, DynamicRestParams, equals_, getRequest, PaginationQueryParams, PaginationSet,
+  appendId, beoRoute, DynamicRestParams, equals_, getRequest, PaginationQueryParams,
   parsePaginationSet, RawPaginationSet
 } from './util';
 
 
 /** ============================ Types ===================================== */
-type DerQueryOptions = Partial<PaginationQueryParams & DynamicRestParams>;
+type DerQueryOptions = PaginationQueryParams & Partial<DynamicRestParams>;
 
-type DerSimulationQueryOptions = Partial<PaginationQueryParams & {
+type DerSimulationQueryOptions = PaginationQueryParams & {
   derConfiguration: BatteryConfiguration['id'];
   derStrategy: BatteryStrategy['id'];
   meterGroup: MeterGroup['id'];
-  data_types: LoadType | LoadType[];
-}>;
+  data_types?: LoadType | LoadType[];
+};
 
 /** ============================ API Methods =============================== */
-export async function getDerConfigurations (
-  queryParams?: DerQueryOptions
-): Promise<PaginationSet<BatteryConfiguration>> {
+export async function getDerConfigurations (queryParams: DerQueryOptions) {
   const response: RawPaginationSet<{ der_configurations: BatteryConfiguration[] }> =
     await getRequest(
       routes.configuration(),
@@ -31,9 +29,7 @@ export async function getDerConfigurations (
   return parsePaginationSet(response, 'der_configurations');
 }
 
-export async function getDerStrategies (
-  queryParams?: DerQueryOptions
-): Promise<PaginationSet<BatteryStrategy>> {
+export async function getDerStrategies (queryParams: DerQueryOptions) {
   const response: RawPaginationSet<{ der_strategies: BatteryStrategy[] }> =
     await getRequest(
       routes.strategy(),
@@ -43,9 +39,7 @@ export async function getDerStrategies (
   return parsePaginationSet(response, 'der_strategies');
 }
 
-export async function getDerSimulations (
-  queryOptions?: DerSimulationQueryOptions
-): Promise<PaginationSet<BatterySimulation>> {
+export async function getDerSimulations (queryOptions: DerSimulationQueryOptions) {
   // Make the request
   const response: RawPaginationSet<{ der_simulations: BatterySimulation[] }> =
     await getRequest(
@@ -53,9 +47,9 @@ export async function getDerSimulations (
       {
         ...omit(queryOptions, ['derConfiguration', 'derStrategy', 'meterGroup']),
         filter: {
-          der_configuration: equals_(queryOptions?.derConfiguration),
-          der_strategy: equals_(queryOptions?.derStrategy),
-          'meter.meter_groups.id': equals_(queryOptions?.meterGroup)
+          der_configuration: equals_(queryOptions.derConfiguration),
+          der_strategy: equals_(queryOptions.derStrategy),
+          'meter.meter_groups.id': equals_(queryOptions.meterGroup)
         }
       }
     ).then(res => res.json());

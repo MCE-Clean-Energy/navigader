@@ -3,9 +3,8 @@ import find from 'lodash/find';
 import { LoadType, parseMeterGroup, MeterGroup } from '@nav/shared/models/meter';
 import { parseScenario, RawScenario, Scenario } from '@nav/shared/models/scenario';
 import {
-  appendId, beoRoute, DynamicRestParams, getRequest,
-  PaginationQueryParams, PaginationSet, parsePaginationSet, patchRequest, postRequest,
-  RawPaginationSet
+  appendId, beoRoute, DynamicRestParams, getRequest, PaginationQueryParams, parsePaginationSet,
+  patchRequest, postRequest, RawPaginationSet
 } from './util';
 
 
@@ -16,10 +15,7 @@ type DerSelection = {
 };
 
 // GET /study/
-type GetScenariosQueryOptions = Partial<PaginationQueryParams & DynamicRestParams & {
-  ids: Array<Scenario['id']>;
-  type: Scenario['object_type'];
-}>;
+type GetScenariosQueryOptions = PaginationQueryParams & Partial<DynamicRestParams>;
 
 type GetScenariosResponse = {
   meter_groups?: MeterGroup[];
@@ -60,9 +56,7 @@ export async function postStudy (
  *
  * @param {GetScenariosQueryOptions} queryParams: parameters for filtering the result set
  */
-export async function getScenarios (
-  queryParams?: GetScenariosQueryOptions
-): Promise<PaginationSet<Scenario>> {
+export async function getScenarios (queryParams: GetScenariosQueryOptions) {
   const response: RawPaginationSet<GetScenariosResponse> =
     await getRequest(
       routes.scenarios(),

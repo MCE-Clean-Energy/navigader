@@ -9,13 +9,13 @@ import SelectCustomers from './SelectCustomers';
 describe('"Select Customers" page', () => {
   const meterGroup1 = fixtures.makeOriginFile({
     id: '1',
-    numMeters: 20,
+    meter_count: 20,
     name: 'My meters'
   });
   
   const meterGroup2 = fixtures.makeOriginFile({
     id: '2',
-    numMeters: 322,
+    meter_count: 322,
     name: 'Residential customers'
   });
   
@@ -77,7 +77,7 @@ describe('"Select Customers" page', () => {
       );
       
       const expectedNumMeters = selectedMeterGroups.reduce(
-        (numMetersPrev, curMeterGroup) => numMetersPrev + curMeterGroup.numMeters,
+        (numMetersPrev, curMeterGroup) => numMetersPrev + curMeterGroup.meter_count,
         0
       );
       

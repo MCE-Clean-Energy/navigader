@@ -9,7 +9,9 @@ export type RawPaginationSet<ResponseSchema> = {
   results: ResponseSchema;
 };
 
-export type RowsPerPageOption = 10 | 20 | 50 | 100;
+// The option `1` is not an option presented to the user in the table pagination. It's a hackish
+// way of querying the server for the number of records (the `count`) without loading many
+export type RowsPerPageOption = 1 | 10 | 20 | 50 | 100;
 export type PaginationQueryParams = {
   page: number;
   page_size: RowsPerPageOption;

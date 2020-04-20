@@ -1,24 +1,24 @@
-import { waitForElement } from '@testing-library/react'
+import { fireEvent, waitForElement } from '@testing-library/react';
 
+import * as routes from '@nav/shared/routes';
 import { fixtures, renderAppRoute } from '@nav/shared/util/testing';
 
 
-describe('Meter Group Page', () => {
-  const groupName = 'Test group';
+describe('Back button', () => {
   const meterGroup = fixtures.makeOriginFile({
-    name: groupName
+    name: 'Test group'
   });
-  
+
   beforeEach(() => {
     fetchMock.resetMocks();
-    
+
     // Set up URLs to mock
     fetchMock.mockResponse(async (req) => {
-      if (req.url.match(/v1\/load\/meter_group\/\d+/)) {
+      if (req.url.match(/v1\/load\/meter_group\/.+\//)) {
         return JSON.stringify({
           meter_group: meterGroup
         });
-      } else if (req.url.match(/v1\/load\/meter_group/)) {
+      } else if (req.url.match(/v1\/load\/meter_group\//)) {
         return JSON.stringify({
           count: 1,
           next: null,
@@ -41,12 +41,15 @@ describe('Meter Group Page', () => {
       }
     });
   });
-  
-  describe('Header',  () => {
-    it('Meter group name is rendered', async () => {
-      const { getByTestId } = renderAppRoute('/load/group/2');
-      await waitForElement(() => getByTestId('page-header'));
-      expect(getByTestId('page-header').textContent).toEqual(groupName);
-    });
+
+  it('Clicking the back button returns you to the previous page', async () => {
+    const { getByRole, getByText } = renderAppRoute([routes.load, routes.meterGroup('random-id')], 1);
+
+    // Click on the back button
+    expect(getByRole('back-button')).toBeInTheDocument();
+    fireEvent.click(getByRole('back-button'));
+
+    // check that the page header changed to the prior page
+    await waitForElement(() => getByText('Uploaded Files'));
   });
 });

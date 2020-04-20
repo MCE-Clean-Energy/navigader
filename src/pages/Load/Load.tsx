@@ -15,7 +15,11 @@ export const LoadPage = () => {
   const history = useHistory();
   
   React.useEffect(makeCancelableAsync(
-    () => api.getMeterGroups({ data_types: 'average' }),
+    () => api.getMeterGroups({
+      data_types: 'average',
+      page: 1,
+      page_size: 20
+    }),
     res => setMeterGroups(res.data)
   ), []);
 

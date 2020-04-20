@@ -9,11 +9,11 @@ import store from '@nav/shared/store';
 import { AppRoutes } from '../../../App';
 
 
-export const renderAppRoute = (startingPage?: string) => {
-  const routerProps = {} as MemoryRouterProps;
-  if (startingPage) {
-    routerProps.initialEntries = [startingPage];
-  }
+export const renderAppRoute = (startingPages: string | string[], startingIndex: number = 0) => {
+  const routerProps = {
+    initialEntries: Array.isArray(startingPages) ? startingPages : [startingPages],
+    initialIndex: startingIndex
+  } as MemoryRouterProps;
   
   return render(
     <Provider store={store}>

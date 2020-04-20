@@ -1,7 +1,7 @@
 
 export const meter = {
   "id": "0f46fbf0-06bd-4f11-99a7-d1bc7dfc5e6f",
-  "object_type": "OriginFile",
+  "object_type": "CustomerMeter",
   "meter_groups": [
     "41a14706-77a8-467e-8f3a-ac4c250ae66a",
     "631ee02f-a49f-4c72-806c-ae811488cc83"

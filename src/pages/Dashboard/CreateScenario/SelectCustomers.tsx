@@ -51,7 +51,6 @@ const SelectCustomers: React.FC<SelectCustomersProps> = (props) => {
             <MeterGroupChip
               className={classes.meterGroupChip}
               color={selected ? 'primary' : 'secondary'}
-              data-testid="meter-group-chip"
               icon={selected ? 'checkMark' : 'plus'}
               key={meterGroup.id}
               meterGroup={meterGroup}

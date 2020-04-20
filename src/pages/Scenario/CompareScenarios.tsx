@@ -188,9 +188,9 @@ export const CompareScenariosPage: React.FC = () => {
       const ids = idsParam.split(',');
       return api.getScenarios({
         include: ['report_summary', 'meter_groups'],
-        filter: {
-          id: in_(ids)
-        }
+        filter: { id: in_(ids) },
+        page: 1,
+        page_size: 100
       });
     }, res => setScenarios(res?.data)),
     [idsParam]

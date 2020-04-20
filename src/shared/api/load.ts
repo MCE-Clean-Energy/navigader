@@ -1,22 +1,20 @@
 import { LoadType, parseMeterGroup, Meter, MeterGroup } from '@nav/shared/models/meter';
 import {
-  appendId, beoRoute, getRequest, makeFormPost, parsePaginationSet, PaginationQueryParams,
-  PaginationSet, RawPaginationSet, equals_
+  appendId, beoRoute, equals_, getRequest, makeFormPost, parsePaginationSet, PaginationQueryParams,
+  RawPaginationSet
 } from './util';
 
 
 /** ============================ Types ===================================== */
-type MeterQueryParams = Partial<PaginationQueryParams & {
-  data_types: LoadType | LoadType[];
+type MeterQueryParams = PaginationQueryParams & {
   meterGroupId: MeterGroup['id'];
-}>;
+};
 
-type MeterGroupQueryParams = Omit<MeterQueryParams, 'meterGroupId'>;
+type MeterGroupQueryParams = { data_types?: LoadType | LoadType[]; };
+type MeterGroupsQueryParams = PaginationQueryParams & MeterGroupQueryParams;
 
 /** ============================ API Methods =============================== */
-export async function getMeterGroups (
-  queryParams?: MeterGroupQueryParams
-): Promise<PaginationSet<MeterGroup>> {
+export async function getMeterGroups (queryParams: MeterGroupsQueryParams) {
   const response: RawPaginationSet<{ meter_groups: MeterGroup[] }> =
     await getRequest(
       routes.meterGroup(),
@@ -53,16 +51,14 @@ export async function postOriginFile (file: File, name: string) {
   );
 }
 
-export async function getMeters (
-  queryParams?: MeterQueryParams
-): Promise<PaginationSet<Meter>> {
+export async function getMeters (queryParams: MeterQueryParams) {
   const response: RawPaginationSet<{ meters: Meter[] }> =
     await getRequest(
       routes.meter(),
       {
         ...queryParams,
         filter: {
-          meter_groups: equals_(queryParams?.meterGroupId)
+          meter_groups: equals_(queryParams.meterGroupId)
         }
       }
     ).then(res => res.json());

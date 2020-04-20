@@ -24,15 +24,15 @@ export const MeterGroupPage: React.FC = () => {
   return (
     <>
       <PageHeader
-          breadcrumbs={[
-            ['Customer Groups', routes.load],
-            [
-              getMeterGroupDisplayName(meterGroup) || 'Customer Group',
-              routes.dashboard.createScenario.review
-            ]
-          ]}
-          title={getMeterGroupDisplayName(meterGroup)}
-        />
+        breadcrumbs={[
+          ['Customer Groups', routes.load],
+          [
+            getMeterGroupDisplayName(meterGroup) || 'Customer Group',
+            routes.dashboard.createScenario.review
+          ]
+        ]}
+        title={getMeterGroupDisplayName(meterGroup)}
+      />
       
       {meterGroup ? (
         <Grid>

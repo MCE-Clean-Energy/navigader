@@ -1,3 +1,5 @@
+import { assertHasQueryParams } from '@nav/shared/util/testing';
+import { equals_ } from './querying';
 import { getRequest } from './requests';
 
 
@@ -33,21 +35,17 @@ describe('`getRequest` method', () => {
       expect(mockFn).toHaveBeenCalledTimes(1);
       
       const callArgs = mockFn.mock.calls[0];
-      const expectedValue = 'myRoute?' +
-        'exclude[]=ders.*&' +
-        'include[]=ders.configuration&' +
-        'include[]=meter_groups.*&' +
-        'include[]=meters.rate_plan';
-      
-      expect(callArgs[0]).toEqual(expectedValue);
+      assertHasQueryParams(callArgs[0], [
+        ['exclude[]', ['ders.*']],
+        ['include[]', ['ders.configuration', 'meter_groups.*', 'meters.rate_plan']]
+      ]);
     });
     
     it('Handles `filter` as expected', () => {
       getRequest('myRoute', {
         filter: {
-          meter_group: 123,
-          'scenario.name': 'my-scenario',
-          bad_param: undefined
+          meter_group: equals_(123),
+          'scenario.name': equals_('my-scenario')
         }
       });
       

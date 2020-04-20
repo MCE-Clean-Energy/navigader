@@ -89,7 +89,7 @@ const App: React.FC = () => {
   React.useEffect(() => {
     if (!userIsAuthenticated()) return;
     // TODO: this is only loading the first page of configurations. We should load all of them
-    getDerConfigurations({ include: 'data', page_size: 100 })
+    getDerConfigurations({ include: 'data', page: 1, page_size: 100 })
       .then((derConfigurations) => {
         dispatch(
           slices.models.updateModels(derConfigurations.data)
@@ -101,7 +101,7 @@ const App: React.FC = () => {
   React.useEffect(() => {
     if (!userIsAuthenticated()) return;
     // TODO: this is only loading the first page of strategies. We should load all of them
-    getDerStrategies({ include: 'data', page_size: 100 })
+    getDerStrategies({ include: 'data', page: 1, page_size: 100 })
       .then((derStrategies) => {
         dispatch(
           slices.models.updateModels(derStrategies.data)

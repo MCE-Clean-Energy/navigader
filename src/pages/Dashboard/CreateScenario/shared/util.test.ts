@@ -6,7 +6,7 @@ import * as util from './util';
 
 describe('CreateScenario utilities', () => {
   describe('validateCustomerSelections method', () => {
-    const emptyMeterGroups = range(10).map(() => fixtures.makeOriginFile({ numMeters: 0 }));
+    const emptyMeterGroups = range(10).map(() => fixtures.makeOriginFile({ meter_count: 0 }));
     
     it('returns false when no meter groups are provided', () => {
       expect(util.validateCustomerSelections([])).toBeFalsy();
@@ -18,7 +18,7 @@ describe('CreateScenario utilities', () => {
     });
     
     it ('returns true when at least one non-empty meter group is provided', () => {
-      const meterGroup = fixtures.makeOriginFile({ numMeters: 1 });
+      const meterGroup = fixtures.makeOriginFile({ meter_count: 1 });
       expect(util.validateCustomerSelections([meterGroup])).toBeTruthy();
       expect(util.validateCustomerSelections([ ...emptyMeterGroups, meterGroup ])).toBeTruthy();
     });
