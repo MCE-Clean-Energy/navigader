@@ -72,19 +72,6 @@ export function Select <T>(props: SelectProps<T>) {
     inputLabel = <InputLabel id={id}>{label}</InputLabel>;
   }
   
-  const unselectedValue = '';
-  const selectedValues = props.multiple
-    ? isUndefined(props.value) ? unselectedValue : props.value.map(v => options.indexOf(v))
-    : isUndefined(props.value) ? unselectedValue : options.indexOf(props.value);
-  
-  const selectProps = {
-    labelId: label ? id : undefined,
-    multiple,
-    onChange: handleChange,
-    value: selectedValues,
-    ...rest
-  };
-  
   // If requested, sort the options by their rendering value
   const sortedOptions = sorted
     ? [...options].sort((option1, option2) => {
@@ -96,6 +83,19 @@ export function Select <T>(props: SelectProps<T>) {
         return 0;
       })
     : options;
+  
+  const unselectedValue = '';
+  const selectedValues = props.multiple
+    ? isUndefined(props.value) ? unselectedValue : props.value.map(v => sortedOptions.indexOf(v))
+    : isUndefined(props.value) ? unselectedValue : sortedOptions.indexOf(props.value);
+  
+  const selectProps = {
+    labelId: label ? id : undefined,
+    multiple,
+    onChange: handleChange,
+    value: selectedValues,
+    ...rest
+  };
   
   return (
     <FormControl className={classes.formControl}>
@@ -114,7 +114,7 @@ export function Select <T>(props: SelectProps<T>) {
   function handleChange (event: React.ChangeEvent<{ name?: string; value: unknown; }>) {
     const index = +(event.target.value as string);
     if (!props.multiple) {
-      onChange(props.options[index]);
+      onChange(sortedOptions[index]);
     } else {
       // TODO: support multi-select
     }

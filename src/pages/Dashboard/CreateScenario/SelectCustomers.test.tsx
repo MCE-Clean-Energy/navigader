@@ -1,6 +1,6 @@
 import * as React from 'react';
 import map from 'lodash/map';
-import { fireEvent } from '@testing-library/react'
+import { cleanup, fireEvent } from '@testing-library/react'
 
 import { fixtures, renderContextDependentComponent } from '@nav/shared/util/testing';
 import SelectCustomers from './SelectCustomers';
@@ -83,6 +83,7 @@ describe('"Select Customers" page', () => {
       
       const numMetersDiv = getByText(/Number of meters:/);
       expect(numMetersDiv.textContent).toEqual(`Number of meters: ${expectedNumMeters}`);
+      cleanup();
     });
   });
 });

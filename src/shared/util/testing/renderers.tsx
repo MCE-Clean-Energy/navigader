@@ -31,10 +31,6 @@ export const renderAppRoute = (startingPages: string | string[], startingIndex: 
  * @param {ReactElement} Element: the Element to render
  */
 export const renderContextDependentComponent = (Element: React.ReactElement) => {
-  // setup a DOM element as a render target
-  const container = document.createElement('div');
-  document.body.appendChild(container);
-  
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={['testingPath']}>
@@ -44,7 +40,6 @@ export const renderContextDependentComponent = (Element: React.ReactElement) => 
           </Switch>
         </ThemeProvider>
       </MemoryRouter>
-    </Provider>,
-    { container }
+    </Provider>
   );
 };

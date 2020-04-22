@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { cleanup } from '@testing-library/react';
 
 import { renderContextDependentComponent } from '@nav/shared/util/testing';
 import { DERSelection } from './shared';
@@ -39,6 +40,7 @@ describe('`Step Actions` component', () => {
       
       const button = getByRole('button') as HTMLButtonElement;
       expect(button.disabled).toBeTruthy();
+      cleanup();
     });
   });
   
