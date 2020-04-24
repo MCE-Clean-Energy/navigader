@@ -62,3 +62,16 @@ export function makePaginationResponse (results: object) {
     results
   });
 }
+
+/**
+ * jsdom strangely does not allow instantiating a `FileList` object. This method creates and returns
+ * an object that mocks the FileList API sufficiently for our needs
+ *
+ * @param {File[]} files: array of files to include in the FileList
+ */
+export const makeFileList = (files: File[]): FileList => {
+  return Object.assign(
+    [...files], {
+      item: (n: number) => files[n]
+    });
+};

@@ -2,8 +2,7 @@ import * as React from 'react';
 
 import * as api from '@nav/shared/api';
 import {
-  Alert, Button, Card, Checkbox, ContactSupport, Flex, Link, PageHeader, Progress, TextField,
-  Typography
+  Alert, Button, Card, ContactSupport, Flex, Link, PageHeader, Progress, TextField, Typography
 } from '@nav/shared/components';
 import * as routes from '@nav/shared/routes';
 import { makeStylesHook } from '@nav/shared/styles';
@@ -18,28 +17,21 @@ type FileCardProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(() => ({
+const useStyles = makeStylesHook(theme => ({
   fileUpload: {
     display: 'none'
+  },
+  uploadButton: {
+    margin: `${theme.spacing(2)}px 0`
   }
 }), 'UploadPage');
 
 const useFileCardStyles = makeStylesHook(theme => ({
-  card: {
-    marginTop: theme.spacing(2)
-  },
   fileName: {
     width: '100%'
   },
   fileSize: {
     marginLeft: theme.spacing(2)
-  },
-  item17: {
-    cursor: 'pointer',
-    display: 'inline-block'
-  },
-  item17Wrapper: {
-    margin: `0 ${theme.spacing(2)}px`
   },
   row2: {
     marginTop: theme.spacing(2)
@@ -49,16 +41,25 @@ const useFileCardStyles = makeStylesHook(theme => ({
   }
 }), 'UploadFileCard');
 
+const useFileFormatAlertStyles = makeStylesHook(theme => ({
+  bulletList: {
+    margin: `${theme.spacing(1)}px 0`
+  }
+}), 'FileFormatAlert');
+
 /** ============================ Components ================================ */
 const FileCard: React.FC<FileCardProps> = ({ file, startUpload, status }) => {
-  const [useItem17, setUseItem17] = React.useState(false);
   const [name, setFileName] = React.useState('');
   const classes = useFileCardStyles();
+  const canUpload = Boolean(name) && statusAllowsUpload(status);
   
-  const canUpload = useItem17 && Boolean(name) && statusAllowsUpload(status);
-  
+  React.useEffect(() => {
+    // Strip the `.csv` from the end of the file name
+    setFileName(file.name.replace(/.csv$/, ''));
+  }, [file]);
+
   return (
-    <Card className={classes.card} raised>
+    <Card raised>
       <Flex.Container justifyContent="flex-start">
         <Flex.Item>
           <Typography useDiv variant="subtitle2">{file.name}</Typography>
@@ -78,18 +79,17 @@ const FileCard: React.FC<FileCardProps> = ({ file, startUpload, status }) => {
             label="Upload Name"
             onChange={handleNameChange}
             outlined
+            value={name}
           />
         </Flex.Item>
         
-        <Flex.Item className={classes.item17Wrapper}>
-          <div className={classes.item17} onClick={toggleItem17}>
-            <Checkbox checked={useItem17} />
-            <Typography>Confirm "Item 17" file</Typography>
-          </div>
-        </Flex.Item>
-        
         <Flex.Item grow textAlign="right">
-          <Button color="secondary" disabled={!canUpload} onClick={handleUploadClick}>
+          <Button
+            color="secondary"
+            disabled={!canUpload}
+            onClick={handleUploadClick}
+            data-testid="upload-button"
+          >
             Upload
           </Button>
         </Flex.Item>
@@ -127,14 +127,33 @@ const FileCard: React.FC<FileCardProps> = ({ file, startUpload, status }) => {
       startUpload(name);
     }
   }
-  
-  function toggleItem17 () {
-    setUseItem17(!useItem17);
-  }
+};
+
+const FileFormatAlert: React.FC = () => {
+  const classes = useFileFormatAlertStyles();
+  return (
+    <Alert outlined title="File Format" type="info">
+      NavigaDER expects customer data to be provided in the "Item 17" format. See the examples
+      below:
+      
+      <ul className={classes.bulletList}>
+        <li>
+          <Link to="/example_item_17_15_min.csv" download="example_item_17_15_min.csv">
+            15-minute interval file
+          </Link>
+        </li>
+        <li>
+          <Link to="/example_item_17_60_min.csv" download="example_item_17_60_min.csv">
+            60-minute interval file
+          </Link>
+        </li>
+      </ul>
+    </Alert>
+  );
 };
 
 export const UploadPage: React.FC = () => {
-  const [file, setFile] = React.useState<File | null>(null);
+  const [file, setFile] = React.useState<File>();
   const [uploadStatus, setUploadStatus] = React.useState<UploadingStatus>('not started');
   const fileUpload = React.useRef<HTMLInputElement>(null);
   const classes = useStyles();
@@ -142,8 +161,9 @@ export const UploadPage: React.FC = () => {
   return (
     <>
       <PageHeader title="Upload" />
+      <FileFormatAlert />
       
-      <div>
+      <div className={classes.uploadButton}>
         <Button color="primary" onClick={openFileSelector}>Select File</Button>
       </div>
       
@@ -151,6 +171,7 @@ export const UploadPage: React.FC = () => {
       <input
         accept=".csv"
         className={classes.fileUpload}
+        data-testid="hidden-upload-input"
         onChange={selectFile}
         ref={fileUpload}
         type="file"
@@ -170,18 +191,19 @@ export const UploadPage: React.FC = () => {
   function selectFile (event: React.ChangeEvent<HTMLInputElement>) {
     if (!event.target.files) {
       // Not sure why this would happen, but TypeScript thinks it can be `null`
-      setFile(null);
+      setFile(undefined);
       return;
     }
     
     const file = event.target.files.item(0);
     if (!file) {
       // File was de-selected
-      setFile(null);
+      setFile(undefined);
       return;
     }
     
     setFile(file);
+    setUploadStatus('not started');
   }
   
   async function startUpload (name: string) {
