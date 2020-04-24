@@ -39,7 +39,40 @@ describe('Scenario model utilities', () => {
         
         // TODO: test `parseReport` method
         report: undefined
-      })
+      });
+    });
+    
+    it('computes the `progress` object properly', () => {
+      type TestValue = [number, number, boolean, number];
+      const testValues: TestValue[] = [
+        [3, 8, false, 37.5],
+        [0, 0, false, Infinity],
+        [73, 74, false, 98.6],
+        [99, 99, true, 100]
+      ];
+      
+      testValues.forEach((testValue) => {
+        const [
+          der_simulation_count,
+          expected_der_simulation_count,
+          is_complete,
+          percent_complete
+        ] = testValue;
+        
+        const parsed = util.parseScenario(
+          fixtures.makeRawScenario({
+            der_simulation_count,
+            expected_der_simulation_count
+          })
+        );
+        
+        expect(parsed).toMatchObject({
+          progress: {
+            is_complete,
+            percent_complete
+          }
+        });
+      });
     });
   })
 });

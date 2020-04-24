@@ -10,8 +10,10 @@ export type PaginationState = {
   rowsPerPage: RowsPerPageOption;
 };
 
-type TableContext = {
+type TableContext<T> = {
   allSelected: boolean;
+  data: T[],
+  disableSelect: (datum: T) => boolean;
   selectable: boolean,
   selections: Set<number>;
   toggleAllSelections: (allSelected: boolean) => void;
@@ -19,8 +21,10 @@ type TableContext = {
 };
 
 /** ============================ Context =================================== */
-export const TableContext = React.createContext<TableContext>({
+export const TableContext = React.createContext<TableContext<any>>({
   allSelected: false,
+  data: [],
+  disableSelect: () => false,
   selectable: false,
   selections: new Set(),
   toggleAllSelections: (allSelected: boolean) => {},

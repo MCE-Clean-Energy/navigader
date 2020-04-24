@@ -122,12 +122,12 @@ const SimulationsTable: React.FC<SimulationsTableProps> = ({ filterParams, repor
           <Table.Body>
             {simulations.map(simulation =>
               <Table.Row key={simulation.id}>
-                <Table.Cell useTh>{simulation.report?.SA_ID}</Table.Cell>
-                <Table.Cell useTh>{simulation.report?.MeterRatePlan}</Table.Cell>
-                <Table.Cell align="right" useTh>{formatters.maxDecimals(simulation.report?.UsageDelta, 2)}</Table.Cell>
-                <Table.Cell align="right" useTh>{formatters.maxDecimals(simulation.report?.BillDelta, 2)}</Table.Cell>
-                <Table.Cell align="right" useTh>{formatters.maxDecimals(simulation.report?.CleanNetShort2022Delta, 2)}</Table.Cell>
-                <Table.Cell align="right" useTh>N/A</Table.Cell>
+                <Table.Cell>{simulation.report?.SA_ID}</Table.Cell>
+                <Table.Cell>{simulation.report?.MeterRatePlan}</Table.Cell>
+                <Table.Cell align="right">{formatters.maxDecimals(simulation.report?.UsageDelta, 2)}</Table.Cell>
+                <Table.Cell align="right">{formatters.maxDecimals(simulation.report?.BillDelta, 2)}</Table.Cell>
+                <Table.Cell align="right">{formatters.maxDecimals(simulation.report?.CleanNetShort2022Delta, 2)}</Table.Cell>
+                <Table.Cell align="right">N/A</Table.Cell>
               </Table.Row>
             )}
           </Table.Body>

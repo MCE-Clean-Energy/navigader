@@ -1,7 +1,7 @@
 import omit from 'lodash/omit';
 import pick from 'lodash/pick';
 
-import { parsePandasFrame } from '@nav/shared/util';
+import { math, parsePandasFrame } from '@nav/shared/util';
 import {
   RawScenarioReport, ScenarioReport, RawScenario, Scenario
 } from './types';
@@ -13,8 +13,9 @@ import {
  * @param {RawScenario} scenario - The raw scenario object to parse
  */
 export function parseScenario (scenario: RawScenario): Scenario {
-  const percentComplete = parseFloat(
-    (scenario.der_simulation_count / scenario.expected_der_simulation_count * 100).toFixed(1)
+  const percentComplete = math.percentOf(
+    scenario.der_simulation_count,
+    scenario.expected_der_simulation_count
   );
   
   const reportSummary = scenario.report_summary ? scenario.report_summary[0] : undefined;
@@ -29,7 +30,7 @@ export function parseScenario (scenario: RawScenario): Scenario {
     meters: scenario.meters,
     progress: {
       is_complete: percentComplete === 100,
-      percent_complete: percentComplete
+      percent_complete: parseFloat(percentComplete.toFixed(1))
     },
     report: parseReport(scenario.report),
     report_summary: reportSummary

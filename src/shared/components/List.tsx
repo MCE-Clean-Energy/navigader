@@ -3,7 +3,9 @@ import MuiList from '@material-ui/core/List';
 import MuiListItem from '@material-ui/core/ListItem';
 import MuiListItemIcon from '@material-ui/core/ListItemIcon';
 import MuiListItemText from '@material-ui/core/ListItemText';
+import classNames from 'classnames';
 
+import { makeStylesHook } from '@nav/shared/styles';
 import { printWarning } from '@nav/shared/util';
 import { Icon, ValidIcon } from './Icon';
 
@@ -15,6 +17,7 @@ type ListProps = React.HTMLAttributes<HTMLUListElement> & {
 
 type ListItemProps = React.PropsWithChildren<{
   className?: string;
+  disabled?: boolean;
   onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
   selected?: boolean;
 }>;
@@ -34,6 +37,15 @@ type ListItem = React.ForwardRefExoticComponent<ListItemProps> & {
 type ListExport = React.ForwardRefExoticComponent<ListProps> & {
   Item: ListItem;
 };
+
+/** ============================ Styles ==================================== */
+const useStyles = makeStylesHook(theme => ({
+  disabled: {
+    cursor: 'default',
+    pointerEvents: 'none',
+    opacity: 0.5
+  }
+}), 'NavigaderListItem');
 
 /** ============================ Components ================================ */
 const ListItemIcon: ListItemIcon = (props, ref) => {
@@ -64,7 +76,14 @@ const ListItemText: ListItemText = ({ children}) =>
 
 const ListItem: ListItem = Object.assign(
   React.forwardRef<HTMLDivElement, ListItemProps>(
-    (props, ref) => <MuiListItem button ref={ref} {...props}  />
+    (props, ref) => {
+      const classes = useStyles();
+      const className = classNames({
+        [classes.disabled]: props.disabled
+      });
+      
+      return <MuiListItem button className={className} ref={ref} {...props}  />;
+    }
   ), {
     Icon: ListItemIcon,
     Text: ListItemText

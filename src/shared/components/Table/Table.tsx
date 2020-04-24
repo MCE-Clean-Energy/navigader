@@ -28,6 +28,7 @@ type TableProps<T extends ObjectWithId> = {
   containerClassName?: string;
   dataFn: (state: PaginationState) => Promise<PaginationSet<T>>;
   dataSelector: (state: RootState) => T[];
+  disableSelect?: (datum: T) => boolean;
   ifEmpty?: React.ReactNode;
   onSelect?: (selections: T[]) => void;
   raised?: boolean;
@@ -38,19 +39,22 @@ type TableProps<T extends ObjectWithId> = {
 type TableCellProps = {
   align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
   colSpan?: number;
-  // For accessibility, a table's first column is set to be a <th> element, with a scope of "row".
-  // This enables screen readers to identify a cell's value by its row and column name.
-  useTh?: boolean;
+  // These prop should not be provided by consuming components-- they are provided by the
+  // `TableHead` and `TableBody` components
+  _columnIndex?: number;
+  _isHeaderRow?: boolean;
 };
 
 type TableHeadProps = {};
 type TableBodyProps = {};
 
 type TableRowProps = {
-  // These props should be provided manually-- they are provided by the `TableHead` and `TableBody`
-  // components
+  // These prop should not be provided by consuming components-- they are provided by the
+  // `TableHead` and `TableBody` components
+  _isHeaderRow?: boolean;
   _selected?: boolean;
   _onChange?: (checked: boolean) => void;
+  _disableSelect?: boolean;
 };
 
 type TableBody = React.FC<TableBodyProps>;
@@ -81,6 +85,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     children,
     dataFn,
     dataSelector,
+    disableSelect = () => false,
     containerClassName,
     onSelect,
     raised = false,
@@ -120,8 +125,11 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
   
   // Build context for child component tree
   const loadedData = !loading && !isEmpty(data);
+  const selectables = data.filter(d => !disableSelect(d));
   const tableContext = {
-    allSelected: data.length > 0 && data.length === selections.size,
+    allSelected: selectables.length > 0 && selectables.length === selections.size,
+    data,
+    disableSelect,
     selectable: Boolean(onSelect) && loadedData,
     selections: selections,
     toggleAllSelections,
@@ -176,7 +184,8 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     // Can't do anything without data
     if (!data) return;
     if (selectAll) {
-      updateSelections(new Set(data.map((d, i) => i)));
+      const selectables = data.filter(d => !disableSelect(d));
+      updateSelections(new Set(selectables.map(d => data.indexOf(d))));
     } else {
       updateSelections(new Set());
     }
@@ -213,7 +222,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
 }
 
 const TableBody: TableBody = (props) => {
-  const { selections, toggleRowSelection } = React.useContext(TableContext);
+  const { data, disableSelect, selections, toggleRowSelection } = React.useContext(TableContext);
   
   // Keeps track of the index of each row. This is augmented once per table row in the loop
   let rowIndex = 0;
@@ -228,8 +237,10 @@ const TableBody: TableBody = (props) => {
         // Augment the row index
         const index = rowIndex++;
         return React.cloneElement<TableRowProps>(child, {
+          _isHeaderRow: false,
           _onChange: (checked: boolean) => toggleRowSelection(index, checked),
-          _selected: selections.has(index)
+          _selected: selections.has(index),
+          _disableSelect: disableSelect(data[index])
         });
       })}
     </MuiTableBody>
@@ -237,13 +248,16 @@ const TableBody: TableBody = (props) => {
 };
 
 const TableHead: TableHead = (props) => {
-  const { allSelected, toggleAllSelections } = React.useContext(TableContext);
+  const { allSelected, data, toggleAllSelections, disableSelect } = React.useContext(TableContext);
+  const selectables = data.filter(d => !disableSelect(d));
   return (
     <MuiTableHead>
       {React.isValidElement(props.children)
         ? React.cloneElement<TableRowProps>(props.children, {
+          _isHeaderRow: true,
           _onChange: toggleAllSelections,
-          _selected: allSelected
+          _selected: allSelected,
+          _disableSelect: selectables.length === 0
         })
         : props.children
       }
@@ -252,16 +266,17 @@ const TableHead: TableHead = (props) => {
 };
 
 const TableRow: TableRow = (props) => {
-  const { children, _selected, _onChange } = props;
+  const { children, _disableSelect, _isHeaderRow, _onChange, _selected } = props;
   const { selectable } = React.useContext(TableContext);
   
   // If the row is selectable, add in a checkbox to the front of the row
   let checkboxCell = null;
+  let colIndex = 0;
   if (selectable) {
     // The `onChange` callback depends on the cell's context
     checkboxCell = (
-      <Table.Cell>
-        <Checkbox checked={_selected} onChange={_onChange} />
+      <Table.Cell _columnIndex={colIndex++} _isHeaderRow={_isHeaderRow}>
+        <Checkbox checked={_selected} disabled={_disableSelect} onChange={_onChange} />
       </Table.Cell>
     );
   }
@@ -269,18 +284,28 @@ const TableRow: TableRow = (props) => {
   return (
     <MuiTableRow>
       {checkboxCell}
-      {children}
+      {React.Children.map(children, child =>
+        // Add the `_columnIndex` prop
+        React.isValidElement(child)
+          ? React.cloneElement(child, { _columnIndex: colIndex++, _isHeaderRow })
+          : null
+      )}
     </MuiTableRow>
   );
 };
 
-const TableCell: TableCell = ({ useTh = false, ...rest }) => {
+const TableCell: TableCell = ({ _columnIndex, _isHeaderRow, ...rest }) => {
   const tableProps = { ...rest };
   
-  if (useTh) {
+  // For accessibility, a table's first column is set to be a <th> element, with a scope of "row",
+  // and table header elements are given a scope of "col". This enables screen readers to identify a
+  // cell's value by its row and column name.
+  //
+  // See more here: https://material-ui.com/components/tables/#structure
+  if (_columnIndex === 0 || _isHeaderRow) {
     Object.assign(tableProps, {
       component: 'th',
-      scope: 'row'
+      scope: _isHeaderRow ? 'col' : 'row'
     });
   }
   

@@ -5,6 +5,7 @@ import MuiCheckbox from '@material-ui/core/Checkbox';
 /** ============================ Types ===================================== */
 type CheckboxProps = {
   checked?: boolean;
+  disabled?: boolean;
   onChange?: (checked: boolean, event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 

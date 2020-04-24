@@ -138,7 +138,8 @@ const ScenariosTable: React.FC = () => {
         aria-label="scenarios table"
         dataFn={getScenarios}
         dataSelector={selectModels('scenarios')}
-        onSelect={(scenarios: Scenario[]) => setSelections(scenarios)}
+        disableSelect={scenario => !scenario.progress.is_complete}
+        onSelect={scenarios => setSelections(scenarios)}
         raised
         stickyHeader
         title="Scenarios"
@@ -167,10 +168,15 @@ const ScenariosTable: React.FC = () => {
               
               {scenarios.map(scenario =>
                 <Table.Row key={scenario.id}>
-                  <Table.Cell useTh>
-                    <Link to={routes.scenario(scenario.id)}>
-                      {scenario.name}
-                    </Link>
+                  <Table.Cell>
+                    {scenario.progress.is_complete
+                      ? (
+                        <Link to={routes.scenario(scenario.id)}>
+                          {scenario.name}
+                        </Link>
+                      )
+                      : scenario.name
+                    }
                   </Table.Cell>
                   <Table.Cell>{formatters.standardDate(scenario.created_at)}</Table.Cell>
                   <Table.Cell>
@@ -209,7 +215,10 @@ const ScenariosTable: React.FC = () => {
                       icon="verticalDots"
                       transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                     >
-                      <List.Item onClick={() => viewScenario(scenario.id)}>
+                      <List.Item
+                        disabled={!scenario.progress.is_complete}
+                        onClick={() => viewScenario(scenario.id)}
+                      >
                         <List.Item.Icon icon="plus" />
                         <List.Item.Text>View</List.Item.Text>
                       </List.Item>

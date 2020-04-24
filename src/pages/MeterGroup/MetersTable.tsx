@@ -62,7 +62,7 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
           <Table.Body>
             {meters.map(meter =>
               <Table.Row key={meter.id}>
-                <Table.Cell useTh>{meter.metadata.sa_id}</Table.Cell>
+                <Table.Cell>{meter.metadata.sa_id}</Table.Cell>
                 <Table.Cell>{meter.metadata.rate_plan_name}</Table.Cell>
               </Table.Row>
             )}
