@@ -2,11 +2,10 @@ import omit from 'lodash/omit';
 import pick from 'lodash/pick';
 
 import { math, parsePandasFrame } from '@nav/shared/util';
-import {
-  RawScenarioReport, ScenarioReport, RawScenario, Scenario
-} from './types';
+import { RawScenarioReport, ScenarioReport, RawScenario, Scenario } from './types';
 
 
+/** ============================ Utils ===================================== */
 /**
  * Basic parsing function for converting a RawScenario into a Scenario
  *
@@ -37,7 +36,7 @@ export function parseScenario (scenario: RawScenario): Scenario {
   };
 }
 
-function parseReport (report?: RawScenarioReport): ScenarioReport | undefined {
+export function parseReport (report?: RawScenarioReport): ScenarioReport | undefined {
   if (!report) return;
   const parsed = parsePandasFrame(report);
   
@@ -46,7 +45,7 @@ function parseReport (report?: RawScenarioReport): ScenarioReport | undefined {
   const rows = Object.fromEntries(parsed.ID.map((simulationId, rowIndex) => {
     const simulationFields = Object.entries(parsed).map(
       ([column, values]) => {
-        const rowValue = values[rowIndex];
+        const rowValue = values && values[rowIndex];
         const columnName = column === 'SA ID' ? 'SA_ID' : column;
         return [columnName, rowValue];
       }

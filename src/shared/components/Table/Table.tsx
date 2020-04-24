@@ -7,9 +7,11 @@ import MuiTableCell from '@material-ui/core/TableCell';
 import MuiTableContainer from '@material-ui/core/TableContainer';
 import MuiTableHead from '@material-ui/core/TableHead';
 import MuiTableRow from '@material-ui/core/TableRow';
+import MuiTableSortLabel from '@material-ui/core/TableSortLabel';
+import omit from 'lodash/omit';
 
 import { PaginationSet } from '@nav/shared/api/util';
-import { Checkbox, Flex, Progress, Typography } from '@nav/shared/components';
+import { Checkbox, Flex, Progress, SortState, Typography } from '@nav/shared/components';
 import { RootState } from '@nav/shared/store';
 import { makeStylesHook } from '@nav/shared/styles';
 import { IdType, ObjectWithId} from '@nav/shared/types';
@@ -23,13 +25,13 @@ type EmptyRowProps = React.PropsWithChildren<{
   colSpan: number;
 }>;
 
-type TableProps<T extends ObjectWithId> = {
+export type TableProps<T extends ObjectWithId> = {
   children: (data: T[], emptyRow: React.FC<EmptyRowProps>) => React.ReactElement;
   containerClassName?: string;
-  dataFn: (state: PaginationState) => Promise<PaginationSet<T>>;
+  dataFn: (state: PaginationState & Partial<SortState>) => Promise<PaginationSet<T>>;
   dataSelector: (state: RootState) => T[];
   disableSelect?: (datum: T) => boolean;
-  ifEmpty?: React.ReactNode;
+  initialSorting?: SortState;
   onSelect?: (selections: T[]) => void;
   raised?: boolean;
   stickyHeader?: boolean;
@@ -39,7 +41,9 @@ type TableProps<T extends ObjectWithId> = {
 type TableCellProps = {
   align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
   colSpan?: number;
-  // These prop should not be provided by consuming components-- they are provided by the
+  sortBy?: string;
+  sortDir?: SortState['dir'];
+  // These props should not be provided by consuming components-- they are provided by the
   // `TableHead` and `TableBody` components
   _columnIndex?: number;
   _isHeaderRow?: boolean;
@@ -49,12 +53,12 @@ type TableHeadProps = {};
 type TableBodyProps = {};
 
 type TableRowProps = {
-  // These prop should not be provided by consuming components-- they are provided by the
+  // These props should not be provided by consuming components-- they are provided by the
   // `TableHead` and `TableBody` components
-  _isHeaderRow?: boolean;
-  _selected?: boolean;
-  _onChange?: (checked: boolean) => void;
   _disableSelect?: boolean;
+  _isHeaderRow?: boolean;
+  _onChange?: (checked: boolean) => void;
+  _selected?: boolean;
 };
 
 type TableBody = React.FC<TableBodyProps>;
@@ -87,6 +91,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     dataSelector,
     disableSelect = () => false,
     containerClassName,
+    initialSorting,
     onSelect,
     raised = false,
     title,
@@ -106,18 +111,19 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     currentPage: 0,
     rowsPerPage: 20
   });
+  const [sortState, setSortState] = React.useState(initialSorting);
   
   // Load data
   React.useEffect(makeCancelableAsync(() => {
     setLoading(true);
-    return dataFn(paginationState)
+    return dataFn({ ...paginationState, ...sortState })
   }, (paginationSet) => {
     setLoading(false);
     setDataState({
       count: paginationSet.count,
       dataIds: paginationSet.data.map(datum => datum.id)
     });
-  }), [dataFn, paginationState]);
+  }), [dataFn, paginationState, sortState]);
   
   // Get the data from the store using the IDs
   const { dataIds, count } = dataState;
@@ -131,7 +137,9 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     data,
     disableSelect,
     selectable: Boolean(onSelect) && loadedData,
-    selections: selections,
+    selections,
+    setSortState,
+    sortState,
     toggleAllSelections,
     toggleRowSelection
   };
@@ -285,7 +293,7 @@ const TableRow: TableRow = (props) => {
     <MuiTableRow>
       {checkboxCell}
       {React.Children.map(children, child =>
-        // Add the `_columnIndex` prop
+        // Add the `_columnIndex` and `_isHeaderRow` props
         React.isValidElement(child)
           ? React.cloneElement(child, { _columnIndex: colIndex++, _isHeaderRow })
           : null
@@ -294,8 +302,10 @@ const TableRow: TableRow = (props) => {
   );
 };
 
-const TableCell: TableCell = ({ _columnIndex, _isHeaderRow, ...rest }) => {
+const TableCell: TableCell = (props) => {
+  const { sortBy, sortDir, _columnIndex, _isHeaderRow, ...rest } = props;
   const tableProps = { ...rest };
+  const { setSortState, sortState } = React.useContext(TableContext);
   
   // For accessibility, a table's first column is set to be a <th> element, with a scope of "row",
   // and table header elements are given a scope of "col". This enables screen readers to identify a
@@ -309,7 +319,61 @@ const TableCell: TableCell = ({ _columnIndex, _isHeaderRow, ...rest }) => {
     });
   }
   
+  if (sortBy) {
+    const active = sortBy === sortState?.key;
+    return (
+      <MuiTableCell {...omit(tableProps, 'children')}>
+        <MuiTableSortLabel
+          active={active}
+          direction={active ? sortState?.dir : getDefaultSortDir()}
+          onClick={updateSortState}
+        >
+          {rest.children}
+        </MuiTableSortLabel>
+      </MuiTableCell>
+    );
+  }
+  
   return <MuiTableCell {...tableProps} />;
+  
+  /** ============================ Callbacks =============================== */
+  /**
+   * Triggered when the user clicks the sort label, indicating they want to sort on a given column
+   */
+  function updateSortState () {
+    const newDir = sortState?.key === sortBy
+      ? toggleSortDir(sortState?.dir)
+      : getDefaultSortDir();
+    
+    setSortState({
+      dir: newDir,
+      // `sortBy` isn't a required column, but is required for rendering the sort label and thus
+      // for triggering this callback, hence the non-null assertion
+      key: sortBy!
+    });
+  }
+  
+  /**
+   * Returns the column's default sorting direction, falling back on the global default sort
+   * direction if no sort direction is provided
+   */
+  function getDefaultSortDir () {
+    return sortDir || DEFAULT_SORT_DIR;
+  }
+  
+  /**
+   * Toggles sort direction from ascending to descending or vice versa. If not provided an initial
+   * direction, returns the global default sorting direction
+   *
+   * @param {'asc' | 'desc'} [dir]: initial sort direction
+   */
+  function toggleSortDir (dir?: SortState['dir']) {
+    switch (dir) {
+      case 'asc': return 'desc';
+      case 'desc': return 'asc';
+      default: return DEFAULT_SORT_DIR;
+    }
+  }
 };
 
 /** ============================ Exports =================================== */
@@ -318,3 +382,6 @@ Table.Cell = TableCell;
 Table.Head = TableHead;
 Table.Pagination = TablePagination;
 Table.Row = TableRow;
+
+/** ============================ Constants ================================= */
+const DEFAULT_SORT_DIR = 'asc';

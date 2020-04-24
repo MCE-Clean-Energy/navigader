@@ -1,16 +1,12 @@
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import map from 'lodash/map';
 
 import * as api from '@nav/shared/api';
-import {
-  Button, DERIcon, Flex, Link, List, Menu, PageHeader, PaginationState, Table, Typography
-} from '@nav/shared/components';
-import { Scenario } from '@nav/shared/models/scenario';
+import { Button, Link, List, Menu, PageHeader, Typography } from '@nav/shared/components';
+import { Components, Scenario } from '@nav/shared/models/scenario';
 import * as routes from '@nav/shared/routes';
-import { selectModels, updateModels } from '@nav/shared/store/slices/models';
-import { formatters, makeCancelableAsync } from '@nav/shared/util';
+import { makeCancelableAsync } from '@nav/shared/util';
 import CreateScenario from './CreateScenario'
 import { makeStylesHook } from '@nav/shared/styles';
 import RenameDialog from './RenameDialog';
@@ -79,7 +75,7 @@ const PageHeaderActions: React.FC<PageHeaderActionsProps> = (props) => {
       >
         Compare Scenarios
       </Button>
-      <Button color="secondary" onClick={createScenario}>Create Scenario</Button>
+      <Button color="secondary" onClick={createScenario}>New Scenario</Button>
     </>
   );
   
@@ -102,22 +98,6 @@ const ScenariosTable: React.FC = () => {
   const [renameScenario, setRenameScenario] = React.useState<Scenario>();
   const [numMeterGroups, setNumMeterGroups] = React.useState<number>();
   const history = useHistory();
-  const dispatch = useDispatch();
-  
-  const getScenarios = React.useCallback(
-    async (state: PaginationState) => {
-      const response = await api.getScenarios({
-        include: ['ders', 'meter_groups', 'report_summary'],
-        page: state.currentPage + 1,
-        page_size: state.rowsPerPage
-      });
-      
-      // Add the models to the store and yield the pagination results
-      dispatch(updateModels(response.data));
-      return response
-    },
-    [dispatch]
-  );
   
   // Check if there are any meter groups-- if not, we link to the upload page
   React.useEffect(
@@ -134,113 +114,37 @@ const ScenariosTable: React.FC = () => {
         title="Dashboard"
       />
       
-      <Table
-        aria-label="scenarios table"
-        dataFn={getScenarios}
-        dataSelector={selectModels('scenarios')}
-        disableSelect={scenario => !scenario.progress.is_complete}
-        onSelect={scenarios => setSelections(scenarios)}
-        raised
-        stickyHeader
-        title="Scenarios"
-      >
-        {(scenarios, EmptyRow) =>
-          <>
-            <Table.Head>
-              <Table.Row>
-                <Table.Cell>Name</Table.Cell>
-                <Table.Cell>Created</Table.Cell>
-                <Table.Cell>Customer Segment (#)</Table.Cell>
-                <Table.Cell>DER</Table.Cell>
-                <Table.Cell>Program Strategy</Table.Cell>
-                <Table.Cell>CCA Bill ($/year)</Table.Cell>
-                <Table.Cell>CNS 2022 Delta (tCO<sub>2</sub>/year)</Table.Cell>
-                <Table.Cell>RA (MW/year)</Table.Cell>
-                <Table.Cell>Status</Table.Cell>
-                <Table.Cell>Menu</Table.Cell>
-              </Table.Row>
-            </Table.Head>
-            <Table.Body>
-              {/** Only renders if there's no data */}
-              <EmptyRow colSpan={10}>
-                <EmptyTableRow numMeterGroups={numMeterGroups} />
-              </EmptyRow>
-              
-              {scenarios.map(scenario =>
-                <Table.Row key={scenario.id}>
-                  <Table.Cell>
-                    {scenario.progress.is_complete
-                      ? (
-                        <Link to={routes.scenario(scenario.id)}>
-                          {scenario.name}
-                        </Link>
-                      )
-                      : scenario.name
-                    }
-                  </Table.Cell>
-                  <Table.Cell>{formatters.standardDate(scenario.created_at)}</Table.Cell>
-                  <Table.Cell>
-                    {scenario.meter_group &&
-                      <span>{scenario.meter_group.name} ({scenario.meter_group.meter_count})</span>
-                    }
-                  </Table.Cell>
-                  <Table.Cell>
-                    {scenario.der &&
-                      <Flex.Container alignItems="center">
-                        <Flex.Item>
-                          <DERIcon type={scenario.der.der_configuration.der_type} />
-                        </Flex.Item>
-                        <Flex.Item>
-                          {scenario.der.der_configuration.name}
-                        </Flex.Item>
-                      </Flex.Container>
-                    }
-                  </Table.Cell>
-                  <Table.Cell>
-                    {scenario.der && scenario.der.der_strategy.name}
-                  </Table.Cell>
-                  <Table.Cell>
-                    {formatters.maxDecimals(scenario.report_summary?.BillDelta, 2)}
-                  </Table.Cell>
-                  <Table.Cell>
-                    {formatters.maxDecimals(scenario.report_summary?.CleanNetShort2022Delta, 2)}
-                  </Table.Cell>
-                  <Table.Cell>
-                    N/A
-                  </Table.Cell>
-                  <Table.Cell>{getScenarioStatus(scenario)}</Table.Cell>
-                  <Table.Cell>
-                    <Menu
-                      anchorOrigin={{ vertical: 'center', horizontal: 'center'}}
-                      icon="verticalDots"
-                      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                    >
-                      <List.Item
-                        disabled={!scenario.progress.is_complete}
-                        onClick={() => viewScenario(scenario.id)}
-                      >
-                        <List.Item.Icon icon="plus" />
-                        <List.Item.Text>View</List.Item.Text>
-                      </List.Item>
-                      <List.Item onClick={() => openRenameScenarioDialog(scenario)}>
-                        <List.Item.Icon icon="pencil" />
-                        <List.Item.Text>Rename</List.Item.Text>
-                      </List.Item>
+      <Components.ScenariosTable
+        actionsMenu={
+          (scenario) =>
+            <Menu
+              anchorOrigin={{ vertical: 'center', horizontal: 'center'}}
+              icon="verticalDots"
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+              <List.Item
+                disabled={!scenario.progress.is_complete}
+                onClick={() => viewScenario(scenario.id)}
+              >
+                <List.Item.Icon icon="plus" />
+                <List.Item.Text>View</List.Item.Text>
+              </List.Item>
+              <List.Item onClick={() => openRenameScenarioDialog(scenario)}>
+                <List.Item.Icon icon="pencil" />
+                <List.Item.Text>Rename</List.Item.Text>
+              </List.Item>
 
-                      {/* TODO: introduce scenario archiving */}
-                      {/*<Divider />*/}
-                      {/*<List.Item onClick={() => archiveScenario(scenario.id)}>*/}
-                      {/*  <List.Item.Icon icon="trash" />*/}
-                      {/*  <List.Item.Text>Archive</List.Item.Text>*/}
-                      {/*</List.Item>*/}
-                    </Menu>
-                  </Table.Cell>
-                </Table.Row>
-              )}
-            </Table.Body>
-          </>
+              {/* TODO: introduce scenario archiving */}
+              {/*<Divider />*/}
+              {/*<List.Item onClick={() => archiveScenario(scenario.id)}>*/}
+              {/*  <List.Item.Icon icon="trash" />*/}
+              {/*  <List.Item.Text>Archive</List.Item.Text>*/}
+              {/*</List.Item>*/}
+            </Menu>
         }
-      </Table>
+        NoScenariosRow={<EmptyTableRow numMeterGroups={numMeterGroups} />}
+        onSelect={setSelections}
+      />
       
       {renameScenario &&
         <RenameDialog
@@ -270,17 +174,3 @@ export const DashboardPage = () =>
     <Route path={routes.dashboard.createScenario.base} component={CreateScenario} />
     <Route exact path={routes.dashboard.base} component={ScenariosTable} />
   </Switch>;
-
-
-/** ============================ Helpers =================================== */
-/**
- * Returns a string representing the scenario's status
- *
- * @param {Scenario} scenario: the scenario whose status we are interested in
- */
-function getScenarioStatus (scenario: Scenario) {
-  const { is_complete, percent_complete } = scenario.progress;
-  return is_complete
-    ? 'Done'
-    : `${Math.floor(percent_complete)}%`;
-}

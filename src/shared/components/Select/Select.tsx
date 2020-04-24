@@ -12,31 +12,16 @@ import { randomString } from '@nav/shared/util';
 
 
 /** ============================ Types ===================================== */
-type SelectCommonProps<T> = {
+type SelectProps<T> = {
   className?: string;
   id?: string;
   label?: string;
+  onChange?: (value: T) => void;
   options: T[];
   renderOption?: ((option: T) => string) | keyof T;
   sorted?: boolean;
-};
-
-type MultiSelectProps<T> = {
-  multiple: true;
-  onChange?: (value: T[]) => void;
-  value: T[] | undefined;
-}
-
-type SingleSelectProps<T> = {
-  multiple?: false;
-  onChange?: (value: T) => void;
   value: T | undefined;
-}
-
-type SelectProps<T> = React.PropsWithChildren<
-  SelectCommonProps<T> &
-  (SingleSelectProps<T> | MultiSelectProps<T>)
->;
+};
 
 /** ============================ Styles ==================================== */
 const useStyles = makeStylesHook(theme => ({
@@ -56,7 +41,6 @@ export function Select <T>(props: SelectProps<T>) {
   const {
     id = randomString(),
     label,
-    multiple,
     options,
     onChange = noop,
     renderOption = (option: T) => option,
@@ -85,13 +69,12 @@ export function Select <T>(props: SelectProps<T>) {
     : options;
   
   const unselectedValue = '';
-  const selectedValues = props.multiple
-    ? isUndefined(props.value) ? unselectedValue : props.value.map(v => sortedOptions.indexOf(v))
-    : isUndefined(props.value) ? unselectedValue : sortedOptions.indexOf(props.value);
+  const selectedValues = isUndefined(props.value)
+    ? unselectedValue
+    : sortedOptions.indexOf(props.value);
   
   const selectProps = {
     labelId: label ? id : undefined,
-    multiple,
     onChange: handleChange,
     value: selectedValues,
     ...rest
@@ -113,11 +96,7 @@ export function Select <T>(props: SelectProps<T>) {
   /** ============================ Callbacks =============================== */
   function handleChange (event: React.ChangeEvent<{ name?: string; value: unknown; }>) {
     const index = +(event.target.value as string);
-    if (!props.multiple) {
-      onChange(sortedOptions[index]);
-    } else {
-      // TODO: support multi-select
-    }
+    onChange(sortedOptions[index]);
   }
   
   function getStyles (option: T) {

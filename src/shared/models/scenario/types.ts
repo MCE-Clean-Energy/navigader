@@ -100,6 +100,11 @@ type ScenarioReportFieldsCommon = {
   CARBUnspecifiedPower2013PostDER: number;
   CARBUnspecifiedPower2013Delta: number;
   
+  // "Resource adequacy report" attributes
+  RAPreDER?: number;
+  RAPostDER?: number;
+  RADelta?: number;
+  
   // "Customer meter report" attributes
   MeterRatePlan: string;
 };

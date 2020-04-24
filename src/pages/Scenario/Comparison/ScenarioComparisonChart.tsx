@@ -3,18 +3,15 @@ import ContainerDimensions, { Dimensions } from 'react-container-dimensions';
 import {
   VictoryAxis, VictoryChart, VictoryLabel, VictoryScatter, VictoryTheme, VictoryTooltip
 } from 'victory';
-import * as d3 from 'd3-scale';
 import find from 'lodash/find';
-import pick from 'lodash/pick';
 
-import * as api from '@nav/shared/api';
-import { in_ } from '@nav/shared/api/util';
-import { Card, Flex, Grid, PageHeader, Progress, Select } from '@nav/shared/components';
-import { MeterGroup } from '@nav/shared/models/meter';
-import { Scenario } from '@nav/shared/models/scenario';
-import * as routes from '@nav/shared/routes';
+import { Card, Flex, Grid, Select } from '@nav/shared/components';
 import { makeStylesHook, primaryColor } from '@nav/shared/styles';
-import { formatters, hooks, makeCancelableAsync, omitFalsey } from '@nav/shared/util';
+import { formatters, omitFalsey } from '@nav/shared/util';
+import { Scenario } from '@nav/shared/models/scenario';
+import * as d3 from 'd3-scale';
+import pick from 'lodash/pick';
+import { MeterGroup } from '@nav/shared/models/meter';
 
 
 /** ============================ Types ===================================== */
@@ -70,7 +67,7 @@ const scatterPointStyle = {
 };
 
 /** ============================ Components ================================ */
-const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (props) => {
+export const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (props) => {
   const { scenarios } = props;
   
   const classes = useStyles();
@@ -83,7 +80,7 @@ const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (props) 
   
   return (
     <Grid>
-      <Grid.Item span={7}>
+      <Grid.Item span={8}>
         <Card className={classes.chartCard} padding={0} raised>
           <ContainerDimensions>
             {({ width }: Dimensions) =>
@@ -96,13 +93,13 @@ const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (props) 
               >
                 <VictoryAxis
                   axisLabelComponent={<VictoryLabel dy={height/2 - CHART_MARGIN} />}
-                  label="Bill Delta ($/year)"
+                  label="Electricity Bill Impacts over Baseline ($/year)"
                 />
                 
                 <VictoryAxis
                   axisLabelComponent={<VictoryLabel dy={-width/2 + CHART_MARGIN} />}
                   dependentAxis
-                  label="GHG Delta (tCO2/year)"
+                  label="GHG Impacts over Baseline (tCO2/year)"
                 />
                 
                 <VictoryScatter
@@ -126,7 +123,7 @@ const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (props) 
           </ContainerDimensions>
         </Card>
       </Grid.Item>
-      <Grid.Item span={5}>
+      <Grid.Item span={4}>
         <Flex.Container alignItems="center">
           <Flex.Item>
             Size scenarios by:
@@ -174,43 +171,6 @@ const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (props) 
       formatters.maxDecimals(sizeValue, 2) + ' ' + sizeSuffix
     ].join('\n');
   }
-};
-
-export const CompareScenariosPage: React.FC = () => {
-  const [scenarios, setScenarios] = React.useState<Scenario[]>();
-  const params = hooks.useQuery();
-  const idsParam = params.get('ids');
-  
-  // Loads the scenario
-  React.useEffect(
-    makeCancelableAsync(async () => {
-      if (!idsParam) return null;
-      const ids = idsParam.split(',');
-      return api.getScenarios({
-        include: ['report_summary', 'meter_groups'],
-        filter: { id: in_(ids) },
-        page: 1,
-        page_size: 100
-      });
-    }, res => setScenarios(res?.data)),
-    [idsParam]
-  );
-
-  return (
-    <>
-      <PageHeader
-        breadcrumbs={[
-          ['Dashboard', routes.dashboard.base],
-          'Compare Scenarios'
-        ]}
-        title="Compare Scenarios"
-      />
-      {scenarios
-        ? <ScenarioComparisonChart scenarios={scenarios} />
-        : <Progress circular />
-      }
-    </>
-  );
 };
 
 /** ============================ Helpers =================================== */

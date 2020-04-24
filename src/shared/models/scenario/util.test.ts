@@ -74,5 +74,19 @@ describe('Scenario model utilities', () => {
         });
       });
     });
-  })
+  });
+  
+  describe('`parseReport` method', () => {
+    it('renames certain fields', () => {
+      const parsed = util.parseReport(fixtures.scenarioReport);
+
+      // Check that rows are renamed
+      Object.values(parsed!.rows).forEach((simulation, i) => {
+        expect(simulation.SA_ID).toEqual(fixtures.scenarioReport['SA ID'][i]);
+      });
+      
+      // Check that columns are renamed
+      expect(parsed?.columns.SA_ID).toEqual(fixtures.scenarioReport['SA ID']);
+    });
+  });
 });

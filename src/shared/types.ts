@@ -22,4 +22,4 @@ export type Nullable<T> = T | null;
 
 // Used in places where a generic `id` field is expected
 export type IdType = string | number;
-export type ObjectWithId = { id: IdType };
+export interface ObjectWithId { id: IdType }

@@ -10,12 +10,19 @@ export type PaginationState = {
   rowsPerPage: RowsPerPageOption;
 };
 
+export type SortState = {
+  dir: 'asc' | 'desc';
+  key: string;
+};
+
 type TableContext<T> = {
   allSelected: boolean;
   data: T[],
   disableSelect: (datum: T) => boolean;
   selectable: boolean,
   selections: Set<number>;
+  setSortState: (state: SortState) => void;
+  sortState?: SortState;
   toggleAllSelections: (allSelected: boolean) => void;
   toggleRowSelection: (rowIndex: number, checked: boolean) => void;
 };
@@ -27,8 +34,9 @@ export const TableContext = React.createContext<TableContext<any>>({
   disableSelect: () => false,
   selectable: false,
   selections: new Set(),
-  toggleAllSelections: (allSelected: boolean) => {},
-  toggleRowSelection: (rowIndex: number) => {}
+  setSortState: () => {},
+  toggleAllSelections: () => {},
+  toggleRowSelection: () => {}
 });
 
 if (!isProduction()) {

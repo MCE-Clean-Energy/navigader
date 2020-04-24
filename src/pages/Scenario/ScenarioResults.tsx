@@ -1,31 +1,20 @@
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 
 import * as api from '@nav/shared/api';
 import {
   Card, DERCard, Flex, Frame288Graph, Frame288MonthsOption, LoadTypeMenu, MeterGroupChip,
-  MonthsMenu, PageHeader, PaginationState, Progress, Table, Typography
+  MonthsMenu, PageHeader, Progress, Typography
 } from '@nav/shared/components';
-import { BatteryConfiguration, BatteryStrategy } from '@nav/shared/models/der';
-import { Frame288LoadType, Frame288Numeric, MeterGroup } from '@nav/shared/models/meter';
-import { Scenario, ScenarioReport } from '@nav/shared/models/scenario';
+import { Frame288LoadType, Frame288Numeric } from '@nav/shared/models/meter';
+import { Scenario } from '@nav/shared/models/scenario';
 import * as routes from '@nav/shared/routes';
-import { selectModels, updateModels } from '@nav/shared/store/slices/models';
 import { makeStylesHook } from '@nav/shared/styles';
-import { formatters, makeCancelableAsync } from '@nav/shared/util';
+import { makeCancelableAsync } from '@nav/shared/util';
+import { ScenariosTable } from '@nav/shared/models/scenario/components';
 
 
 /** ============================ Types ===================================== */
-type SimulationsTableProps = {
-  filterParams: {
-    derConfiguration: BatteryConfiguration['id'];
-    derStrategy: BatteryStrategy['id'];
-    meterGroup: MeterGroup['id'];
-  };
-  report: ScenarioReport;
-};
-
 type ScenarioProp = {
   scenario: Scenario;
 };
@@ -75,68 +64,6 @@ const useScenarioGraphStyles = makeStylesHook(theme => ({
 }), 'ScenarioGraph');
 
 /** ============================ Components ================================ */
-const SimulationsTable: React.FC<SimulationsTableProps> = ({ filterParams, report }) => {
-  const dispatch = useDispatch();
-  
-  // Loads the scenario's meters
-  const getMeters = React.useCallback(
-    async (state: PaginationState) => {
-      const response = await api.getDerSimulations({
-          ...filterParams,
-        page: state.currentPage + 1,
-        page_size: state.rowsPerPage
-      });
-      
-      // Mix in the report data
-      response.data.forEach((datum) => {
-        datum.report = report.rows[datum.meter];
-      });
-      
-      dispatch(updateModels(response.data));
-      return response;
-    },
-    [filterParams, report, dispatch]
-  );
-  
-  return (
-    <Table
-      aria-label="simulations table"
-      dataFn={getMeters}
-      dataSelector={selectModels('derSimulations')}
-      raised
-      stickyHeader
-      title="Simulations"
-    >
-      {(simulations) =>
-        <>
-          <Table.Head>
-            <Table.Row>
-              <Table.Cell>SA ID</Table.Cell>
-              <Table.Cell>Rate Plan</Table.Cell>
-              <Table.Cell align="right">Usage Delta (kWh)</Table.Cell>
-              <Table.Cell align="right">Bill Delta ($)</Table.Cell>
-              <Table.Cell align="right">CNS 2022 Delta (tCO<sub>2</sub>)</Table.Cell>
-              <Table.Cell align="right">RA System Peak Delta</Table.Cell>
-            </Table.Row>
-          </Table.Head>
-          <Table.Body>
-            {simulations.map(simulation =>
-              <Table.Row key={simulation.id}>
-                <Table.Cell>{simulation.report?.SA_ID}</Table.Cell>
-                <Table.Cell>{simulation.report?.MeterRatePlan}</Table.Cell>
-                <Table.Cell align="right">{formatters.maxDecimals(simulation.report?.UsageDelta, 2)}</Table.Cell>
-                <Table.Cell align="right">{formatters.maxDecimals(simulation.report?.BillDelta, 2)}</Table.Cell>
-                <Table.Cell align="right">{formatters.maxDecimals(simulation.report?.CleanNetShort2022Delta, 2)}</Table.Cell>
-                <Table.Cell align="right">N/A</Table.Cell>
-              </Table.Row>
-            )}
-          </Table.Body>
-        </>
-      }
-    </Table>
-  );
-};
-
 const ScenarioContext: React.FC<ScenarioProp> = ({ scenario }) => {
   const history = useHistory();
   const classes = useStyles();
@@ -224,15 +151,6 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
 
   return (
     <Flex.Container className={classes.scenarioGraphs} justifyContent="space-between">
-      <Flex.Item basis={10}>
-        <div className={classes.headingSpacer} />
-        <MonthsMenu selectedMonths={selectedMonths} changeMonths={setMonths} />
-        <LoadTypeMenu
-          changeType={setLoadType}
-          className={classes.loadTypeMenu}
-          selectedType={loadType}
-        />
-      </Flex.Item>
       <Flex.Item basis={graphWidth}>
         <Typography useDiv variant="h6">Initial Load</Typography>
         <Card className={classes.loadGraphCard} raised>
@@ -247,6 +165,17 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
           <LoadingModal loading={meterGroupLoading} />
         </Card>
       </Flex.Item>
+
+      <Flex.Item>
+        <div className={classes.headingSpacer} />
+        <MonthsMenu selectedMonths={selectedMonths} changeMonths={setMonths} />
+        <LoadTypeMenu
+          changeType={setLoadType}
+          className={classes.loadTypeMenu}
+          selectedType={loadType}
+        />
+      </Flex.Item>
+
       <Flex.Item basis={graphWidth}>
         <Typography useDiv variant="h6">Simulated Load</Typography>
         <Card className={classes.loadGraphCard} raised>
@@ -291,7 +220,7 @@ export const ScenarioResultsPage: React.FC = () => {
   React.useEffect(
     makeCancelableAsync(async () => {
       if (!id) return;
-      return api.getScenario(id, { include: ['ders', 'meter_groups', 'report'] });
+      return api.getScenario(id, { include: ['ders', 'meter_groups', 'report', 'report_summary'] });
     }, res => setScenario(res)),
     [id]
   );
@@ -308,16 +237,7 @@ export const ScenarioResultsPage: React.FC = () => {
       
       {scenario && <ScenarioContext scenario={scenario} />}
       {scenario && <ScenarioGraphs scenario={scenario} />}
-      {scenario && scenario.meter_group && scenario.report &&
-        <SimulationsTable
-          filterParams={{
-            derConfiguration: scenario.metadata.der_configuration,
-            derStrategy: scenario.metadata.der_strategy,
-            meterGroup: scenario.meter_group.id
-          }}
-          report={scenario.report}
-        />
-      }
+      {scenario && <ScenariosTable scenarios={[scenario]} />}
     </>
   );
 };
