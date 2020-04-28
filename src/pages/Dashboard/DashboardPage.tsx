@@ -2,13 +2,13 @@ import * as React from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import map from 'lodash/map';
 
-import * as api from '@nav/shared/api';
-import { Button, Link, List, Menu, PageHeader, Typography } from '@nav/shared/components';
-import { Components, Scenario } from '@nav/shared/models/scenario';
-import * as routes from '@nav/shared/routes';
-import { makeCancelableAsync } from '@nav/shared/util';
+import * as api from '@nav/common/api';
+import { Button, Link, List, Menu, PageHeader, Typography } from '@nav/common/components';
+import { Components, Scenario } from '@nav/common/models/scenario';
+import * as routes from '@nav/common/routes';
+import { makeCancelableAsync } from '@nav/common/util';
 import CreateScenario from './CreateScenario'
-import { makeStylesHook } from '@nav/shared/styles';
+import { makeStylesHook } from '@nav/common/styles';
 import RenameDialog from './RenameDialog';
 
 
@@ -133,13 +133,16 @@ const ScenariosTable: React.FC = () => {
                 <List.Item.Icon icon="pencil" />
                 <List.Item.Text>Rename</List.Item.Text>
               </List.Item>
+              
+              {/** TODO: introduce scenario archiving
 
-              {/* TODO: introduce scenario archiving */}
-              {/*<Divider />*/}
-              {/*<List.Item onClick={() => archiveScenario(scenario.id)}>*/}
-              {/*  <List.Item.Icon icon="trash" />*/}
-              {/*  <List.Item.Text>Archive</List.Item.Text>*/}
-              {/*</List.Item>*/}
+                <Divider />}
+                <List.Item onClick={() => archiveScenario(scenario.id)}>}
+                  <List.Item.Icon icon="trash" />}
+                  <List.Item.Text>Archive</List.Item.Text>}
+                </List.Item>}
+
+              */}
             </Menu>
         }
         NoScenariosRow={<EmptyTableRow numMeterGroups={numMeterGroups} />}

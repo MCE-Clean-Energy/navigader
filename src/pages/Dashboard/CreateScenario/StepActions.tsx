@@ -3,15 +3,15 @@ import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import find from 'lodash/find';
 
-import * as api from '@nav/shared/api';
-import { Button, Flex } from '@nav/shared/components';
-import { MeterGroup } from '@nav/shared/models/meter';
-import * as routes from '@nav/shared/routes';
-import { setMessage } from '@nav/shared/store/slices/ui';
-import { omitFalsey, printWarning } from '@nav/shared/util';
+import * as api from '@nav/common/api';
+import { Button, Flex } from '@nav/common/components';
+import { MeterGroup } from '@nav/common/models/meter';
+import * as routes from '@nav/common/routes';
+import { setMessage } from '@nav/common/store/slices/ui';
+import { omitFalsey, printWarning } from '@nav/common/util';
 import {
   DERSelection, stepPaths, stepNumbers, validateCustomerSelections, validateDerSelections
-} from './shared';
+} from './common';
 
 
 /** ============================ Types ===================================== */

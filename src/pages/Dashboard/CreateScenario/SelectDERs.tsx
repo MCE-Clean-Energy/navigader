@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import { Button, Grid } from '@nav/shared/components';
-import { BatteryConfiguration, BatteryStrategy } from '@nav/shared/models/der';
-import { DerSelectionCard, DERSelection } from './shared';
+import { Button, Grid } from '@nav/common/components';
+import { BatteryConfiguration, BatteryStrategy } from '@nav/common/models/der';
+import { DerSelectionCard, DERSelection } from './common';
 
 
 /** ============================ Types ===================================== */

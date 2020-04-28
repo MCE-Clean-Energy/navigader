@@ -1,18 +1,27 @@
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 
-import * as api from '@nav/shared/api';
-import { Button, Grid, PageHeader } from '@nav/shared/components';
-import { MeterGroup } from '@nav/shared/models/meter';
-import * as routes from '@nav/shared/routes';
-import { makeCancelableAsync } from '@nav/shared/util';
+import * as api from '@nav/common/api';
+import { Button, Grid, PageHeader, Progress } from '@nav/common/components';
+import { MeterGroup } from '@nav/common/models/meter';
+import * as routes from '@nav/common/routes';
+import { makeStylesHook } from '@nav/common/styles';
+import { makeCancelableAsync } from '@nav/common/util';
 import { MeterGroupCard } from './MeterGroupCard';
 
 
+/** ============================ Styles ==================================== */
+const useStyles = makeStylesHook(theme => ({
+  pageContent: {
+    marginTop: theme.spacing(1)
+  }
+}), 'LoadPage');
+
 /** ============================ Components ================================ */
 export const LoadPage = () => {
-  const [meterGroups, setMeterGroups] = React.useState([] as MeterGroup[]);
+  const [meterGroups, setMeterGroups] = React.useState<MeterGroup[]>();
   const history = useHistory();
+  const classes = useStyles();
   
   React.useEffect(makeCancelableAsync(
     () => api.getMeterGroups({
@@ -29,13 +38,19 @@ export const LoadPage = () => {
         actions={<Button color="secondary" onClick={goToUpload}>Add File</Button>}
         title="Uploaded Files"
       />
-      <Grid>
-        {meterGroups.map(meterGroup =>
-          <Grid.Item key={meterGroup.id} span={6}>
-            <MeterGroupCard meterGroup={meterGroup} />
-          </Grid.Item>
-        )}
-      </Grid>
+      <div className={classes.pageContent}>
+        <Grid>
+          {
+            meterGroups
+              ? meterGroups.map(meterGroup =>
+                  <Grid.Item key={meterGroup.id} span={6}>
+                    <MeterGroupCard meterGroup={meterGroup} />
+                  </Grid.Item>
+                )
+              : <Progress circular />
+          }
+        </Grid>
+      </div>
     </>
   );
 

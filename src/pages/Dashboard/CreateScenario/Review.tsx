@@ -1,12 +1,12 @@
 import * as React from 'react';
 import find from 'lodash/find';
 
-import { Card, Grid, Link, MeterGroupChip, TextField, Typography } from '@nav/shared/components';
-import { BatteryConfiguration, BatteryStrategy } from '@nav/shared/models/der';
-import { MeterGroup } from '@nav/shared/models/meter';
-import * as routes from '@nav/shared/routes';
-import { makeStylesHook } from '@nav/shared/styles';
-import { DerCardReadOnly, DERSelection, validateDerSelections } from './shared';
+import { Card, Grid, Link, MeterGroupChip, TextField, Typography } from '@nav/common/components';
+import { BatteryConfiguration, BatteryStrategy } from '@nav/common/models/der';
+import { MeterGroup } from '@nav/common/models/meter';
+import * as routes from '@nav/common/routes';
+import { makeStylesHook } from '@nav/common/styles';
+import { DerCardReadOnly, DERSelection, validateDerSelections } from './common';
 
 
 /** ============================ Types ===================================== */

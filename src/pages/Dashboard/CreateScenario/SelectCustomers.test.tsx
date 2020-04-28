@@ -2,8 +2,8 @@ import * as React from 'react';
 import map from 'lodash/map';
 import { cleanup, fireEvent } from '@testing-library/react'
 
-import { fixtures, renderContextDependentComponent } from '@nav/shared/util/testing';
-import SelectCustomers from './SelectCustomers';
+import { fixtures, renderContextDependentComponent } from '@nav/common/util/testing';
+import { SelectCustomers } from './SelectCustomers';
 
 
 describe('"Select Customers" page', () => {

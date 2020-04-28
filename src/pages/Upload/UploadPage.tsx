@@ -1,11 +1,11 @@
 import * as React from 'react';
 
-import * as api from '@nav/shared/api';
+import * as api from '@nav/common/api';
 import {
   Alert, Button, Card, ContactSupport, Flex, Link, PageHeader, Progress, TextField, Typography
-} from '@nav/shared/components';
-import * as routes from '@nav/shared/routes';
-import { makeStylesHook } from '@nav/shared/styles';
+} from '@nav/common/components';
+import * as routes from '@nav/common/routes';
+import { makeStylesHook } from '@nav/common/styles';
 
 
 /** ============================ Types ===================================== */

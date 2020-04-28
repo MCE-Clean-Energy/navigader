@@ -2,10 +2,10 @@ import * as React from 'react';
 import find from 'lodash/find';
 import without from 'lodash/without';
 
-import { Flex, MeterGroupChip, Tooltip, Typography } from '@nav/shared/components';
-import { MeterGroup } from '@nav/shared/models/meter';
-import { makeStylesHook } from '@nav/shared/styles';
-import { formatters, math } from '@nav/shared/util';
+import { Flex, MeterGroupChip, Tooltip, Typography } from '@nav/common/components';
+import { isSufficientlyIngested, MeterGroup, OriginFileMeterGroup } from '@nav/common/models/meter';
+import { makeStylesHook } from '@nav/common/styles';
+import { formatters } from '@nav/common/util';
 
 
 /** ============================ Types ===================================== */
@@ -32,7 +32,7 @@ const useStyles = makeStylesHook(theme => ({
 }), 'SelectCustomers');
 
 /** ============================ Components ================================ */
-const SelectCustomers: React.FC<SelectCustomersProps> = (props) => {
+export const SelectCustomers: React.FC<SelectCustomersProps> = (props) => {
   const { meterGroups, selectedMeterGroupIds, updateMeterGroups } = props;
   const classes = useStyles();
   if (meterGroups === null) return null;
@@ -58,19 +58,11 @@ const SelectCustomers: React.FC<SelectCustomersProps> = (props) => {
             />
           );
           
-          // Customer clusters are always selectable
-          if (meterGroup.object_type === 'CustomerCluster') return chip;
+          // If the meter group can be run in a scenario, just render the chip
+          if (isSufficientlyIngested(meterGroup)) return chip;
           
           const { meter_count } = meterGroup;
-          const { expected_meter_count } = meterGroup.metadata;
-          
-          // If origin files have sufficiently finished ingesting, they are selectable. We don't
-          // require 100% completion in case a few meters fail to ingest.
-          const sufficientlyFinishedPercent = 95;
-          if (
-            typeof expected_meter_count === 'number' &&
-            math.percentOf(meter_count, expected_meter_count) > sufficientlyFinishedPercent
-          ) return chip;
+          const { expected_meter_count } = (meterGroup as OriginFileMeterGroup).metadata;
           
           // Otherwise we will render a tooltip explaining why the meter group is disabled
           const percentComplete = expected_meter_count === null
@@ -107,6 +99,3 @@ const SelectCustomers: React.FC<SelectCustomersProps> = (props) => {
     );
   }
 };
-
-/** ============================ Exports =================================== */
-export default SelectCustomers;

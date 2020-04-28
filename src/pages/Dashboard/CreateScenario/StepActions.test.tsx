@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { cleanup } from '@testing-library/react';
 
-import { renderContextDependentComponent } from '@nav/shared/util/testing';
-import { DERSelection } from './shared';
+import { renderContextDependentComponent } from '@nav/common/util/testing';
+import { DERSelection } from './common';
 import StepActions from './StepActions';
 
 

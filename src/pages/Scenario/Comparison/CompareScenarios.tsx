@@ -1,11 +1,11 @@
 import * as React from 'react';
 
-import * as api from '@nav/shared/api';
-import { in_ } from '@nav/shared/api/util';
-import { PageHeader, Progress } from '@nav/shared/components';
-import { Components, Scenario } from '@nav/shared/models/scenario';
-import * as routes from '@nav/shared/routes';
-import { hooks, makeCancelableAsync } from '@nav/shared/util';
+import * as api from '@nav/common/api';
+import { in_ } from '@nav/common/api/util';
+import { PageHeader, Progress } from '@nav/common/components';
+import { Components, Scenario } from '@nav/common/models/scenario';
+import * as routes from '@nav/common/routes';
+import { hooks, makeCancelableAsync } from '@nav/common/util';
 import { ScenarioComparisonChart } from './ScenarioComparisonChart';
 
 

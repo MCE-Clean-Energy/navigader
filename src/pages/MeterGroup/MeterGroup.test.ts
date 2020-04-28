@@ -1,6 +1,6 @@
 import { waitForElement } from '@testing-library/react'
 
-import { fixtures, renderAppRoute } from '@nav/shared/util/testing';
+import { fixtures, renderAppRoute } from '@nav/common/util/testing';
 
 
 describe('Meter Group Page', () => {

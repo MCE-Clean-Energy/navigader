@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import { PrefetchedTable, Table } from '@nav/shared/components';
-import { ScenarioReportFields } from '@nav/shared/models/scenario';
-import { formatters } from '@nav/shared/util';
+import { PrefetchedTable, Table } from '@nav/common/components';
+import { ScenarioReportFields } from '@nav/common/models/scenario';
+import { formatters } from '@nav/common/util';
 
 
 /** ============================ Types ===================================== */

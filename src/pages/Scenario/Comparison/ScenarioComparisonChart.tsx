@@ -3,15 +3,15 @@ import ContainerDimensions, { Dimensions } from 'react-container-dimensions';
 import {
   VictoryAxis, VictoryChart, VictoryLabel, VictoryScatter, VictoryTheme, VictoryTooltip
 } from 'victory';
-import find from 'lodash/find';
-
-import { Card, Flex, Grid, Select } from '@nav/shared/components';
-import { makeStylesHook, primaryColor } from '@nav/shared/styles';
-import { formatters, omitFalsey } from '@nav/shared/util';
-import { Scenario } from '@nav/shared/models/scenario';
 import * as d3 from 'd3-scale';
+import find from 'lodash/find';
 import pick from 'lodash/pick';
-import { MeterGroup } from '@nav/shared/models/meter';
+
+import { Card, Flex, Grid, Select } from '@nav/common/components';
+import { makeStylesHook, primaryColor } from '@nav/common/styles';
+import { formatters, omitFalsey } from '@nav/common/util';
+import { Scenario } from '@nav/common/models/scenario';
+import { MeterGroup } from '@nav/common/models/meter';
 
 
 /** ============================ Types ===================================== */

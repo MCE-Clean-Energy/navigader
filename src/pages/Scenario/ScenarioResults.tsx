@@ -1,17 +1,17 @@
 import * as React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
-import * as api from '@nav/shared/api';
+import * as api from '@nav/common/api';
 import {
   Card, DERCard, Flex, Frame288Graph, Frame288MonthsOption, LoadTypeMenu, MeterGroupChip,
   MonthsMenu, PageHeader, Progress, Typography
-} from '@nav/shared/components';
-import { Frame288LoadType, Frame288Numeric } from '@nav/shared/models/meter';
-import { Scenario } from '@nav/shared/models/scenario';
-import * as routes from '@nav/shared/routes';
-import { makeStylesHook } from '@nav/shared/styles';
-import { makeCancelableAsync } from '@nav/shared/util';
-import { ScenariosTable } from '@nav/shared/models/scenario/components';
+} from '@nav/common/components';
+import { Frame288LoadType, Frame288Numeric } from '@nav/common/models/meter';
+import { Scenario } from '@nav/common/models/scenario';
+import * as routes from '@nav/common/routes';
+import { makeStylesHook } from '@nav/common/styles';
+import { makeCancelableAsync } from '@nav/common/util';
+import { ScenariosTable } from '@nav/common/models/scenario/components';
 
 
 /** ============================ Types ===================================== */
@@ -152,7 +152,7 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
   return (
     <Flex.Container className={classes.scenarioGraphs} justifyContent="space-between">
       <Flex.Item basis={graphWidth}>
-        <Typography useDiv variant="h6">Initial Load</Typography>
+        <Typography useDiv variant="h6">Initial Aggregate Load Curve by Month</Typography>
         <Card className={classes.loadGraphCard} raised>
           {meterGroupData &&
             <Frame288Graph
@@ -177,7 +177,7 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
       </Flex.Item>
 
       <Flex.Item basis={graphWidth}>
-        <Typography useDiv variant="h6">Simulated Load</Typography>
+        <Typography useDiv variant="h6">Simulated Aggregate Load Curve by Month</Typography>
         <Card className={classes.loadGraphCard} raised>
           {simulationData &&
             <Frame288Graph

@@ -2,9 +2,9 @@ import * as React from 'react';
 
 import {
   Card, Grid, Frame288Graph, Frame288MonthsOption, MonthsMenu, LoadTypeMenu
-} from '@nav/shared/components';
-import { Frame288LoadType, hasDataField, MeterGroup } from '@nav/shared/models/meter';
-import { makeStylesHook } from '@nav/shared/styles';
+} from '@nav/common/components';
+import { Frame288LoadType, hasDataField, MeterGroup } from '@nav/common/models/meter';
+import { makeStylesHook } from '@nav/common/styles';
 
 
 /** ============================ Types ===================================== */

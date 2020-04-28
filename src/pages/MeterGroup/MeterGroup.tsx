@@ -1,19 +1,31 @@
 import * as React from 'react';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
-import * as api from '@nav/shared/api';
-import { Fade, Grid, PageHeader, Progress } from '@nav/shared/components';
-import { Frame288LoadType, getMeterGroupDisplayName, MeterGroup } from '@nav/shared/models/meter';
-import * as routes from '@nav/shared/routes';
+import * as api from '@nav/common/api';
+import { Button, Fade, Grid, PageHeader, Progress, Typography } from '@nav/common/components';
+import {
+  Frame288LoadType, getMeterGroupDisplayName, isSufficientlyIngested, MeterGroup
+} from '@nav/common/models/meter';
+import * as routes from '@nav/common/routes';
+import { makeStylesHook } from '@nav/common/styles';
 import LoadGraph from './LoadGraph';
 import MetersTable from './MetersTable';
 
 
+/** ============================ Styles ==================================== */
+const useStyles = makeStylesHook(theme => ({
+  graphTitle: {
+    marginBottom: theme.spacing(1)
+  }
+}), 'MeterGroupPage');
+
 /** ============================ Components ================================ */
 export const MeterGroupPage: React.FC = () => {
-  const [meterGroup, setMeterGroup] = React.useState<MeterGroup | null>(null);
+  const [meterGroup, setMeterGroup] = React.useState<MeterGroup>();
   const [graphDataType, setGraphDataType] = React.useState<Frame288LoadType>('average');
+  const history = useHistory();
   const { id } = useParams();
+  const classes = useStyles();
   
   React.useEffect(() => {
     if (!id) return;
@@ -24,6 +36,11 @@ export const MeterGroupPage: React.FC = () => {
   return (
     <>
       <PageHeader
+        actions={
+          isSufficientlyIngested(meterGroup)
+            ? <Button color="secondary" onClick={goToScenarioCreation}>New Scenario</Button>
+            : null
+        }
         breadcrumbs={[
           ['Customer Groups', routes.load],
           [
@@ -37,6 +54,9 @@ export const MeterGroupPage: React.FC = () => {
       {meterGroup ? (
         <Grid>
           <Grid.Item span={12}>
+            <Typography className={classes.graphTitle} useDiv variant="h6">
+              Aggregate Load Curve by Month
+            </Typography>
             <LoadGraph
               changeType={changeGraphType}
               dataType={graphDataType}
@@ -59,5 +79,9 @@ export const MeterGroupPage: React.FC = () => {
   /** ============================ Callbacks =============================== */
   function changeGraphType (newType: Frame288LoadType) {
     setGraphDataType(newType);
+  }
+  
+  function goToScenarioCreation () {
+    history.push(routes.dashboard.createScenario.selectDers);
   }
 };

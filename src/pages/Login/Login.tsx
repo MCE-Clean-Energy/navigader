@@ -1,9 +1,9 @@
 import * as React from 'react';
 import classNames from 'classnames';
 
-import * as api from '@nav/shared/api';
-import { Button, Card, Flex, Branding, TextField, Typography } from '@nav/shared/components';
-import { makeStylesHook } from '@nav/shared/styles';
+import * as api from '@nav/common/api';
+import { Button, Card, Flex, Branding, TextField, Typography } from '@nav/common/components';
+import { makeStylesHook } from '@nav/common/styles';
 
 
 /** ============================ Styles ==================================== */

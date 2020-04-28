@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import 'url-search-params-polyfill';
 
 import App from './App';
-import store from './shared/store';
+import store from './common/store';
 import './index.css';
 
 

@@ -2,17 +2,17 @@ import * as React from 'react';
 import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
-import { getMeterGroups } from '@nav/shared/api';
-import { Button, Flex, PageHeader, Stepper } from '@nav/shared/components';
-import { MeterGroup } from '@nav/shared/models/meter';
-import * as routes from '@nav/shared/routes';
-import { slices } from '@nav/shared/store';
-import { makeStylesHook } from '@nav/shared/styles';
-import { makeCancelableAsync } from '@nav/shared/util';
+import { getMeterGroups } from '@nav/common/api';
+import { Button, Flex, PageHeader, Stepper } from '@nav/common/components';
+import { MeterGroup } from '@nav/common/models/meter';
+import * as routes from '@nav/common/routes';
+import { slices } from '@nav/common/store';
+import { makeStylesHook } from '@nav/common/styles';
+import { makeCancelableAsync } from '@nav/common/util';
 import Review from './Review';
-import SelectCustomers from './SelectCustomers';
+import { SelectCustomers } from './SelectCustomers';
 import SelectDERs from './SelectDERs';
-import { DERSelection, stepPaths } from './shared';
+import { DERSelection, stepPaths } from './common';
 import StepActions from './StepActions';
 
 
@@ -117,7 +117,7 @@ const CreateScenarioPage: React.FC = () => {
   
   /** ============================ Callbacks =============================== */
   function cancel () {
-    history.push(routes.dashboard.base);
+    history.goBack();
   }
 };
 
