@@ -2,7 +2,8 @@ import * as React from 'react';
 import MuiStep from '@material-ui/core/Step';
 import MuiStepLabel from '@material-ui/core/StepLabel';
 import MuiStepper from '@material-ui/core/Stepper';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+
+import { makeStylesHook } from '@nav/common/styles';
 
 
 /** ============================ Types ===================================== */
@@ -13,13 +14,11 @@ type StepperProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStyles(
-  createStyles({
-    stepper: {
-      padding: 0
-    }
-  })
-);
+const useStyles = makeStylesHook(() => ({
+  stepper: {
+    padding: 0
+  }
+}), 'Stepper');
 
 /** ============================ Components ================================ */
 export const Stepper: React.FC<StepperProps> = ({ activeStep, className, steps }) => {

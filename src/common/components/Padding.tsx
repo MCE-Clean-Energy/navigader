@@ -1,7 +1,8 @@
 import * as React from 'react';
 import omit from 'lodash/omit';
 import classNames from 'classnames';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+
+import { makeStylesHook } from '@nav/common/styles';
 
 
 /** ============================ Types ===================================== */
@@ -15,24 +16,22 @@ type PaddingProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStyles(
-  createStyles({
-    root: (props: PaddingProps) => {
-      if (typeof props.pad === 'number') {
-        return {
-          padding: props.pad
-        };
-      }
-      
+const useStyles = makeStylesHook<PaddingProps>(() => ({
+  root: (props) => {
+    if (typeof props.pad === 'number') {
       return {
-        paddingLeft: props.left,
-        paddingRight: props.right,
-        paddingTop: props.top,
-        paddingBottom: props.bottom,
+        padding: props.pad
       };
     }
-  })
-);
+    
+    return {
+      paddingLeft: props.left,
+      paddingRight: props.right,
+      paddingTop: props.top,
+      paddingBottom: props.bottom,
+    };
+  }
+}), 'Padding');
 
 /** ============================ Components ================================ */
 export const Padding: React.FC<PaddingProps> = ({ className, ...rest }) => {
