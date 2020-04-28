@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 
 import * as api from '@nav/common/api';
 import {
-  DERIcon, Flex, Link, PaginationState, PrefetchedTable, Table
+  DERIcon, Flex, Link, PaginationState, PrefetchedTable, Progress, Table, Tooltip, Typography
 } from '@nav/common/components';
 import { Scenario } from '@nav/common/models/scenario';
 import * as routes from '@nav/common/routes';
@@ -19,7 +19,21 @@ type ScenariosTableProps = {
   scenarios?: Scenario[];
 };
 
+type ScenarioStatusProps = {
+  scenario: Scenario;
+};
+
 /** ============================ Components ================================ */
+const ScenarioStatus: React.FC<ScenarioStatusProps> = ({ scenario }) => {
+  const { is_complete, percent_complete } = scenario.progress;
+  if (is_complete) return <Typography variant="body1">Done</Typography>;
+  return (
+    <Tooltip title={`${Math.floor(percent_complete)}%`}>
+      <Progress circular value={Math.max(percent_complete, 3)} showBackground />
+    </Tooltip>
+  );
+};
+
 export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
   const { actionsMenu, NoScenariosRow, onSelect, scenarios } = props;
   const dispatch = useDispatch();
@@ -118,7 +132,9 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 <Table.Cell align="right">
                   {formatters.maxDecimals(kwToMw(scenario.report_summary?.RADelta), 2)}
                 </Table.Cell>
-                <Table.Cell>{getScenarioStatus(scenario)}</Table.Cell>
+                <Table.Cell>
+                  <ScenarioStatus scenario={scenario} />
+                </Table.Cell>
                 {actionsMenu && <Table.Cell>{actionsMenu(scenario)}</Table.Cell>}
               </Table.Row>
             )}
@@ -128,16 +144,3 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
     </TableComponent>
   );
 };
-
-/** ============================ Helpers =================================== */
-/**
- * Returns a string representing the scenario's status
- *
- * @param {Scenario} scenario: the scenario whose status we are interested in
- */
-function getScenarioStatus (scenario: Scenario) {
-  const { is_complete, percent_complete } = scenario.progress;
-  return is_complete
-    ? 'Done'
-    : `${Math.floor(percent_complete)}%`;
-}
