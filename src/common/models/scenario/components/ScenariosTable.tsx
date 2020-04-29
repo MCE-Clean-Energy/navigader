@@ -5,10 +5,10 @@ import * as api from '@nav/common/api';
 import {
   DERIcon, Flex, Link, PaginationState, PrefetchedTable, Table
 } from '@nav/common/components';
+import { Scenario } from '@nav/common/models/scenario';
 import * as routes from '@nav/common/routes';
 import { selectModels, updateModels } from '@nav/common/store/slices/models';
-import { formatters } from '@nav/common/util';
-import { Scenario } from '../types';
+import { formatters, kwToMw } from '@nav/common/util';
 
 
 /** ============================ Types ===================================== */
@@ -116,7 +116,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                   {formatters.maxDecimals(scenario.report_summary?.CleanNetShort2022Delta, 2)}
                 </Table.Cell>
                 <Table.Cell align="right">
-                  {formatters.maxDecimals(scenario.report_summary?.RADelta, 2)}
+                  {formatters.maxDecimals(kwToMw(scenario.report_summary?.RADelta), 2)}
                 </Table.Cell>
                 <Table.Cell>{getScenarioStatus(scenario)}</Table.Cell>
                 {actionsMenu && <Table.Cell>{actionsMenu(scenario)}</Table.Cell>}

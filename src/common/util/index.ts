@@ -4,6 +4,7 @@ import * as math from './math';
 import * as typeGuards from './typeGuards';
 
 
+export * from './conversions';
 export * from './cookies';
 export * from './isProduction';
 export * from './makeCancelableAsync';
