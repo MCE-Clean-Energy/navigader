@@ -1,8 +1,8 @@
 import * as React from 'react';
 import find from 'lodash/find';
 
-import { Button, Card, DERCard, Flex, Select } from '@nav/common/components';
-import { BatteryConfiguration, BatteryStrategy } from '@nav/common/models/der';
+import { Button, Card, Flex, Select } from '@nav/common/components';
+import { BatteryConfiguration, BatteryStrategy, Components } from '@nav/common/models/der';
 import { makeStylesHook } from '@nav/common/styles';
 import { ProgramOptions } from './ProgramOptions';
 import { DERSelection } from './util';
@@ -112,5 +112,11 @@ export const DerCardReadOnly: React.FC<DerSelectionCardReadOnlyProps> = (props) 
   const strategy = find(strategies, { id: der.strategyId });
   
   if (!configuration || !strategy) return null;
-  return <DERCard className={classes.derCard} configuration={configuration} strategy={strategy} />;
+  return (
+    <Components.DERCard
+      className={classes.derCard}
+      configuration={configuration}
+      strategy={strategy}
+    />
+  );
 };

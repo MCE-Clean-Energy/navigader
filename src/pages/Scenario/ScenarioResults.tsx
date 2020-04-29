@@ -3,9 +3,10 @@ import { useHistory, useParams } from 'react-router-dom';
 
 import * as api from '@nav/common/api';
 import {
-  Card, DERCard, Flex, Frame288Graph, Frame288MonthsOption, LoadTypeMenu, MeterGroupChip,
-  MonthsMenu, PageHeader, Progress, Typography
+  Card, Flex, Frame288Graph, Frame288MonthsOption, LoadTypeMenu, MeterGroupChip, MonthsMenu,
+  PageHeader, Progress, Typography
 } from '@nav/common/components';
+import { Components } from '@nav/common/models/der';
 import { Frame288LoadType, Frame288Numeric } from '@nav/common/models/meter';
 import { Scenario } from '@nav/common/models/scenario';
 import * as routes from '@nav/common/routes';
@@ -72,7 +73,7 @@ const ScenarioContext: React.FC<ScenarioProp> = ({ scenario }) => {
     <Flex.Container alignItems="center">
       <Flex.Item>
         {scenario &&
-          <DERCard
+          <Components.DERCard
             configuration={scenario.der?.der_configuration}
             strategy={scenario.der?.der_strategy}
           />

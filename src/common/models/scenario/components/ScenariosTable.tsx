@@ -3,8 +3,9 @@ import { useDispatch } from 'react-redux';
 
 import * as api from '@nav/common/api';
 import {
-  DERIcon, Flex, Link, PaginationState, PrefetchedTable, Progress, Table, Tooltip, Typography
+  Flex, Link, PaginationState, PrefetchedTable, Progress, Table, Tooltip, Typography
 } from '@nav/common/components';
+import { Components } from '@nav/common/models/der';
 import { Scenario } from '@nav/common/models/scenario';
 import * as routes from '@nav/common/routes';
 import { selectModels, updateModels } from '@nav/common/store/slices/models';
@@ -112,7 +113,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                   {scenario.der &&
                     <Flex.Container alignItems="center">
                       <Flex.Item>
-                        <DERIcon type={scenario.der.der_configuration.der_type} />
+                        <Components.DERIcon type={scenario.der.der_configuration.der_type} />
                       </Flex.Item>
                       <Flex.Item>
                         {scenario.der.der_configuration.name}
