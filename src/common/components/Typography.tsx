@@ -7,7 +7,7 @@ import { printWarning } from '@nav/common/util';
 
 
 /** ============================ Types ===================================== */
-type Emphasis = 'normal' | 'secondary' | 'disabled';
+type Emphasis = 'bold' | 'disabled' | 'normal' | 'secondary';
 type TextColor =
   | 'inherit'
   | 'initial'
@@ -15,7 +15,10 @@ type TextColor =
   | 'secondary'
   | 'textPrimary'
   | 'textSecondary'
-  | 'error';
+  | 'error'
+  | 'warning'
+  | 'info'
+  | 'success';
 
 export type TypographyProps = React.HTMLAttributes<HTMLSpanElement> & {
   className?: string;
@@ -28,19 +31,34 @@ export type TypographyProps = React.HTMLAttributes<HTMLSpanElement> & {
 };
 
 /** ============================ Styles ==================================== */
-const getOpacity = (emphasis?: Emphasis) => {
+function getOpacity (emphasis?: Emphasis) {
   switch (emphasis) {
     case 'secondary': return '60%';
     case 'disabled': return '38%';
     case 'normal':
     default: return '87%';
   }
-};
+}
 
-const useStyles = makeStylesHook<TypographyProps>(() => ({
+function getFontWeight (emphasis?: Emphasis) {
+  if (emphasis === 'bold') return 'bold';
+  return 'inherit';
+}
+
+const useStyles = makeStylesHook<TypographyProps>(theme => ({
   text: props => ({
-    opacity: getOpacity(props.emphasis)
-  })
+    opacity: getOpacity(props.emphasis),
+    fontWeight: getFontWeight(props.emphasis)
+  }),
+  info: {
+    color: theme.palette.info.main
+  },
+  success: {
+    color: theme.palette.success.main
+  },
+  warning: {
+    color: theme.palette.warning.main
+  }
 }), 'NavigaderTypography');
 
 /** ============================ Components ================================ */
@@ -57,8 +75,12 @@ export const Typography: React.FC<TypographyProps> = (props) => {
     ...rest
   } = props;
   const classes = useStyles({ emphasis });
-  const spanClasses = classNames(className, classes.text);
-  
+  const spanClasses = classNames(className, classes.text, {
+    [classes.info]: color === 'info',
+    [classes.success]: color === 'success',
+    [classes.warning]: color === 'warning'
+  });
+
   // If the component is provided both the `useDiv` and `component` props, we will print a warning
   // (when in development mode) and use a div.
   const actualComponent = useDiv ? 'div' : component;
@@ -68,18 +90,29 @@ export const Typography: React.FC<TypographyProps> = (props) => {
       ' should be provided'
     );
   }
-  
+
   const typographyProps = {
-    color,
+    color: getColor(color),
     component: 'span',
     style,
     variant,
     ...rest
   };
-  
+
   return (
     <MuiTypography {...typographyProps}>
       {React.createElement(actualComponent, { className: spanClasses, children })}
     </MuiTypography>
   );
 };
+
+/** ============================ Helpers =================================== */
+export function getColor (color?: TextColor): MuiTypographyProps['color'] {
+  switch (color) {
+    case 'info':
+    case 'success':
+    case 'warning':
+      return undefined;
+    default: return color;
+  }
+}

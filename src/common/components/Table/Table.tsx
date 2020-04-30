@@ -40,7 +40,9 @@ export type TableProps<T extends ObjectWithId> = {
 
 type TableCellProps = {
   align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
+  className?: string;
   colSpan?: number;
+  rowSpan?: number;
   sortBy?: string;
   sortDir?: SortState['dir'];
   // These props should not be provided by consuming components-- they are provided by the
@@ -53,6 +55,7 @@ type TableHeadProps = {};
 type TableBodyProps = {};
 
 type TableRowProps = {
+  className?: string;
   // These props should not be provided by consuming components-- they are provided by the
   // `TableHead` and `TableBody` components
   _disableSelect?: boolean;
@@ -274,7 +277,7 @@ const TableHead: TableHead = (props) => {
 };
 
 const TableRow: TableRow = (props) => {
-  const { children, _disableSelect, _isHeaderRow, _onChange, _selected } = props;
+  const { children, className, _disableSelect, _isHeaderRow, _onChange, _selected } = props;
   const { selectable } = React.useContext(TableContext);
   
   // If the row is selectable, add in a checkbox to the front of the row
@@ -290,7 +293,7 @@ const TableRow: TableRow = (props) => {
   }
   
   return (
-    <MuiTableRow>
+    <MuiTableRow className={className}>
       {checkboxCell}
       {React.Children.map(children, child =>
         // Add the `_columnIndex` and `_isHeaderRow` props
@@ -304,7 +307,7 @@ const TableRow: TableRow = (props) => {
 
 const TableCell: TableCell = (props) => {
   const { sortBy, sortDir, _columnIndex, _isHeaderRow, ...rest } = props;
-  const tableProps = { ...rest };
+  const tableCellProps = { ...rest };
   const { setSortState, sortState } = React.useContext(TableContext);
   
   // For accessibility, a table's first column is set to be a <th> element, with a scope of "row",
@@ -313,7 +316,7 @@ const TableCell: TableCell = (props) => {
   //
   // See more here: https://material-ui.com/components/tables/#structure
   if (_columnIndex === 0 || _isHeaderRow) {
-    Object.assign(tableProps, {
+    Object.assign(tableCellProps, {
       component: 'th',
       scope: _isHeaderRow ? 'col' : 'row'
     });
@@ -322,7 +325,7 @@ const TableCell: TableCell = (props) => {
   if (sortBy) {
     const active = sortBy === sortState?.key;
     return (
-      <MuiTableCell {...omit(tableProps, 'children')}>
+      <MuiTableCell {...omit(tableCellProps, 'children')}>
         <MuiTableSortLabel
           active={active}
           direction={active ? sortState?.dir : getDefaultSortDir()}
@@ -334,7 +337,7 @@ const TableCell: TableCell = (props) => {
     );
   }
   
-  return <MuiTableCell {...tableProps} />;
+  return <MuiTableCell {...tableCellProps} />;
   
   /** ============================ Callbacks =============================== */
   /**

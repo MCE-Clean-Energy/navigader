@@ -48,6 +48,7 @@ export const AppRoutes: React.FC = () =>
             <Route path={routes.dashboard.base} component={pages.DashboardPage} />
             <Route path={routes.scenario.compare()} component={pages.CompareScenariosPage} />
             <Route path={routes.scenario(':id')} component={pages.ScenarioResultsPage} />
+            <Route path={routes.roadmap} component={pages.RoadmapPage} />
           
             {/** Route of last resort */}
             <Redirect to={routes.dashboard.base} />

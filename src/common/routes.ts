@@ -27,5 +27,5 @@ scenario.compare = (ids?: string[]) => {
 export const login = '/login';
 export const load = '/load';
 export const meterGroup = (id: string) => `/load/group/${id}`;
+export const roadmap = '/roadmap';
 export const upload = '/upload';
-

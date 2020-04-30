@@ -32,8 +32,11 @@ const useStyles = makeStyles((theme: Theme) =>
       right: 0,
       top: 0
     },
-    logoutButton: {
-      color: 'white'
+    rightSideButton: {
+      color: 'white',
+      '& + &': {
+        marginLeft: theme.spacing(1)
+      }
     },
     navigaderText: {
       width: 250
@@ -61,7 +64,12 @@ export const AppBar: React.FC = () => {
               </Flex.Item>
               
               <Flex.Item>
-                <Button.Text className={classes.logoutButton} onClick={logout}>Logout</Button.Text>
+                <Button.Text className={classes.rightSideButton} onClick={goToRoadmap}>
+                  Roadmap
+                </Button.Text>
+                <Button.Text className={classes.rightSideButton} onClick={logout}>
+                  Logout
+                </Button.Text>
               </Flex.Item>
             </Flex.Container>
           </Padding>
@@ -71,6 +79,9 @@ export const AppBar: React.FC = () => {
   );
   
   /** ============================ Callbacks =============================== */
+  function goToRoadmap () {
+    history.push(routes.roadmap);
+  }
   function logout () {
     removeCookie('authToken');
     history.push(routes.login);

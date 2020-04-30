@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import MuiLink from '@material-ui/core/Link';
-import { TypographyProps } from './Typography';
+import { getColor, TypographyProps } from './Typography';
 
 
 /** ============================ Types ===================================== */
@@ -13,8 +13,9 @@ type LinkProps = {
 
 /** ============================ Components ================================ */
 export const Link: React.FC<LinkProps> = (props) => {
-  const { download, to, ...rest } = props;
+  const { color, download, to, ...rest } = props;
   const linkProps = {
+    color: getColor(color),
     component: download ? 'a' : RouterLink,
     href: download ? to : undefined,
     to: download ? undefined : to,
