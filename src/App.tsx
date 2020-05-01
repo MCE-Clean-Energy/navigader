@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { BrowserRouter as Router, Switch, Redirect, Route, RouteProps } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch, Provider } from 'react-redux';
 
-import { getDerConfigurations, getDerStrategies } from '@nav/common/api';
+import { initApplication } from '@nav/common';
 import { Alert, AppContainer, Snackbar, ThemeProvider } from '@nav/common/components';
 import * as routes from '@nav/common/routes';
-import { slices } from '@nav/common/store';
+import store, { slices } from '@nav/common/store';
 import { userIsAuthenticated } from '@nav/common/models/user';
 import * as pages from './pages';
 
@@ -84,36 +84,14 @@ const AuthenticatedRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
  * The application's root component. This component is not rendered by tests
  */
 const App: React.FC = () => {
-  const dispatch = useDispatch();
-  
-  // Load DER configurations
-  React.useEffect(() => {
-    if (!userIsAuthenticated()) return;
-    // TODO: this is only loading the first page of configurations. We should load all of them
-    getDerConfigurations({ include: 'data', page: 1, page_size: 100 })
-      .then((derConfigurations) => {
-        dispatch(
-          slices.models.updateModels(derConfigurations.data)
-        );
-      });
-  });
-  
-  // Load DER strategies
-  React.useEffect(() => {
-    if (!userIsAuthenticated()) return;
-    // TODO: this is only loading the first page of strategies. We should load all of them
-    getDerStrategies({ include: 'data', page: 1, page_size: 100 })
-      .then((derStrategies) => {
-        dispatch(
-          slices.models.updateModels(derStrategies.data)
-        );
-      });
-  });
-  
+  initApplication();
+
   return (
-    <Router>
-      <AppRoutes />
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <AppRoutes />
+      </Router>
+    </Provider>
   );
 };
 
