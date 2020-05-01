@@ -1,5 +1,5 @@
 import { userIsAuthenticated } from './models/user';
-import { getDerConfigurations, getDerStrategies } from './api';
+import { getDerConfigurations, getDerStrategies, connectToScenarioUpdates } from './api';
 import store, { slices } from './store';
 
 
@@ -25,4 +25,7 @@ export function initApplication () {
         slices.models.updateModels(derStrategies.data)
       );
     });
+
+  // Set up WebSockets
+  connectToScenarioUpdates();
 }

@@ -2,6 +2,7 @@ import find from 'lodash/find';
 
 import { LoadType, parseMeterGroup, MeterGroup } from '@nav/common/models/meter';
 import { parseScenario, RawScenario, Scenario } from '@nav/common/models/scenario';
+import store, { slices } from '@nav/common/store';
 import {
   appendId, beoRoute, DynamicRestParams, getRequest, PaginationQueryParams, parsePaginationSet,
   patchRequest, postRequest, RawPaginationSet
@@ -89,6 +90,18 @@ export async function getScenario (id: string, options?: GetScenarioQueryOptions
     ).then(res => res.json());
   
   return compileScenario(response.study, response.meter_groups);
+}
+
+/** ============================ WebSockets ================================ */
+export function connectToScenarioUpdates () {
+  const chatSocket = new WebSocket(beoRoute.ws('scenario_update'));
+  
+  chatSocket.onmessage = function (e) {
+    const scenario = JSON.parse(e.data) as RawScenario;
+    store.dispatch(slices.models.updateModel(compileScenario(scenario)));
+  };
+  
+  chatSocket.onclose = () => console.error('Scenario updates socket closed unexpectedly');
 }
 
 /** ============================ Helpers =================================== */
