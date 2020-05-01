@@ -9,7 +9,7 @@ require('jest-fetch-mock').enableMocks();
 
 beforeEach(() => {
   process.env = Object.assign(process.env, {
-    REACT_APP_BEO_URI: 'http://test-domain.com'
+    REACT_APP_BEO_HOST: 'test-domain.com'
   });
   
   // Fake authorization

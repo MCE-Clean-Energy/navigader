@@ -2,7 +2,7 @@
 
 # Set up environment variables
 export REACT_APP_ENV=dev;
-export REACT_APP_BEO_URI=https://api-dev.navigader.com;
+export REACT_APP_BEO_HOST=api-dev.navigader.com;
 
 # Run the build
 echo 'Running CRA build...';

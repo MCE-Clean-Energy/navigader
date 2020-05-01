@@ -15,13 +15,14 @@ Building the application requires a `.env` file to specify certain environment v
 
 - `REACT_APP_ENV`: a simple representation of the current environment. Typicall `prod` or
  `staging` or `local` 
-- `REACT_APP_BEO_URI`: the URI of the `beo_datastore` backend that will be serving data to the
- front end. This should omit a trailing `/`.
+- `REACT_APP_BEO_HOST`: the hostname of the server where the `beo_datastore` backend that will be
+ serving data to the front end. This should omit a trailing `/`.
 
 Full example:
 
 ```
-REACT_APP_BEO_URI=http://localhost:8000
+REACT_APP_ENV=local
+REACT_APP_BEO_HOST=localhost:8000
 ```
 
 ## Deployment

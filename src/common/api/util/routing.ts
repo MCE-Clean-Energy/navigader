@@ -10,8 +10,11 @@ export function appendId (route: string) {
   };
 }
 
-const beoUri = process.env.REACT_APP_BEO_URI;
+const beoHost = process.env.REACT_APP_BEO_HOST;
+const isSecure = process.env.REACT_APP_ENV !== 'local';
+const httpProtocol = isSecure ? 'https' : 'http';
+
 export const beoRoute = {
-  restAuth: (rest: string) => `${beoUri}/rest-auth/${rest}`,
-  v1: (rest: string) => `${beoUri}/v1/${rest}`
+  restAuth: (rest: string) => `${httpProtocol}://${beoHost}/rest-auth/${rest}`,
+  v1: (rest: string) => `${httpProtocol}://${beoHost}/v1/${rest}`,
 };
