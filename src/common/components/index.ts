@@ -13,7 +13,6 @@ export * from './Checkbox';
 export * from './Chip';
 export * from './ContactSupport';
 export * from './Container';
-export * from './DERComponents';
 export * from './Dialog';
 export * from './Divider';
 export * from './Fade';

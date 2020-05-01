@@ -33,7 +33,13 @@ export const Progress: React.ComponentType<ProgressProps> = React.forwardRef(
     const classes = useStyles();
     const progressProps = {
       ...rest,
-      variant: rest.value !== undefined ? 'determinate' : 'indeterminate' as ProgressVariant
+      variant: (
+        rest.value === undefined
+          ? 'indeterminate'
+          : circular
+            ? 'static'
+            : 'determinate'
+      ) as ProgressVariant
     };
     
     if (showBackground && !circular) {
