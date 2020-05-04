@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { Card, DERIcon, Flex, Statistic } from '@nav/common/components';
-import { BatteryConfiguration, BatteryStrategy } from '@nav/common/models/der';
+import { Card, Flex, Statistic } from '@nav/common/components';
+import { BatteryConfiguration, BatteryStrategy, Components } from '@nav/common/models/der';
 import { makeStylesHook } from '@nav/common/styles';
 
 
@@ -37,7 +37,7 @@ export const DERCard: React.FC<DerCardProps> = (props) => {
               derType
                 ? (
                   <Flex.Container>
-                    <DERIcon type={derType}/>
+                    <Components.DERIcon type={derType}/>
                     {derType}
                   </Flex.Container>
                 )

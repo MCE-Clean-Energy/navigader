@@ -1,36 +1,33 @@
 import * as React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
-import { Theme } from '@nav/common/styles';
+import { makeStylesHook } from '@nav/common/styles';
 import * as Flex from '../Flex';
 import { AppBar } from './AppBar';
 import { SideDrawer } from './SideDrawer';
 
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    appBarSpacer: {
-      ...theme.mixins.toolbar,
-    },
-    center: {
-      display: 'flex',
-      flexDirection: 'column'
-    },
-    container: {
-      backgroundColor: '#F8F9FD',
-      boxSizing: 'border-box',
-      display: 'flex',
-      height: '100vh',
-      overflow: 'auto'
-    },
-    content: {
-      flexGrow: 1,
-      paddingBottom: theme.spacing(3)
-    }
-  })
-);
+const useStyles = makeStylesHook(theme => ({
+  appBarSpacer: {
+    ...theme.mixins.toolbar,
+  },
+  center: {
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  container: {
+    backgroundColor: theme.palette.grey[50],
+    boxSizing: 'border-box',
+    display: 'flex',
+    height: '100vh',
+    overflow: 'auto'
+  },
+  content: {
+    flexGrow: 1,
+    paddingBottom: theme.spacing(3)
+  }
+}), 'AppContainer');
 
 /** ============================ Components ================================ */
 export const AppContainer: React.FC = ({ children }) => {

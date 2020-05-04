@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import Drawer from '@material-ui/core/Drawer';
 
 import * as routes from '@nav/common/routes';
-import { primaryColor, Theme } from '@nav/common/styles';
+import { makeStylesHook } from '@nav/common/styles';
 import { Centered } from '../Centered';
 import * as Flex from '../Flex';
 
@@ -17,53 +16,49 @@ type DrawerButtonProps = {
 
 /** ============================ Styles ==================================== */
 const drawerWidth = 250;
-const useDrawerStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    appBarSpacer: {
-      ...theme.mixins.toolbar
-    },
-    drawer: {
-      height: '100vh',
-      flexShrink: 0,
-      width: drawerWidth,
-      boxShadow: theme.shadows[24]
-    },
-    drawerLogo: {
-      padding: drawerPadding(theme)
-    },
-    drawerPaper: {
-      backgroundColor: primaryColor,
-      borderRight: 'none',
-      color: '#fff',
-      width: drawerWidth
-    },
-    flexContainer: {
-      flexGrow: 1,
-      marginTop: theme.spacing(2)
-    }
-  })
-);
+const useDrawerStyles = makeStylesHook(theme => ({
+  appBarSpacer: {
+    ...theme.mixins.toolbar
+  },
+  drawer: {
+    height: '100vh',
+    flexShrink: 0,
+    width: drawerWidth,
+    boxShadow: theme.shadows[24]
+  },
+  drawerLogo: {
+    padding: theme.spacing(2)
+  },
+  drawerPaper: {
+    backgroundColor: theme.palette.primary.main,
+    borderRight: 'none',
+    color: '#fff',
+    width: drawerWidth
+  },
+  flexContainer: {
+    flexGrow: 1,
+    marginTop: theme.spacing(2)
+  }
+}), 'SideDrawer');
 
-const useDrawerButtonStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      padding: theme.spacing(1),
-      transition: theme.transitions.create('background-color', {
-        duration: theme.transitions.duration.shortest
-      }),
-      width: '100%',
-      '&:hover': {
-        backgroundColor: theme.palette.action.hover,
-        // Reset on touch devices, it doesn't add specificity
-        '@media (hover: none)': {
-          backgroundColor: 'transparent'
-        }
-      },
-      // Renders it in button font
-      ...theme.typography.button
-    }
-  })
-);
+const useDrawerButtonStyles = makeStylesHook(theme => ({
+  root: {
+    padding: theme.spacing(1),
+    transition: theme.transitions.create('background-color', {
+      duration: theme.transitions.duration.shortest
+    }),
+    width: '100%',
+    '&:hover': {
+      backgroundColor: theme.palette.action.hover,
+      // Reset on touch devices, it doesn't add specificity
+      '@media (hover: none)': {
+        backgroundColor: 'transparent'
+      }
+    },
+    // Renders it in button font
+    ...theme.typography.button
+  }
+}), 'DrawerButton');
 
 /** ============================ Components ================================ */
 const DrawerButton: React.FC<DrawerButtonProps> = ({ children, linkTo }) => {
@@ -101,8 +96,3 @@ export const SideDrawer: React.FC = () => {
     </Drawer>
   );
 };
-
-/** ============================ Helpers =================================== */
-function drawerPadding (theme: Theme) {
-  return theme.spacing(2);
-}

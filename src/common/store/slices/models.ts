@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import findIndex from 'lodash/findIndex';
+import merge from 'lodash/merge';
 
 import { BatteryConfiguration, BatteryStrategy, BatterySimulation } from '@nav/common/models/der';
 import { Meter } from '@nav/common/models/meter';
@@ -104,5 +105,6 @@ function addOrUpdateModel (state: ModelsSlice, model: ModelClass) {
   }
   
   // Splice it into the slice
-  slice.splice(modelIndex, 1, model);
+  const merged = merge({}, slice[modelIndex], model);
+  slice.splice(modelIndex, 1, merged);
 }
