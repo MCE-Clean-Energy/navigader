@@ -1,2 +1,2 @@
 export * from './Comparison';
-export * from './ScenarioResults';
+export * from './Details';

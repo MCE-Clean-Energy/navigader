@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
-import * as api from '@nav/common/api';
-import { Table, PaginationState } from '@nav/common/components';
-import { MeterGroup } from '@nav/common/models/meter';
-import { selectModels, updateModels } from '@nav/common/store/slices/models';
-import { makeStylesHook } from '@nav/common/styles';
+import * as api from 'navigader/api';
+import { Table, PaginationState } from 'navigader/components';
+import { MeterGroup } from 'navigader/models/meter';
+import { selectModels, updateModels } from 'navigader/store/slices/models';
+import { makeStylesHook } from 'navigader/styles';
 
 
 /** ============================ Types ===================================== */

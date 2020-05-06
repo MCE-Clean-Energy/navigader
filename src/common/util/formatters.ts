@@ -1,9 +1,12 @@
 import moment from 'moment';
-import { percentOf } from './math';
+import { clamp, percentOf } from './math';
 
 
 /** ============================ Types ===================================== */
 type DateType = Date | string;
+type DollarFormatOptions = Partial<{
+  cents: boolean;
+}>;
 
 /** ============================ Formatters ================================ */
 /**
@@ -113,4 +116,44 @@ export function percentage (numerator: number, denominator: number, n: number = 
   return percent === Infinity
     ? 'Infinity'
     : maxDecimals(percent, n) + '%';
+}
+
+/**
+ * Renders a number as a dollar amount, adding commas and a dollar sign. Cents are omitted by
+ * default, but can be added. If the amt falls between -1 and 1, decimals will be included unless
+ * specifically told to omit them.
+ *
+ * @param {number} amt: the dollar amount to render
+ * @param {DollarFormatOptions} [options]: optional options
+ */
+export function dollars (amt: number | undefined, options?: DollarFormatOptions) {
+  if (amt === undefined) return;
+  
+  const roundsToOne = [-1, 1].includes(+amt.toFixed(2));
+  const lessThanOne = clamp(amt, -1, 1) === amt && !roundsToOne;
+  const addDecimals = (options && options.cents) || (lessThanOne && !options?.cents);
+  const amtFixed = parseFloat(amt.toFixed(addDecimals ? 2 : 0));
+  const roundedTowardsZero = amtFixed >= 0 ? Math.floor(amtFixed) : Math.ceil(amtFixed);
+  const wholeDollars = Math.abs(roundedTowardsZero).toString().split('');
+  
+  let dollarString = '';
+  wholeDollars.reverse().forEach((integer, i) => {
+    // Every 3 digits we insert a comma
+    if (i === 0 || i % 3 !== 0) {
+      dollarString = integer + dollarString;
+    } else {
+      dollarString = integer + ',' + dollarString;
+    }
+  });
+  
+  // Append the cents unless omitted
+  if (addDecimals) {
+    let decimalString = amtFixed.toFixed(2).split('.')[1];
+    if (decimalString && decimalString.length === 1) decimalString += '0';
+    dollarString += '.' + decimalString;
+  }
+  
+  // Add a minus sign if negative
+  const prefix = amtFixed < 0 ? '-' : '';
+  return prefix + '$' + dollarString;
 }

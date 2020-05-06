@@ -4,8 +4,8 @@ import { MemoryRouterProps } from 'react-router';
 import { MemoryRouter, Route, Switch } from 'react-router-dom';
 import { render } from '@testing-library/react';
 
-import { ThemeProvider } from '@nav/common/components';
-import store from '@nav/common/store';
+import { ThemeProvider } from 'navigader/components';
+import store from 'navigader/store';
 import { AppRoutes } from '../../../App';
 
 

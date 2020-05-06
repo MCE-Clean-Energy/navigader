@@ -3,8 +3,8 @@ import { useHistory } from 'react-router-dom';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import Drawer from '@material-ui/core/Drawer';
 
-import * as routes from '@nav/common/routes';
-import { makeStylesHook } from '@nav/common/styles';
+import * as routes from 'navigader/routes';
+import { makeStylesHook } from 'navigader/styles';
 import { Centered } from '../Centered';
 import * as Flex from '../Flex';
 

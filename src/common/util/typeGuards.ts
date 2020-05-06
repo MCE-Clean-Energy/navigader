@@ -1,7 +1,7 @@
 import some from 'lodash/some';
 
-import { NavigaderObject } from '@nav/common/models';
-import { MeterGroup } from '@nav/common/models/meter';
+import { NavigaderObject } from 'navigader/models';
+import { MeterGroup } from 'navigader/models/meter';
 
 
 /** ============================ Navigader Objects ========================= */

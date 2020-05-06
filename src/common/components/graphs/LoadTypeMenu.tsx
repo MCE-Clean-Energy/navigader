@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import { Checkbox, List, Menu } from '@nav/common/components';
-import { Frame288LoadType } from '@nav/common/models/meter';
-import { formatters } from '@nav/common/util';
+import { Checkbox, List, Menu } from 'navigader/components';
+import { Frame288LoadType } from 'navigader/models/meter';
+import { formatters } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */

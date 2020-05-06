@@ -2,7 +2,7 @@ import * as React from 'react';
 import map from 'lodash/map';
 import { cleanup, fireEvent } from '@testing-library/react'
 
-import { fixtures, renderContextDependentComponent } from '@nav/common/util/testing';
+import { fixtures, renderContextDependentComponent } from 'navigader/util/testing';
 import { SelectCustomers } from './SelectCustomers';
 
 

@@ -1,8 +1,8 @@
 import sumBy from 'lodash/sumBy';
 
-import { DerType } from '@nav/common/models/der';
-import * as routes from '@nav/common/routes';
-import { MeterGroup } from '@nav/common/models/meter';
+import { DerType } from 'navigader/models/der';
+import * as routes from 'navigader/routes';
+import { MeterGroup } from 'navigader/models/meter';
 
 
 // Order of steps

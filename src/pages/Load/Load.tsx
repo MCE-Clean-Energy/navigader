@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 
-import * as api from '@nav/common/api';
-import { Button, Grid, PageHeader, Progress } from '@nav/common/components';
-import { MeterGroup } from '@nav/common/models/meter';
-import * as routes from '@nav/common/routes';
-import { makeStylesHook } from '@nav/common/styles';
-import { makeCancelableAsync } from '@nav/common/util';
+import * as api from 'navigader/api';
+import { Button, Grid, PageHeader, Progress } from 'navigader/components';
+import { MeterGroup } from 'navigader/models/meter';
+import * as routes from 'navigader/routes';
+import { makeStylesHook } from 'navigader/styles';
+import { makeCancelableAsync } from 'navigader/util';
 import { MeterGroupCard } from './MeterGroupCard';
 
 

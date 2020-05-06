@@ -3,7 +3,7 @@ import omit from 'lodash/omit';
 import { CreateCSSProperties } from '@material-ui/styles/withStyles';
 import classNames from 'classnames';
 
-import { makeStylesHook } from '@nav/common/styles';
+import { makeStylesHook } from 'navigader/styles';
 
 
 /** ============================ Types ===================================== */

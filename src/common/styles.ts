@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { Color as MuiColor } from '@material-ui/core';
+import * as muiColors from '@material-ui/core/colors';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import useTheme from '@material-ui/core/styles/useTheme';
 import createStyles from '@material-ui/styles/createStyles';
@@ -51,3 +53,11 @@ export function makeStylesHook<Props extends {} = {}, ClassKey extends string = 
     { name }
   );
 }
+
+/** ============================ Colors ==================================== */
+export type Color = MuiColor;
+export const colors = {
+  primary: primaryColor,
+  secondary: secondaryColor,
+  ...muiColors
+};

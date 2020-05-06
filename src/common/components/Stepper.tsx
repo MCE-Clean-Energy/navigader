@@ -3,7 +3,7 @@ import MuiStep from '@material-ui/core/Step';
 import MuiStepLabel from '@material-ui/core/StepLabel';
 import MuiStepper from '@material-ui/core/Stepper';
 
-import { makeStylesHook } from '@nav/common/styles';
+import { makeStylesHook } from 'navigader/styles';
 
 
 /** ============================ Types ===================================== */

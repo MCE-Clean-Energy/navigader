@@ -1,7 +1,7 @@
 import find from 'lodash/find';
 
-import { LoadType, parseMeterGroup, MeterGroup } from '@nav/common/models/meter';
-import { parseScenario, RawScenario, Scenario } from '@nav/common/models/scenario';
+import { LoadType, parseMeterGroup, MeterGroup } from 'navigader/models/meter';
+import { parseScenario, RawScenario, Scenario } from 'navigader/models/scenario';
 import {
   appendId, beoRoute, DynamicRestParams, getRequest, PaginationQueryParams, parsePaginationSet,
   patchRequest, postRequest, RawPaginationSet

@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
-import * as api from '@nav/common/api';
-import { Button, Dialog, TextField } from '@nav/common/components';
-import { Scenario } from '@nav/common/models/scenario';
-import { setMessage } from '@nav/common/store/slices/ui';
-import { updateModel } from '@nav/common/store/slices/models';
+import * as api from 'navigader/api';
+import { Button, Dialog, TextField } from 'navigader/components';
+import { Scenario } from 'navigader/models/scenario';
+import { setMessage } from 'navigader/store/slices/ui';
+import { updateModel } from 'navigader/store/slices/models';
 
 
 /** ============================ Types ===================================== */

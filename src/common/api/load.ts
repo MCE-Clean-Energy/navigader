@@ -1,6 +1,6 @@
 import {
   LoadType, parseMeterGroup, Meter, MeterGroup, RawMeterGroup
-} from '@nav/common/models/meter';
+} from 'navigader/models/meter';
 import {
   appendId, beoRoute, equals_, getRequest, makeFormPost, parsePaginationSet, PaginationQueryParams,
   RawPaginationSet

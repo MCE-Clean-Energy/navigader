@@ -1,7 +1,7 @@
 import * as React from 'react';
 import classNames from 'classnames';
 
-import { makeStylesHook } from '@nav/common/styles';
+import { makeStylesHook } from 'navigader/styles';
 
 
 /** ============================ Types ===================================== */

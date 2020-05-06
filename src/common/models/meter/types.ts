@@ -1,5 +1,5 @@
-import { NavigaderObject, ProgressFields } from '@nav/common/models';
-import { MonthIndex, Nullable } from '@nav/common/types';
+import { NavigaderObject, ProgressFields } from 'navigader/models';
+import { MonthIndex, Nullable } from 'navigader/types';
 
 /** ============================ Meter Types =============================== */
 export type Frame288LoadType = 'total' | 'average' | 'maximum' | 'minimum' | 'count';

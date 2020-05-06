@@ -2,11 +2,11 @@ import * as React from 'react';
 import { BrowserRouter as Router, Switch, Redirect, Route, RouteProps } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { getDerConfigurations, getDerStrategies } from '@nav/common/api';
-import { Alert, AppContainer, Snackbar, ThemeProvider } from '@nav/common/components';
-import * as routes from '@nav/common/routes';
-import { slices } from '@nav/common/store';
-import { userIsAuthenticated } from '@nav/common/models/user';
+import { getDerConfigurations, getDerStrategies } from 'navigader/api';
+import { Alert, AppContainer, Snackbar, ThemeProvider } from 'navigader/components';
+import * as routes from 'navigader/routes';
+import { slices } from 'navigader/store';
+import { userIsAuthenticated } from 'navigader/models/user';
 import * as pages from './pages';
 
 

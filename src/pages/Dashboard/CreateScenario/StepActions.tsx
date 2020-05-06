@@ -3,12 +3,12 @@ import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import find from 'lodash/find';
 
-import * as api from '@nav/common/api';
-import { Button, Flex } from '@nav/common/components';
-import { MeterGroup } from '@nav/common/models/meter';
-import * as routes from '@nav/common/routes';
-import { setMessage } from '@nav/common/store/slices/ui';
-import { omitFalsey, printWarning } from '@nav/common/util';
+import * as api from 'navigader/api';
+import { Button, Flex } from 'navigader/components';
+import { MeterGroup } from 'navigader/models/meter';
+import * as routes from 'navigader/routes';
+import { setMessage } from 'navigader/store/slices/ui';
+import { omitFalsey, printWarning } from 'navigader/util';
 import {
   DERSelection, stepPaths, stepNumbers, validateCustomerSelections, validateDerSelections
 } from './common';

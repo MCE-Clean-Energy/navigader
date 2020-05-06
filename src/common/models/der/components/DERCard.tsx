@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import { Card, Flex, Statistic } from '@nav/common/components';
-import { BatteryConfiguration, BatteryStrategy, Components } from '@nav/common/models/der';
-import { makeStylesHook } from '@nav/common/styles';
+import { Card, Flex, Statistic } from 'navigader/components';
+import { BatteryConfiguration, BatteryStrategy, Components } from 'navigader/models/der';
+import { makeStylesHook } from 'navigader/styles';
 
 
 /** ============================ Types ===================================== */

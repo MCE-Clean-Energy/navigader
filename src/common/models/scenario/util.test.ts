@@ -1,4 +1,4 @@
-import { fixtures } from '@nav/common/util/testing';
+import { fixtures } from 'navigader/util/testing';
 import * as util from './util';
 
 
@@ -42,11 +42,20 @@ describe('Scenario model utilities', () => {
       });
     });
     
+    it('handles when `expected_der_simulation_count` is 0', () => {
+      const parsed = util.parseScenario({
+        ...rawScenario,
+        der_simulation_count: 0,
+        expected_der_simulation_count: 0
+      });
+      
+      expect(parsed.progress.percent_complete).toEqual(0);
+    });
+    
     it('computes the `progress` object properly', () => {
-      type TestValue = [number, number, boolean, number];
-      const testValues: TestValue[] = [
+      const testValues = [
         [3, 8, false, 37.5],
-        [0, 0, false, Infinity],
+        [0, 10, false, 0],
         [73, 74, false, 98.6],
         [99, 99, true, 100]
       ];

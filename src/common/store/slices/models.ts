@@ -2,9 +2,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import findIndex from 'lodash/findIndex';
 import merge from 'lodash/merge';
 
-import { BatteryConfiguration, BatteryStrategy, BatterySimulation } from '@nav/common/models/der';
-import { Meter } from '@nav/common/models/meter';
-import { Scenario } from '@nav/common/models/scenario';
+import { BatteryConfiguration, BatteryStrategy, BatterySimulation } from 'navigader/models/der';
+import { Meter } from 'navigader/models/meter';
+import { Scenario } from 'navigader/models/scenario';
 import { RootState, ModelsSlice } from '../types';
 
 
@@ -17,10 +17,9 @@ type ModelClass =
   | Meter
   | Scenario;
 
-/** Updates models en-masse */
-type SetModelsAction = PayloadAction<ModelClass[]>;
-
-/** Updates a single model using its `id` field */
+/** Payloads */
+type UpdateModelsAction = PayloadAction<ModelClass[]>;
+type UpdateHasMeterGroupsAction = PayloadAction<boolean>;
 type UpdateModelAction = PayloadAction<ModelClass>;
 
 /** ============================ Slice ===================================== */
@@ -28,6 +27,7 @@ const initialState = {
   derConfigurations: [],
   derSimulations: [],
   derStrategies: [],
+  hasMeterGroups: null,
   meters: [],
   scenarios: []
 } as ModelsSlice;
@@ -40,7 +40,10 @@ const slice = createSlice({
   name: 'models',
   initialState,
   reducers: {
-    updateModels: (state, action: SetModelsAction) => {
+    updateHasMeterGroups: (state, action: UpdateHasMeterGroupsAction) => {
+      state.hasMeterGroups = action.payload
+    },
+    updateModels: (state, action: UpdateModelsAction) => {
       action.payload.forEach(model => addOrUpdateModel(state, model));
     },
     updateModel: (state, action: UpdateModelAction) => {
@@ -51,7 +54,7 @@ const slice = createSlice({
 
 /** ============================ Exports =================================== */
 export const { reducer } = slice;
-export const { updateModels, updateModel } = slice.actions;
+export const { updateHasMeterGroups, updateModels, updateModel } = slice.actions;
 
 /** ============================ Selectors ================================= */
 /**
@@ -66,7 +69,12 @@ export function selectModels <Type extends ModelName>(modelType: Type) {
   };
 }
 
-/** ======================= */
+/**
+ * Selects the `hasMeterGroups` state pocket
+ */
+export const selectHasMeterGroups = (state: RootState) => state.models.hasMeterGroups;
+
+/** ============================ Reducer methods =========================== */
 /**
  * Updates a model in state if it is already present, or adds it to state if it is not. The model's
  * `id` and `object_type` are used to access the model within the slice

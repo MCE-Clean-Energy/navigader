@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Container from '@material-ui/core/Container';
 
-import { makeStylesHook } from '@nav/common/styles';
+import { makeStylesHook } from 'navigader/styles';
 import * as Flex from '../Flex';
 import { AppBar } from './AppBar';
 import { SideDrawer } from './SideDrawer';

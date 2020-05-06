@@ -1,4 +1,4 @@
-import { RawScenario, Scenario } from '@nav/common/models/scenario';
+import { RawScenario, Scenario } from 'navigader/models/scenario';
 
 
 /** ============================ Fixture creators ========================== */

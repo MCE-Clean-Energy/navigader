@@ -1,4 +1,4 @@
-import { assertHasQueryParams } from '@nav/common/util/testing';
+import { assertHasQueryParams } from 'navigader/util/testing';
 import { equals_ } from './querying';
 import { getRequest } from './requests';
 

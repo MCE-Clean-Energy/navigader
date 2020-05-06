@@ -1,11 +1,11 @@
 import * as React from 'react';
 import find from 'lodash/find';
 
-import { Card, Grid, Link, MeterGroupChip, TextField, Typography } from '@nav/common/components';
-import { BatteryConfiguration, BatteryStrategy } from '@nav/common/models/der';
-import { MeterGroup } from '@nav/common/models/meter';
-import * as routes from '@nav/common/routes';
-import { makeStylesHook } from '@nav/common/styles';
+import { Card, Grid, Link, MeterGroupChip, TextField, Typography } from 'navigader/components';
+import { BatteryConfiguration, BatteryStrategy } from 'navigader/models/der';
+import { MeterGroup } from 'navigader/models/meter';
+import * as routes from 'navigader/routes';
+import { makeStylesHook } from 'navigader/styles';
 import { DerCardReadOnly, DERSelection, validateDerSelections } from './common';
 
 

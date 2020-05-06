@@ -2,8 +2,8 @@ import * as React from 'react';
 
 import {
   Card, Centered, PageHeader, PrefetchedTable, Table, Typography
-} from '@nav/common/components';
-import { makeStylesHook } from '@nav/common/styles';
+} from 'navigader/components';
+import { makeStylesHook } from 'navigader/styles';
 
 
 /** ============================ Styles ==================================== */

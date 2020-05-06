@@ -2,9 +2,9 @@ import * as React from 'react';
 import range from 'lodash/range';
 import without from 'lodash/without';
 
-import { Checkbox, Divider, List, Menu } from '@nav/common/components';
-import { MonthIndex } from '@nav/common/types';
-import { formatters } from '@nav/common/util';
+import { Checkbox, Divider, List, Menu } from 'navigader/components';
+import { MonthIndex } from 'navigader/types';
+import { formatters } from 'navigader/util';
 import { Frame288MonthsOption } from './Frame288Graph';
 
 

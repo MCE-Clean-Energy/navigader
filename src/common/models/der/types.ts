@@ -1,7 +1,7 @@
-import { DeferrableFields } from '@nav/common/api/util';
-import { NavigaderObject } from '@nav/common/models';
-import { Frame288Type, MeterDataField } from '@nav/common/models/meter';
-import { ScenarioReportFields } from '@nav/common/models/scenario';
+import { DeferrableFields } from 'navigader/api/util';
+import { NavigaderObject } from 'navigader/models';
+import { Frame288Type, MeterDataField } from 'navigader/models/meter';
+import { ScenarioReportFields } from 'navigader/models/scenario';
 
 
 export type DerType = 'Battery' | 'Solar Panel';

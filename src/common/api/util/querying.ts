@@ -1,6 +1,6 @@
 import omit from 'lodash/omit';
 
-import { omitFalsey, printWarning } from '@nav/common/util';
+import { omitFalsey, printWarning } from 'navigader/util';
 import { PaginationQueryParams } from './pagination';
 
 

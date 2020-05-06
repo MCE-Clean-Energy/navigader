@@ -2,8 +2,8 @@ import * as React from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-import { makeStylesHook } from '@nav/common/styles';
-import { printWarning } from '@nav/common/util';
+import { makeStylesHook } from 'navigader/styles';
+import { printWarning } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */

@@ -1,6 +1,6 @@
 import range from 'lodash/range';
 
-import { fixtures } from '@nav/common/util/testing';
+import { fixtures } from 'navigader/util/testing';
 import * as util from './util';
 
 

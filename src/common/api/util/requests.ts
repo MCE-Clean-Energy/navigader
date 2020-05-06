@@ -1,4 +1,4 @@
-import { getCookie, omitFalsey } from '@nav/common/util';
+import { getCookie, omitFalsey } from 'navigader/util';
 import { makeQueryString, QueryParams } from './querying';
 
 

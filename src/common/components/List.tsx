@@ -5,8 +5,8 @@ import MuiListItemIcon from '@material-ui/core/ListItemIcon';
 import MuiListItemText from '@material-ui/core/ListItemText';
 import classNames from 'classnames';
 
-import { makeStylesHook } from '@nav/common/styles';
-import { printWarning } from '@nav/common/util';
+import { makeStylesHook } from 'navigader/styles';
+import { printWarning } from 'navigader/util';
 import { Icon, ValidIcon } from './Icon';
 
 

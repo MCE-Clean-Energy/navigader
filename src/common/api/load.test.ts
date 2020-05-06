@@ -1,4 +1,4 @@
-import { assertHasQueryParams, makePaginationResponse } from '@nav/common/util/testing';
+import { assertHasQueryParams, makePaginationResponse } from 'navigader/util/testing';
 import { getMeters } from './load';
 
 

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { fireEvent, waitForElement } from '@testing-library/react';
 
-import { renderContextDependentComponent } from '@nav/common/util/testing';
+import { renderContextDependentComponent } from 'navigader/util/testing';
 import { Select } from './Select';
 
 

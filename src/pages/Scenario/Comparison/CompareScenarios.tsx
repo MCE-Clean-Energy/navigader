@@ -1,12 +1,14 @@
 import * as React from 'react';
 
-import * as api from '@nav/common/api';
-import { in_ } from '@nav/common/api/util';
-import { PageHeader, Progress } from '@nav/common/components';
-import { Components, Scenario } from '@nav/common/models/scenario';
-import * as routes from '@nav/common/routes';
-import { hooks, makeCancelableAsync } from '@nav/common/util';
-import { ScenarioComparisonChart } from './ScenarioComparisonChart';
+import * as api from 'navigader/api';
+import { in_ } from 'navigader/api/util';
+import { PageHeader, Progress } from 'navigader/components';
+import { Components, Scenario } from 'navigader/models/scenario';
+import * as routes from 'navigader/routes';
+import { colors } from 'navigader/styles';
+import { IdType } from 'navigader/types';
+import { hooks, makeCancelableAsync } from 'navigader/util';
+import { ScenarioComparisonChart } from './Chart';
 
 
 /** ============================ Components ================================ */
@@ -30,6 +32,7 @@ export const CompareScenariosPage: React.FC = () => {
     [idsParam]
   );
 
+  const colorMap = getScenarioColors(scenarios);
   return (
     <>
       <PageHeader
@@ -43,8 +46,7 @@ export const CompareScenariosPage: React.FC = () => {
         ? <Progress circular />
         : (
           <>
-            <ScenarioComparisonChart scenarios={scenarios} />
-            
+            <ScenarioComparisonChart colorMap={colorMap} scenarios={scenarios} />
             <Components.ScenariosTable scenarios={scenarios} />
             {/**
               * TODO: need to find way to type scenarios as possessing report
@@ -59,3 +61,53 @@ export const CompareScenariosPage: React.FC = () => {
     </>
   );
 };
+
+/** ============================ Helpers =================================== */
+function getScenarioColors (scenarios?: Scenario[]) {
+  return new Map(
+    (scenarios || []).map(
+      scenario => [scenario.id, getColor(scenario.id)]
+    )
+  );
+}
+
+/**
+ * Returns the color for a given scenario being rendered in the chart and the table
+ *
+ * @param {IdType} scenarioId: the ID of the scenario
+ */
+function getColor (scenarioId: IdType): string {
+  if (colorMap.has(scenarioId)) return colorMap.get(scenarioId)!;
+  
+  // Haven't dealt with this ID yet, give it a new color
+  const colorKey = graphColors[colorMap.size % graphColors.length];
+  const color = colors[colorKey][700];
+  
+  colorMap.set(scenarioId, color);
+  return color;
+}
+
+type IrregularColorKeys = 'common' | 'primary' | 'secondary';
+type GraphColors = Omit<typeof colors, IrregularColorKeys>;
+const colorMap = new Map<IdType, string>();
+const graphColors: Array<keyof GraphColors> = [
+  'amber',
+  'blue',
+  'blueGrey',
+  'brown',
+  'cyan',
+  'deepOrange',
+  'deepPurple',
+  'green',
+  'grey',
+  'indigo',
+  'lightBlue',
+  'lightGreen',
+  'lime',
+  'orange',
+  'pink',
+  'purple',
+  'red',
+  'teal',
+  'yellow'
+];

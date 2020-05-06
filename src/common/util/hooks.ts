@@ -5,8 +5,8 @@ import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import find from 'lodash/find';
 
-import { IdType, ObjectWithId } from '@nav/common/types';
-import { RootState } from '@nav/common/store';
+import { IdType, ObjectWithId } from 'navigader/types';
+import { RootState } from 'navigader/store';
 import { omitFalsey } from './omitFalsey';
 
 

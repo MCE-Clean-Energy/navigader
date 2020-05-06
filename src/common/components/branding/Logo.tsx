@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import logo from '@nav/common/images/logo.png';
-import { makeStylesHook } from '@nav/common/styles';
+import logo from 'navigader/images/logo.png';
+import { makeStylesHook } from 'navigader/styles';
 
 
 /** ============================ Types ===================================== */

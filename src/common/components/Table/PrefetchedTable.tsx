@@ -1,7 +1,7 @@
 import * as React from 'react';
 import sortBy from 'lodash/sortBy';
 
-import { ObjectWithId } from '@nav/common/types';
+import { ObjectWithId } from 'navigader/types';
 import { Table, TableProps } from './Table';
 import { PaginationState, SortState } from './util';
 

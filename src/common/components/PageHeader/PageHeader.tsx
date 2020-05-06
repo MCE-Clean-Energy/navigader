@@ -3,8 +3,8 @@ import { useHistory } from 'react-router-dom';
 import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
 import findLast from 'lodash/findLast';
 
-import { Button, Link } from '@nav/common/components';
-import { makeStylesHook } from '@nav/common/styles';
+import { Button, Link } from 'navigader/components';
+import { makeStylesHook } from 'navigader/styles';
 import * as Flex from '../Flex';
 import { Typography } from '../Typography';
 

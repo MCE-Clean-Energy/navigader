@@ -1,7 +1,7 @@
 import * as React from 'react';
 import MuiPopover from '@material-ui/core/Popover';
 
-import { Theme, useTheme } from '@nav/common/styles';
+import { Theme, useTheme } from 'navigader/styles';
 
 
 /** ============================ Types ===================================== */

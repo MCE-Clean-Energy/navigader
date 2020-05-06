@@ -3,11 +3,11 @@ import { useHistory } from 'react-router-dom';
 
 import {
   Card, Grid, Frame288Graph, Statistic, MeterGroupChip, Progress, Typography, Tooltip
-} from '@nav/common/components';
-import { hasDataField, isSufficientlyIngested, MeterGroup } from '@nav/common/models/meter';
-import * as routes from '@nav/common/routes';
-import { makeStylesHook } from '@nav/common/styles';
-import { formatters } from '@nav/common/util';
+} from 'navigader/components';
+import { hasDataField, isSufficientlyIngested, MeterGroup } from 'navigader/models/meter';
+import * as routes from 'navigader/routes';
+import { makeStylesHook } from 'navigader/styles';
+import { formatters } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -17,9 +17,10 @@ type MeterGroupCardProps = {
 
 /** ============================ Styles ==================================== */
 const cardPadding = '1rem';
-const useStyles = makeStylesHook<MeterGroupCardProps>(() => ({
+const useStyles = makeStylesHook<MeterGroupCardProps>(theme => ({
   card: (props) => ({
     cursor: isSufficientlyIngested(props.meterGroup) ? 'pointer' : 'default',
+    marginBottom: theme.spacing(2),
     overflow: 'visible',
     position: 'relative'
   }),

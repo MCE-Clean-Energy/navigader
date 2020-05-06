@@ -1,11 +1,11 @@
 import * as React from 'react';
 
-import * as api from '@nav/common/api';
+import * as api from 'navigader/api';
 import {
   Alert, Button, Card, ContactSupport, Flex, Link, PageHeader, Progress, TextField, Typography
-} from '@nav/common/components';
-import * as routes from '@nav/common/routes';
-import { makeStylesHook } from '@nav/common/styles';
+} from 'navigader/components';
+import * as routes from 'navigader/routes';
+import { makeStylesHook } from 'navigader/styles';
 
 
 /** ============================ Types ===================================== */

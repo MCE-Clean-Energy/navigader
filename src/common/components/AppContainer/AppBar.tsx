@@ -6,10 +6,10 @@ import createStyles from '@material-ui/core/styles/createStyles';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import useTheme from '@material-ui/core/styles/useTheme';
 
-import navigaderImage from '@nav/common/images/navigader.png';
-import * as routes from '@nav/common/routes';
-import { Theme } from '@nav/common/styles';
-import { removeCookie } from '@nav/common/util';
+import navigaderImage from 'navigader/images/navigader.png';
+import * as routes from 'navigader/routes';
+import { Theme } from 'navigader/styles';
+import { removeCookie } from 'navigader/util';
 import { Gradient } from '../branding';
 import { Button } from '../Button';
 import * as Flex from '../Flex';

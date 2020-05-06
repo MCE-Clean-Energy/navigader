@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { cleanup } from '@testing-library/react';
 
-import { renderContextDependentComponent } from '@nav/common/util/testing';
+import { renderContextDependentComponent } from 'navigader/util/testing';
 import { DERSelection } from './common';
 import StepActions from './StepActions';
 

@@ -3,8 +3,8 @@ import flatten from 'lodash/flatten';
 import isArray from 'lodash/isArray';
 import range from 'lodash/range';
 
-import { MonthIndex } from '@nav/common/types';
-import { math, typeGuards } from '@nav/common/util';
+import { MonthIndex } from 'navigader/types';
+import { math, typeGuards } from 'navigader/util';
 import {
   Frame288NumericType, LoadType, LoadTypeMap, MeterDataField, MeterGroup, RawMeterGroup
 } from './types';

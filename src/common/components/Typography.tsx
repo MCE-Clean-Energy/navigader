@@ -2,8 +2,8 @@ import * as React from 'react';
 import MuiTypography, { TypographyProps as MuiTypographyProps } from '@material-ui/core/Typography';
 import classNames from 'classnames';
 
-import { makeStylesHook } from '@nav/common/styles';
-import { printWarning } from '@nav/common/util';
+import { makeStylesHook } from 'navigader/styles';
+import { printWarning } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */

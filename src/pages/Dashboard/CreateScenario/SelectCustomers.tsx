@@ -2,10 +2,10 @@ import * as React from 'react';
 import find from 'lodash/find';
 import without from 'lodash/without';
 
-import { Flex, MeterGroupChip, Tooltip, Typography } from '@nav/common/components';
-import { isSufficientlyIngested, MeterGroup, OriginFileMeterGroup } from '@nav/common/models/meter';
-import { makeStylesHook } from '@nav/common/styles';
-import { formatters } from '@nav/common/util';
+import { Flex, MeterGroupChip, Tooltip, Typography } from 'navigader/components';
+import { isSufficientlyIngested, MeterGroup, OriginFileMeterGroup } from 'navigader/models/meter';
+import { makeStylesHook } from 'navigader/styles';
+import { formatters } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */

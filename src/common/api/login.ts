@@ -1,5 +1,5 @@
-import * as routes from '@nav/common/routes';
-import { setCookie } from '@nav/common/util';
+import * as routes from 'navigader/routes';
+import { setCookie } from 'navigader/util';
 import { beoRoute, postRequest } from './util';
 
 

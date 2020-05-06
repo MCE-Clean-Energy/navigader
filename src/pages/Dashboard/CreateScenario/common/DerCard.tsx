@@ -1,9 +1,9 @@
 import * as React from 'react';
 import find from 'lodash/find';
 
-import { Button, Card, Flex, Select } from '@nav/common/components';
-import { BatteryConfiguration, BatteryStrategy, Components } from '@nav/common/models/der';
-import { makeStylesHook } from '@nav/common/styles';
+import { Button, Card, Flex, Select } from 'navigader/components';
+import { BatteryConfiguration, BatteryStrategy, Components } from 'navigader/models/der';
+import { makeStylesHook } from 'navigader/styles';
 import { ProgramOptions } from './ProgramOptions';
 import { DERSelection } from './util';
 

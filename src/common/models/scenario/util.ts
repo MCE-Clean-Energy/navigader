@@ -1,8 +1,8 @@
 import omit from 'lodash/omit';
 import pick from 'lodash/pick';
 
-import { parsePandasFrame } from '@nav/common/models';
-import { math } from '@nav/common/util';
+import { parsePandasFrame } from 'navigader/models';
+import { math } from 'navigader/util';
 import { RawScenarioReport, ScenarioReport, RawScenario, Scenario } from './types';
 
 
@@ -13,10 +13,10 @@ import { RawScenarioReport, ScenarioReport, RawScenario, Scenario } from './type
  * @param {RawScenario} scenario - The raw scenario object to parse
  */
 export function parseScenario (scenario: RawScenario): Scenario {
-  const percentComplete = math.percentOf(
-    scenario.der_simulation_count,
-    scenario.expected_der_simulation_count
-  );
+  const { der_simulation_count, expected_der_simulation_count } = scenario;
+  const percentComplete = expected_der_simulation_count === 0
+    ? 0
+    : math.percentOf(der_simulation_count, expected_der_simulation_count);
   
   const reportSummary = scenario.report_summary ? scenario.report_summary[0] : undefined;
   return {

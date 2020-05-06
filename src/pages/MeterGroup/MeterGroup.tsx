@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
-import * as api from '@nav/common/api';
-import { Button, Fade, Grid, PageHeader, Progress, Typography } from '@nav/common/components';
+import * as api from 'navigader/api';
+import { Button, Fade, Grid, PageHeader, Progress, Typography } from 'navigader/components';
 import {
   Frame288LoadType, getMeterGroupDisplayName, isSufficientlyIngested, MeterGroup
-} from '@nav/common/models/meter';
-import * as routes from '@nav/common/routes';
-import { makeStylesHook } from '@nav/common/styles';
+} from 'navigader/models/meter';
+import * as routes from 'navigader/routes';
+import { makeStylesHook } from 'navigader/styles';
 import LoadGraph from './LoadGraph';
 import MetersTable from './MetersTable';
 

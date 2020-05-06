@@ -1,9 +1,9 @@
 import * as React from 'react';
 
-import { Chip, ChipProps, Flex, Typography } from '@nav/common/components';
-import { getMeterGroupDisplayName, MeterGroup } from '@nav/common/models/meter';
-import { makeStylesHook } from '@nav/common/styles';
-import { formatters } from '@nav/common/util';
+import { Chip, ChipProps, Flex, Typography } from 'navigader/components';
+import { getMeterGroupDisplayName, MeterGroup } from 'navigader/models/meter';
+import { makeStylesHook } from 'navigader/styles';
+import { formatters } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */

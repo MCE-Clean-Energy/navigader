@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
-import * as api from '@nav/common/api';
+import * as api from 'navigader/api';
 import {
-  Flex, Link, PaginationState, PrefetchedTable, Progress, Table, Tooltip, Typography
-} from '@nav/common/components';
-import { Components } from '@nav/common/models/der';
-import { Scenario } from '@nav/common/models/scenario';
-import * as routes from '@nav/common/routes';
-import { selectModels, updateModels } from '@nav/common/store/slices/models';
-import { formatters, kwToMw } from '@nav/common/util';
+  Flex, Icon, Link, PaginationState, PrefetchedTable, Progress, Table, Tooltip
+} from 'navigader/components';
+import { Components } from 'navigader/models/der';
+import { Scenario } from 'navigader/models/scenario';
+import * as routes from 'navigader/routes';
+import { selectModels, updateModels } from 'navigader/store/slices/models';
+import { formatters, kwToMw } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -27,7 +27,14 @@ type ScenarioStatusProps = {
 /** ============================ Components ================================ */
 const ScenarioStatus: React.FC<ScenarioStatusProps> = ({ scenario }) => {
   const { is_complete, percent_complete } = scenario.progress;
-  if (is_complete) return <Typography variant="body1">Done</Typography>;
+  if (is_complete) {
+    return (
+      <Tooltip title="Done">
+        <Icon color="success" name="checkMark" />
+      </Tooltip>
+    );
+  }
+  
   return (
     <Tooltip title={`${Math.floor(percent_complete)}%`}>
       <Progress circular value={Math.max(percent_complete, 3)} showBackground />
@@ -78,6 +85,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
               <Table.Cell>Customer Segment (#)</Table.Cell>
               <Table.Cell>DER</Table.Cell>
               <Table.Cell>Program Strategy</Table.Cell>
+              <Table.Cell align="right">Usage Delta (kWh/year)</Table.Cell>
               <Table.Cell align="right">CCA Bill ($/year)</Table.Cell>
               <Table.Cell align="right">CNS 2022 Delta (tCO<sub>2</sub>/year)</Table.Cell>
               <Table.Cell align="right">RA (MW/year)</Table.Cell>
@@ -127,7 +135,14 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? formatters.maxDecimals(scenario.report_summary?.BillDelta, 2)
+                      ? formatters.maxDecimals(scenario.report_summary?.UsageDelta, 2)
+                      : '-'
+                  }
+                </Table.Cell>
+                <Table.Cell align="right">
+                  {
+                    scenario.progress.is_complete
+                      ? formatters.dollars(scenario.report_summary?.BillDelta)
                       : '-'
                   }
                 </Table.Cell>

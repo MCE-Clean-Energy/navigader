@@ -10,12 +10,12 @@ import MuiTableRow from '@material-ui/core/TableRow';
 import MuiTableSortLabel from '@material-ui/core/TableSortLabel';
 import omit from 'lodash/omit';
 
-import { PaginationSet } from '@nav/common/api/util';
-import { Checkbox, Flex, Progress, SortState, Typography } from '@nav/common/components';
-import { RootState } from '@nav/common/store';
-import { makeStylesHook } from '@nav/common/styles';
-import { IdType, ObjectWithId} from '@nav/common/types';
-import { hooks, makeCancelableAsync } from '@nav/common/util';
+import { PaginationSet } from 'navigader/api/util';
+import { Checkbox, Flex, Progress, SortState, Typography } from 'navigader/components';
+import { RootState } from 'navigader/store';
+import { makeStylesHook } from 'navigader/styles';
+import { IdType, ObjectWithId} from 'navigader/types';
+import { hooks, makeCancelableAsync } from 'navigader/util';
 import { TablePagination } from './Pagination';
 import { PaginationState, TableContext } from './util';
 

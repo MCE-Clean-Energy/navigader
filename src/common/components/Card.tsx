@@ -2,7 +2,7 @@ import * as React from 'react';
 import MuiCard from '@material-ui/core/Card';
 import classNames from 'classnames';
 
-import { makeStylesHook } from '@nav/common/styles';
+import { makeStylesHook } from 'navigader/styles';
 
 
 /** ============================ Types ===================================== */

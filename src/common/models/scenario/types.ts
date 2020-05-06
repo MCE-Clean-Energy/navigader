@@ -1,7 +1,7 @@
-import { DeferrableFields } from '@nav/common/api/util';
-import { NavigaderObject, PandasFrame, ProgressFields, RawPandasFrame } from '@nav/common/models';
-import { BatteryConfiguration, BatteryStrategy } from '@nav/common/models/der';
-import { LoadTypeMap, MeterGroup } from '@nav/common/models/meter';
+import { DeferrableFields } from 'navigader/api/util';
+import { NavigaderObject, PandasFrame, ProgressFields, RawPandasFrame } from 'navigader/models';
+import { BatteryConfiguration, BatteryStrategy } from 'navigader/models/der';
+import { LoadTypeMap, MeterGroup } from 'navigader/models/meter';
 
 
 /** ============================ Scenarios ================================= */

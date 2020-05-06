@@ -1,7 +1,7 @@
 import omit from 'lodash/omit';
 
-import { BatteryConfiguration, BatteryStrategy, BatterySimulation } from '@nav/common/models/der';
-import { LoadType, MeterGroup } from '@nav/common/models/meter';
+import { BatteryConfiguration, BatteryStrategy, BatterySimulation } from 'navigader/models/der';
+import { LoadType, MeterGroup } from 'navigader/models/meter';
 import {
   appendId, beoRoute, DynamicRestParams, equals_, getRequest, PaginationQueryParams,
   parsePaginationSet, RawPaginationSet

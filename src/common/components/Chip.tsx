@@ -1,8 +1,8 @@
 import * as React from 'react';
 import MuiChip from '@material-ui/core/Chip';
 
-import { makeStylesHook } from '@nav/common/styles';
-import { omitFalsey } from '@nav/common/util';
+import { makeStylesHook } from 'navigader/styles';
+import { omitFalsey } from 'navigader/util';
 import { Icon, ValidIcon } from './Icon';
 
 

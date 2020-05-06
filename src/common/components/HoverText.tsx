@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { makeStylesHook} from '@nav/common/styles';
-import { randomString} from '@nav/common/util';
+import { makeStylesHook} from 'navigader/styles';
+import { randomString} from 'navigader/util';
 import { Popover } from './Popover';
 import { Typography } from './Typography';
 

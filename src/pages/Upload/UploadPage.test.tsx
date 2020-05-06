@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { fireEvent, waitForElement, RenderResult } from '@testing-library/react';
 
-import { makeFileList, renderContextDependentComponent } from '@nav/common/util/testing';
+import { makeFileList, renderContextDependentComponent } from 'navigader/util/testing';
 import { renderFileSize, UploadPage } from './UploadPage';
 
 

@@ -1,4 +1,4 @@
-import { Frame288NumericType } from '@nav/common/models/meter';
+import { Frame288NumericType } from 'navigader/models/meter';
 
 
 const frame288: Frame288NumericType = {

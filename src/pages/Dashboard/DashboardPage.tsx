@@ -1,24 +1,21 @@
 import * as React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import map from 'lodash/map';
 
-import * as api from '@nav/common/api';
-import { Button, Link, List, Menu, PageHeader, Typography } from '@nav/common/components';
-import { Components, Scenario } from '@nav/common/models/scenario';
-import * as routes from '@nav/common/routes';
-import { makeCancelableAsync } from '@nav/common/util';
+import * as api from 'navigader/api';
+import { Button, Link, List, Menu, PageHeader, Typography } from 'navigader/components';
+import { Components, Scenario } from 'navigader/models/scenario';
+import * as routes from 'navigader/routes';
+import { slices } from 'navigader/store';
+import { makeCancelableAsync } from 'navigader/util';
 import CreateScenario from './CreateScenario'
-import { makeStylesHook } from '@nav/common/styles';
+import { makeStylesHook } from 'navigader/styles';
 import RenameDialog from './RenameDialog';
 
 
 /** ============================ Types ===================================== */
-type EmptyTableRowProps = {
-  numMeterGroups?: number;
-};
-
 type PageHeaderActionsProps = {
-  numMeterGroups?: number;
   selections: Scenario[];
 };
 
@@ -34,9 +31,10 @@ const useStyles = makeStylesHook(theme => ({
  * Links to the "Upload" page if no meter groups have been created yet. Otherwise links to the
  * "Create Scenario" workflow
  */
-const EmptyTableRow: React.FC<EmptyTableRowProps> = ({ numMeterGroups }) => {
+const EmptyTableRow: React.FC = () => {
   let rowContent: React.ReactFragment;
-  if (numMeterGroups === 0) {
+  const hasMeterGroups = useSelector(slices.models.selectHasMeterGroups);
+  if (hasMeterGroups === false) {
     rowContent =
       <>
         <span>No "Item 17" customer data has been uploaded.</span>
@@ -55,13 +53,13 @@ const EmptyTableRow: React.FC<EmptyTableRowProps> = ({ numMeterGroups }) => {
   return <Typography>{rowContent}</Typography>;
 };
 
-const PageHeaderActions: React.FC<PageHeaderActionsProps> = (props) => {
-  const { numMeterGroups, selections } = props;
+const PageHeaderActions: React.FC<PageHeaderActionsProps> = ({ selections }) => {
   const history = useHistory();
   const classes = useStyles();
+  const hasMeterGroups = useSelector(slices.models.selectHasMeterGroups);
   
-  if (typeof numMeterGroups === 'undefined') return null;
-  if (numMeterGroups === 0) {
+  if (hasMeterGroups === null) return null;
+  if (!hasMeterGroups) {
     return <Button color="secondary" onClick={goToUpload}>Upload Data</Button>;
   }
   
@@ -96,21 +94,29 @@ const PageHeaderActions: React.FC<PageHeaderActionsProps> = (props) => {
 const ScenariosTable: React.FC = () => {
   const [selections, setSelections] = React.useState<Scenario[]>([]);
   const [renameScenario, setRenameScenario] = React.useState<Scenario>();
-  const [numMeterGroups, setNumMeterGroups] = React.useState<number>();
   const history = useHistory();
+  const dispatch = useDispatch();
+  const hasMeterGroups = useSelector(slices.models.selectHasMeterGroups);
   
   // Check if there are any meter groups-- if not, we link to the upload page
   React.useEffect(
     makeCancelableAsync(
-      async () => api.getMeterGroups({ page: 1, page_size: 1 }),
-      res => setNumMeterGroups(res.count)
+      async () => {
+        // Don't fetch the meter groups if we already know how many we have
+        if (hasMeterGroups !== null) return;
+        return api.getMeterGroups({ page: 1, page_size: 1 });
+      },
+      (res) => {
+        if (res === undefined) return;
+        dispatch(slices.models.updateHasMeterGroups(res.count >= 1));
+      }
     )
   );
   
   return (
     <>
       <PageHeader
-        actions={<PageHeaderActions numMeterGroups={numMeterGroups} selections={selections} />}
+        actions={<PageHeaderActions selections={selections} />}
         title="Dashboard"
       />
       
@@ -145,7 +151,7 @@ const ScenariosTable: React.FC = () => {
               */}
             </Menu>
         }
-        NoScenariosRow={<EmptyTableRow numMeterGroups={numMeterGroups} />}
+        NoScenariosRow={<EmptyTableRow />}
         onSelect={setSelections}
       />
       

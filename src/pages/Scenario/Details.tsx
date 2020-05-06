@@ -1,18 +1,18 @@
 import * as React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
-import * as api from '@nav/common/api';
+import * as api from 'navigader/api';
 import {
   Card, Flex, Frame288Graph, Frame288MonthsOption, LoadTypeMenu, MeterGroupChip, MonthsMenu,
   PageHeader, Progress, Typography
-} from '@nav/common/components';
-import { Components } from '@nav/common/models/der';
-import { Frame288LoadType, Frame288Numeric } from '@nav/common/models/meter';
-import { Scenario } from '@nav/common/models/scenario';
-import * as routes from '@nav/common/routes';
-import { makeStylesHook } from '@nav/common/styles';
-import { makeCancelableAsync } from '@nav/common/util';
-import { ScenariosTable } from '@nav/common/models/scenario/components';
+} from 'navigader/components';
+import { Components } from 'navigader/models/der';
+import { Frame288LoadType, Frame288Numeric } from 'navigader/models/meter';
+import { Scenario } from 'navigader/models/scenario';
+import * as routes from 'navigader/routes';
+import { makeStylesHook } from 'navigader/styles';
+import { makeCancelableAsync } from 'navigader/util';
+import { ScenariosTable } from 'navigader/models/scenario/components';
 
 
 /** ============================ Types ===================================== */
@@ -231,9 +231,9 @@ export const ScenarioResultsPage: React.FC = () => {
       <PageHeader
         breadcrumbs={[
           ['Dashboard', routes.dashboard.base],
-          'View Scenario'
+          'Scenario Details'
         ]}
-        title={scenario ? scenario.name : 'Scenario Loading...'}
+        title="Scenario Details"
       />
       
       {scenario && <ScenarioContext scenario={scenario} />}

@@ -6,10 +6,10 @@ import {
 } from 'victory';
 import range from 'lodash/range';
 
-import { Frame288LoadType, Frame288Numeric, Frame288NumericType } from '@nav/common/models/meter';
-import { primaryColor } from '@nav/common/styles';
-import { MonthIndex } from '@nav/common/types';
-import { formatters } from '@nav/common/util';
+import { Frame288LoadType, Frame288Numeric, Frame288NumericType } from 'navigader/models/meter';
+import { primaryColor } from 'navigader/styles';
+import { MonthIndex } from 'navigader/types';
+import { formatters } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */

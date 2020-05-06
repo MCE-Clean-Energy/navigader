@@ -1,9 +1,9 @@
 import * as React from 'react';
 import classNames from 'classnames';
 
-import * as api from '@nav/common/api';
-import { Button, Card, Flex, Branding, TextField, Typography } from '@nav/common/components';
-import { makeStylesHook } from '@nav/common/styles';
+import * as api from 'navigader/api';
+import { Button, Card, Flex, Branding, TextField, Typography } from 'navigader/components';
+import { makeStylesHook } from 'navigader/styles';
 
 
 /** ============================ Styles ==================================== */

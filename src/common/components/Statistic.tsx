@@ -4,7 +4,7 @@
 import * as React from 'react';
 import padEnd from 'lodash/padEnd';
 
-import { makeStylesHook } from '@nav/common/styles';
+import { makeStylesHook } from 'navigader/styles';
 import { Typography, TypographyProps } from './Typography';
 
 

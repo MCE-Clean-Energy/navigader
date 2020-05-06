@@ -1,4 +1,4 @@
-import { getCookie } from '@nav/common/util';
+import { getCookie } from 'navigader/util';
 
 
 /**

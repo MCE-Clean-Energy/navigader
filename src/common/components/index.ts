@@ -34,6 +34,7 @@ export * from './Select';
 export * from './Snackbar';
 export * from './Statistic';
 export * from './Stepper';
+export * from './Switch';
 export * from './Table';
 export * from './TextField';
 export * from './ThemeProvider';

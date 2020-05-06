@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import { PrefetchedTable, Table } from '@nav/common/components';
-import { ScenarioReportFields } from '@nav/common/models/scenario';
-import { formatters } from '@nav/common/util';
+import { PrefetchedTable, Table } from 'navigader/components';
+import { ScenarioReportFields } from 'navigader/models/scenario';
+import { formatters } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -45,7 +45,7 @@ export const SimulationsTable: React.FC<SimulationsTableProps> = ({ simulations 
                 <Table.Cell>{simulation.SA_ID}</Table.Cell>
                 <Table.Cell>{simulation.MeterRatePlan}</Table.Cell>
                 <Table.Cell align="right">{formatters.maxDecimals(simulation.UsageDelta, 2)}</Table.Cell>
-                <Table.Cell align="right">{formatters.maxDecimals(simulation.BillDelta, 2)}</Table.Cell>
+                <Table.Cell align="right">{formatters.dollars(simulation.BillDelta)}</Table.Cell>
                 <Table.Cell align="right">{formatters.maxDecimals(simulation.CleanNetShort2022Delta, 2)}</Table.Cell>
                 <Table.Cell align="right">{formatters.maxDecimals(simulation.RADelta, 2)}</Table.Cell>
               </Table.Row>

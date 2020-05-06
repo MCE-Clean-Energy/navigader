@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { RowsPerPageOption } from '@nav/common/api/util';
-import { isProduction } from '@nav/common/util';
+import { RowsPerPageOption } from 'navigader/api/util';
+import { isProduction } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */

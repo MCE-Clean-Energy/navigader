@@ -7,8 +7,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MuiSelect from '@material-ui/core/Select';
 import useTheme from '@material-ui/core/styles/useTheme';
 
-import { makeStylesHook } from '@nav/common/styles';
-import { randomString } from '@nav/common/util';
+import { makeStylesHook } from 'navigader/styles';
+import { randomString } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */

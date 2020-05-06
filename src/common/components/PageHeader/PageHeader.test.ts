@@ -1,7 +1,7 @@
 import { fireEvent, waitForElement } from '@testing-library/react';
 
-import * as routes from '@nav/common/routes';
-import { fixtures, renderAppRoute } from '@nav/common/util/testing';
+import * as routes from 'navigader/routes';
+import { fixtures, renderAppRoute } from 'navigader/util/testing';
 
 
 describe('Back button', () => {
