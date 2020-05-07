@@ -31,12 +31,12 @@ export const SimulationsTable: React.FC<SimulationsTableProps> = ({ simulations 
             <Table.Row>
               <Table.Cell>SA ID</Table.Cell>
               <Table.Cell>Rate Plan</Table.Cell>
-              <Table.Cell align="right" sortBy="UsageDelta" sortDir="desc">Usage Delta (kWh)</Table.Cell>
-              <Table.Cell align="right" sortBy="BillDelta">Bill Delta ($)</Table.Cell>
+              <Table.Cell align="right" sortBy="UsageDelta" sortDir="desc">Usage Impact (kWh)</Table.Cell>
+              <Table.Cell align="right" sortBy="BillDelta">Bill Impact ($)</Table.Cell>
               <Table.Cell align="right" sortBy="CleanNetShort2022Delta">
-                <span>CNS 2022 Delta (tCO<sub>2</sub>)</span>
+                <span>CNS 2022 Impact (tCO<sub>2</sub>)</span>
               </Table.Cell>
-              <Table.Cell align="right" sortBy="RADelta">RA System Peak Delta (kW)</Table.Cell>
+              <Table.Cell align="right" sortBy="RADelta">RA Impact (kW)</Table.Cell>
             </Table.Row>
           </Table.Head>
           <Table.Body>

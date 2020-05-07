@@ -85,10 +85,10 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
               <Table.Cell>Customer Segment (#)</Table.Cell>
               <Table.Cell>DER</Table.Cell>
               <Table.Cell>Program Strategy</Table.Cell>
-              <Table.Cell align="right">Usage Delta (kWh/year)</Table.Cell>
-              <Table.Cell align="right">CCA Bill ($/year)</Table.Cell>
-              <Table.Cell align="right">CNS 2022 Delta (tCO<sub>2</sub>/year)</Table.Cell>
-              <Table.Cell align="right">RA (MW/year)</Table.Cell>
+              <Table.Cell align="right">Usage Impact (kWh/year)</Table.Cell>
+              <Table.Cell align="right">Revenue Impact ($/year)</Table.Cell>
+              <Table.Cell align="right">GHG Impact (tCO<sub>2</sub>/year)</Table.Cell>
+              <Table.Cell align="right">RA Impact (MW/year)</Table.Cell>
               <Table.Cell>Status</Table.Cell>
               {actionsMenu && <Table.Cell>Menu</Table.Cell>}
             </Table.Row>

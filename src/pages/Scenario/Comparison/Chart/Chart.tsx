@@ -66,7 +66,7 @@ export const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (
               >
                 <VictoryAxis
                   axisLabelComponent={<VictoryLabel dy={height/2 - CHART_MARGIN} />}
-                  label="Electricity Bill Impacts over Baseline ($/year)"
+                  label="Revenue Impacts over Baseline ($/year)"
                 />
                 
                 <VictoryAxis
