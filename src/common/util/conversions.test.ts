@@ -9,8 +9,9 @@ describe('`conversion` utility methods', () => {
       expect(conversions.kwToMw(123456789)).toEqual(123456.789);
     });
     
-    it('handles `undefined`', () => {
+    it('handles `undefined` and `null`', () => {
       expect(conversions.kwToMw(undefined)).toBeUndefined();
+      expect(conversions.kwToMw(null)).toBeUndefined();
     });
   });
 });

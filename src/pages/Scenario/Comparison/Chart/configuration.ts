@@ -1,29 +1,24 @@
 import flatten from 'lodash/flatten';
-import identity from 'lodash/identity';
 import pick from 'lodash/pick';
-import * as d3 from 'd3-scale';
 
 import { Scenario } from 'navigader/models/scenario';
 import { omitFalsey } from 'navigader/util';
-import { LARGEST_RADIUS, SMALLEST_RADIUS } from './constants';
 import { CustomerWrapper, ScenarioWrapper } from './dataWrappers';
-import { AggregationState, ChartData, ChartDatumWrapper, SizingOption } from './types';
+import { ChartData, ChartDatumWrapper } from './types';
 
 /**
  * Produces configuration for rendering the comparison chart. This includes the domain of the
  * chart, the domain's padding and the sizing function.
  *
  * @param {Scenario[]} scenarios: the scenarios being compared
- * @param {SizingOption} sizingMethod: enum indicating how the scenario points should be sized
- * @param {AggregationState} aggregationState: whether or not the chart is showing aggregated data
+ * @param {boolean} isAggregated: whether or not the chart is showing aggregated data
+ * @param {boolean} isAveraged: whether or not to show the per customer values
  */
 export function buildChartConfiguration (
   scenarios: Scenario[],
-  sizingMethod: SizingOption,
-  aggregationState: AggregationState
+  isAggregated: boolean,
+  isAveraged: boolean
 ): ChartData {
-  const isAggregated = aggregationState === 'aggregated';
-  
   // These are set in the data loop
   let xMin = Infinity;
   let xMax = -Infinity;
@@ -40,33 +35,25 @@ export function buildChartConfiguration (
         )
       );
   
-  // Get the size values up front-- the pixel sizes will be computed relative to one another
-  const sizeValues = wrappedData.map(d => Math.abs(d.getSize(sizingMethod)));
-  const sizeScale = isAggregated
-    ? d3.scaleSqrt()
-        .domain([0, Math.max(...sizeValues)])
-        .range([SMALLEST_RADIUS, LARGEST_RADIUS])
-    : identity;
-  
   const data = omitFalsey(wrappedData.map((datum, i) => {
+    const xValue = datum.getBillImpact(isAveraged);
+    const yValue = datum.getGhgImpact(isAveraged);
+    
+    // If the xValue or yValue are `null` don't render this point
+    if (xValue === null || yValue === null) return null;
+    
     // Check if the xValue and yValue are the new min or max of their respective axes
-    const xValue = datum.getBillDelta();
-    const yValue = datum.getGhgDelta();
     if (xValue < xMin) xMin = xValue;
     if (xValue > xMax) xMax = xValue;
     if (yValue < yMin) yMin = yValue;
     if (yValue > yMax) yMax = yValue;
     
-    // Compute the datum's size metric
-    const sizeValue = sizeValues[i];
-    const size = sizeScale(sizeValue) as number;
-    
     return {
       ...pick(datum, ['name']),
+      id: datum.getId(),
       label: datum.getLabel(),
       scenario: datum.getScenarioId(),
-      size,
-      sizeValue,
+      size: datum.getSize(),
       xValue,
       yValue
     };

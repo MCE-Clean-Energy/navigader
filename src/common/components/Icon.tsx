@@ -9,7 +9,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import MoreVert from '@material-ui/icons/MoreVert';
 import WbSunny from '@material-ui/icons/WbSunny';
 
-import { colors } from 'navigader/styles';
+import { materialColors } from 'navigader/styles';
 
 
 /** ============================ Types ===================================== */
@@ -27,7 +27,7 @@ export const Icon: React.ComponentType<IconProps> = React.forwardRef<SVGSVGEleme
     const colorProps = color === undefined
       ? {}
       : color === 'success'
-        ? { style: { color: colors.green[500] }}
+        ? { style: { color: materialColors.green[500] }}
         : { color };
     
     return <IconComponent ref={ref} {...colorProps} {...rest} />;

@@ -1,21 +1,36 @@
 import * as React from 'react';
+import flatten from 'lodash/flatten';
 
 import * as api from 'navigader/api';
 import { in_ } from 'navigader/api/util';
-import { PageHeader, Progress } from 'navigader/components';
+import { PageHeader, Progress, Typography } from 'navigader/components';
 import { Components, Scenario } from 'navigader/models/scenario';
 import * as routes from 'navigader/routes';
-import { colors } from 'navigader/styles';
+import { makeStylesHook, materialColors } from 'navigader/styles';
 import { IdType } from 'navigader/types';
 import { hooks, makeCancelableAsync } from 'navigader/util';
 import { ScenarioComparisonChart } from './Chart';
+import { CustomersTable } from './CustomersTable';
 
+
+/** ============================ Styles ==================================== */
+const useStyles = makeStylesHook(() => ({
+  tableContainer: {
+    maxHeight: 500
+  }
+}), 'CompareScenariosPage');
 
 /** ============================ Components ================================ */
 export const CompareScenariosPage: React.FC = () => {
-  const [scenarios, setScenarios] = React.useState<Scenario[]>();
+  const classes = useStyles();
   const params = hooks.useQuery();
   const idsParam = params.get('ids');
+  
+  // State
+  const [aggregated, setAggregated] = React.useState(true);
+  const [averaged, setAveraged] = React.useState(false);
+  const [hoveredId, setHoveredId] = React.useState<string>();
+  const [scenarios, setScenarios] = React.useState<Scenario[]>();
   
   // Loads the scenario
   React.useEffect(
@@ -32,7 +47,7 @@ export const CompareScenariosPage: React.FC = () => {
     [idsParam]
   );
 
-  const colorMap = getScenarioColors(scenarios);
+  const colorMap = getScenarioColors();
   return (
     <>
       <PageHeader
@@ -46,30 +61,73 @@ export const CompareScenariosPage: React.FC = () => {
         ? <Progress circular />
         : (
           <>
-            <ScenarioComparisonChart colorMap={colorMap} scenarios={scenarios} />
-            <Components.ScenariosTable scenarios={scenarios} />
-            {/**
-              * TODO: need to find way to type scenarios as possessing report
-              * TODO: uncomment this when disaggregation feature is available
-              * <SimulationsTable
-              *   simulations={flatten(scenarios.map(s => Object.values(s.report!.rows)))}
-              * />
-             */}
+            <Typography variant="h6">{getChartTitle()}</Typography>
+            <ScenarioComparisonChart
+              aggregated={aggregated}
+              averaged={averaged}
+              colorMap={colorMap}
+              highlightedId={hoveredId}
+              scenarios={scenarios}
+              updateAggregated={updateAggregation}
+            />
+            
+            {
+              aggregated
+                ? (
+                  <Components.ScenariosTable
+                    averaged={averaged}
+                    className={classes.tableContainer}
+                    colorMap={colorMap}
+                    scenarios={scenarios}
+                    updateAveraged={setAveraged}
+                  />
+                ) : (
+                  // TODO: need to find way to type scenarios as possessing report
+                  <CustomersTable
+                    className={classes.tableContainer}
+                    colorMap={colorMap}
+                    scenarios={scenarios}
+                    simulations={flatten(scenarios.map(s => Object.values(s.report!.rows)))}
+                    updateHover={setHoveredId}
+                  />
+                )
+            }
           </>
         )
       }
     </>
   );
+  
+  /** ============================ Callbacks =============================== */
+  /**
+   * Updates the aggregation state and resets the hovered ID
+   *
+   * @param {boolean} aggregated: whether the graph should now show aggregated results
+   */
+  function updateAggregation (aggregated: boolean) {
+    setHoveredId(undefined);
+    setAggregated(aggregated);
+  }
+  
+  /** ============================ Helpers =================================== */
+  function getScenarioColors () {
+    return new Map(
+      (scenarios || []).map(
+        scenario => [scenario.id, getColor(scenario.id)]
+      )
+    );
+  }
+  
+  function getChartTitle () {
+    if (aggregated) {
+      return averaged
+        ? 'Scenario Bill Impact vs. GHG Impact per Customer'
+        : 'Scenario Bill Impact vs. GHG Impact';
+    } else {
+      return 'Customer Bill Impact vs. GHG Impact';
+    }
+  }
 };
-
-/** ============================ Helpers =================================== */
-function getScenarioColors (scenarios?: Scenario[]) {
-  return new Map(
-    (scenarios || []).map(
-      scenario => [scenario.id, getColor(scenario.id)]
-    )
-  );
-}
 
 /**
  * Returns the color for a given scenario being rendered in the chart and the table
@@ -81,33 +139,11 @@ function getColor (scenarioId: IdType): string {
   
   // Haven't dealt with this ID yet, give it a new color
   const colorKey = graphColors[colorMap.size % graphColors.length];
-  const color = colors[colorKey][700];
+  const color = materialColors[colorKey][700];
   
   colorMap.set(scenarioId, color);
   return color;
 }
 
-type IrregularColorKeys = 'common' | 'primary' | 'secondary';
-type GraphColors = Omit<typeof colors, IrregularColorKeys>;
 const colorMap = new Map<IdType, string>();
-const graphColors: Array<keyof GraphColors> = [
-  'amber',
-  'blue',
-  'blueGrey',
-  'brown',
-  'cyan',
-  'deepOrange',
-  'deepPurple',
-  'green',
-  'grey',
-  'indigo',
-  'lightBlue',
-  'lightGreen',
-  'lime',
-  'orange',
-  'pink',
-  'purple',
-  'red',
-  'teal',
-  'yellow'
-];
+const graphColors = Object.keys(materialColors).sort() as Array<keyof typeof materialColors>;

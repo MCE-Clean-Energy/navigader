@@ -4,57 +4,98 @@ import {
   VictoryAxis, VictoryChart, VictoryLabel, VictoryScatter, VictoryTheme, VictoryTooltip
 } from 'victory';
 
-import { Card, Grid } from 'navigader/components';
+import { Card, Flex, Grid, List, Typography } from 'navigader/components';
 import { Scenario } from 'navigader/models/scenario';
 import { makeStylesHook, primaryColor } from 'navigader/styles';
 import { CHART_MARGIN, LARGEST_RADIUS } from './constants';
 import { buildChartConfiguration } from './configuration';
 import { Controls } from './Controls';
-import { AggregationState, ScenarioDatum, SizingOption } from './types';
+import { ScenarioDatum } from './types';
 import { IdType } from 'navigader/types';
 
 
 /** ============================ Types ===================================== */
 type ScenarioComparisonChartProps = {
+  aggregated: boolean;
+  averaged: boolean;
   colorMap: Map<IdType, string>;
+  highlightedId?: string;
   scenarios: Scenario[];
+  updateAggregated: (aggregation: boolean) => void;
 };
 
+type LegendCardProps = Pick<ScenarioComparisonChartProps, 'colorMap' | 'scenarios'>
 type VictoryCallbackArgs = {
   datum: ScenarioDatum
 }
 
 /** ============================ Styles ==================================== */
 const useStyles = makeStylesHook(theme => ({
-  chartCard: {
-    marginBottom: theme.spacing(1)
+  legend: {
+    flexGrow: 1,
+    marginTop: theme.spacing(2),
+    maxHeight: '100%',
+    overflow: 'auto',
+    position: 'relative'
   },
-  sizingSelect: {
-    marginLeft: theme.spacing(2)
+  legendHeader: {
+    marginLeft: theme.spacing(1)
   },
-  tooltip: {
-    ...theme.typography.body1
+  list: {
+    left: 0,
+    position: 'absolute',
+    top: 0,
+    width: '100%'
+  },
+  rightSideContainer: {
+    height: '100%'
   }
 }), 'ScenarioComparisonChart');
 
 /** ============================ Components ================================ */
-export const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (props) => {
-  const { colorMap, scenarios } = props;
+const LegendCard: React.FC<LegendCardProps> = ({ colorMap, scenarios }) => {
   const classes = useStyles();
-  
-  // State
-  const [sizing, setSizing] = React.useState(SizingOption.CohortSize);
-  const [aggregation, setAggregation] = React.useState<AggregationState>('aggregated');
+  return (
+    <Card className={classes.legend} padding={0} raised>
+      <List className={classes.list}>
+        <Typography
+          className={classes.legendHeader}
+          color="textSecondary"
+          variant="body2"
+        >
+          Legend
+        </Typography>
+        
+        {scenarios.map(scenario =>
+          <List.Item button={false} key={scenario.id}>
+            <List.Item.Avatar color={colorMap.get(scenario.id)}>
+              &nbsp;
+            </List.Item.Avatar>
+            <List.Item.Text>
+              <Typography noWrap useDiv>
+                {scenario.name}
+              </Typography>
+            </List.Item.Text>
+          </List.Item>
+        )}
+      </List>
+    </Card>
+  );
+};
+
+export const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (props) => {
+  const { aggregated, averaged, colorMap, highlightedId, scenarios, updateAggregated } = props;
+  const classes = useStyles();
   
   // The height is defined in the material theme, but the theme's type definition says the `chart`
   // member is optional. Hence the `|| 350`.
   const height = VictoryTheme.material.chart?.height || 350;
-  const chartConfig = buildChartConfiguration(scenarios, sizing, aggregation);
+  const chartConfig = buildChartConfiguration(scenarios, aggregated, averaged);
   
   return (
     <Grid>
       <Grid.Item span={8}>
-        <Card className={classes.chartCard} padding={0} raised>
+        <Card padding={0} raised>
           <ContainerDimensions>
             {({ width }: Dimensions) =>
               <VictoryChart
@@ -66,13 +107,13 @@ export const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (
               >
                 <VictoryAxis
                   axisLabelComponent={<VictoryLabel dy={height/2 - CHART_MARGIN} />}
-                  label="Revenue Impacts over Baseline ($/year)"
+                  label={`${averaged ? 'Avg. ' : ''}Revenue Impacts ($/year)`}
                 />
                 
                 <VictoryAxis
                   axisLabelComponent={<VictoryLabel dy={-width/2 + CHART_MARGIN} />}
                   dependentAxis
-                  label="GHG Impacts over Baseline (tCO2/year)"
+                  label={`${averaged ? 'Avg. ' : ''}GHG Impacts (tCO2/year)`}
                 />
                 
                 <VictoryScatter
@@ -89,9 +130,15 @@ export const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (
                   style={{
                     data: {
                       fill: ({ datum }: VictoryCallbackArgs) => {
-                        return colorMap.get(datum.scenario) || primaryColor;
+                        return datum.id === highlightedId
+                          ? 'red'
+                          : colorMap.get(datum.scenario) || primaryColor;
                       },
-                      opacity: 0.5
+                      opacity: ({ datum }: VictoryCallbackArgs) => {
+                        return datum.id === highlightedId
+                          ? 1
+                          : 0.5;
+                      }
                     }
                   }}
                   x="xValue"
@@ -104,12 +151,10 @@ export const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (
       </Grid.Item>
       
       <Grid.Item span={4}>
-        <Controls
-          aggregation={aggregation}
-          sizing={sizing}
-          updateAggregation={setAggregation}
-          updateSizing={setSizing}
-        />
+        <Flex.Container className={classes.rightSideContainer} direction="column">
+          <Controls aggregated={aggregated} updateAggregated={updateAggregated} />
+          <LegendCard colorMap={colorMap} scenarios={scenarios} />
+        </Flex.Container>
       </Grid.Item>
     </Grid>
   );

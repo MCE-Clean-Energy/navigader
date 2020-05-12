@@ -117,7 +117,7 @@ const CreateScenarioPage: React.FC = () => {
   
   /** ============================ Callbacks =============================== */
   function cancel () {
-    history.goBack();
+    history.push(routes.dashboard.base);
   }
 };
 

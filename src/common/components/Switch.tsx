@@ -9,7 +9,7 @@ type SwitchProps = {
   color?: 'primary' | 'secondary';
   label: React.ReactNode;
   name?: string;
-  onChange: (selected: boolean, event: React.ChangeEvent) => void;
+  onChange: (checked: boolean, event: React.ChangeEvent) => void;
 };
 
 /** ============================ Components ================================ */

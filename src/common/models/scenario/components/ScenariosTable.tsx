@@ -3,21 +3,27 @@ import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
 import {
-  Flex, Icon, Link, PaginationState, PrefetchedTable, Progress, Table, Tooltip
+  Avatar, Flex, Icon, Link, PaginationState, PrefetchedTable, Progress, Switch, Table, Tooltip,
+  Typography
 } from 'navigader/components';
 import { Components } from 'navigader/models/der';
-import { Scenario } from 'navigader/models/scenario';
+import { Scenario, ScenarioReportSummary } from 'navigader/models/scenario';
 import * as routes from 'navigader/routes';
 import { selectModels, updateModels } from 'navigader/store/slices/models';
-import { formatters, kwToMw } from 'navigader/util';
+import { IdType } from 'navigader/types';
+import { formatters, kwToMw, printWarning } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
 type ScenariosTableProps = {
   actionsMenu?: (scenario: Scenario) => React.ReactElement;
-  onSelect?: (selections: Scenario[]) => void;
+  averaged?: boolean;
+  className?: string;
+  colorMap?: Map<IdType, string>;
   NoScenariosRow?: React.ReactElement;
+  onSelect?: (selections: Scenario[]) => void;
   scenarios?: Scenario[];
+  updateAveraged?: (averaged: boolean) => void;
 };
 
 type ScenarioStatusProps = {
@@ -43,8 +49,37 @@ const ScenarioStatus: React.FC<ScenarioStatusProps> = ({ scenario }) => {
 };
 
 export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
-  const { actionsMenu, NoScenariosRow, onSelect, scenarios } = props;
+  const {
+    actionsMenu,
+    averaged = false,
+    className,
+    colorMap,
+    NoScenariosRow,
+    onSelect,
+    scenarios,
+    updateAveraged
+  } = props;
   const dispatch = useDispatch();
+  
+  // The averaged state can be either maintained by the `ScenariosTable` component itself, or by a
+  // parent component
+  const hasAveragedProp = props.hasOwnProperty('averaged') && props.averaged !== undefined;
+  const hasUpdateAveragedProp = Boolean(updateAveraged);
+  
+  if ((hasAveragedProp && !hasUpdateAveragedProp) || (hasUpdateAveragedProp && !hasAveragedProp)) {
+    printWarning(
+      '`ScenariosTable` component expects both or neither of the `averaged` and ' +
+      '`updateAveraged` props.'
+    );
+  }
+  
+  const [innerAveraged, setAveraged] = React.useState(averaged);
+  React.useEffect(() => {
+    if (hasAveragedProp) {
+      // If the `props` object has the `averaged` prop provided by a parent component, update state
+      setAveraged(averaged);
+    }
+  }, [averaged, hasAveragedProp]);
   
   const getScenarios = React.useCallback(
     async (state: PaginationState) => {
@@ -70,7 +105,19 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
     <TableComponent
       {...tableProps}
       aria-label="scenarios table"
+      containerClassName={className}
       disableSelect={(scenario: Scenario) => !scenario.progress.is_complete}
+      headerActions={
+        <Tooltip title="Shows the scenario's impacts averaged across all customers">
+          <div>
+            <Switch
+              label="Impact per customer"
+              onChange={handleSwitchToggle}
+              checked={innerAveraged}
+            />
+          </div>
+        </Tooltip>
+      }
       onSelect={onSelect}
       raised
       stickyHeader
@@ -80,15 +127,22 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
         <>
           <Table.Head>
             <Table.Row>
+              {colorMap && <Table.Cell />}
               <Table.Cell>Name</Table.Cell>
               <Table.Cell>Created</Table.Cell>
               <Table.Cell>Customer Segment (#)</Table.Cell>
               <Table.Cell>DER</Table.Cell>
               <Table.Cell>Program Strategy</Table.Cell>
-              <Table.Cell align="right">Usage Impact (kWh/year)</Table.Cell>
-              <Table.Cell align="right">Revenue Impact ($/year)</Table.Cell>
-              <Table.Cell align="right">GHG Impact (tCO<sub>2</sub>/year)</Table.Cell>
-              <Table.Cell align="right">RA Impact (MW/year)</Table.Cell>
+              <Table.Cell align="right">
+                Usage Impact (kWh/year{innerAveraged && '/SAID'})
+              </Table.Cell>
+              <Table.Cell align="right">
+                Revenue Impact ($/year{innerAveraged && '/SAID'})
+              </Table.Cell>
+              <Table.Cell align="right">
+                GHG Impact (tCO<sub>2</sub>/year{innerAveraged && '/SAID'})
+              </Table.Cell>
+              <Table.Cell align="right">RA Impact (MW/year{innerAveraged && '/SAID'})</Table.Cell>
               <Table.Cell>Status</Table.Cell>
               {actionsMenu && <Table.Cell>Menu</Table.Cell>}
             </Table.Row>
@@ -101,6 +155,11 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
             
             {scenarios.map(scenario =>
               <Table.Row key={scenario.id}>
+                {colorMap &&
+                  <Table.Cell>
+                    <Avatar color={colorMap.get(scenario.id)} size="small">&nbsp;</Avatar>
+                  </Table.Cell>
+                }
                 <Table.Cell>
                   {scenario.progress.is_complete
                     ? (
@@ -135,28 +194,28 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? formatters.maxDecimals(scenario.report_summary?.UsageDelta, 2)
+                      ? formatters.maxDecimals(getField(scenario, 'UsageDelta', innerAveraged), 2)
                       : '-'
                   }
                 </Table.Cell>
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? formatters.dollars(scenario.report_summary?.BillDelta)
+                      ? formatters.dollars(getField(scenario, 'BillDelta', innerAveraged))
                       : '-'
                   }
                 </Table.Cell>
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? formatters.maxDecimals(scenario.report_summary?.CleanNetShort2022Delta, 2)
+                      ? formatters.maxDecimals(getField(scenario, 'CleanNetShort2022Delta', innerAveraged), 2)
                       : '-'
                   }
                 </Table.Cell>
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? formatters.maxDecimals(kwToMw(scenario.report_summary?.RADelta), 2)
+                      ? formatters.maxDecimals(kwToMw(getField(scenario, 'RADelta', innerAveraged)), 2)
                       : '-'
                   }
                 </Table.Cell>
@@ -171,4 +230,27 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
       }
     </TableComponent>
   );
+  
+  /** ============================ Callbacks =============================== */
+  /**
+   * Updates the `averaged` state. If the state is managed by a parent component, this will call the
+   * `updateAveraged` prop; otherwise the component state itself is updated
+   *
+   * @param {boolean} checked: whether the switch is checked, i.e. `true` if values should be
+   *   averaged
+   */
+  function handleSwitchToggle (checked: boolean) {
+    if (hasAveragedProp && updateAveraged) {
+      updateAveraged(checked);
+    } else {
+      setAveraged(checked);
+    }
+  }
+  
+  /** ============================ Helpers ================================= */
+  function getField (scenario: Scenario, field: keyof ScenarioReportSummary, averaged: boolean) {
+    const value = scenario.report_summary?.[field];
+    if (typeof value !== 'number') return;
+    return averaged ? value / scenario.meter_count : value;
+  }
 };

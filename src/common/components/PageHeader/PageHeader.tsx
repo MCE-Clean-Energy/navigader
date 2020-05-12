@@ -107,6 +107,11 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
 
 export const PageHeader: React.FC<PageHeaderProps> = ({ actions, breadcrumbs, title }) => {
   const classes = useStyles();
+
+  React.useEffect(() => {
+    document.title = title;
+  }, [title]);
+
   return (
     <Flex.Container direction="column">
       <Breadcrumbs breadcrumbs={breadcrumbs}/>

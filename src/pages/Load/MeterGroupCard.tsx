@@ -105,6 +105,7 @@ export const MeterGroupCard: React.FC<MeterGroupCardProps> = (props) => {
     </Tooltip>
   );
   
+  /** ============================ Callbacks =============================== */
   function viewMeterGroup (event: React.MouseEvent<HTMLDivElement>) {
     // If the user clicks on the meter group chip, the event will propagate up to the card and this
     // method will be called again. Stopping the propagation prevents that second call

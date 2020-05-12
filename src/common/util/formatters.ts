@@ -18,7 +18,7 @@ type DollarFormatOptions = Partial<{
  *   number may be undefined
  * @param {number} maxDecimals: the maximum number of decimals to include
  */
-export function maxDecimals (n: number | undefined, maxDecimals: number) {
+export function maxDecimals (n: number | undefined | null, maxDecimals: number) {
   return typeof n === 'number'
     ? parseFloat(n.toFixed(maxDecimals))
     : null;
@@ -126,8 +126,8 @@ export function percentage (numerator: number, denominator: number, n: number = 
  * @param {number} amt: the dollar amount to render
  * @param {DollarFormatOptions} [options]: optional options
  */
-export function dollars (amt: number | undefined, options?: DollarFormatOptions) {
-  if (amt === undefined) return;
+export function dollars (amt: number | undefined | null, options?: DollarFormatOptions) {
+  if (amt === undefined || amt === null) return;
   
   const roundsToOne = [-1, 1].includes(+amt.toFixed(2));
   const lessThanOne = clamp(amt, -1, 1) === amt && !roundsToOne;

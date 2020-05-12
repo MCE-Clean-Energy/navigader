@@ -19,6 +19,11 @@ describe('formatting methods', () => {
       expect(maxDecimals(10, 2)).toEqual(10);
       expect(maxDecimals(10, 50)).toEqual(10);
     });
+    
+    it('handles `undefined` and `null`', () => {
+      expect(maxDecimals(undefined, 50)).toBeNull();
+      expect(maxDecimals(null, 50)).toBeNull();
+    });
   });
   
   describe('`pluralize`', () => {
@@ -91,8 +96,9 @@ describe('formatting methods', () => {
       expect(dollars(-0.999, { cents: true })).toEqual('-$1.00');
     });
     
-    it('handles undefined', () => {
+    it('handles `undefined` and `null`', () => {
       expect(dollars(undefined)).toBeUndefined();
+      expect(dollars(null)).toBeUndefined();
     });
   });
 });

@@ -26,11 +26,11 @@ type FlexContainerProps = React.HTMLAttributes<HTMLDivElement> & FlexItemProps &
 
 /** ============================ Styles ==================================== */
 const useContainerStyles = makeStylesHook<FlexContainerProps>(() => ({
-  flexContainer: getFlexContainerStyles
+  flexContainer: containerStyles
 }), 'FlexContainer');
 
 const useItemStyles = makeStylesHook<FlexItemProps>(() => ({
-  flexItem: getFlexItemStyles
+  flexItem: itemStyles
 }), 'FlexItem');
 
 /** ============================ Components ================================ */
@@ -69,7 +69,7 @@ export const Item = React.forwardRef<HTMLDivElement, FlexItemProps>(
 Item.displayName = 'FlexItem';
 
 /** ============================ Helpers =================================== */
-function getFlexContainerStyles (props: FlexContainerProps): CreateCSSProperties {
+export function containerStyles (props: FlexContainerProps): CreateCSSProperties {
   return {
     alignItems: props.alignItems,
     display: 'flex',
@@ -79,7 +79,7 @@ function getFlexContainerStyles (props: FlexContainerProps): CreateCSSProperties
   };
 }
 
-function getFlexItemStyles (props: FlexItemProps): CreateCSSProperties {
+function itemStyles (props: FlexItemProps): CreateCSSProperties {
   return {
     flexBasis: props.basis
       ? `${props.basis}%`

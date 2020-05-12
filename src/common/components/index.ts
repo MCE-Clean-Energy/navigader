@@ -5,6 +5,7 @@ export { Branding };
 export { Flex };
 
 export * from './Alert';
+export * from './Avatar';
 export * from './AppContainer';
 export * from './Button';
 export * from './Card';

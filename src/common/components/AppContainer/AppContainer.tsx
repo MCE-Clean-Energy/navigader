@@ -25,7 +25,11 @@ const useStyles = makeStylesHook(theme => ({
   },
   content: {
     flexGrow: 1,
-    paddingBottom: theme.spacing(3)
+    paddingBottom: theme.spacing(3),
+    // Addresses a Safari rendering issue
+    '& > *': {
+      flexShrink: 0
+    }
   }
 }), 'AppContainer');
 

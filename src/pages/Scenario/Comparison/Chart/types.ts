@@ -1,16 +1,10 @@
-import { IdType } from 'navigader/types';
-
-
 export type ScenarioDatum = {
-  scenario: IdType;
+  id: string;
   label: string;
+  scenario: string;
+  size: number;
   xValue: number;
   yValue: number;
-  
-  // `size` is a pixel value used by Victory to size the points; `sizeValue` is the value
-  // computed from the scenario that was used to derive `size`
-  size: number;
-  sizeValue: number;
 };
 
 export type ChartData = {
@@ -21,18 +15,11 @@ export type ChartData = {
   };
 }
 
-export enum SizingOption {
-  CohortSize = '# Customers',
-  GHGImpactPerCustomer = 'GHG impact per customer',
-  BillImpactPerCustomer = 'Bill impact per customer'
-}
-
-export type AggregationState = 'aggregated' | 'disaggregated';
-
 export interface ChartDatumWrapper {
-  getBillDelta: () => number;
-  getGhgDelta: () => number;
+  getBillImpact: (averaged: boolean) => number | null;
+  getGhgImpact: (averaged: boolean) => number | null;
+  getId: () => string;
   getLabel: () => string;
-  getScenarioId: () => IdType;
-  getSize: (sizingMethod: SizingOption) => number;
+  getScenarioId: () => string;
+  getSize: () => number;
 }

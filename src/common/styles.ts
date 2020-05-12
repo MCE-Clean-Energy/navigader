@@ -6,6 +6,7 @@ import useTheme from '@material-ui/core/styles/useTheme';
 import createStyles from '@material-ui/styles/createStyles';
 import makeStyles from '@material-ui/styles/makeStyles';
 import { ClassNameMap, StyleRules } from '@material-ui/styles/withStyles';
+import omit from 'lodash/omit';
 
 
 /** ============================ Theme ===================================== */
@@ -56,8 +57,25 @@ export function makeStylesHook<Props extends {} = {}, ClassKey extends string = 
 
 /** ============================ Colors ==================================== */
 export type Color = MuiColor;
-export const colors = {
-  primary: primaryColor,
-  secondary: secondaryColor,
-  ...muiColors
-};
+export type MaterialColor =
+  | 'amber'
+  | 'blue'
+  | 'blueGrey'
+  | 'brown'
+  | 'cyan'
+  | 'deepOrange'
+  | 'deepPurple'
+  | 'green'
+  | 'grey'
+  | 'indigo'
+  | 'lightBlue'
+  | 'lightGreen'
+  | 'lime'
+  | 'orange'
+  | 'pink'
+  | 'purple'
+  | 'red'
+  | 'teal'
+  | 'yellow';
+
+export const materialColors: Record<MaterialColor, Color> = omit(muiColors, 'common');

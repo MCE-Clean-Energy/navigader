@@ -2,6 +2,7 @@ import { DeferrableFields } from 'navigader/api/util';
 import { NavigaderObject, PandasFrame, ProgressFields, RawPandasFrame } from 'navigader/models';
 import { BatteryConfiguration, BatteryStrategy } from 'navigader/models/der';
 import { LoadTypeMap, MeterGroup } from 'navigader/models/meter';
+import { Nullable } from 'navigader/types';
 
 
 /** ============================ Scenarios ================================= */
@@ -74,31 +75,31 @@ type ScenarioReportFieldsCommon = {
   UsageDelta: number;
   
   // "Bill report" attributes
-  BillPreDER: number;
-  BillPostDER: number;
-  BillDelta: number;
+  BillPreDER: Nullable<number>;
+  BillPostDER: Nullable<number>;
+  BillDelta: Nullable<number>;
   
   // "GHG report" attributes
-  CleanNetShort2018PreDER: number;
-  CleanNetShort2018PostDER: number;
-  CleanNetShort2018Delta: number;
-  CleanNetShort2022PreDER: number;
-  CleanNetShort2022PostDER: number;
-  CleanNetShort2022Delta: number;
-  CleanNetShort2026PreDER: number;
-  CleanNetShort2026PostDER: number;
-  CleanNetShort2026Delta: number;
-  CleanNetShort2030PreDER: number;
-  CleanNetShort2030PostDER: number;
-  CleanNetShort2030Delta: number;
-  CARBUnspecifiedPower2013PreDER: number;
-  CARBUnspecifiedPower2013PostDER: number;
-  CARBUnspecifiedPower2013Delta: number;
+  CleanNetShort2018PreDER: Nullable<number>;
+  CleanNetShort2018PostDER: Nullable<number>;
+  CleanNetShort2018Delta: Nullable<number>;
+  CleanNetShort2022PreDER: Nullable<number>;
+  CleanNetShort2022PostDER: Nullable<number>;
+  CleanNetShort2022Delta: Nullable<number>;
+  CleanNetShort2026PreDER: Nullable<number>;
+  CleanNetShort2026PostDER: Nullable<number>;
+  CleanNetShort2026Delta: Nullable<number>;
+  CleanNetShort2030PreDER: Nullable<number>;
+  CleanNetShort2030PostDER: Nullable<number>;
+  CleanNetShort2030Delta: Nullable<number>;
+  CARBUnspecifiedPower2013PreDER: Nullable<number>;
+  CARBUnspecifiedPower2013PostDER: Nullable<number>;
+  CARBUnspecifiedPower2013Delta: Nullable<number>;
   
   // "Resource adequacy report" attributes
-  RAPreDER?: number;
-  RAPostDER?: number;
-  RADelta?: number;
+  RAPreDER: Nullable<number>;
+  RAPostDER: Nullable<number>;
+  RADelta: Nullable<number>;
   
   // "Customer meter report" attributes
   MeterRatePlan: string;

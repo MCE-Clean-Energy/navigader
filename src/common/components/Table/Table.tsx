@@ -31,6 +31,7 @@ export type TableProps<T extends ObjectWithId> = {
   dataFn: (state: PaginationState & Partial<SortState>) => Promise<PaginationSet<T>>;
   dataSelector: (state: RootState) => T[];
   disableSelect?: (datum: T) => boolean;
+  headerActions?: React.ReactNode;
   initialSorting?: SortState;
   onSelect?: (selections: T[]) => void;
   raised?: boolean;
@@ -56,6 +57,8 @@ type TableBodyProps = {};
 
 type TableRowProps = {
   className?: string;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
   // These props should not be provided by consuming components-- they are provided by the
   // `TableHead` and `TableBody` components
   _disableSelect?: boolean;
@@ -90,10 +93,11 @@ const TableRaiser: React.FC = (props) => <MuiPaper elevation={8} {...props} />;
 export function Table <T extends ObjectWithId>(props: TableProps<T>) {
   const {
     children,
+    containerClassName,
     dataFn,
     dataSelector,
     disableSelect = () => false,
-    containerClassName,
+    headerActions,
     initialSorting,
     onSelect,
     raised = false,
@@ -152,11 +156,16 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
       <Flex.Container alignItems="center" className={classes.header} justifyContent="space-between">
         <Typography variant="h6">{title}</Typography>
         {data &&
-          <TablePagination
-            count={count}
-            paginationState={paginationState}
-            updatePaginationState={updatePaginationState}
-          />
+          <Flex.Container alignItems="center">
+            {headerActions}
+            {data.length > 10 &&
+              <TablePagination
+                count={count}
+                paginationState={paginationState}
+                updatePaginationState={updatePaginationState}
+              />
+            }
+          </Flex.Container>
         }
       </Flex.Container>
       <MuiTableContainer className={containerClassName} component={raised ? TableRaiser : MuiPaper}>
@@ -277,7 +286,16 @@ const TableHead: TableHead = (props) => {
 };
 
 const TableRow: TableRow = (props) => {
-  const { children, className, _disableSelect, _isHeaderRow, _onChange, _selected } = props;
+  const {
+    children,
+    className,
+    onMouseEnter,
+    onMouseLeave,
+    _disableSelect,
+    _isHeaderRow,
+    _onChange,
+    _selected
+  } = props;
   const { selectable } = React.useContext(TableContext);
   
   // If the row is selectable, add in a checkbox to the front of the row
@@ -293,7 +311,12 @@ const TableRow: TableRow = (props) => {
   }
   
   return (
-    <MuiTableRow className={className}>
+    <MuiTableRow
+      className={className}
+      hover
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
       {checkboxCell}
       {React.Children.map(children, child =>
         // Add the `_columnIndex` and `_isHeaderRow` props
