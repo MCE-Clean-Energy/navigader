@@ -38,15 +38,21 @@ export type RawScenario = DeferrableFields<
     ders: [DerInfo];
     meters: string[];
     meter_groups: [string];
-    report: RawScenarioReport;
-    report_summary: RawScenarioReportSummary;
+    report: RawScenarioReport | EmptyReport;
+    report_summary: RawScenarioReportSummary | EmptyReportSummary;
   }
 >;
 
 export interface Scenario extends DeferrableFields<
   NavigaderObject<'SingleScenarioStudy'> &
   ScenarioCommon &
-  ProgressFields,
+  ProgressFields &
+  {
+    progress: {
+      is_complete?: boolean;
+      has_run: boolean;
+    }
+  },
   
   // Fields that can be requested but which are not included by default
   {
@@ -68,7 +74,7 @@ type ScenarioReportFieldsCommon = {
   DERStrategy: string;
   SimulationRatePlan: string;
   SingleScenarioStudy: string;
-  
+} & Partial<{
   // "Usage report" attributes
   UsagePreDER: number;
   UsagePostDER: number;
@@ -103,11 +109,12 @@ type ScenarioReportFieldsCommon = {
   
   // "Customer meter report" attributes
   MeterRatePlan: string;
-};
+}>;
 
 export type RawScenarioReportFields = ScenarioReportFieldsCommon & { "SA ID": number; };
 export type ScenarioReportFields = ScenarioReportFieldsCommon & { SA_ID: number; };
 
+export type EmptyReport = { index: {}; };
 export type RawScenarioReport = RawPandasFrame<RawScenarioReportFields>;
 export type ScenarioReport = {
   columns: PandasFrame<ScenarioReportFields>;
@@ -121,5 +128,6 @@ type ScenarioReportSummaryFields = Omit<
   'ID' | 'SingleScenarioStudy' | 'SimulationRatePlan' | 'MeterRatePlan'
 >;
 
-type RawScenarioReportSummary = { 0: ScenarioReportSummaryFields };
+type EmptyReportSummary = {};
+export type RawScenarioReportSummary = { 0: ScenarioReportSummaryFields };
 export type ScenarioReportSummary = ScenarioReportSummaryFields;

@@ -14,14 +14,14 @@ export class ScenarioWrapper implements ChartDatumWrapper {
   
   getBillImpact (averaged: boolean) {
     const billImpact = this.reportSummary.BillDelta;
-    return averaged && billImpact !== null
+    return averaged && typeof billImpact === 'number'
       ? billImpact / this.scenario.meter_count
       : billImpact;
   }
   
   getGhgImpact (averaged: boolean) {
     const ghgImpact = this.reportSummary.CleanNetShort2022Delta;
-    return averaged && ghgImpact !== null
+    return averaged && typeof ghgImpact === 'number'
       ? ghgImpact / this.scenario.meter_count
       : ghgImpact;
   }

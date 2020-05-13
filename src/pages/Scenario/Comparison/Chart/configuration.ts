@@ -40,7 +40,7 @@ export function buildChartConfiguration (
     const yValue = datum.getGhgImpact(isAveraged);
     
     // If the xValue or yValue are `null` don't render this point
-    if (xValue === null || yValue === null) return null;
+    if (typeof xValue !== 'number' || typeof yValue !== 'number') return null;
     
     // Check if the xValue and yValue are the new min or max of their respective axes
     if (xValue < xMin) xMin = xValue;

@@ -217,3 +217,32 @@ export const scenarioReport = {
     "HE6N"
   ]
 };
+
+export const scenarioReportSummary = {
+  0: {
+    UsagePreDER: 782287.0815333332,
+    UsagePostDER: 901204.6454222234,
+    UsageDelta: 118917.5638888898,
+    BillPreDER: 9918.46670553,
+    BillPostDER: 13941.00633053,
+    BillDelta: 4022.539625,
+    CleanNetShort2018PreDER: 310.4897999284,
+    CleanNetShort2018PostDER: 355.1367758584,
+    CleanNetShort2018Delta: 44.6469759299,
+    CleanNetShort2022PreDER: 390.2358922852,
+    CleanNetShort2022PostDER: 397.6004736298,
+    CleanNetShort2022Delta: 7.3645813446,
+    CleanNetShort2026PreDER: 370.8986283876,
+    CleanNetShort2026PostDER: 380.5774822582,
+    CleanNetShort2026Delta: 9.6788538706,
+    CleanNetShort2030PreDER: 416.9143357812,
+    CleanNetShort2030PostDER: 406.4049519567,
+    CleanNetShort2030Delta: -10.5093838246,
+    CARBUnspecifiedPower2013PreDER: 334.8188708963,
+    CARBUnspecifiedPower2013PostDER: 385.7155882407,
+    CARBUnspecifiedPower2013Delta: 50.8967173444,
+    RAPreDER: 8833000.0,
+    RAPostDER: 8832677.906440001,
+    RADelta: -322.093559999
+  }
+};

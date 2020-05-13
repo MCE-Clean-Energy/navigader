@@ -1,5 +1,6 @@
 import { fixtures } from 'navigader/util/testing';
 import * as util from './util';
+import { RawScenario } from './types';
 
 
 describe('Scenario model utilities', () => {
@@ -16,7 +17,8 @@ describe('Scenario model utilities', () => {
       expected_der_simulation_count: 1,
       metadata: undefined,
       meter_count: 1,
-      meters: ['def']
+      meters: ['def'],
+      report: fixtures.scenarioReport
     });
     
     it('parses a scenario as expected', () => {
@@ -35,10 +37,7 @@ describe('Scenario model utilities', () => {
         progress: {
           is_complete: true,
           percent_complete: 100
-        },
-        
-        // TODO: test `parseReport` method
-        report: undefined
+        }
       });
     });
     
@@ -52,8 +51,9 @@ describe('Scenario model utilities', () => {
       expect(parsed.progress.percent_complete).toEqual(0);
     });
     
-    it('computes the `progress` object properly', () => {
-      const testValues = [
+    it('computes `has_run` correctly', () => {
+      type TestValue = [number, number, boolean, number];
+      const testValues: TestValue[] = [
         [3, 8, false, 37.5],
         [0, 10, false, 0],
         [73, 74, false, 98.6],
@@ -64,7 +64,7 @@ describe('Scenario model utilities', () => {
         const [
           der_simulation_count,
           expected_der_simulation_count,
-          is_complete,
+          has_run,
           percent_complete
         ] = testValue;
         
@@ -77,10 +77,53 @@ describe('Scenario model utilities', () => {
         
         expect(parsed).toMatchObject({
           progress: {
-            is_complete,
+            has_run,
             percent_complete
           }
         });
+      });
+    });
+
+    it('computes `is_complete` correctly', () => {
+      const emptyReport = { index: {} };
+      const emptySummary = {};
+      const fullReport = fixtures.scenarioReport;
+      const fullSummary = fixtures.scenarioReportSummary;
+
+      type TestCase = [RawScenario['report'], RawScenario['report_summary'], boolean | undefined];
+      const testCases: TestCase[] = [
+        [undefined, undefined, false],
+        [undefined, emptySummary, false],
+        [undefined, fullSummary, true],
+        [emptyReport, undefined, false],
+        [emptyReport, emptySummary, false],
+        [emptyReport, fullSummary, true],
+        [fullReport, undefined, true],
+        [fullReport, emptySummary, true],
+        [fullReport, fullSummary, true],
+      ];
+
+      testCases.forEach(([report, summary, hasAggregated]) => {
+        const hasntRunParsed = util.parseScenario(
+          fixtures.makeRawScenario({
+            der_simulation_count: 0,
+            expected_der_simulation_count: 10,
+            report,
+            report_summary: summary
+          })
+        );
+        
+        const hasRunParsed = util.parseScenario(
+          fixtures.makeRawScenario({
+            der_simulation_count: 10,
+            expected_der_simulation_count: 10,
+            report,
+            report_summary: summary
+          })
+        );
+
+        expect(hasntRunParsed.progress.is_complete).toEqual(false);
+        expect(hasRunParsed.progress.is_complete).toEqual(hasAggregated);
       });
     });
   });

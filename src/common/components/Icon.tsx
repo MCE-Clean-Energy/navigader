@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { SvgIconProps } from '@material-ui/core/SvgIcon';
 import AddIcon from '@material-ui/icons/Add';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import BatteryChargingFull from '@material-ui/icons/BatteryChargingFull';
@@ -7,15 +6,34 @@ import CreateIcon from '@material-ui/icons/Create';
 import DoneIcon from '@material-ui/icons/Done';
 import DeleteIcon from '@material-ui/icons/Delete';
 import MoreVert from '@material-ui/icons/MoreVert';
+import Schedule from '@material-ui/icons/Schedule';
 import WbSunny from '@material-ui/icons/WbSunny';
 
-import { materialColors } from 'navigader/styles';
+import { MaterialColor, materialColors } from 'navigader/styles';
 
 
 /** ============================ Types ===================================== */
-export type ValidIcon = 'back' | 'battery' | 'checkMark' | 'pencil' | 'plus' | 'sun' | 'trash' | 'verticalDots';
+type IconColor =
+  | 'inherit'
+  | 'primary'
+  | 'secondary'
+  | 'action'
+  | 'disabled'
+  | 'error';
+
+export type ValidIcon =
+  | 'back'
+  | 'battery'
+  | 'checkMark'
+  | 'clock'
+  | 'pencil'
+  | 'plus'
+  | 'sun'
+  | 'trash'
+  | 'verticalDots';
+
 export type IconProps = {
-  color?: SvgIconProps['color'] | 'success';
+  color?: IconColor | MaterialColor;
   name: ValidIcon;
   size?: 'small' | 'medium' | 'large';
 };
@@ -24,11 +42,9 @@ export type IconProps = {
 export const Icon: React.ComponentType<IconProps> = React.forwardRef<SVGSVGElement, IconProps>(
   ({ color, name, size, ...rest }, ref) => {
     const IconComponent = iconMap[name];
-    const colorProps = color === undefined
-      ? {}
-      : color === 'success'
-        ? { style: { color: materialColors.green[500] }}
-        : { color };
+    const colorProps = isMaterialColor(color)
+      ? { style: { color: materialColors[color][500] }}
+      : { color };
     
     return <IconComponent ref={ref} {...colorProps} {...rest} />;
   }
@@ -42,9 +58,14 @@ const iconMap = {
   back: ArrowBack,
   battery: BatteryChargingFull,
   checkMark: DoneIcon,
+  clock: Schedule,
   pencil: CreateIcon,
   plus: AddIcon,
   sun: WbSunny,
   trash: DeleteIcon,
   verticalDots: MoreVert
 };
+
+function isMaterialColor (color?: IconColor | MaterialColor): color is MaterialColor {
+  return !!color && color in materialColors;
+}

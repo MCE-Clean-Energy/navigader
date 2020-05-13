@@ -11,7 +11,9 @@ type ProgressVariant = 'determinate' | 'indeterminate';
 type ProgressProps = {
   circular?: boolean;
   className?: string;
+  color?: 'primary' | 'secondary';
   showBackground?: boolean;
+  size?: number;
   value?: number;
 };
 
@@ -29,10 +31,11 @@ const useStyles = makeStylesHook(theme => ({
 
 /** ============================ Components ================================ */
 export const Progress: React.ComponentType<ProgressProps> = React.forwardRef(
-  ({ circular, showBackground, ...rest }, ref) => {
+  ({ circular, showBackground, size, ...rest }, ref) => {
     const classes = useStyles();
     const progressProps = {
       ...rest,
+      size,
       variant: (
         rest.value === undefined
           ? 'indeterminate'
@@ -55,6 +58,7 @@ export const Progress: React.ComponentType<ProgressProps> = React.forwardRef(
         <div className={classes.root}>
           <CircularProgress
             className={classes.background}
+            size={size}
             value={100}
             variant="determinate"
           />

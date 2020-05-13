@@ -16,8 +16,8 @@ export type ChartData = {
 }
 
 export interface ChartDatumWrapper {
-  getBillImpact: (averaged: boolean) => number | null;
-  getGhgImpact: (averaged: boolean) => number | null;
+  getBillImpact: (averaged: boolean) => number | null | undefined;
+  getGhgImpact: (averaged: boolean) => number | null | undefined;
   getId: () => string;
   getLabel: () => string;
   getScenarioId: () => string;

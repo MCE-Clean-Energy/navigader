@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import filter from 'lodash/filter';
 
 import * as api from 'navigader/api';
 import {
-  Avatar, Flex, Icon, Link, PaginationState, PrefetchedTable, Progress, Switch, Table, Tooltip,
-  Typography
+  Avatar, Flex, Icon, Link, PaginationState, PrefetchedTable, Progress, Switch, Table, Tooltip
 } from 'navigader/components';
+import { poller } from 'navigader/models';
 import { Components } from 'navigader/models/der';
 import { Scenario, ScenarioReportSummary } from 'navigader/models/scenario';
 import * as routes from 'navigader/routes';
@@ -32,18 +33,32 @@ type ScenarioStatusProps = {
 
 /** ============================ Components ================================ */
 const ScenarioStatus: React.FC<ScenarioStatusProps> = ({ scenario }) => {
-  const { is_complete, percent_complete } = scenario.progress;
+  const { has_run, is_complete, percent_complete } = scenario.progress;
+
+  // Show the checkmark if the report has completed and aggregated
   if (is_complete) {
     return (
       <Tooltip title="Done">
-        <Icon color="success" name="checkMark" />
+        <Icon color="green" name="checkMark" />
+      </Tooltip>
+    );
+  } else if (has_run) {
+    return (
+      <Tooltip title="Finalizing...">
+        <Progress circular color="secondary" size={24} />
+      </Tooltip>
+    );
+  } else if (percent_complete === 0) {
+    return (
+      <Tooltip title="Waiting to run...">
+        <Icon color="blue" name="clock" />
       </Tooltip>
     );
   }
-  
+
   return (
     <Tooltip title={`${Math.floor(percent_complete)}%`}>
-      <Progress circular value={Math.max(percent_complete, 3)} showBackground />
+      <Progress circular value={Math.max(percent_complete, 3)} showBackground size={24} />
     </Tooltip>
   );
 };
@@ -88,9 +103,14 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
         page: state.currentPage + 1,
         page_size: state.rowsPerPage
       });
-      
+
+      // Unfinished scenarios should be polled for
+      const scenarios = response.data;
+      const unfinished = filter(scenarios, s => !s.progress.is_complete);
+      poller.pollFor(unfinished);
+
       // Add the models to the store and yield the pagination results
-      dispatch(updateModels(response.data));
+      dispatch(updateModels(scenarios));
       return response
     },
     [dispatch]

@@ -1,9 +1,12 @@
+import isEmpty from 'lodash/isEmpty';
 import omit from 'lodash/omit';
 import pick from 'lodash/pick';
 
 import { parsePandasFrame } from 'navigader/models';
 import { math } from 'navigader/util';
-import { RawScenarioReport, ScenarioReport, RawScenario, Scenario } from './types';
+import {
+  RawScenarioReport, ScenarioReport, RawScenario, Scenario, RawScenarioReportSummary
+} from './types';
 
 
 /** ============================ Utils ===================================== */
@@ -18,7 +21,20 @@ export function parseScenario (scenario: RawScenario): Scenario {
     ? 0
     : math.percentOf(der_simulation_count, expected_der_simulation_count);
   
-  const reportSummary = scenario.report_summary ? scenario.report_summary[0] : undefined;
+  const hasRun = percentComplete === 100;
+  const report = parseReport(scenario.report);
+  const reportSummary = hasReportSummary(scenario.report_summary)
+    ? scenario.report_summary[0]
+    : undefined;
+  
+  // If we have the report or the report summary (i.e. it isn't undefined) and it's empty, then the
+  // report hasn't been built yet and so the scenario hasn't undergone aggregation. If we have
+  // neither the report nor the summary, it's likely that the request didn't ask for them and we
+  // can't tell if it's aggregated or not and will assume it hasn't
+  const hasAggregated = scenario.report === undefined && scenario.report_summary === undefined
+    ? false
+    : Boolean(hasRun && (report || reportSummary));
+  
   return {
     ...pick(scenario, 'created_at', 'data', 'id', 'name', 'object_type'),
     der: scenario.ders ? scenario.ders[0] : undefined,
@@ -29,7 +45,8 @@ export function parseScenario (scenario: RawScenario): Scenario {
     meter_count: scenario.meter_count,
     meters: scenario.meters,
     progress: {
-      is_complete: percentComplete === 100,
+      is_complete: hasAggregated,
+      has_run: hasRun,
       percent_complete: parseFloat(percentComplete.toFixed(1))
     },
     report: parseReport(scenario.report),
@@ -37,13 +54,13 @@ export function parseScenario (scenario: RawScenario): Scenario {
   };
 }
 
-export function parseReport (report?: RawScenarioReport): ScenarioReport | undefined {
-  if (!report) return;
+export function parseReport (report?: RawScenario['report']): ScenarioReport | undefined {
+  if (!hasReport(report)) return;
   const parsed = parsePandasFrame(report);
   
   // For every simulation ID in the report, gather the values associated with that ID from the
   // other columns and compile them into an object
-  const rows = Object.fromEntries(parsed.ID.map((simulationId, rowIndex) => {
+  const rows = Object.fromEntries((parsed.ID || []).map((simulationId, rowIndex) => {
     const simulationFields = Object.entries(parsed).map(
       ([column, values]) => {
         const rowValue = values && values[rowIndex];
@@ -62,4 +79,14 @@ export function parseReport (report?: RawScenarioReport): ScenarioReport | undef
     },
     rows
   };
+}
+
+function hasReport (report: RawScenario['report']): report is RawScenarioReport {
+  return Boolean(report && !report.hasOwnProperty('index'));
+}
+
+function hasReportSummary (
+  summary: RawScenario['report_summary']
+): summary is RawScenarioReportSummary {
+  return Boolean(summary && !isEmpty(summary));
 }

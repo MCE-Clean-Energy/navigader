@@ -96,6 +96,7 @@ const defaultScenario: Scenario = {
     rate_plan_name: 'E-1 - Baseline Region Q'
   },
   progress: {
+    has_run: false,
     is_complete: false,
     percent_complete: 0,
   },
