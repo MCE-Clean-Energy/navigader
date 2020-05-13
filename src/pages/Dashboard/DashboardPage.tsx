@@ -4,13 +4,14 @@ import { Route, Switch, useHistory } from 'react-router-dom';
 import map from 'lodash/map';
 
 import * as api from 'navigader/api';
-import { Button, Link, List, Menu, PageHeader, Typography } from 'navigader/components';
+import { Button, Divider, Link, List, Menu, PageHeader, Typography } from 'navigader/components';
 import { Components, Scenario } from 'navigader/models/scenario';
 import * as routes from 'navigader/routes';
 import { slices } from 'navigader/store';
+import { makeStylesHook } from 'navigader/styles';
 import { makeCancelableAsync } from 'navigader/util';
 import CreateScenario from './CreateScenario'
-import { makeStylesHook } from 'navigader/styles';
+import { DeleteDialog } from './DeleteDialog';
 import RenameDialog from './RenameDialog';
 
 
@@ -92,8 +93,9 @@ const PageHeaderActions: React.FC<PageHeaderActionsProps> = ({ selections }) => 
 };
 
 const ScenariosTable: React.FC = () => {
-  const [selections, setSelections] = React.useState<Scenario[]>([]);
+  const [deleteScenario, setDeleteScenario] = React.useState<Scenario>();
   const [renameScenario, setRenameScenario] = React.useState<Scenario>();
+  const [selections, setSelections] = React.useState<Scenario[]>([]);
   const history = useHistory();
   const dispatch = useDispatch();
   const hasMeterGroups = useSelector(slices.models.selectHasMeterGroups);
@@ -140,15 +142,11 @@ const ScenariosTable: React.FC = () => {
                 <List.Item.Text>Rename</List.Item.Text>
               </List.Item>
               
-              {/** TODO: introduce scenario archiving
-
-                <Divider />}
-                <List.Item onClick={() => archiveScenario(scenario.id)}>}
-                  <List.Item.Icon icon="trash" />}
-                  <List.Item.Text>Archive</List.Item.Text>}
-                </List.Item>}
-
-              */}
+              <Divider />
+              <List.Item onClick={() => openDeleteScenarioDialog(scenario)}>
+                <List.Item.Icon icon="trash" />
+                <List.Item.Text>Delete</List.Item.Text>
+              </List.Item>
             </Menu>
         }
         NoScenariosRow={<EmptyTableRow />}
@@ -159,6 +157,13 @@ const ScenariosTable: React.FC = () => {
         <RenameDialog
           onClose={() => setRenameScenario(undefined)}
           scenario={renameScenario}
+        />
+      }
+      
+      {deleteScenario &&
+        <DeleteDialog
+          onClose={() => setDeleteScenario(undefined)}
+          scenario={deleteScenario}
         />
       }
     </>
@@ -173,9 +178,9 @@ const ScenariosTable: React.FC = () => {
     history.push(routes.scenario(scenarioId));
   }
   
-  // function archiveScenario (scenarioId: string) {
-  //   alert('Scenario archiving has not been implemented yet');
-  // }
+  async function openDeleteScenarioDialog (scenario: Scenario) {
+    setDeleteScenario(scenario);
+  }
 };
 
 export const DashboardPage = () =>

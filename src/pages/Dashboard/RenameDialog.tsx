@@ -31,14 +31,10 @@ const RenameDialog: React.FC<RenameDialogProps> = (props) => {
         <TextField autoFocus id="name" label="Scenario name" onChange={updateName} value={name} />
       </Dialog.Content>
       <Dialog.Actions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button
-          color="primary"
-          disabled={name.length === 0}
-          onClick={renameScenario}
-        >
+        <Button.Text onClick={onClose}>Cancel</Button.Text>
+        <Button.Text color="primary" disabled={name.length === 0} onClick={renameScenario}>
           Rename
-        </Button>
+        </Button.Text>
       </Dialog.Actions>
     </Dialog>
   );

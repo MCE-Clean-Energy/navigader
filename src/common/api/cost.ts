@@ -3,7 +3,8 @@ import find from 'lodash/find';
 import { LoadType, parseMeterGroup, MeterGroup } from 'navigader/models/meter';
 import { parseScenario, RawScenario, Scenario } from 'navigader/models/scenario';
 import {
-  appendId, beoRoute, DynamicRestParams, getRequest, PaginationQueryParams, parsePaginationSet,
+  appendId, beoRoute, deleteRequest, DynamicRestParams, getRequest, PaginationQueryParams,
+  parsePaginationSet,
   patchRequest, postRequest, RawPaginationSet
 } from './util';
 
@@ -89,6 +90,15 @@ export async function getScenario (id: string, options?: GetScenarioQueryOptions
     ).then(res => res.json());
   
   return compileScenario(response.study, response.meter_groups);
+}
+
+/**
+ * Deletes a scenario given the ID
+ *
+ * @param {string} id: the ID of the scenario
+ */
+export async function deleteScenario (id: string) {
+  return await deleteRequest(routes.scenarios(id));
 }
 
 /** ============================ Helpers =================================== */

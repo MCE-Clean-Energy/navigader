@@ -5,7 +5,7 @@ import { makeQueryString, QueryParams } from './querying';
 /** ============================ Types ===================================== */
 // Needless to say, this is not a complete set of HTTP method types. It is the set of the ones used
 // in the NavigaDER application.
-type HttpMethodType = 'GET' | 'PATCH' | 'POST';
+type HttpMethodType = 'DELETE' | 'GET' | 'PATCH' | 'POST';
 type ContentType = 'application/json' | 'multipart/form-data';
 
 /** ============================ API Methods =============================== */
@@ -41,6 +41,10 @@ export function makeFormPost (route: string, formFields: object) {
     headers: getRequestHeaders(),
     method: 'POST'
   });
+}
+
+export function deleteRequest(route: string) {
+  return makeJsonRequest('DELETE', route);
 }
 
 export function getRequest (route: string, queryParams?: QueryParams) {

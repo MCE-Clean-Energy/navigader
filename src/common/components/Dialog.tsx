@@ -13,7 +13,7 @@ type DialogProps = React.HTMLAttributes<HTMLDivElement> & {
 }
 
 type DialogActions = React.FC<React.HTMLAttributes<HTMLDivElement>>;
-type DialogContent = React.FC<React.HTMLAttributes<HTMLDivElement>>;
+type DialogContent = React.FC<React.HTMLAttributes<HTMLDivElement> & { dividers?: boolean; }>;
 type DialogContentText = React.FC;
 type DialogTitle = React.FC<React.HTMLAttributes<HTMLDivElement>>;
 type Dialog = React.FC<DialogProps>;

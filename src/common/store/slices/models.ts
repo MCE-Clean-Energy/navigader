@@ -18,6 +18,7 @@ type ModelClass =
   | Scenario;
 
 /** Payloads */
+type RemoveModelAction = PayloadAction<ModelClass>;
 type UpdateModelsAction = PayloadAction<ModelClass[]>;
 type UpdateHasMeterGroupsAction = PayloadAction<boolean>;
 type UpdateModelAction = PayloadAction<ModelClass>;
@@ -40,6 +41,16 @@ const slice = createSlice({
   name: 'models',
   initialState,
   reducers: {
+    removeModel: (state, action: RemoveModelAction) => {
+      const model = action.payload;
+      const slice = getSliceForModel(state, model);
+      
+      // If we find the model in the slice, splice it out
+      const modelIndex = findIndex(slice, { id: model.id });
+      if (modelIndex !== -1) {
+        slice.splice(modelIndex, 1);
+      }
+    },
     updateHasMeterGroups: (state, action: UpdateHasMeterGroupsAction) => {
       state.hasMeterGroups = action.payload
     },
@@ -52,9 +63,8 @@ const slice = createSlice({
   }
 });
 
-/** ============================ Exports =================================== */
 export const { reducer } = slice;
-export const { updateHasMeterGroups, updateModels, updateModel } = slice.actions;
+export const { removeModel, updateHasMeterGroups, updateModels, updateModel } = slice.actions;
 
 /** ============================ Selectors ================================= */
 /**
@@ -83,28 +93,7 @@ export const selectHasMeterGroups = (state: RootState) => state.models.hasMeterG
  * @param {ModelClass} model: the model to add or update to the store
  */
 function addOrUpdateModel (state: ModelsSlice, model: ModelClass) {
-  // Get the model's slice
-  let slice: Array<ModelClass>;
-  switch (model.object_type) {
-    case 'BatteryConfiguration':
-      slice = state.derConfigurations;
-      break;
-    case 'BatteryStrategy':
-      slice = state.derStrategies;
-      break;
-    case 'StoredBatterySimulation':
-      slice = state.derSimulations;
-      break;
-    case 'CustomerMeter':
-    case 'ReferenceMeter':
-      slice = state.meters;
-      break;
-    case 'SingleScenarioStudy':
-      slice = state.scenarios;
-      break;
-  }
-  
-  // Get the model
+  const slice = getSliceForModel(state, model);
   const modelIndex = findIndex(slice, { id: model.id });
   if (modelIndex === -1) {
     // Add it to the store
@@ -115,4 +104,21 @@ function addOrUpdateModel (state: ModelsSlice, model: ModelClass) {
   // Splice it into the slice
   const merged = merge({}, slice[modelIndex], model);
   slice.splice(modelIndex, 1, merged);
+}
+
+/** ============================ Helpers =================================== */
+function getSliceForModel (state: ModelsSlice, model: ModelClass): Array<ModelClass> {
+  switch (model.object_type) {
+    case 'BatteryConfiguration':
+      return state.derConfigurations;
+    case 'BatteryStrategy':
+      return state.derStrategies;
+    case 'StoredBatterySimulation':
+      return state.derSimulations;
+    case 'CustomerMeter':
+    case 'ReferenceMeter':
+      return state.meters;
+    case 'SingleScenarioStudy':
+      return state.scenarios;
+  }
 }
