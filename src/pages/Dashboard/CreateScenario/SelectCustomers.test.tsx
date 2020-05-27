@@ -2,7 +2,7 @@ import * as React from 'react';
 import map from 'lodash/map';
 import { cleanup, fireEvent } from '@testing-library/react'
 
-import { fixtures, renderContextDependentComponent } from 'navigader/util/testing';
+import { asyncForEach, fixtures, renderContextDependentComponent } from 'navigader/util/testing';
 import { SelectCustomers } from './SelectCustomers';
 
 
@@ -67,7 +67,7 @@ describe('"Select Customers" page', () => {
       [meterGroup1, meterGroup2]
     ];
     
-    meterGroupCombinations.forEach((selectedMeterGroups) => {
+    await asyncForEach(meterGroupCombinations, async (selectedMeterGroups) => {
       const { getByText } = renderContextDependentComponent(
         <SelectCustomers
           meterGroups={[meterGroup1, meterGroup2]}
@@ -83,7 +83,7 @@ describe('"Select Customers" page', () => {
       
       const numMetersDiv = getByText(/Number of meters:/);
       expect(numMetersDiv.textContent).toEqual(`Number of meters: ${expectedNumMeters}`);
-      cleanup();
+      await cleanup();
     });
   });
 });

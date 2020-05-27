@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { cleanup } from '@testing-library/react';
 
-import { renderContextDependentComponent } from 'navigader/util/testing';
+import { asyncForEach, renderContextDependentComponent } from 'navigader/util/testing';
 import { DERSelection } from './common';
 import StepActions from './StepActions';
 
@@ -22,25 +22,25 @@ describe('`Step Actions` component', () => {
     expect(button.disabled).toBeTruthy();
   });
   
-  it('disables "Next" button on DER Selection page when DER selections are incomplete', () => {
+  it('disables "Next" button on DER Selection page when DER selections are incomplete', async () => {
     const derNoType: Partial<DERSelection> = { configurationId: 'a', strategyId: 'b' };
     const derNoConfiguration: Partial<DERSelection> = { strategyId: 'a', type: 'Battery' };
     const derNoStrategy: Partial<DERSelection> = { configurationId: 'a', type: 'Battery' };
-    
-    [derNoType, derNoConfiguration, derNoStrategy].forEach((partialDer) => {
+
+    await asyncForEach([derNoType, derNoConfiguration, derNoStrategy], async (partialDer) => {
       const { getByRole } = renderContextDependentComponent(
         <StepActions
           activeStep={0}
           meterGroups={null}
           scenarioName={null}
-          selectedDers={[]}
+          selectedDers={[partialDer]}
           selectedMeterGroupIds={[]}
         />
       );
-      
+
       const button = getByRole('button') as HTMLButtonElement;
       expect(button.disabled).toBeTruthy();
-      cleanup();
+      await cleanup();
     });
   });
   

@@ -1,5 +1,3 @@
-import { waitForElement } from '@testing-library/react'
-
 import { fixtures, renderAppRoute } from 'navigader/util/testing';
 
 
@@ -44,9 +42,8 @@ describe('Meter Group Page', () => {
   
   describe('Header',  () => {
     it('Meter group name is rendered', async () => {
-      const { getByTestId } = renderAppRoute('/load/group/2');
-      await waitForElement(() => getByTestId('page-header'));
-      expect(getByTestId('page-header').textContent).toEqual(groupName);
+      const { findByTestId } = renderAppRoute('/load/group/2');
+      expect((await findByTestId('page-header')).textContent).toEqual(groupName);
     });
   });
 });

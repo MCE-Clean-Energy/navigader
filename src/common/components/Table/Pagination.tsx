@@ -26,6 +26,7 @@ export const TablePagination: React.FC<TablePaginationProps> = (props) => {
     <MuiTablePagination
       component="div"
       count={count}
+      data-testid="table-pagination"
       onChangePage={changePage}
       onChangeRowsPerPage={changeRowsPerPage}
       page={currentPage}

@@ -158,7 +158,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
         {data &&
           <Flex.Container alignItems="center">
             {headerActions}
-            {data.length > 10 &&
+            {(count !== null && count > 10) &&
               <TablePagination
                 count={count}
                 paginationState={paginationState}
@@ -175,7 +175,10 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
           </TableContext.Provider>
         </MuiTable>
       </MuiTableContainer>
-      {loading ? <Progress /> : <div className={classes.progressBarSpacer} />}
+      {loading
+        ? <Progress data-testid="table-progress" />
+        : <div className={classes.progressBarSpacer} />
+      }
     </div>
   );
   

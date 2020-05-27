@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { fireEvent, waitForElement } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 
 import { renderContextDependentComponent } from 'navigader/util/testing';
 import { Select } from './Select';
@@ -14,7 +14,7 @@ describe('`Select` component', () => {
       { name: 'Libby', color: 'black', sound: 'WOOF' }
     ];
     
-    const { getByRole, getAllByRole } = renderContextDependentComponent(
+    const { findAllByRole, getByRole } = renderContextDependentComponent(
       <Select
         label="Choose Best Dog"
         onChange={spy}
@@ -28,11 +28,9 @@ describe('`Select` component', () => {
     // Open the menu
     const menuRoot = getByRole('button');
     fireEvent.mouseDown(menuRoot);
-    
-    await waitForElement(() => getAllByRole('option'));
-    const options = getAllByRole('option');
-    
+
     // Assert they render in sorted order
+    const options = await findAllByRole('option');
     expect(options[0]).toHaveTextContent('Dora');
     expect(options[1]).toHaveTextContent('Libby');
     expect(options[2]).toHaveTextContent('Scout');

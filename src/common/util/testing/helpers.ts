@@ -75,3 +75,28 @@ export const makeFileList = (files: File[]): FileList => {
       item: (n: number) => files[n]
     });
 };
+
+/**
+ * Basic polyfill for `Array.prototype.forEach` which awaits the completion of the callback before
+ * moving on to the next array entry. This is useful when rendering components in a loop, such as
+ * when testing how a component handles multiple test cases. Typical usage:
+ *
+ *   await asyncForEach([1, 2, 3], async (num) => {
+ *     const { getByRole } = render(<MyComponent num={num} />);
+ *     // ... test assertions here ... //
+ *     await cleanup();
+ *   });
+ *
+ *   // ... post loop actions here ... //
+ *
+ * @param {Array<T>>} array: the array to iterate over
+ * @param {function} callback: the async callback to call for each array entry
+ */
+export async function asyncForEach <T>(
+  array: T[],
+  callback: (entry: T, index: number, arr: any[]) => Promise<void>
+) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}

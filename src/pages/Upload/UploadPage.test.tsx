@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { fireEvent, waitForElement, RenderResult } from '@testing-library/react';
+import { fireEvent, waitFor, RenderResult } from '@testing-library/react';
 
 import { makeFileList, renderContextDependentComponent } from 'navigader/util/testing';
 import { renderFileSize, UploadPage } from './UploadPage';
@@ -78,35 +78,32 @@ describe('Upload page', () => {
     });
     
     it('shows a success message when upload works', async () => {
-      const { getByTestId, getByText } = renderContextDependentComponent(<UploadPage />);
+      const { findByText, getByTestId } = renderContextDependentComponent(<UploadPage />);
       
       // Select a file to upload
       selectFile(getByTestId, 'test_upload.csv');
       
       // Upload button should now be enabled
-      await waitForElement(() => !getUploadButton(getByTestId).disabled );
+      await waitFor(() => !getUploadButton(getByTestId).disabled);
       fireEvent.click(getUploadButton(getByTestId));
       
       // Success message should now show
-      await waitForElement(() => true);
-      expect(getByText('Success!')).toBeInTheDocument();
+      expect(await findByText('Success!')).toBeInTheDocument();
     });
     
     it('allows uploading twice', async () => {
-      const { getByRole, getByTestId, getByText } = renderContextDependentComponent(<UploadPage />);
+      const { findByText, getByRole, getByTestId } = renderContextDependentComponent(<UploadPage />);
       
       // Select a file to upload, enter a name and upload
       selectFile(getByTestId, 'my_upload.csv');
-      await waitForElement(() => !getUploadButton(getByTestId).disabled );
+      await waitFor(() => !getUploadButton(getByTestId).disabled);
       fireEvent.click(getUploadButton(getByTestId));
       
       // Success message should now show
-      await waitForElement(() => true);
-      expect(getByText('Success!')).toBeInTheDocument();
+      expect(await findByText('Success!')).toBeInTheDocument();
       
       // Select another file. Doing so should reset the upload card
       selectFile(getByTestId, 'my_other_upload.csv');
-      await waitForElement(() => true);
       expect(getNameInput(getByRole).value).toEqual('my_other_upload');
     });
   });

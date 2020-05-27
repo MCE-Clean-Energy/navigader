@@ -1,4 +1,4 @@
-import { fireEvent, waitForElement } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 
 import * as routes from 'navigader/routes';
 import { fixtures, renderAppRoute } from 'navigader/util/testing';
@@ -43,13 +43,13 @@ describe('Back button', () => {
   });
 
   it('Clicking the back button returns you to the previous page', async () => {
-    const { getByRole, getByText } = renderAppRoute([routes.load, routes.meterGroup('random-id')], 1);
+    const { findByText, getByRole } = renderAppRoute([routes.load, routes.meterGroup('random-id')], 1);
 
     // Click on the back button
     expect(getByRole('back-button')).toBeInTheDocument();
     fireEvent.click(getByRole('back-button'));
 
     // check that the page header changed to the prior page
-    await waitForElement(() => getByText('Uploaded Files'));
+    expect(await findByText('Uploaded Files')).toBeInTheDocument();
   });
 });
