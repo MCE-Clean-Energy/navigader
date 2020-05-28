@@ -2,8 +2,8 @@ import {
   LoadType, parseMeterGroup, Meter, MeterGroup, RawMeterGroup
 } from 'navigader/models/meter';
 import {
-  appendId, beoRoute, equals_, getRequest, makeFormPost, parsePaginationSet, PaginationQueryParams,
-  RawPaginationSet
+  appendId, beoRoute, equals_, getRequest, makeFormXhrPost, parsePaginationSet,
+  PaginationQueryParams, RawPaginationSet
 } from './util';
 
 
@@ -43,14 +43,8 @@ export async function getMeterGroup (
   return parseMeterGroup(response.meter_group);
 }
 
-export async function postOriginFile (file: File, name: string) {
-  return await makeFormPost(
-    routes.originFile,
-    {
-      file,
-      name
-    }
-  );
+export function postOriginFile (file: File, name: string) {
+  return makeFormXhrPost(routes.originFile, { file, name });
 }
 
 export async function getMeters (queryParams: MeterQueryParams) {

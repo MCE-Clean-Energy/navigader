@@ -38,7 +38,8 @@
     "jest-environment-jsdom-sixteen": "^1.0.3",
     "jest-fetch-mock": "^3.0.1",
     "react-scripts": "^3.3.0",
-    "typescript": "^3.7.5"
+    "typescript": "^3.7.5",
+    "xhr-mock": "^2.5.1"
   },
   "scripts": {
     "start": "react-scripts start",

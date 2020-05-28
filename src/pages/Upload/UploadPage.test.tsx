@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { fireEvent, waitFor, RenderResult } from '@testing-library/react';
+import mock from 'xhr-mock';
 
+import { util } from 'navigader/api';
 import { makeFileList, renderContextDependentComponent } from 'navigader/util/testing';
 import { renderFileSize, UploadPage } from './UploadPage';
 
@@ -46,6 +48,11 @@ describe('Upload page', () => {
     type GetByRole = RenderResult['getByRole'];
     type GetByTestId = RenderResult['getByTestId'];
     
+    // Replace the real XHR object with the mock XHR object before each test and put the real XHR
+    // object back after each test
+    beforeEach(() => mock.setup());
+    afterEach(() => mock.teardown());
+    
     // Can't use the file selector, so attach a file to the input directly
     function selectFile (getByTestId: GetByTestId, name: string) {
       const file = new File([], name, { type: 'text/csv' });
@@ -80,6 +87,11 @@ describe('Upload page', () => {
     it('shows a success message when upload works', async () => {
       const { findByText, getByTestId } = renderContextDependentComponent(<UploadPage />);
       
+      // Mock XHR to respond successfully
+      mock.post(util.beoRoute.v1('load/origin_file/'), {
+        status: 201
+      });
+      
       // Select a file to upload
       selectFile(getByTestId, 'test_upload.csv');
       
@@ -98,6 +110,11 @@ describe('Upload page', () => {
       selectFile(getByTestId, 'my_upload.csv');
       await waitFor(() => !getUploadButton(getByTestId).disabled);
       fireEvent.click(getUploadButton(getByTestId));
+      
+      // Mock XHR to respond successfully
+      mock.post(util.beoRoute.v1('load/origin_file/'), {
+        status: 201
+      });
       
       // Success message should now show
       expect(await findByText('Success!')).toBeInTheDocument();

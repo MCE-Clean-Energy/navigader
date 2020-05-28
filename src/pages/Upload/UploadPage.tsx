@@ -11,7 +11,8 @@ import { makeStylesHook } from 'navigader/styles';
 /** ============================ Types ===================================== */
 type UploadingStatus = 'not started' | 'uploading' | 'success' | 'failure';
 type FileCardProps = {
-  file: File;
+  file?: File;
+  progress?: number;
   startUpload: (name: string) => void;
   status: UploadingStatus;
 };
@@ -48,16 +49,19 @@ const useFileFormatAlertStyles = makeStylesHook(theme => ({
 }), 'FileFormatAlert');
 
 /** ============================ Components ================================ */
-const FileCard: React.FC<FileCardProps> = ({ file, startUpload, status }) => {
+const FileCard: React.FC<FileCardProps> = ({ file, progress, startUpload, status }) => {
   const [name, setFileName] = React.useState('');
   const classes = useFileCardStyles();
   const canUpload = Boolean(name) && statusAllowsUpload(status);
   
   React.useEffect(() => {
     // Strip the `.csv` from the end of the file name
-    setFileName(file.name.replace(/.csv$/, ''));
+    if (file) {
+      setFileName(file.name.replace(/.csv$/, ''));
+    }
   }, [file]);
-
+  
+  if (!file) return null;
   return (
     <Card raised>
       <Flex.Container justifyContent="flex-start">
@@ -97,7 +101,7 @@ const FileCard: React.FC<FileCardProps> = ({ file, startUpload, status }) => {
       
       {status !== 'not started' &&
         <div className={classes.uploadingStatus}>
-          {status === 'uploading' && <Progress />}
+          {status === 'uploading' && <Progress value={progress} />}
           {status === 'success' &&
             <Alert title="Success!" type="success">
               <Typography variant="body2">
@@ -155,6 +159,7 @@ const FileFormatAlert: React.FC = () => {
 export const UploadPage: React.FC = () => {
   const [file, setFile] = React.useState<File>();
   const [uploadStatus, setUploadStatus] = React.useState<UploadingStatus>('not started');
+  const [uploadProgress, setUploadProgress] = React.useState<number>();
   const fileUpload = React.useRef<HTMLInputElement>(null);
   const classes = useStyles();
   
@@ -177,7 +182,12 @@ export const UploadPage: React.FC = () => {
         type="file"
       />
       
-      {file && <FileCard file={file} startUpload={startUpload} status={uploadStatus} />}
+      <FileCard
+        file={file}
+        progress={uploadProgress}
+        startUpload={startUpload}
+        status={uploadStatus}
+      />
     </>
   );
   
@@ -209,13 +219,23 @@ export const UploadPage: React.FC = () => {
   async function startUpload (name: string) {
     if (!file) return;
     
-    try {
-      setUploadStatus('uploading');
-      const response = await api.postOriginFile(file, name);
-      setUploadStatus(response.ok ? 'success' : 'failure');
-    } catch (e) {
-      setUploadStatus('failure');
-    }
+    setUploadStatus('uploading');
+    setUploadProgress(0);
+    const xhr = api.postOriginFile(file, name);
+    
+    // Update the progress bar with the `progress` event
+    xhr.upload.addEventListener('progress', (evt) => {
+      const percentComplete = (evt.loaded / evt.total * 100);
+      setUploadProgress(percentComplete);
+    });
+    
+    // When the request completes, update the status
+    xhr.addEventListener('readystatechange', () => {
+      if (xhr.readyState === 4) {
+        setUploadStatus(xhr.status === 201 ? 'success' : 'failure');
+        setUploadProgress(undefined);
+      }
+    });
   }
 };
 

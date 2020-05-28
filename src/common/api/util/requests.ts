@@ -31,16 +31,32 @@ function makeJsonRequest (method: HttpMethodType, route: string, body?: string |
  * @param {object} formFields: an object mapping form data fields to their values
  */
 export function makeFormPost (route: string, formFields: object) {
-  const formData = new FormData();
-  Object.entries(formFields).forEach(([fieldName, value]) => {
-    formData.append(fieldName, value);
-  });
-  
   return fetch(route, {
-    body: formData,
+    body: objToFormData(formFields),
     headers: getRequestHeaders(),
     method: 'POST'
   });
+}
+
+/**
+ * Emulates a form submission using the XHR API. This exists to support `progress` events, which
+ * the fetch API can't handle.
+ *
+ * @param {string} route: the route to send the request to
+ * @param {object} formFields: an object mapping form data fields to their values
+ */
+export function makeFormXhrPost (route: string, formFields: object) {
+  // Make the XHR object
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', route);
+  
+  // Add headers
+  getRequestHeaders().forEach((value, key) => xhr.setRequestHeader(key, value));
+  
+  // Send the request after a delay, so that calling code can add event listeners and modify the
+  // request in whatever manner seems fitting
+  Promise.resolve().then(() => xhr.send(objToFormData(formFields)));
+  return xhr;
 }
 
 export function deleteRequest(route: string) {
@@ -76,3 +92,16 @@ function getRequestHeaders (contentType?: ContentType) {
   );
 }
 
+/**
+ * Given an object, creates a FormData object with the object's keys and corresponding values as
+ * fields
+ *
+ * @param {object} formFields: the object to convert to a FormData object
+ */
+function objToFormData (formFields: object) {
+  const formData = new FormData();
+  Object.entries(formFields).forEach(([fieldName, value]) => {
+    formData.append(fieldName, value);
+  });
+  return formData;
+}
