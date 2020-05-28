@@ -19,7 +19,7 @@ export interface ChartDatumWrapper {
   getBillImpact: (averaged: boolean) => number | null | undefined;
   getGhgImpact: (averaged: boolean) => number | null | undefined;
   getId: () => string;
-  getLabel: () => string;
+  getLabel: (averaged: boolean) => string;
   getScenarioId: () => string;
   getSize: () => number;
 }

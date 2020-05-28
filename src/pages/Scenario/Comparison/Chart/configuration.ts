@@ -51,7 +51,7 @@ export function buildChartConfiguration (
     return {
       ...pick(datum, ['name']),
       id: datum.getId(),
-      label: datum.getLabel(),
+      label: datum.getLabel(isAveraged),
       scenario: datum.getScenarioId(),
       size: datum.getSize(),
       xValue,

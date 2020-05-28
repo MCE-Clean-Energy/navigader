@@ -1,5 +1,5 @@
 import {
-  capitalize, dollars, maxDecimals, percentage, pluralize, standardDate
+  capitalize, dollars, maxDecimals, percentage, pluralize, standardDate, truncateAtLength
 } from './formatters';
 
 
@@ -99,6 +99,21 @@ describe('formatting methods', () => {
     it('handles `undefined` and `null`', () => {
       expect(dollars(undefined)).toBeUndefined();
       expect(dollars(null)).toBeUndefined();
+    });
+  });
+  
+  describe('`truncateAtLength`', () => {
+    it('Does not truncate when given a sufficiently large length', () => {
+      const str = 'the brown dog jumps over the lazy fox';
+      expect(truncateAtLength(str, str.length)).toEqual(str);
+    });
+    
+    it('Truncates when not given a sufficiently large length', () => {
+      const str = 'the brown dog jumps over the lazy fox';
+      expect(truncateAtLength(str, 10)).toEqual('the brown ...');
+      expect(truncateAtLength(str, 20)).toEqual('the brown dog jumps ...');
+      expect(truncateAtLength(str, 30)).toEqual('the brown dog jumps over the l...');
+      expect(truncateAtLength(str, 40)).toEqual('the brown dog jumps over the lazy fox');
     });
   });
 });

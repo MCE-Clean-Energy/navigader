@@ -1,4 +1,6 @@
 import moment from 'moment';
+
+import { Nullable } from 'navigader/types';
 import { clamp, percentOf } from './math';
 
 
@@ -12,13 +14,15 @@ type DollarFormatOptions = Partial<{
 /**
  * When given a number `n` and a maximum number of decimal digits to print, returns the number `n`
  * rounded such that it has at most the number of decimal digits. No trailing zeroes will be
- * included. If no number `n` is passed in, returns `null`.
+ * included. If a non-number `n` is passed in, returns `null`.
  *
  * @param {number} [n]: the number to format. This is made optional to support cases where the
  *   number may be undefined
  * @param {number} maxDecimals: the maximum number of decimals to include
  */
-export function maxDecimals (n: number | undefined | null, maxDecimals: number) {
+export function maxDecimals (n: number, maxDecimals: number): number;
+export function maxDecimals (n: any, maxDecimals: number): Nullable<number>;
+export function maxDecimals (n: any, maxDecimals: number) {
   return typeof n === 'number'
     ? parseFloat(n.toFixed(maxDecimals))
     : null;
@@ -156,4 +160,17 @@ export function dollars (amt: number | undefined | null, options?: DollarFormatO
   // Add a minus sign if negative
   const prefix = amtFixed < 0 ? '-' : '';
   return prefix + '$' + dollarString;
+}
+
+/**
+ * Truncates a string at a given length, replacing the rest of the string with an ellipsis
+ *
+ * @param {string} str: the string to (potentially) truncate
+ * @param {number} numChars: the number of characters to truncate at
+ */
+export function truncateAtLength (str: string | undefined, numChars: number) {
+  if (!str) return;
+  return str.length > numChars
+    ? str.slice(0, numChars) + '...'
+    : str;
 }
