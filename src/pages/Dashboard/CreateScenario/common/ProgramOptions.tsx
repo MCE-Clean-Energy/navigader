@@ -1,9 +1,9 @@
 import * as React from 'react';
-import find from 'lodash/find';
 
 import { Flex, Select } from 'navigader/components';
-import { BatteryConfiguration, BatteryStrategy } from 'navigader/models/der';
+import { BatteryConfiguration, BatteryStrategy, DerStrategyType } from 'navigader/models/der';
 import { makeStylesHook } from 'navigader/styles';
+import { _ } from 'navigader/util';
 import { DERSelection } from './util';
 
 
@@ -23,7 +23,7 @@ type ProgramOptionsWhileLoadingProps =
   & Partial<Pick<ProgramOptionsProps, LoadedProps>>
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(theme => ({
+const useStyles = makeStylesHook(() => ({
   configurationSelect: {
     width: 200
   },
@@ -36,9 +36,20 @@ const useStyles = makeStylesHook(theme => ({
 const BatteryOptions: React.FC<ProgramOptionsProps> = (props) => {
   const { configurations, der, strategies, update } = props;
   const classes = useStyles();
-  const configuration = find(configurations, { id: der.configurationId });
-  const strategy = find(strategies, { id: der.strategyId });
+  const configuration = _.find(configurations, { id: der.configurationId });
+  const strategy = _.find(strategies, { id: der.strategyId });
   
+  // Split the strategies by objective
+  const strategyGroups = _.sortBy(
+    _.toPairs(
+      _.groupBy(strategies, 'objective')
+    ).map(([strategyType, strategies]) => ({
+      title: formatStrategyType(strategyType as DerStrategyType),
+      options: strategies
+    })),
+    'title'
+  );
+
   return (
     <>
       <Flex.Item>
@@ -58,7 +69,7 @@ const BatteryOptions: React.FC<ProgramOptionsProps> = (props) => {
           className={classes.strategySelect}
           label="Strategy"
           onChange={updateStrategy}
-          options={strategies}
+          optionSections={strategyGroups}
           renderOption="name"
           sorted
           value={strategy}
@@ -74,6 +85,22 @@ const BatteryOptions: React.FC<ProgramOptionsProps> = (props) => {
   
   function updateStrategy (strategy: BatteryStrategy) {
     update({ strategyId: strategy.id });
+  }
+  
+  /** ============================ Helpers ================================= */
+  function formatStrategyType (type: DerStrategyType) {
+    switch (type) {
+      case 'load_flattening':
+        return 'Load Flattening';
+      case 'reduce_bill':
+        return 'Bill Reduction';
+      case 'reduce_ghg':
+        return 'GHG Reduction';
+      case 'reduce_cca_finance':
+        return 'Minimize CCA Financial Impacts';
+      default:
+        return 'Uncategorized';
+    }
   }
 };
 
@@ -91,12 +118,9 @@ export const ProgramOptions: React.FC<ProgramOptionsWhileLoadingProps> = (props)
     strategies,
   };
   
-  switch (der.type) {
-    case 'Battery':
-      return <BatteryOptions {...optionProps} />;
-    case 'Solar Panel':
-      return null;
-    default:
-      return null;
+  if (der.type === 'Battery') {
+    return <BatteryOptions {...optionProps} />;
+  } else {
+    return null;
   }
 };

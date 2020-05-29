@@ -1,9 +1,9 @@
 import * as React from 'react';
-import find from 'lodash/find';
 
 import { Button, Card, Flex, Select } from 'navigader/components';
 import { BatteryConfiguration, BatteryStrategy, Components } from 'navigader/models/der';
 import { makeStylesHook } from 'navigader/styles';
+import { _ } from 'navigader/util';
 import { ProgramOptions } from './ProgramOptions';
 import { DERSelection } from './util';
 
@@ -108,8 +108,8 @@ export const DerCardReadOnly: React.FC<DerSelectionCardReadOnlyProps> = (props) 
   const classes = useStyles();
   
   // Get selected configuration and strategy
-  const configuration = find(configurations, { id: der.configurationId });
-  const strategy = find(strategies, { id: der.strategyId });
+  const configuration = _.find(configurations, { id: der.configurationId });
+  const strategy = _.find(strategies, { id: der.strategyId });
   
   if (!configuration || !strategy) return null;
   return (

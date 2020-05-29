@@ -1,10 +1,8 @@
 import * as React from 'react';
-import range from 'lodash/range';
-import without from 'lodash/without';
 
 import { Checkbox, Divider, List, Menu } from 'navigader/components';
 import { MonthIndex } from 'navigader/types';
-import { formatters } from 'navigader/util';
+import { _, formatters } from 'navigader/util';
 import { Frame288MonthsOption } from './Frame288Graph';
 
 
@@ -16,7 +14,7 @@ type MonthsMenuProps = {
 
 /** ============================ Components ================================ */
 export const MonthsMenu: React.FC<MonthsMenuProps> = ({ selectedMonths, changeMonths }) => {
-  const monthOptions = range(1, 13) as MonthIndex[];
+  const monthOptions = _.range(1, 13) as MonthIndex[];
   return (
     <div>
       <Menu label="Months">
@@ -60,7 +58,7 @@ export const MonthsMenu: React.FC<MonthsMenuProps> = ({ selectedMonths, changeMo
     
     if (selectedMonths.includes(month)) {
       // Remove the month from the selected list
-      changeMonths(without(selectedMonths, month));
+      changeMonths(_.without(selectedMonths, month));
     } else {
       // Add to the list
       changeMonths([...selectedMonths, month]);

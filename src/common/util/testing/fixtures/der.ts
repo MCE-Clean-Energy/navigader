@@ -27,9 +27,11 @@ const defaultDerConfiguration: BatteryConfiguration = {
 const defaultDerStrategy: BatteryStrategy = {
   id: '7b517b5c-b22e-4586-9fbf-84146db76219',
   der_type: 'Battery',
+  description: 'Flattens the load in the evening',
   name: 'Flatten Evening Load Using NEM Exports',
   created_at: '2020-03-19T23:02:10.664629',
   object_type: 'BatteryStrategy',
+  objective: 'load_flattening',
   data: {
     'charge_schedule_frame': {
       '1':  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

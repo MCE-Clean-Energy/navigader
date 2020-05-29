@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, Switch, useHistory } from 'react-router-dom';
-import map from 'lodash/map';
 
 import * as api from 'navigader/api';
 import { Button, Divider, Link, List, Menu, PageHeader, Typography } from 'navigader/components';
@@ -9,7 +8,7 @@ import { Components, Scenario } from 'navigader/models/scenario';
 import * as routes from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
-import { makeCancelableAsync } from 'navigader/util';
+import { _, makeCancelableAsync } from 'navigader/util';
 import CreateScenario from './CreateScenario'
 import { DeleteDialog } from './DeleteDialog';
 import RenameDialog from './RenameDialog';
@@ -80,7 +79,7 @@ const PageHeaderActions: React.FC<PageHeaderActionsProps> = ({ selections }) => 
   
   /** ============================ Callbacks =============================== */
   function compareScenarios () {
-    history.push(routes.scenario.compare(map(selections, 'id')));
+    history.push(routes.scenario.compare(_.map(selections, 'id')));
   }
   
   function createScenario () {

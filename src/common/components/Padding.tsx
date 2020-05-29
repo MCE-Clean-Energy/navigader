@@ -1,8 +1,8 @@
 import * as React from 'react';
-import omit from 'lodash/omit';
 import classNames from 'classnames';
 
 import { makeStylesHook } from 'navigader/styles';
+import { _ } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -35,7 +35,7 @@ const useStyles = makeStylesHook<PaddingProps>(() => ({
 
 /** ============================ Components ================================ */
 export const Padding: React.FC<PaddingProps> = ({ className, ...rest }) => {
-  const childProps = omit(rest, 'pad', 'top', 'left', 'bottom', 'right');
+  const childProps = _.omit(rest, 'pad', 'top', 'left', 'bottom', 'right');
   const classes = classNames(
     useStyles(rest).root,
     className

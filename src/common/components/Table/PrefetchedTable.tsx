@@ -1,7 +1,7 @@
 import * as React from 'react';
-import sortBy from 'lodash/sortBy';
 
 import { ObjectWithId } from 'navigader/types';
+import { _ } from 'navigader/util';
 import { Table, TableProps } from './Table';
 import { PaginationState, SortState } from './util';
 
@@ -34,7 +34,7 @@ function getDataPage (data: any[], state: PaginationState & Partial<SortState>) 
   let sorted = data;
   if (key) {
     // `sortBy` sorts in ascending order by default
-    sorted = sortBy(data, [key]);
+    sorted = _.sortBy(data, [key]);
     if (dir === 'desc') sorted.reverse();
   }
   

@@ -1,9 +1,9 @@
 import * as React from 'react';
 import MuiAvatar from '@material-ui/core/Avatar';
-import omit from 'lodash/omit';
 import classNames from 'classnames';
 
 import { makeStylesHook } from 'navigader/styles';
+import { _ } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -37,7 +37,7 @@ export const Avatar: React.ComponentType<AvatarProps> = React.forwardRef(
       <MuiAvatar
         className={classes}
         ref={ref as React.RefObject<HTMLDivElement>}
-        {...omit(rest, 'color', 'size')}
+        {..._.omit(rest, 'color', 'size')}
       />
     );
   }

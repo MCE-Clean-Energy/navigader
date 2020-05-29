@@ -1,9 +1,5 @@
-import isEmpty from 'lodash/isEmpty';
-import omit from 'lodash/omit';
-import pick from 'lodash/pick';
-
 import { parsePandasFrame } from 'navigader/models';
-import { math } from 'navigader/util';
+import { _, math } from 'navigader/util';
 import {
   RawScenarioReport, ScenarioReport, RawScenario, Scenario, RawScenarioReportSummary
 } from './types';
@@ -36,7 +32,7 @@ export function parseScenario (scenario: RawScenario): Scenario {
     : Boolean(hasRun && (report || reportSummary));
   
   return {
-    ...pick(scenario, 'created_at', 'data', 'id', 'name', 'object_type'),
+    ..._.pick(scenario, 'created_at', 'data', 'id', 'name', 'object_type'),
     der: scenario.ders ? scenario.ders[0] : undefined,
     der_simulation_count: scenario.der_simulation_count,
     der_simulations: scenario.der_simulations,
@@ -74,7 +70,7 @@ export function parseReport (report?: RawScenario['report']): ScenarioReport | u
   
   return {
     columns: {
-      ...omit(parsed, 'SA ID'),
+      ..._.omit(parsed, 'SA ID'),
       SA_ID: parsed['SA ID']
     },
     rows
@@ -88,5 +84,5 @@ function hasReport (report: RawScenario['report']): report is RawScenarioReport 
 function hasReportSummary (
   summary: RawScenario['report_summary']
 ): summary is RawScenarioReportSummary {
-  return Boolean(summary && !isEmpty(summary));
+  return Boolean(summary && !_.isEmpty(summary));
 }

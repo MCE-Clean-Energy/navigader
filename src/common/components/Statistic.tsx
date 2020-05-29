@@ -2,9 +2,9 @@
  * Taken from the `antd` framework: https://ant.design/components/statistic/
  */
 import * as React from 'react';
-import padEnd from 'lodash/padEnd';
 
 import { makeStylesHook } from 'navigader/styles';
+import { _ } from 'navigader/util';
 import { Typography, TypographyProps } from './Typography';
 
 
@@ -65,7 +65,7 @@ const StatisticNumber: React.FC<NumberProps> = props => {
     let decimal = cells[4] || '';
 
     if (typeof precision === 'number') {
-      decimal = padEnd(decimal, precision, '0').slice(0, precision);
+      decimal = _.padEnd(decimal, precision, '0').slice(0, precision);
     }
 
     if (decimal) {

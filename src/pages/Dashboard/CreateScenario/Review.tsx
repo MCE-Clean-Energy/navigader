@@ -1,11 +1,11 @@
 import * as React from 'react';
-import find from 'lodash/find';
 
 import { Card, Grid, Link, MeterGroupChip, TextField, Typography } from 'navigader/components';
 import { BatteryConfiguration, BatteryStrategy } from 'navigader/models/der';
 import { MeterGroup } from 'navigader/models/meter';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
+import { _ } from 'navigader/util';
 import { DerCardReadOnly, DERSelection, validateDerSelections } from './common';
 
 
@@ -66,7 +66,7 @@ const SelectedCustomers: React.FC<ReviewProps> = (props) => {
             color="primary"
             icon="checkMark"
             key={meterGroupId}
-            meterGroup={find(meterGroups, { id: meterGroupId })}
+            meterGroup={_.find(meterGroups, { id: meterGroupId })}
             showCount
           />
         );

@@ -1,9 +1,9 @@
 import * as React from 'react';
-import omit from 'lodash/omit';
 import { CreateCSSProperties } from '@material-ui/styles/withStyles';
 import classNames from 'classnames';
 
 import { makeStylesHook } from 'navigader/styles';
+import { _ } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -45,7 +45,7 @@ export const Container = React.forwardRef<HTMLDivElement, FlexContainerProps>(
       className
     );
     
-    const childProps = omit(rest, 'alignItems', 'basis', 'grow', 'justifyContent', 'textAlign', 'wrap');
+    const childProps = _.omit(rest, 'alignItems', 'basis', 'grow', 'justifyContent', 'textAlign', 'wrap');
     
     return <div {...childProps} className={classes} ref={ref} />;
   }
@@ -61,7 +61,7 @@ export const Item = React.forwardRef<HTMLDivElement, FlexItemProps>(
   (props, ref) => {
     const { className, ...rest } = props;
     const classes = classNames(useItemStyles(props).flexItem, className);
-    const childProps = omit(rest, 'alignItems', 'basis', 'grow', 'justifyContent', 'textAlign', 'wrap');
+    const childProps = _.omit(rest, 'alignItems', 'basis', 'grow', 'justifyContent', 'textAlign', 'wrap');
     return <div {...childProps} className={classes} ref={ref} />
   }
 );

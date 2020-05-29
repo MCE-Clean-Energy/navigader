@@ -1,38 +1,49 @@
 import * as React from 'react';
-import isUndefined from 'lodash/isUndefined';
-import noop from 'lodash/noop';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
+import MuiFormControl from '@material-ui/core/FormControl';
+import MuiInputLabel from '@material-ui/core/InputLabel';
+import MuiListSubheader from '@material-ui/core/ListSubheader';
+import MuiMenuItem from '@material-ui/core/MenuItem';
 import MuiSelect from '@material-ui/core/Select';
 import useTheme from '@material-ui/core/styles/useTheme';
 
 import { makeStylesHook } from 'navigader/styles';
-import { randomString } from 'navigader/util';
+import { Nullable } from 'navigader/types';
+import { _, omitFalsey, printWarning, randomString } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
+type OptionSection<T> = { title: Nullable<string>; options: T[]; };
 type SelectProps<T> = {
   className?: string;
   id?: string;
   label?: string;
   onChange?: (value: T) => void;
-  options: T[];
+  options?: T[];
+  optionSections?: OptionSection<T>[];
   renderOption?: ((option: T) => string) | keyof T;
   sorted?: boolean;
   value: T | undefined;
 };
 
+type SectionOption<T> = {
+  datum: T;
+  index: number;
+  rendering: string | T | T[keyof T];
+};
+
+type FormattedSection<T> = {
+  title: Nullable<string>;
+  options: Array<SectionOption<T>>
+};
+
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(theme => ({
+const useStyles = makeStylesHook(() => ({
   formControl: {
     minWidth: 120
   },
-  option: {
-    fontWeight: theme.typography.fontWeightRegular
-  },
-  selectedOption: {
-    fontWeight: theme.typography.fontWeightMedium
+  subheader: {
+    cursor: 'default',
+    pointerEvents: 'none'
   }
 }), 'NavigaderSelect');
 
@@ -41,8 +52,9 @@ export function Select <T>(props: SelectProps<T>) {
   const {
     id = randomString(),
     label,
+    onChange = () => {},
     options,
-    onChange = noop,
+    optionSections,
     renderOption = (option: T) => option,
     sorted = false,
     value,
@@ -53,65 +65,91 @@ export function Select <T>(props: SelectProps<T>) {
   
   let inputLabel: React.ReactNode = null;
   if (label) {
-    inputLabel = <InputLabel id={id}>{label}</InputLabel>;
+    inputLabel = <MuiInputLabel id={id}>{label}</MuiInputLabel>;
   }
   
+  if (!options && !optionSections) printWarning(warnings.noOptions);
+  if (options && optionSections) printWarning(warnings.tooManyOptions);
+  
+  const sections: OptionSection<T>[] = options
+    ? [{ options, title: null }]
+    : optionSections || [];
+  
+  // Format the sections
+  let i = 0;
+  const formattedSections: FormattedSection<T>[] = sections.map(section => ({
+    title: section.title,
+    options: section.options.map((option) => ({
+      datum: option,
+      index: i++,
+      rendering: getOptionRendering(option)
+    }))
+  }));
+
   // If requested, sort the options by their rendering value
-  const sortedOptions = sorted
-    ? [...options].sort((option1, option2) => {
-        const renderValue1 = getOptionRendering(option1);
-        const renderValue2 = getOptionRendering(option2);
-        
-        if (renderValue1 < renderValue2) return -1;
-        if (renderValue1 > renderValue2) return 1;
-        return 0;
-      })
-    : options;
+  i = 0;
+  const sortedSections = sorted
+    ? formattedSections.map(section => ({
+        title: section.title,
+        options: _.sortBy(section.options, 'rendering').map(option => ({ ...option, index: i++ }))
+      }))
+    : formattedSections;
   
+  const sortedOptions = _.flatten(_.map(sortedSections, 'options'));
   const unselectedValue = '';
-  const selectedValues = isUndefined(props.value)
+  const selectValue = _.isUndefined(value)
     ? unselectedValue
-    : sortedOptions.indexOf(props.value);
-  
-  const selectProps = {
-    labelId: label ? id : undefined,
-    onChange: handleChange,
-    value: selectedValues,
-    ...rest
-  };
-  
+    : _.findIndex(sortedOptions, option => option.datum === value);
+
   return (
-    <FormControl className={classes.formControl}>
+    <MuiFormControl className={classes.formControl}>
       {inputLabel}
-      <MuiSelect {...selectProps}>
-        {sortedOptions.map((option, i) =>
-          <MenuItem key={i} value={i} className={getStyles(option)}>
-            {getOptionRendering(option)}
-          </MenuItem>
-        )}
+      <MuiSelect
+        labelId={label ? id : undefined}
+        onChange={handleChange}
+        value={selectValue}
+        {...rest}
+      >
+        {_.flatten(sortedSections.map(section => omitFalsey([
+          section.title && (
+            <MuiListSubheader
+              className={classes.subheader}
+              key={`header-${section.title}`}
+            >
+              {section.title}
+            </MuiListSubheader>
+          ),
+          section.options.map(option =>
+            <MuiMenuItem key={option.index} value={option.index}>
+              {option.rendering}
+            </MuiMenuItem>
+          )
+        ])))}
       </MuiSelect>
-    </FormControl>
+    </MuiFormControl>
   );
   
   /** ============================ Callbacks =============================== */
   function handleChange (event: React.ChangeEvent<{ name?: string; value: unknown; }>) {
     const index = +(event.target.value as string);
-    onChange(sortedOptions[index]);
+    onChange(sortedOptions[index].datum);
   }
   
-  function getStyles (option: T) {
-    const isSelected = Array.isArray(value)
-      ? value.includes(option)
-      : value === option;
-    
-    return isSelected
-      ? classes.selectedOption
-      : classes.option;
-  }
-  
+  /** ============================ Helpers ================================= */
   function getOptionRendering (option: T) {
     return typeof renderOption === 'function'
       ? renderOption(option)
       : option[renderOption];
   }
 }
+
+/** ============================ Helpers =================================== */
+const warnings = {
+  noOptions:
+    '`Select` component did not receive `options` prop or `optionSections` prop. One of the two, ' +
+    'but not both, is expected.',
+
+  tooManyOptions:
+    '`Select` component received `options` prop and `optionSections` prop. One of the two, but ' +
+    'not both, is expected.'
+};

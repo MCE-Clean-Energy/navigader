@@ -1,12 +1,11 @@
-import range from 'lodash/range';
-
+import { _ } from 'navigader/util';
 import { fixtures } from 'navigader/util/testing';
 import * as util from './util';
 
 
 describe('CreateScenario utilities', () => {
   describe('validateCustomerSelections method', () => {
-    const emptyMeterGroups = range(10).map(() => fixtures.makeOriginFile({ meter_count: 0 }));
+    const emptyMeterGroups = _.range(10).map(() => fixtures.makeOriginFile({ meter_count: 0 }));
     
     it('returns false when no meter groups are provided', () => {
       expect(util.validateCustomerSelections([])).toBeFalsy();

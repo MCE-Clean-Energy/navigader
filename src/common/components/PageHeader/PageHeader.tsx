@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
-import findLast from 'lodash/findLast';
 
 import { Button, Link } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
+import { _ } from 'navigader/util';
 import * as Flex from '../Flex';
 import { Typography } from '../Typography';
 
@@ -51,7 +51,7 @@ const BackButton: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
   if (breadcrumbs.length <= 1) return null;
   
   // Find the last link with an `href`
-  const lastLink = findLast(breadcrumbs.slice(0, breadcrumbs.length - 1), (breadcrumb) => {
+  const lastLink = _.findLast(breadcrumbs.slice(0, breadcrumbs.length - 1), (breadcrumb) => {
     return typeof breadcrumb !== 'string';
   });
   

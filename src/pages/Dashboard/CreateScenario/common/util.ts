@@ -1,8 +1,7 @@
-import sumBy from 'lodash/sumBy';
-
 import { DerType } from 'navigader/models/der';
-import * as routes from 'navigader/routes';
 import { MeterGroup } from 'navigader/models/meter';
+import * as routes from 'navigader/routes';
+import { _ } from 'navigader/util';
 
 
 // Order of steps
@@ -52,5 +51,5 @@ export function validateDerSelections (ders: Partial<DERSelection>[]): ders is D
  */
 export function validateCustomerSelections (meterGroups: MeterGroup[]) {
   if (meterGroups.length === 0) return false;
-  return sumBy(meterGroups, 'meter_count') > 0;
+  return _.sumBy(meterGroups, 'meter_count') > 0;
 }

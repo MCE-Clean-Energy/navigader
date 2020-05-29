@@ -1,10 +1,9 @@
 import * as React from 'react';
-import groupBy from 'lodash/groupBy';
 
 import { Avatar, PrefetchedTable, Table, Tooltip } from 'navigader/components';
 import { Scenario, ScenarioReportFields } from 'navigader/models/scenario';
 import { IdType } from 'navigader/types';
-import { formatters } from 'navigader/util';
+import { _, formatters } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -19,7 +18,7 @@ type CustomersTableProps = {
 /** ============================ Components ================================ */
 export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
   const { className, colorMap, scenarios, simulations, updateHover } = props;
-  const scenarioMap = groupBy(scenarios, 'id');
+  const scenarioMap = _.groupBy(scenarios, 'id');
   return (
     <PrefetchedTable
       aria-label="customers table"

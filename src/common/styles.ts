@@ -6,7 +6,8 @@ import useTheme from '@material-ui/core/styles/useTheme';
 import createStyles from '@material-ui/styles/createStyles';
 import makeStyles from '@material-ui/styles/makeStyles';
 import { ClassNameMap, StyleRules } from '@material-ui/styles/withStyles';
-import omit from 'lodash/omit';
+
+import { _ } from 'navigader/util';
 
 
 /** ============================ Theme ===================================== */
@@ -78,4 +79,4 @@ export type MaterialColor =
   | 'teal'
   | 'yellow';
 
-export const materialColors: Record<MaterialColor, Color> = omit(muiColors, 'common');
+export const materialColors: Record<MaterialColor, Color> = _.omit(muiColors, 'common');

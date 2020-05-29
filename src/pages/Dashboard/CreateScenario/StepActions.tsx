@@ -1,14 +1,13 @@
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import find from 'lodash/find';
 
 import * as api from 'navigader/api';
 import { Button, Flex } from 'navigader/components';
 import { MeterGroup } from 'navigader/models/meter';
 import * as routes from 'navigader/routes';
 import { setMessage } from 'navigader/store/slices/ui';
-import { omitFalsey, printWarning } from 'navigader/util';
+import { _, omitFalsey, printWarning } from 'navigader/util';
 import {
   DERSelection, stepPaths, stepNumbers, validateCustomerSelections, validateDerSelections
 } from './common';
@@ -135,7 +134,7 @@ const StepActions: React.FC<StepActionProps> = (props) => {
 function getSelectedMeterGroups (meterGroups: MeterGroup[] | null, ids: string[]) {
   return meterGroups === null
     ? []
-    : omitFalsey(ids.map(id => find(meterGroups, { id })));
+    : omitFalsey(ids.map(id => _.find(meterGroups, { id })));
 }
 
 /** ============================ Exports =================================== */

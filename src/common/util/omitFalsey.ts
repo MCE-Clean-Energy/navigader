@@ -1,4 +1,4 @@
-import pickBy from 'lodash/pickBy';
+import { _ } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -29,7 +29,7 @@ export function omitFalsey <T>(obj: Record<string, T | Falsey>): Record<string, 
 export function omitFalsey (arrayOrObject: any) {
   return Array.isArray(arrayOrObject)
     ? arrayOrObject.filter(notFalsey)
-    : pickBy(arrayOrObject, notFalsey);
+    : _.pickBy(arrayOrObject, notFalsey);
 }
 
 /** ============================ Helpers ===================================== */

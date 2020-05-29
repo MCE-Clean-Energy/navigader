@@ -1,5 +1,4 @@
-import range from 'lodash/range';
-
+import { _ } from 'navigader/util';
 import { RawPandasFrame } from './types';
 import { parsePandasFrame } from './util';
 
@@ -35,7 +34,7 @@ describe('`parsePandasFrame` method', () => {
 
 function makeRawPandasFrame <RowType extends Record<string, any>>(pandaRow: RowType, numRows: number) {
   return Object.keys(pandaRow).reduce((frame, key: keyof RowType) => {
-    frame[key] = range(numRows).reduce((frameObj, i) => {
+    frame[key] = _.range(numRows).reduce((frameObj, i) => {
       frameObj[i] = pandaRow[key];
       return frameObj;
     }, {} as { [i: number]: any });

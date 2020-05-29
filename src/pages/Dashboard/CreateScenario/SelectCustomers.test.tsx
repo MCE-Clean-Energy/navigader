@@ -1,7 +1,7 @@
 import * as React from 'react';
-import map from 'lodash/map';
 import { cleanup, fireEvent } from '@testing-library/react'
 
+import { _ } from 'navigader/util';
 import { asyncForEach, fixtures, renderContextDependentComponent } from 'navigader/util/testing';
 import { SelectCustomers } from './SelectCustomers';
 
@@ -71,7 +71,7 @@ describe('"Select Customers" page', () => {
       const { getByText } = renderContextDependentComponent(
         <SelectCustomers
           meterGroups={[meterGroup1, meterGroup2]}
-          selectedMeterGroupIds={map(selectedMeterGroups, 'id')}
+          selectedMeterGroupIds={_.map(selectedMeterGroups, 'id')}
           updateMeterGroups={() => {}}
         />
       );

@@ -3,10 +3,10 @@
  */
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import find from 'lodash/find';
 
 import { IdType, ObjectWithId } from 'navigader/types';
 import { RootState } from 'navigader/store';
+import { _ } from 'navigader/util';
 import { omitFalsey } from './omitFalsey';
 
 
@@ -36,7 +36,7 @@ export function useTableSelector <Datum extends ObjectWithId>(
   
   if (ids === null) return [];
   
-  // TODO: the property shorthand `find(allData, { id })` is preferable and should work-- I'm
+  // TODO: the property shorthand `_.find(allData, { id })` is preferable and should work-- I'm
   //  confused why it doesn't
-  return omitFalsey(ids.map((id) => find(allData, ['id', id])));
+  return omitFalsey(ids.map((id) => _.find(allData, ['id', id])));
 }

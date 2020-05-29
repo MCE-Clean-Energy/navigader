@@ -1,10 +1,5 @@
-import every from 'lodash/every';
-import flatten from 'lodash/flatten';
-import isArray from 'lodash/isArray';
-import range from 'lodash/range';
-
 import { MonthIndex } from 'navigader/types';
-import { math, typeGuards } from 'navigader/util';
+import { _, math, typeGuards } from 'navigader/util';
 import {
   Frame288NumericType, LoadType, LoadTypeMap, MeterDataField, MeterGroup, RawMeterGroup
 } from './types';
@@ -20,8 +15,8 @@ export function hasDataField <T extends LoadType>(
   data: MeterDataField,
   loadType: T | T[]
 ): data is Pick<LoadTypeMap, T> {
-  return isArray(loadType)
-    ? every(loadType, t => data.hasOwnProperty(t))
+  return _.isArray(loadType)
+    ? _.every(loadType, t => data.hasOwnProperty(t))
     : data.hasOwnProperty(loadType);
 }
 
@@ -95,13 +90,13 @@ export function isSufficientlyIngested (meterGroup: MeterGroup | undefined) {
 }
 
 export class Frame288Numeric {
-  static months = range(1, 13) as MonthIndex[];
+  static months = _.range(1, 13) as MonthIndex[];
   readonly flattened: number[];
   readonly frame: Frame288NumericType;
 
   constructor (frame: Frame288NumericType) {
     this.frame = frame;
-    this.flattened = flatten(Frame288Numeric.months.map(i => this.frame[i]));
+    this.flattened = _.flatten(Frame288Numeric.months.map(i => this.frame[i]));
   }
   
   /**

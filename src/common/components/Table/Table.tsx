@@ -1,5 +1,4 @@
 import * as React from 'react';
-import isEmpty from 'lodash/isEmpty';
 import MuiPaper from '@material-ui/core/Paper';
 import MuiTable from '@material-ui/core/Table';
 import MuiTableBody from '@material-ui/core/TableBody';
@@ -8,14 +7,13 @@ import MuiTableContainer from '@material-ui/core/TableContainer';
 import MuiTableHead from '@material-ui/core/TableHead';
 import MuiTableRow from '@material-ui/core/TableRow';
 import MuiTableSortLabel from '@material-ui/core/TableSortLabel';
-import omit from 'lodash/omit';
 
 import { PaginationSet } from 'navigader/api/util';
 import { Checkbox, Flex, Progress, SortState, Typography } from 'navigader/components';
 import { RootState } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { IdType, ObjectWithId} from 'navigader/types';
-import { hooks, makeCancelableAsync } from 'navigader/util';
+import { _, hooks, makeCancelableAsync } from 'navigader/util';
 import { TablePagination } from './Pagination';
 import { PaginationState, TableContext } from './util';
 
@@ -137,7 +135,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
   const data = hooks.useTableSelector(dataSelector, dataIds);
   
   // Build context for child component tree
-  const loadedData = !loading && !isEmpty(data);
+  const loadedData = !loading && !_.isEmpty(data);
   const selectables = data.filter(d => !disableSelect(d));
   const tableContext = {
     allSelected: selectables.length > 0 && selectables.length === selections.size,
@@ -351,7 +349,7 @@ const TableCell: TableCell = (props) => {
   if (sortBy) {
     const active = sortBy === sortState?.key;
     return (
-      <MuiTableCell {...omit(tableCellProps, 'children')}>
+      <MuiTableCell {..._.omit(tableCellProps, 'children')}>
         <MuiTableSortLabel
           active={active}
           direction={active ? sortState?.dir : getDefaultSortDir()}

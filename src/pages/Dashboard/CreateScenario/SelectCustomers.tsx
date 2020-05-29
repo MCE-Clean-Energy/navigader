@@ -1,11 +1,9 @@
 import * as React from 'react';
-import find from 'lodash/find';
-import without from 'lodash/without';
 
 import { Flex, MeterGroupChip, Tooltip, Typography } from 'navigader/components';
 import { isSufficientlyIngested, MeterGroup, OriginFileMeterGroup } from 'navigader/models/meter';
 import { makeStylesHook } from 'navigader/styles';
-import { formatters } from 'navigader/util';
+import { _, formatters } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -38,7 +36,7 @@ export const SelectCustomers: React.FC<SelectCustomersProps> = (props) => {
   if (meterGroups === null) return null;
   
   const selectedMeterCount = selectedMeterGroupIds.reduce((curCount, meterId) => {
-    const meter = find(meterGroups, { id: meterId });
+    const meter = _.find(meterGroups, { id: meterId });
     return meter ? meter.meter_count + curCount : curCount;
   }, 0);
   
@@ -94,7 +92,7 @@ export const SelectCustomers: React.FC<SelectCustomersProps> = (props) => {
   function toggleMeterGroup (id: string) {
     updateMeterGroups(
       selectedMeterGroupIds.includes(id)
-        ? without(selectedMeterGroupIds, id)
+        ? _.without(selectedMeterGroupIds, id)
         : [...selectedMeterGroupIds, id]
     );
   }

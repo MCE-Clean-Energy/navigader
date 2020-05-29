@@ -1,7 +1,6 @@
-import find from 'lodash/find';
-
 import { LoadType, parseMeterGroup, MeterGroup } from 'navigader/models/meter';
 import { parseScenario, RawScenario, Scenario } from 'navigader/models/scenario';
+import { _ } from 'navigader/util';
 import {
   appendId, beoRoute, deleteRequest, DynamicRestParams, getRequest, PaginationQueryParams,
   parsePaginationSet,
@@ -122,7 +121,7 @@ function compileScenario (
   // Mix in the meter group
   let meterGroup;
   if (scenario.meter_groups && scenario.meter_groups.length > 0) {
-    const scenarioMeterGroup = find(meterGroups, { id: scenario.meter_groups[0] });
+    const scenarioMeterGroup = _.find(meterGroups, { id: scenario.meter_groups[0] });
     if (scenarioMeterGroup) {
       meterGroup = parseMeterGroup(scenarioMeterGroup);
     }

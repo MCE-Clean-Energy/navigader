@@ -4,12 +4,11 @@ import {
   DomainPropType, VictoryAxis, VictoryChart, VictoryLabel, VictoryLine, VictoryTheme,
   VictoryTooltip, VictoryVoronoiContainer
 } from 'victory';
-import range from 'lodash/range';
 
 import { Frame288LoadType, Frame288Numeric, Frame288NumericType } from 'navigader/models/meter';
 import { primaryColor } from 'navigader/styles';
 import { MonthIndex } from 'navigader/types';
-import { formatters } from 'navigader/util';
+import { _, formatters } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -48,7 +47,7 @@ export const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
     : new Frame288Numeric(data);
   
   // Convert Frame288 to an array of objects
-  const allMonths = range(1, 13) as MonthIndex[];
+  const allMonths = _.range(1, 13) as MonthIndex[];
   let monthIndices: MonthIndex[];
   if (months === 'all') {
     monthIndices = allMonths;

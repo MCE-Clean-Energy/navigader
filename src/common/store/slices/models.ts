@@ -1,10 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import findIndex from 'lodash/findIndex';
-import merge from 'lodash/merge';
 
 import { BatteryConfiguration, BatteryStrategy, BatterySimulation } from 'navigader/models/der';
 import { Meter } from 'navigader/models/meter';
 import { Scenario } from 'navigader/models/scenario';
+import { _ } from 'navigader/util';
 import { RootState, ModelsSlice } from '../types';
 
 
@@ -46,7 +45,7 @@ const slice = createSlice({
       const slice = getSliceForModel(state, model);
       
       // If we find the model in the slice, splice it out
-      const modelIndex = findIndex(slice, { id: model.id });
+      const modelIndex = _.findIndex(slice, { id: model.id });
       if (modelIndex !== -1) {
         slice.splice(modelIndex, 1);
       }
@@ -94,7 +93,7 @@ export const selectHasMeterGroups = (state: RootState) => state.models.hasMeterG
  */
 function addOrUpdateModel (state: ModelsSlice, model: ModelClass) {
   const slice = getSliceForModel(state, model);
-  const modelIndex = findIndex(slice, { id: model.id });
+  const modelIndex = _.findIndex(slice, { id: model.id });
   if (modelIndex === -1) {
     // Add it to the store
     slice.push(model);
@@ -102,7 +101,7 @@ function addOrUpdateModel (state: ModelsSlice, model: ModelClass) {
   }
   
   // Splice it into the slice
-  const merged = merge({}, slice[modelIndex], model);
+  const merged = _.merge({}, slice[modelIndex], model);
   slice.splice(modelIndex, 1, merged);
 }
 

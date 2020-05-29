@@ -1,5 +1,4 @@
-import range from 'lodash/range';
-
+import { _ } from 'navigader/util';
 import { fixtures } from 'navigader/util/testing';
 import * as utils from './util';
 
@@ -72,7 +71,7 @@ describe('Meter utility methods', () => {
     });
     
     it('returns `true` if a customer cluster is at least 95% finished', () => {
-      range(101).forEach((meter_count) => {
+      _.range(101).forEach((meter_count) => {
         const isSufficientlyIngested = utils.isSufficientlyIngested(
           fixtures.makeOriginFile({
             meter_count,

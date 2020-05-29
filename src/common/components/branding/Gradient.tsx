@@ -1,8 +1,8 @@
 import * as React from 'react';
-import omit from 'lodash/omit';
 import classNames from 'classnames';
 
 import { makeStylesHook } from 'navigader/styles';
+import { _ } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -48,7 +48,7 @@ export const useGradientStyles = makeStylesHook<GradientProps>(theme => ({
 /** ============================ Components ================================ */
 export const Gradient: React.FC<GradientProps> = ({ className, ...rest }) => {
   const classes = useGradientStyles(rest);
-  const childProps = omit(rest, 'finishPercent', 'invert', 'orientation', 'startPercent');
+  const childProps = _.omit(rest, 'finishPercent', 'invert', 'orientation', 'startPercent');
   return <div className={classNames(classes.root, className)} {...childProps} />;
 };
 

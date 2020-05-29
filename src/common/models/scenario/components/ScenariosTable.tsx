@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import filter from 'lodash/filter';
 
 import * as api from 'navigader/api';
 import {
@@ -12,7 +11,7 @@ import { Scenario, ScenarioReportSummary } from 'navigader/models/scenario';
 import * as routes from 'navigader/routes';
 import { selectModels, updateModels } from 'navigader/store/slices/models';
 import { IdType } from 'navigader/types';
-import { formatters, kwToMw, printWarning } from 'navigader/util';
+import { _, formatters, kwToMw, printWarning } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -106,7 +105,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
 
       // Unfinished scenarios should be polled for
       const scenarios = response.data;
-      const unfinished = filter(scenarios, s => !s.progress.is_complete);
+      const unfinished = _.filter(scenarios, s => !s.progress.is_complete);
       poller.pollFor(unfinished);
 
       // Add the models to the store and yield the pagination results

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import flatten from 'lodash/flatten';
 
 import * as api from 'navigader/api';
 import { in_ } from 'navigader/api/util';
@@ -8,7 +7,7 @@ import { Components, Scenario } from 'navigader/models/scenario';
 import * as routes from 'navigader/routes';
 import { makeStylesHook, materialColors } from 'navigader/styles';
 import { IdType } from 'navigader/types';
-import { hooks, makeCancelableAsync } from 'navigader/util';
+import { _, hooks, makeCancelableAsync } from 'navigader/util';
 import { ScenarioComparisonChart } from './Chart';
 import { CustomersTable } from './CustomersTable';
 
@@ -87,7 +86,7 @@ export const CompareScenariosPage: React.FC = () => {
                     className={classes.tableContainer}
                     colorMap={colorMap}
                     scenarios={scenarios}
-                    simulations={flatten(scenarios.map(s => Object.values(s.report!.rows)))}
+                    simulations={_.flatten(scenarios.map(s => Object.values(s.report!.rows)))}
                     updateHover={setHoveredId}
                   />
                 )

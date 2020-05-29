@@ -1,9 +1,9 @@
 import * as React from 'react';
-import omit from 'lodash/omit';
 import MuiButton from '@material-ui/core/Button';
 import MuiFab from '@material-ui/core/Fab';
 import MuiIconButton from '@material-ui/core/IconButton';
 
+import { _ } from 'navigader/util';
 import { Icon, IconProps, ValidIcon } from './Icon';
 
 
@@ -30,7 +30,7 @@ export const Button: Button = ({ icon, ...rest }) => {
   // Render an icon-button if there's an icon but no children
   if (icon && noChildren) {
     return (
-      <MuiIconButton {...omit(rest, 'size')}>
+      <MuiIconButton {..._.omit(rest, 'size')}>
         <Icon name={icon} />
       </MuiIconButton>
     );
@@ -46,7 +46,7 @@ export const Button: Button = ({ icon, ...rest }) => {
 };
 
 Button.Fab = ({ name, ...rest }) => {
-  const fabProps = omit(rest, 'children');
+  const fabProps = _.omit(rest, 'children');
   return (
     <MuiFab {...fabProps}>
       <Icon name={name} />

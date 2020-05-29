@@ -4,9 +4,7 @@ import { Frame288Type, MeterDataField } from 'navigader/models/meter';
 import { ScenarioReportFields } from 'navigader/models/scenario';
 
 
-export type DerType = 'Battery' | 'Solar Panel';
-
-/** ============================ Battery =================================== */
+export type DerType = 'Battery';
 type DerConfigurationDeferrableFields = {
   data: {
     rating: number
@@ -15,27 +13,36 @@ type DerConfigurationDeferrableFields = {
   };
 };
 
+export type DerStrategyType =
+  | 'load_flattening'
+  | 'reduce_bill'
+  | 'reduce_ghg'
+  | 'reduce_cca_finance'
+  | null;
+
 type DerCommonFields = {
   der_type: 'Battery';
   name: string;
 }
 
+/** ============================ Battery =================================== */
 export interface BatteryConfiguration extends DeferrableFields<
   NavigaderObject<'BatteryConfiguration'> & DerCommonFields,
   DerConfigurationDeferrableFields
 > {}
 
-type Frame288BatteryStrategy = Frame288Type<number | 'inf' | '-inf'>;
-type DerStrategyDeferredFields = {
+type BatteryStrategyFrame288 = Frame288Type<number | 'inf' | '-inf'>;
+type BatteryStrategyDeferredFields = {
   data: {
-    charge_schedule_frame: Frame288BatteryStrategy;
-    discharge_schedule_frame: Frame288BatteryStrategy;
+    charge_schedule_frame: BatteryStrategyFrame288;
+    discharge_schedule_frame: BatteryStrategyFrame288;
   };
 };
 
 export interface BatteryStrategy extends DeferrableFields<
-  NavigaderObject<'BatteryStrategy'> & DerCommonFields,
-  DerStrategyDeferredFields
+  NavigaderObject<'BatteryStrategy'> & DerCommonFields & {
+    description: string; objective: DerStrategyType;
+  }, BatteryStrategyDeferredFields
 > {}
 
 /** ============================ DER Simulations =========================== */

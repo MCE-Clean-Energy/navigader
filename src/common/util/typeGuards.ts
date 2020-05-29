@@ -1,7 +1,6 @@
-import some from 'lodash/some';
-
 import { NavigaderObject } from 'navigader/models';
 import { MeterGroup } from 'navigader/models/meter';
+import { _ } from 'navigader/util';
 
 
 /** ============================ Navigader Objects ========================= */
@@ -10,5 +9,5 @@ function isNavigaderObject <T extends string>(obj: any, type: T): obj is Navigad
 }
 
 export function isMeterGroup (obj: any): obj is MeterGroup {
-  return some(['CustomerCluster', 'OriginFile'].map(type => isNavigaderObject(obj, type)));
+  return _.some(['CustomerCluster', 'OriginFile'].map(type => isNavigaderObject(obj, type)));
 }

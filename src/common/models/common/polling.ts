@@ -2,6 +2,7 @@ import * as api from 'navigader/api';
 import { Scenario } from 'navigader/models/scenario';
 import store, { slices } from 'navigader/store';
 import { IdType } from 'navigader/types';
+import { printWarning } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -26,7 +27,7 @@ class Poller {
           this.pollingIds.scenario.add(model.id);
           return;
         default:
-          console.warn(`Polling module received un-pollable object of type ${model.object_type}`);
+          printWarning(`Polling module received un-pollable object of type ${model.object_type}`);
       }
     });
   }

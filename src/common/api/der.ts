@@ -1,7 +1,6 @@
-import omit from 'lodash/omit';
-
 import { BatteryConfiguration, BatteryStrategy, BatterySimulation } from 'navigader/models/der';
 import { LoadType, MeterGroup } from 'navigader/models/meter';
+import { _ } from 'navigader/util';
 import {
   appendId, beoRoute, DynamicRestParams, equals_, getRequest, PaginationQueryParams,
   parsePaginationSet, RawPaginationSet
@@ -45,7 +44,7 @@ export async function getDerSimulations (queryOptions: DerSimulationQueryOptions
     await getRequest(
       routes.simulation(),
       {
-        ...omit(queryOptions, ['derConfiguration', 'derStrategy', 'meterGroup']),
+        ..._.omit(queryOptions, ['derConfiguration', 'derStrategy', 'meterGroup']),
         filter: {
           der_configuration: equals_(queryOptions.derConfiguration),
           der_strategy: equals_(queryOptions.derStrategy),

@@ -1,9 +1,9 @@
 import * as React from 'react';
 import MuiAlert from '@material-ui/lab/Alert';
 import MuiAlertTitle from '@material-ui/lab/AlertTitle';
-import omit from 'lodash/omit';
 
 import { makeStylesHook } from 'navigader/styles';
+import { _ } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -28,7 +28,7 @@ export const Alert: React.FC<AlertProps> = (props) => {
   const { children, title, type, ...rest } = props;
   const classes = useStyles(props);
   const alertProps = {
-    ...omit(rest, 'outlined'),
+    ..._.omit(rest, 'outlined'),
     className: classes.alert,
     severity: type
   };

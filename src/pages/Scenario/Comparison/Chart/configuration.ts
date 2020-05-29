@@ -1,8 +1,5 @@
-import flatten from 'lodash/flatten';
-import pick from 'lodash/pick';
-
 import { Scenario } from 'navigader/models/scenario';
-import { omitFalsey } from 'navigader/util';
+import { _, omitFalsey } from 'navigader/util';
 import { CustomerWrapper, ScenarioWrapper } from './dataWrappers';
 import { ChartData, ChartDatumWrapper } from './types';
 
@@ -29,7 +26,7 @@ export function buildChartConfiguration (
   // the unit of data
   const wrappedData: ChartDatumWrapper[] = isAggregated
     ? scenarios.map(s => new ScenarioWrapper(s))
-    : flatten(
+    : _.flatten(
         scenarios.map(
           s => Object.values(s.report!.rows).map(row => new CustomerWrapper(row))
         )
@@ -49,7 +46,7 @@ export function buildChartConfiguration (
     if (yValue > yMax) yMax = yValue;
     
     return {
-      ...pick(datum, ['name']),
+      ..._.pick(datum, ['name']),
       id: datum.getId(),
       label: datum.getLabel(isAveraged),
       scenario: datum.getScenarioId(),

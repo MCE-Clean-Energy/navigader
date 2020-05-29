@@ -1,6 +1,4 @@
-import omit from 'lodash/omit';
-
-import { omitFalsey, printWarning } from 'navigader/util';
+import { _, omitFalsey, printWarning } from 'navigader/util';
 import { PaginationQueryParams } from './pagination';
 
 
@@ -86,7 +84,7 @@ export function makeQueryString (params?: QueryParams): string {
   ];
   
   // Handle all other params
-  const nonDynamicRestParams = omit(params, ['exclude', 'include', 'filter']);
+  const nonDynamicRestParams = _.omit(params, ['exclude', 'include', 'filter']);
   const nonDRQueryParamPairs: QueryParamPair[] = omitFalsey(Object.entries(nonDynamicRestParams)
     .map(([key, value]) => {
       // Apply some basic validation on the `unknown` type
