@@ -23,3 +23,5 @@ else
   variable to be set. The S3 bucket has been updated, but the cache may still be active.';
 fi
 
+# Tag the commit
+zsh ./scripts/tag-commit.sh production;

@@ -22,3 +22,6 @@ else
   echo 'WARNING: could not invalidate the CloudFront cache! Expected DEV_CLOUDFRONT_ID environment
   variable to be set. The S3 bucket has been updated, but the cache may still be active.';
 fi
+
+# Tag the commit
+zsh ./scripts/tag-commit.sh dev;
