@@ -9,7 +9,7 @@ import useTheme from '@material-ui/core/styles/useTheme';
 import navigaderImage from 'navigader/images/navigader.png';
 import * as routes from 'navigader/routes';
 import { Theme } from 'navigader/styles';
-import { removeCookie } from 'navigader/util';
+import { removeCookie } from 'navigader/util/cookies';
 import { Gradient } from '../branding';
 import { Button } from '../Button';
 import * as Flex from '../Flex';

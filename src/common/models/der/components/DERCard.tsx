@@ -1,8 +1,9 @@
 import * as React from 'react';
 
 import { Card, Flex, Statistic } from 'navigader/components';
-import { BatteryConfiguration, BatteryStrategy, Components } from 'navigader/models/der';
 import { makeStylesHook } from 'navigader/styles';
+import { BatteryConfiguration, BatteryStrategy } from 'navigader/types';
+import { DERIcon } from './DERIcon';
 
 
 /** ============================ Types ===================================== */
@@ -37,7 +38,7 @@ export const DERCard: React.FC<DerCardProps> = (props) => {
               derType
                 ? (
                   <Flex.Container>
-                    <Components.DERIcon type={derType}/>
+                    <DERIcon type={derType}/>
                     {derType}
                   </Flex.Container>
                 )

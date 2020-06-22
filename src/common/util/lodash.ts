@@ -2,10 +2,11 @@
  * Defines all Lodash methods that are exposed to the application. Consuming code should import
  * the methods like so:
  *
- *   import { _ } from 'navigader/util';
+ *   import _ from 'navigader/util/lodash';
  *
  * Note that we cherry-pick methods for smaller webpack bundles.
  */
+import defaults from 'lodash/defaults';
 import every from 'lodash/every';
 import filter from 'lodash/filter';
 import find from 'lodash/find';
@@ -30,7 +31,8 @@ import toPairs from 'lodash/toPairs';
 import without from 'lodash/without';
 
 
-export {
+export default {
+  defaults,
   every,
   filter,
   find,

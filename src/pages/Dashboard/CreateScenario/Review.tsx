@@ -1,11 +1,10 @@
 import * as React from 'react';
 
 import { Card, Grid, Link, MeterGroupChip, TextField, Typography } from 'navigader/components';
-import { BatteryConfiguration, BatteryStrategy } from 'navigader/models/der';
-import { MeterGroup } from 'navigader/models/meter';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
-import { _ } from 'navigader/util';
+import { BatteryConfiguration, BatteryStrategy, MeterGroup } from 'navigader/types';
+import _ from 'navigader/util/lodash';
 import { DerCardReadOnly, DERSelection, validateDerSelections } from './common';
 
 

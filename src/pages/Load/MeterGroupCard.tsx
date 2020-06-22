@@ -4,10 +4,11 @@ import { useHistory } from 'react-router-dom';
 import {
   Card, Grid, Frame288Graph, Statistic, MeterGroupChip, Progress, Typography, Tooltip
 } from 'navigader/components';
-import { hasDataField, isSufficientlyIngested, MeterGroup } from 'navigader/models/meter';
+import { hasDataField, isSufficientlyIngested } from 'navigader/models/meter';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
-import { formatters } from 'navigader/util';
+import { MeterGroup, PowerFrame288 } from 'navigader/types';
+import { date } from 'navigader/util/formatters';
 
 
 /** ============================ Types ===================================== */
@@ -54,7 +55,13 @@ export const CardContent: React.FC<MeterGroupCardProps> = ({ meterGroup }) => {
       />
     );
   } else if (hasDataField(meterGroup.data, 'average')) {
-    return <Frame288Graph data={meterGroup.data.average} loadType="average" />;
+    return (
+      <Frame288Graph
+        axisLabel="Customer Load"
+        data={new PowerFrame288(meterGroup.data.average).scale()}
+        months="all"
+      />
+    );
   } else {
     return <Typography variant="subtitle1">Data unavailable</Typography>;
   }
@@ -87,7 +94,7 @@ export const MeterGroupCard: React.FC<MeterGroupCardProps> = (props) => {
         </Grid.Item>
         <Grid.Item span={1} />
         <Grid.Item>
-          <Statistic title="Uploaded" value={formatters.standardDate(meterGroup.created_at)} />
+          <Statistic title="Uploaded" value={date.standard(meterGroup.created_at)} />
         </Grid.Item>
       </Grid>
     </Card>

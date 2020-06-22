@@ -3,11 +3,13 @@ import * as React from 'react';
 import * as api from 'navigader/api';
 import { in_ } from 'navigader/api/util';
 import { PageHeader, Progress, Typography } from 'navigader/components';
-import { Components, Scenario } from 'navigader/models/scenario';
+import { Components } from 'navigader/models/scenario';
 import * as routes from 'navigader/routes';
-import { makeStylesHook, materialColors } from 'navigader/styles';
-import { IdType } from 'navigader/types';
-import { _, hooks, makeCancelableAsync } from 'navigader/util';
+import { makeStylesHook } from 'navigader/styles';
+import { Scenario } from 'navigader/types';
+import { makeCancelableAsync } from 'navigader/util';
+import { useColorMap, useQuery } from 'navigader/util/hooks';
+import _ from 'navigader/util/lodash';
 import { ScenarioComparisonChart } from './Chart';
 import { CustomersTable } from './CustomersTable';
 
@@ -22,7 +24,7 @@ const useStyles = makeStylesHook(() => ({
 /** ============================ Components ================================ */
 export const CompareScenariosPage: React.FC = () => {
   const classes = useStyles();
-  const params = hooks.useQuery();
+  const params = useQuery();
   const idsParam = params.get('ids');
   
   // State
@@ -46,7 +48,7 @@ export const CompareScenariosPage: React.FC = () => {
     [idsParam]
   );
 
-  const colorMap = getScenarioColors();
+  const colorMap = useColorMap([scenarios]);
   return (
     <>
       <PageHeader
@@ -109,14 +111,6 @@ export const CompareScenariosPage: React.FC = () => {
   }
   
   /** ============================ Helpers =================================== */
-  function getScenarioColors () {
-    return new Map(
-      (scenarios || []).map(
-        scenario => [scenario.id, getColor(scenario.id)]
-      )
-    );
-  }
-  
   function getChartTitle () {
     if (aggregated) {
       return averaged
@@ -127,22 +121,3 @@ export const CompareScenariosPage: React.FC = () => {
     }
   }
 };
-
-/**
- * Returns the color for a given scenario being rendered in the chart and the table
- *
- * @param {IdType} scenarioId: the ID of the scenario
- */
-function getColor (scenarioId: IdType): string {
-  if (colorMap.has(scenarioId)) return colorMap.get(scenarioId)!;
-  
-  // Haven't dealt with this ID yet, give it a new color
-  const colorKey = graphColors[colorMap.size % graphColors.length];
-  const color = materialColors[colorKey][700];
-  
-  colorMap.set(scenarioId, color);
-  return color;
-}
-
-const colorMap = new Map<IdType, string>();
-const graphColors = Object.keys(materialColors).sort() as Array<keyof typeof materialColors>;

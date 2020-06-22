@@ -1,34 +1,13 @@
-import { _, omitFalsey, printWarning } from 'navigader/util';
-import { PaginationQueryParams } from './pagination';
+import {
+  DynamicRestParams, FilterEqualClause, FilterInClause, IncludeExcludeFields, QueryParams,
+  QueryStringPrimitive
+} from 'navigader/types';
+import { omitFalsey, printWarning } from 'navigader/util';
+import _ from 'navigader/util/lodash';
 
 
 /** ============================ Types ===================================== */
-export type DeferrableFields<CommonFields, DeferredFields> = CommonFields & Partial<DeferredFields>;
-
-type QueryStringPrimitive = string | number;
-type FilterInClause = {
-  operation: 'in';
-  value: Array<QueryStringPrimitive>;
-}
-
-type FilterEqualClause = {
-  operation: 'equals';
-  value: QueryStringPrimitive;
-}
-
-type IncludeExcludeFields = string | string[];
-export type DynamicRestParams = {
-  exclude: IncludeExcludeFields;
-  include: IncludeExcludeFields;
-  filter: {
-    [key: string]: FilterEqualClause | FilterInClause;
-  };
-}
-
 type QueryParamPair = [string, QueryStringPrimitive | QueryStringPrimitive[]];
-export type QueryParams = Partial<PaginationQueryParams & DynamicRestParams> & {
-  [key: string]: unknown;
-};
 
 /** ============================ Query compilation ========================= */
 function makeFilterQueryParams (

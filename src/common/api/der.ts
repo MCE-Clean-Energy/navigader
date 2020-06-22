@@ -1,10 +1,9 @@
-import { BatteryConfiguration, BatteryStrategy, BatterySimulation } from 'navigader/models/der';
-import { LoadType, MeterGroup } from 'navigader/models/meter';
-import { _ } from 'navigader/util';
 import {
-  appendId, beoRoute, DynamicRestParams, equals_, getRequest, PaginationQueryParams,
-  parsePaginationSet, RawPaginationSet
-} from './util';
+  BatteryConfiguration, BatteryStrategy, BatterySimulation, DynamicRestParams, LoadType, MeterGroup,
+  PaginationQueryParams, RawPaginationSet
+} from 'navigader/types';
+import _ from 'navigader/util/lodash';
+import { appendId, beoRoute, equals_, getRequest, parsePaginationSet } from './util';
 
 
 /** ============================ Types ===================================== */

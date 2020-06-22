@@ -1,160 +1,132 @@
 import * as React from 'react';
 import ContainerDimensions, { Dimensions } from 'react-container-dimensions';
 import {
-  DomainPropType, VictoryAxis, VictoryChart, VictoryLabel, VictoryLine, VictoryTheme,
-  VictoryTooltip, VictoryVoronoiContainer
+  VictoryAxis, VictoryChart, VictoryLabel, VictoryLine, VictoryTheme, VictoryVoronoiContainer
 } from 'victory';
 
-import { Frame288LoadType, Frame288Numeric, Frame288NumericType } from 'navigader/models/meter';
-import { primaryColor } from 'navigader/styles';
-import { MonthIndex } from 'navigader/types';
-import { _, formatters } from 'navigader/util';
+import { ColorMap } from 'navigader/styles';
+import { Frame288Numeric, Frame288NumericType, MonthIndex, MonthsOption } from 'navigader/types';
+import { getMonthName } from 'navigader/util/formatters';
+import { useColorMap } from 'navigader/util/hooks';
+import _ from 'navigader/util/lodash';
+import { getAxisLabel, VictoryCallbackArg } from './util';
 
 
 /** ============================ Types ===================================== */
-export type Frame288MonthsOption = MonthIndex[] | 'all';
 type Frame288GraphProps = {
+  axisLabel?: string;
   data: Frame288Numeric | Frame288NumericType;
-  loadRange?: [number, number];
-  loadType: Frame288LoadType;
-  months?: Frame288MonthsOption;
+  months: MonthsOption;
+  units?: string;
   width?: number;
 };
 
-type ScaleInfo = {
-  scale: number;
-  units: 'kW' | 'MW' | 'GW';
+type LineDatum = {
+  monthIndex: MonthIndex;
+  x: number;
+  y: number;
 };
 
 /** ============================ Styles ===================================== */
-const lineStyle = {
+const lineStyle = (colorMap: ColorMap) => ({
   data: {
-    opacity: 0.2,
-    stroke: primaryColor,
-    strokeWidth: 1.5
+    opacity: 0.5,
+    stroke: colorMap.getColor('line')
   },
   parent: {
     border: '1px solid #ccc'
   }
-};
+});
 
 /** ============================ Components ================================ */
 export const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
-  const { data, loadRange, loadType, months = 'all', width: widthProp } = props;
-  
-  const frame = data instanceof Frame288Numeric
-    ? data
-    : new Frame288Numeric(data);
-  
-  // Convert Frame288 to an array of objects
-  const allMonths = _.range(1, 13) as MonthIndex[];
-  let monthIndices: MonthIndex[];
-  if (months === 'all') {
-    monthIndices = allMonths;
-  } else {
-    monthIndices = months;
-  }
-  
+  const { axisLabel, data, months, width: widthProp } = props;
+  const monthIndices = months === 'all'
+    ? _.range(1, 13) as MonthIndex[]
+    : months;
+
   // Scale the data
-  const [min, max] = loadRange || frame.getRange();
-  const { scale, units } = loadType === 'count'
-    ? { scale: 1, units: 'kW' } as ScaleInfo
-    : scaleData(min, max);
-  
-  // As the user changes which months they're viewing, we want to keep the graph's domain the
-  // same-- it's jarring to see the axes jump
-  const domain: DomainPropType = {
-    x: [0, 23],
-    y: [min / scale, max / scale]
-  };
-  
-  const formattedData = monthIndices
-    .map(monthIndex =>
-      frame.getMonth(monthIndex).map((value, i) => ({
-        x: i,
-        y: value / scale
-      }))
-    );
-  
-  const yAxisLabel = loadType === 'count'
-    ? 'Number of meter readings'
-    : `Customer Load (${units})`;
-  
+  const frame = data instanceof Frame288Numeric ? data : new Frame288Numeric(data);
+  const { units = frame.units } = props;
+  const [min, max] = frame.getRange();
+
+  // If the data changes without the component unmounting, get a new color map
+  const colorMap = useColorMap([data]);
+
+  // Convert frames to an array of objects
+  const formattedData: LineDatum[][] = monthIndices.map(monthIndex =>
+    frame.getMonth(monthIndex).map((value, i) => ({
+      monthIndex,
+      x: i,
+      y: value
+    }))
+  );
+
   return (
     <ContainerDimensions>
       {({ width }: Dimensions) =>
         <VictoryChart
-          containerComponent={<VictoryVoronoiContainer responsive={!widthProp} />}
-          height={(widthProp || width) / 2}
-          domain={domain}
+          containerComponent={
+            <VictoryVoronoiContainer labels={lineLabel} responsive={!widthProp} />
+          }
+          height={300}
+          domain={{
+            x: [0, 23],
+            y: [min, max]
+          }}
           domainPadding={{ y: 10 }}
           padding={{ left: 50, bottom: 30, top: 10, right: 0 }}
           theme={VictoryTheme.material}
           width={widthProp || width}
         >
-          <VictoryAxis tickValues={[3, 6, 9, 12, 15, 18, 21]} tickFormat={xAxisLabel} />
+          <VictoryAxis tickValues={[3, 6, 9, 12, 15, 18, 21]} tickFormat={formatHour} />
           <VictoryAxis
             crossAxis={false}
             dependentAxis
-            label={yAxisLabel}
+            label={getAxisLabel(axisLabel, units)}
             axisLabelComponent={<VictoryLabel dy={-30} />}
           />
-          
+
           {monthIndices.map((monthIndex, arrayIndex) =>
             <VictoryLine
               data={formattedData[arrayIndex]}
               key={monthIndex}
-              labels={() => formatters.getMonthName(monthIndex)}
-              labelComponent={<VictoryTooltip />}
-              style={lineStyle}
+              style={lineStyle(colorMap)}
             />
           )}
         </VictoryChart>
       }
     </ContainerDimensions>
   );
-  
+
   /** ============================ Callbacks =============================== */
   /**
    * Turns a 0-indexed hour into a human-friendly format (e.g. 0 --> "12am", 17 --> "5pm")
    *
    * @param {number} hour: the hour of the day to render
    */
-  function xAxisLabel (hour: number) {
-    const suffix = hour < 12 ? 'am' : 'pm';
-    const formattedHour = hour === 0
+  function formatHour (hour: number) {
+    const realHour = Math.round(hour);
+    const suffix = realHour < 12 ? 'am' : 'pm';
+    const formattedHour = realHour === 0
       ? 12
-      : hour <= 12
-        ? hour
-        : hour - 12;
-    
+      : realHour <= 12
+        ? realHour
+        : realHour - 12;
+
     return formattedHour + suffix;
   }
-};
-
-/** ============================ Helpers =================================== */
-/**
- * Gets the order of magnitude of the data to determine which units to render with
- *
- * @param {number} min: the minimum value of the data
- * @param {number} max: the maximum value of the data
- */
-export function scaleData (min: number, max: number): ScaleInfo {
-  const magnitude = Math.log10(Math.max(Math.abs(min), Math.abs(max)));
-  if (magnitude >= 6) {
-    return {
-      scale: 1e6,
-      units: 'GW'
-    };
-  } else if (magnitude >= 3) {
-    return {
-      scale: 1e3,
-      units: 'MW'
-    };
-  } else {
-    return {
-      scale: 1,
-      units: 'kW'
-    };
+  
+  /**
+   * Creates the label for a point along a month-line
+   *
+   * @param {VictoryCallbackArg<LineDatum>} datum: the data point for which the label is made
+   */
+  function lineLabel ({ datum }: VictoryCallbackArg<LineDatum>) {
+    const month = getMonthName(datum.monthIndex);
+    const hour = formatHour(datum.x);
+    const value = datum.y.toFixed(2);
+    const suffix = units ? ` ${units}` : '';
+    return `${month}, ${hour}: ${value}${suffix}`;
   }
-}
+};

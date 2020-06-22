@@ -1,4 +1,4 @@
-import { clamp, lerp, percentOf } from './math';
+import { clamp, lerp, percentOf, xor } from './math';
 
 
 describe('`lerp` method', () => {
@@ -37,5 +37,26 @@ describe('`percentOf` method', () => {
     expect(percentOf(1, 2)).toEqual(50);
     expect(percentOf(50.1, 100)).toEqual(50.1);
     expect(percentOf(3.5, 2)).toEqual(175);
+  });
+});
+
+describe('`xor` method', () => {
+  it('returns true when only 1 input is truthy', () => {
+    expect(xor(1, 0)).toBeTruthy();
+    expect(xor(1, 0, '', false, null)).toBeTruthy();
+    expect(xor('true', false)).toBeTruthy();
+    expect(xor('one arg')).toBeTruthy();
+  });
+  
+  it('returns false when there are more than 1 truthy inputs', () => {
+    expect(xor(1, 1)).toBeFalsy();
+    expect(xor(true, false, false, false, 1)).toBeFalsy();
+    expect(xor('true', 'false')).toBeFalsy();
+  });
+  
+  it('returns false when there are no truthy inputs', () => {
+    expect(xor(0, 0)).toBeFalsy();
+    expect(xor(false, false, false)).toBeFalsy();
+    expect(xor(false , 0 , '' , null , undefined)).toBeFalsy();
   });
 });

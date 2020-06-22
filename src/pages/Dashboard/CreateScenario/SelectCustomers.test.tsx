@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { cleanup, fireEvent } from '@testing-library/react'
 
-import { _ } from 'navigader/util';
+import _ from 'navigader/util/lodash';
 import { asyncForEach, fixtures, renderContextDependentComponent } from 'navigader/util/testing';
 import { SelectCustomers } from './SelectCustomers';
 

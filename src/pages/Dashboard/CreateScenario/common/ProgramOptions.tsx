@@ -1,9 +1,9 @@
 import * as React from 'react';
 
 import { Flex, Select } from 'navigader/components';
-import { BatteryConfiguration, BatteryStrategy, DerStrategyType } from 'navigader/models/der';
 import { makeStylesHook } from 'navigader/styles';
-import { _ } from 'navigader/util';
+import { BatteryConfiguration, BatteryStrategy, DerStrategyType } from 'navigader/types';
+import _ from 'navigader/util/lodash';
 import { DERSelection } from './util';
 
 

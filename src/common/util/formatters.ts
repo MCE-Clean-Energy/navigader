@@ -1,14 +1,11 @@
-import moment from 'moment';
+import moment, { MomentInput } from 'moment';
 
 import { Nullable } from 'navigader/types';
 import { clamp, percentOf } from './math';
 
 
 /** ============================ Types ===================================== */
-type DateType = Date | string;
-type DollarFormatOptions = Partial<{
-  cents: boolean;
-}>;
+type DollarFormatOptions = Partial<{ cents: boolean; }>;
 
 /** ============================ Formatters ================================ */
 /**
@@ -58,14 +55,15 @@ export function getMonthName (monthIndex: number) {
 }
 
 /**
- * Utility method for formatting dates consistently in the application. This will largely just be a
+ * Utility methods for formatting dates consistently in the application. This will largely just be a
  * wrapper around moment.js
  *
- * @param {Date object | string} date - The date to format
+ * @param {MomentInput} date: the date to format
  */
-export function standardDate (date: DateType): string {
-  return moment(date).format('MMM D, YYYY');
-}
+export const date = {
+  monthDayHourMinute: (date: MomentInput) => moment(date).format('MMM D, h:mm a'),
+  standard: (date: MomentInput) => moment(date).format('MMM D, YYYY')
+};
 
 /**
  * Pluralizes a word based on the `count` parameter

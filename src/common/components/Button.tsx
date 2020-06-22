@@ -3,7 +3,7 @@ import MuiButton from '@material-ui/core/Button';
 import MuiFab from '@material-ui/core/Fab';
 import MuiIconButton from '@material-ui/core/IconButton';
 
-import { _ } from 'navigader/util';
+import _ from 'navigader/util/lodash';
 import { Icon, IconProps, ValidIcon } from './Icon';
 
 

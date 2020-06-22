@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Icon } from 'navigader/components';
-import { DerType } from 'navigader/models/der';
+import { DerType } from 'navigader/types';
 
 
 /** ============================ Types ===================================== */

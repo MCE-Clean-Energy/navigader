@@ -1,9 +1,65 @@
+import { RawScenario, RawPandasFrame } from 'navigader/types';
+import _ from 'navigader/util/lodash';
 import { fixtures } from 'navigader/util/testing';
-import * as util from './util';
-import { RawScenario } from './types';
+import { parseMeterGroup, parsePandasFrame, parseReport, parseScenario } from './parsing';
 
 
-describe('Scenario model utilities', () => {
+describe('API parsing methods', () => {
+  describe('`parseMeterGroup` method', () => {
+    const customerCluster = fixtures.makeCustomerCluster();
+    const originFile = fixtures.makeOriginFile({
+      metadata: {
+        expected_meter_count: 0,
+        filename: 'origin_files/myFile.csv'
+      }
+    });
+    
+    function parseOriginFile (meterCount: number, expectedCount: number | null) {
+      return parseMeterGroup({
+        ...originFile,
+        meter_count: meterCount,
+        metadata: {
+          expected_meter_count: expectedCount,
+          filename: 'origin_files/myFile.csv'
+        }
+      });
+    }
+    
+    it('should strip the `origin_files/` prefix from origin filenames', () => {
+      expect(parseMeterGroup(originFile)).toMatchObject({
+        metadata: {
+          filename: 'myFile.csv',
+        }
+      });
+    });
+    
+    it('parses the `progress` key properly', () => {
+      const parsedCustomerCluster = parseMeterGroup(customerCluster);
+      expect(parsedCustomerCluster.progress.is_complete).toEqual(true);
+      expect(parsedCustomerCluster.progress.percent_complete).toEqual(100);
+      
+      // Expected meter count is 0
+      let parsedOriginFile = parseMeterGroup(originFile);
+      expect(parsedOriginFile.progress.is_complete).toEqual(false);
+      expect(parsedOriginFile.progress.percent_complete).toEqual(Infinity);
+      
+      // Set meter count to 0, expected count to `null`
+      parsedOriginFile = parseOriginFile(0, null);
+      expect(parsedOriginFile.progress.is_complete).toEqual(false);
+      expect(parsedOriginFile.progress.percent_complete).toEqual(0);
+      
+      // Set meter count to 1, expected count to 7. Percent complete rounds to 1 digit
+      parsedOriginFile = parseOriginFile(1, 7);
+      expect(parsedOriginFile.progress.is_complete).toEqual(false);
+      expect(parsedOriginFile.progress.percent_complete).toEqual(14.3);
+      
+      // Set meter count to 100, expected count to 100. `is_complete` should be true
+      parsedOriginFile = parseOriginFile(100, 100);
+      expect(parsedOriginFile.progress.is_complete).toEqual(true);
+      expect(parsedOriginFile.progress.percent_complete).toEqual(100);
+    });
+  });
+  
   describe('`parseScenario` method', () => {
     const derConfiguration = fixtures.makeDerConfiguration();
     const derStrategy = fixtures.makeDerStrategy();
@@ -22,7 +78,7 @@ describe('Scenario model utilities', () => {
     });
     
     it('parses a scenario as expected', () => {
-      const parsed = util.parseScenario(rawScenario);
+      const parsed = parseScenario(rawScenario);
       expect(parsed).toMatchObject({
         der: {
           der_configuration: derConfiguration,
@@ -42,7 +98,7 @@ describe('Scenario model utilities', () => {
     });
     
     it('handles when `expected_der_simulation_count` is 0', () => {
-      const parsed = util.parseScenario({
+      const parsed = parseScenario({
         ...rawScenario,
         der_simulation_count: 0,
         expected_der_simulation_count: 0
@@ -68,7 +124,7 @@ describe('Scenario model utilities', () => {
           percent_complete
         ] = testValue;
         
-        const parsed = util.parseScenario(
+        const parsed = parseScenario(
           fixtures.makeRawScenario({
             der_simulation_count,
             expected_der_simulation_count
@@ -104,7 +160,7 @@ describe('Scenario model utilities', () => {
       ];
 
       testCases.forEach(([report, summary, hasAggregated]) => {
-        const hasntRunParsed = util.parseScenario(
+        const hasntRunParsed = parseScenario(
           fixtures.makeRawScenario({
             der_simulation_count: 0,
             expected_der_simulation_count: 10,
@@ -113,7 +169,7 @@ describe('Scenario model utilities', () => {
           })
         );
         
-        const hasRunParsed = util.parseScenario(
+        const hasRunParsed = parseScenario(
           fixtures.makeRawScenario({
             der_simulation_count: 10,
             expected_der_simulation_count: 10,
@@ -130,7 +186,7 @@ describe('Scenario model utilities', () => {
   
   describe('`parseReport` method', () => {
     it('renames certain fields', () => {
-      const parsed = util.parseReport(fixtures.scenarioReport);
+      const parsed = parseReport(fixtures.scenarioReport);
 
       // Check that rows are renamed
       Object.values(parsed!.rows).forEach((simulation, i) => {
@@ -139,6 +195,48 @@ describe('Scenario model utilities', () => {
       
       // Check that columns are renamed
       expect(parsed?.columns.SA_ID).toEqual(fixtures.scenarioReport['SA ID']);
+    });
+  });
+  
+  describe('`parsePandasFrame` method', () => {
+    function makeRawPandasFrame <RowType extends Record<string, any>>(
+      pandaRow: RowType,
+      numRows: number
+    ) {
+      return Object.keys(pandaRow).reduce((frame, key: keyof RowType) => {
+        frame[key] = _.range(numRows).reduce((frameObj, i) => {
+          frameObj[i] = pandaRow[key];
+          return frameObj;
+        }, {} as { [i: number]: any });
+        return frame;
+      }, {} as RawPandasFrame<RowType>);
+    }
+  
+    it('parses values', () => {
+      const parsed = parsePandasFrame(
+        makeRawPandasFrame({
+          propA: 1,
+          propB: 'c'
+        }, 3)
+      );
+      
+      expect(parsed.propA.length).toEqual(3);
+      expect(parsed.propB.length).toEqual(3);
+      expect(parsed.propA).toEqual([1, 1, 1]);
+      expect(parsed.propB).toEqual(['c', 'c', 'c']);
+    });
+    
+    it('should maintain alphanumeric order', () => {
+      const parsed = parsePandasFrame({
+        propA: {
+          '1': 1,
+          '3': 3,
+          '0': 'b',
+          '2': null
+        }
+      });
+      
+      expect(parsed.propA).toEqual(['b', 1, null, 3]);
     });
   });
 });

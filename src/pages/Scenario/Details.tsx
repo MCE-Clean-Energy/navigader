@@ -1,18 +1,21 @@
 import * as React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
+import moment from 'moment';
 
 import * as api from 'navigader/api';
 import {
-  Card, Flex, Frame288Graph, Frame288MonthsOption, LoadTypeMenu, MeterGroupChip, MonthsMenu,
-  PageHeader, Progress, Typography
+  Card, Centered, Flex, IntervalDataGraph, IntervalDataTuple, MeterGroupChip,
+  MonthSelectorExclusive, PageHeader, Progress, TimeTuple, Toggle, Typography
 } from 'navigader/components';
-import { Components } from 'navigader/models/der';
-import { Frame288LoadType, Frame288Numeric } from 'navigader/models/meter';
-import { Scenario } from 'navigader/models/scenario';
+import { IntervalDataWrapper } from 'navigader/models';
+import { DERCard } from 'navigader/models/der/components';
+import { ScenariosTable } from 'navigader/models/scenario/components';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
+import { Frame288Numeric, MonthIndex, Scenario } from 'navigader/types';
 import { makeCancelableAsync } from 'navigader/util';
-import { ScenariosTable } from 'navigader/models/scenario/components';
+import { useGhgRates } from 'navigader/util/hooks';
+import _ from 'navigader/util/lodash';
 
 
 /** ============================ Types ===================================== */
@@ -22,7 +25,10 @@ type ScenarioProp = {
 
 type LoadingModalProps = {
   loading: boolean;
-}
+};
+
+type ChartView = 'usage' | 'ghg';
+type TimeDomainOption = '1d' | '2d' | '1w' | '1m';
 
 /** ============================ Styles ==================================== */
 const useStyles = makeStylesHook(theme => ({
@@ -73,7 +79,7 @@ const ScenarioContext: React.FC<ScenarioProp> = ({ scenario }) => {
     <Flex.Container alignItems="center">
       <Flex.Item>
         {scenario &&
-          <Components.DERCard
+          <DERCard
             configuration={scenario.der?.der_configuration}
             strategy={scenario.der?.der_strategy}
           />
@@ -110,12 +116,14 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
   const classes = useScenarioGraphStyles();
 
   // State
-  const [loadType, setLoadType] = React.useState<Frame288LoadType>('average');
-  const [meterGroupData, setMeterGroupData] = React.useState<Frame288Numeric>();
+  const [chartView, setChartView] = React.useState<ChartView>('usage');
+  const [meterGroupData, setMeterGroupData] = React.useState<IntervalDataWrapper>();
   const [meterGroupLoading, setMeterGroupLoading] = React.useState(false);
-  const [simulationData, setSimulationData] = React.useState<Frame288Numeric>();
+  const [simulationData, setSimulationData] = React.useState<IntervalDataWrapper>();
   const [simulationLoading, setSimulationLoading] = React.useState(false);
-  const [selectedMonths, setMonths] = React.useState<Frame288MonthsOption>('all');
+  const [selectedMonth, setMonth] = React.useState<MonthIndex>(1);
+  const [timeDomainOption, setTimeDomainOption] = React.useState<TimeDomainOption>('1m');
+  const [timeDomain, setTimeDomain] = React.useState<TimeTuple>();
 
   // Load the meter group data
   React.useEffect(
@@ -123,93 +131,163 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
       async () => {
         if (!meter_group?.id) return;
         setMeterGroupLoading(true);
-        return api.getMeterGroup(meter_group.id, { data_types: loadType });
+        return api.getMeterGroup(meter_group.id, { data_types: 'default' });
       }, (res) => {
-        const loadData = res?.data[loadType];
-        loadData && setMeterGroupData(new Frame288Numeric(loadData));
         setMeterGroupLoading(false);
+        const loadData = res?.data.default;
+        loadData && setMeterGroupData(
+          IntervalDataWrapper.create({ ...loadData, name: 'Initial load' }, 'index', 'kw')
+        );
       }
-    ), [meter_group?.id, loadType]
+    ), [meter_group?.id]
   );
-  
+
   // Load the simulation data
   React.useEffect(
     makeCancelableAsync(
-      async () => {
+      () => {
         setSimulationLoading(true);
-        return api.getScenario(scenario.id, { data_types: loadType });
+        return api.getScenario(scenario.id, { data_types: 'default' });
       },
       res => {
-        const loadData = res?.data[loadType];
-        loadData && setSimulationData(new Frame288Numeric(loadData));
         setSimulationLoading(false);
+        const loadData = res.data.default;
+        loadData && setSimulationData(
+          IntervalDataWrapper.create({ ...loadData, name: 'Simulated load' }, 'index', 'kw')
+        );
       }
-    ), [scenario.id, loadType]
+    ), [scenario.id]
   );
-  
-  const graphWidth = 43;
-  const combinedLoadRange = getLoadRange();
+
+  const ghgRates = useGhgRates();
+  const cns2022 = ghgRates && _.find(ghgRates,
+      rate => rate.name === 'Clean Net Short' && rate.effective.includes('2022')
+  )?.data?.rename('Clean Net Short 2022');
 
   return (
-    <Flex.Container className={classes.scenarioGraphs} justifyContent="space-between">
-      <Flex.Item basis={graphWidth}>
-        <Typography useDiv variant="h6">Initial Aggregate Load Curve by Month</Typography>
-        <Card className={classes.loadGraphCard} raised>
-          {meterGroupData &&
-            <Frame288Graph
-              data={meterGroupData}
-              loadRange={combinedLoadRange}
-              loadType={loadType}
-              months={selectedMonths}
-            />
-          }
-          <LoadingModal loading={meterGroupLoading} />
-        </Card>
-      </Flex.Item>
+    <div className={classes.scenarioGraphs}>
+      <Typography useDiv variant="h6">Simulation Impacts</Typography>
+      <Card className={classes.loadGraphCard} raised>
+        <LoadingModal loading={meterGroupLoading || simulationLoading} />
+        <Centered>
+          <Flex.Container alignItems="center" justifyContent="center">
+            <Flex.Item>
+              <MonthSelectorExclusive selected={selectedMonth} onChange={handleMonthChange} />
+            </Flex.Item>
+            <Flex.Item style={{ marginLeft: '1rem' }}>
+              <Toggle.Group
+                exclusive
+                onChange={setChartView}
+                size="small"
+                value={chartView}
+              >
+                <Toggle.Button aria-label="view load curves" value="usage">Load</Toggle.Button>
+                <Toggle.Button aria-label="view GHG curves" value="ghg">GHG</Toggle.Button>
+              </Toggle.Group>
+            </Flex.Item>
 
-      <Flex.Item>
-        <div className={classes.headingSpacer} />
-        <MonthsMenu selectedMonths={selectedMonths} changeMonths={setMonths} />
-        <LoadTypeMenu
-          changeType={setLoadType}
-          className={classes.loadTypeMenu}
-          selectedType={loadType}
-        />
-      </Flex.Item>
-
-      <Flex.Item basis={graphWidth}>
-        <Typography useDiv variant="h6">Simulated Aggregate Load Curve by Month</Typography>
-        <Card className={classes.loadGraphCard} raised>
-          {simulationData &&
-            <Frame288Graph
-              data={simulationData}
-              loadRange={combinedLoadRange}
-              loadType={loadType}
-              months={selectedMonths}
-            />
-          }
-          <LoadingModal loading={simulationLoading} />
-        </Card>
-      </Flex.Item>
-    </Flex.Container>
+            <Flex.Item style={{ marginLeft: '1rem' }}>
+              <Toggle.Group
+                exclusive
+                onChange={handleTimeDomainChange}
+                size="small"
+                value={timeDomainOption}
+              >
+                <Toggle.Button aria-label="one day" value="1d">1D</Toggle.Button>
+                <Toggle.Button aria-label="two days" value="2d">2D</Toggle.Button>
+                <Toggle.Button aria-label="one week" value="1w">1W</Toggle.Button>
+                <Toggle.Button aria-label="one month" value="1m">1M</Toggle.Button>
+              </Toggle.Group>
+            </Flex.Item>
+          </Flex.Container>
+        </Centered>
+        {meterGroupData && simulationData &&
+          <>
+            {chartView === 'usage' &&
+              <IntervalDataGraph
+                axisLabel="Customer load"
+                month={selectedMonth}
+                onTimeDomainChange={setTimeDomain}
+                timeDomain={timeDomain}
+                {...scaleLoadData([meterGroupData, simulationData])}
+              />
+            }
+            {
+              chartView === 'ghg' && cns2022 &&
+                <>
+                  <IntervalDataGraph
+                    axisLabel="GHG Emissions"
+                    data={[
+                      meterGroupData.multiply288(cns2022, 'Initial GHG emissions'),
+                      simulationData.multiply288(cns2022, 'Simulated GHG emissions')
+                    ]}
+                    month={selectedMonth}
+                    timeDomain={timeDomain}
+                    onTimeDomainChange={setTimeDomain}
+                    units="tCO2"
+                  />
+                  <IntervalDataGraph
+                    height={100}
+                    hideXAxis
+                    month={selectedMonth}
+                    timeDomain={timeDomain}
+                    onTimeDomainChange={setTimeDomain}
+                    {...scaleGhgRatesData(meterGroupData, cns2022)}
+                  />
+                </>
+            }
+          </>
+        }
+      </Card>
+    </div>
   );
-  
-  /** ============================ Helpers ================================= */
+
+  /** ============================ Callbacks =============================== */
   /**
-   * Returns the minimum and maximum load values from both the meter group (initial) data and the
-   * simulation data. If one of the two is missing, returns the two values for the dataset that's
-   * present. If both are missing, returns `undefined`.
+   * Called when the month selector changes. This changes the selected month and resets the time
+   * domain to a month
+   *
+   * @param {MonthIndex} month: the month now being shown
    */
-  function getLoadRange (): [number, number] | undefined {
-    if (!meterGroupData && !simulationData) return undefined;
+  function handleMonthChange (month: MonthIndex) {
+    setMonth(month);
+    handleTimeDomainChange('1m', month);
+  }
+  
+  /**
+   * Called when the time domain selector changes. This changes the active time domain by setting
+   * the domain start to the start of the given month, and the domain end to the appropriate
+   * distance ahead of the start
+   *
+   * @param {TimeDomainOption} timeDomainOption: the timespan to set the domain to
+   * @param {MonthIndex} month: the month to start at
+   */
+  function handleTimeDomainChange (
+    timeDomainOption: TimeDomainOption,
+    month: MonthIndex = selectedMonth
+  ) {
+    setTimeDomainOption(timeDomainOption);
+    const monthStart = meterGroupData?.startOfMonth(month);
+    if (!monthStart) return;
     
-    const meterGroupRange = meterGroupData ? meterGroupData.getRange() : [Infinity, -Infinity];
-    const simulationRange = simulationData ? simulationData.getRange() : [Infinity, -Infinity];
+    const domainEnd = moment(monthStart);
+    switch (timeDomainOption) {
+      case '1d':
+        domainEnd.add(1, 'day');
+        break;
+      case '2d':
+        domainEnd.add(2, 'days');
+        break;
+      case '1w':
+        domainEnd.add(1, 'week');
+        break;
+      case '1m':
+        domainEnd.endOf('month');
+        break;
+    }
     
-    return [
-      Math.min(meterGroupRange[0], simulationRange[0]),
-      Math.max(meterGroupRange[1], simulationRange[1]),
-    ]
+    // Update the state variable
+    setTimeDomain([monthStart, domainEnd.toDate()]);
   }
 };
 
@@ -242,3 +320,53 @@ export const ScenarioResultsPage: React.FC = () => {
     </>
   );
 };
+
+/** ============================ Helpers =================================== */
+/**
+ * Scales the data to show in kW, MW or GW depending on the extent of the interval's power values
+ *
+ * @param {IntervalDataWrapper[]} intervals: the pre-DER and post-DER load interval data
+ */
+function scaleLoadData (intervals: IntervalDataTuple) {
+  const [min, max] = intervals.reduce(([curMin, curMax], interval) => {
+    const [minInterval, maxInterval] = interval.valueDomain();
+    return [Math.min(curMin, minInterval), Math.max(curMax, maxInterval)];
+  }, [Infinity, -Infinity]);
+
+  const magnitude = Math.log10(Math.max(Math.abs(min), Math.abs(max)));
+  const [divisor, units] = magnitude >= 6
+    ? [1e6, 'GW']
+    : magnitude >= 3
+      ? [1e3, 'MW']
+      : [1, 'kW'];
+  
+  return {
+    data: intervals.map(interval => interval.divide(divisor)) as IntervalDataTuple,
+    units
+  };
+}
+
+/**
+ * Scales the GHG rates to show in tCO2 per kW, MW or GW depending on the extent of the frame288.
+ * This is very similar to `scaleLoadData`. The difference is that the GHG rates use kW/MW/GW in the
+ * denominator rather than the numerator.
+ *
+ * @param {IntervalDataWrapper} interval: the load interval. This will be used for its domain to
+ *   align the frame288
+ * @param {Frame288Numeric} ghgRate: the frame288 representing the GHG rates
+ */
+function scaleGhgRatesData (interval: IntervalDataWrapper, ghgRate: Frame288Numeric) {
+  const data = interval.align288(ghgRate);
+  const max = data.valueDomain()[1];
+  const magnitude = Math.abs(Math.log10(max));
+  const [scale, units] = magnitude >= 6
+    ? [1e6, 'GW']
+    : magnitude >= 3
+      ? [1e3, 'MW']
+      : [1, 'kW'];
+  
+  return {
+    data: data.multiply(scale),
+    units: `tCO2/${units}`
+  };
+}

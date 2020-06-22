@@ -1,4 +1,5 @@
-import { parsePaginationSet, RawPaginationSet } from './pagination';
+import { RawPaginationSet } from 'navigader/types';
+import { parsePaginationSet} from './pagination';
 
 
 describe('`parsePaginationSet` method', () => {

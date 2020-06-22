@@ -1,4 +1,4 @@
-import { _ } from 'navigader/util';
+import _ from 'navigader/util/lodash';
 import { fixtures } from 'navigader/util/testing';
 import * as util from './util';
 

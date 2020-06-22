@@ -1,7 +1,8 @@
-import { Frame288NumericType } from 'navigader/models/meter';
+import { Frame288Numeric, Frame288NumericType, MonthIndex } from 'navigader/types';
+import _ from 'navigader/util/lodash';
 
 
-const frame288: Frame288NumericType = {
+export const frame288: Frame288NumericType = {
   1: [
     1049.7197,
     874.4885,
@@ -316,4 +317,15 @@ const frame288: Frame288NumericType = {
   ]
 };
 
-export default frame288;
+/**
+ * Takes a function that will be called to produce the values of a frame 288. The function will be
+ * passed two arguments: the month index and the hour index
+ * @param fn
+ */
+export const makeFrame288 = (
+  fn: (month: MonthIndex, hour: number) => number
+): Frame288NumericType => {
+  const frame288 = {} as Record<MonthIndex, number[]>;
+  Frame288Numeric.months.forEach(m => frame288[m] = _.range(24).map(h => fn(m, h)));
+  return frame288;
+};

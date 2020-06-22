@@ -1,9 +1,11 @@
 import * as React from 'react';
 
 import { Flex, MeterGroupChip, Tooltip, Typography } from 'navigader/components';
-import { isSufficientlyIngested, MeterGroup, OriginFileMeterGroup } from 'navigader/models/meter';
+import { isSufficientlyIngested } from 'navigader/models/meter';
 import { makeStylesHook } from 'navigader/styles';
-import { _, formatters } from 'navigader/util';
+import { MeterGroup, OriginFileMeterGroup } from 'navigader/types';
+import { percentage } from 'navigader/util/formatters';
+import _ from 'navigader/util/lodash';
 
 
 /** ============================ Types ===================================== */
@@ -65,7 +67,7 @@ export const SelectCustomers: React.FC<SelectCustomersProps> = (props) => {
           // Otherwise we will render a tooltip explaining why the meter group is disabled
           const percentComplete = expected_meter_count === null
             ? '0%'
-            : formatters.percentage(meter_count, expected_meter_count);
+            : percentage(meter_count, expected_meter_count);
           
           const explanation = (
             <Typography variant="body2">

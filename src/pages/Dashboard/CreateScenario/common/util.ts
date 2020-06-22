@@ -1,7 +1,6 @@
-import { DerType } from 'navigader/models/der';
-import { MeterGroup } from 'navigader/models/meter';
 import * as routes from 'navigader/routes';
-import { _ } from 'navigader/util';
+import { DerType, MeterGroup } from 'navigader/types';
+import _ from 'navigader/util/lodash';
 
 
 // Order of steps

@@ -1,13 +1,18 @@
 import {
-  capitalize, dollars, maxDecimals, percentage, pluralize, standardDate, truncateAtLength
+  capitalize, date, dollars, maxDecimals, percentage, pluralize, truncateAtLength
 } from './formatters';
 
 
 describe('formatting methods', () => {
-  describe('`standardDate`', () => {
-    it('formats ISO times correctly', () => {
-      const janOne2020 = '2020-01-01T10:00:00';
-      expect(standardDate(janOne2020)).toEqual('Jan 1, 2020');
+  describe('date formatters', () => {
+    const janOne2020 = '2020-01-01T10:00:00';
+
+    it('`date.standard` formats ISO times correctly', () => {
+      expect(date.standard(janOne2020)).toEqual('Jan 1, 2020');
+    });
+
+    it('`date.` formats ISO times correctly', () => {
+      expect(date.monthDayHourMinute(janOne2020)).toEqual('Jan 1, 10:00 am');
     });
   });
   

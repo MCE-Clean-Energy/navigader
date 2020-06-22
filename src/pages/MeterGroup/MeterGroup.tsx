@@ -3,11 +3,10 @@ import { useHistory, useParams } from 'react-router-dom';
 
 import * as api from 'navigader/api';
 import { Button, Fade, Grid, PageHeader, Progress, Typography } from 'navigader/components';
-import {
-  Frame288LoadType, getMeterGroupDisplayName, isSufficientlyIngested, MeterGroup
-} from 'navigader/models/meter';
+import { getMeterGroupDisplayName, isSufficientlyIngested } from 'navigader/models/meter';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
+import { Frame288LoadType, MeterGroup } from 'navigader/types';
 import LoadGraph from './LoadGraph';
 import MetersTable from './MetersTable';
 

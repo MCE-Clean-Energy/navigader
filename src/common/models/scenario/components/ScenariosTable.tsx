@@ -5,13 +5,15 @@ import * as api from 'navigader/api';
 import {
   Avatar, Flex, Icon, Link, PaginationState, PrefetchedTable, Progress, Switch, Table, Tooltip
 } from 'navigader/components';
-import { poller } from 'navigader/models';
-import { Components } from 'navigader/models/der';
-import { Scenario, ScenarioReportSummary } from 'navigader/models/scenario';
 import * as routes from 'navigader/routes';
 import { selectModels, updateModels } from 'navigader/store/slices/models';
-import { IdType } from 'navigader/types';
-import { _, formatters, kwToMw, printWarning } from 'navigader/util';
+import { ColorMap } from 'navigader/styles';
+import { Scenario, ScenarioReportSummary } from 'navigader/types';
+import { kwToMw, printWarning } from 'navigader/util';
+import { date, dollars, maxDecimals } from 'navigader/util/formatters';
+import _ from 'navigader/util/lodash';
+import { poller } from '../../common';
+import { Components } from '../../der';
 
 
 /** ============================ Types ===================================== */
@@ -19,7 +21,7 @@ type ScenariosTableProps = {
   actionsMenu?: (scenario: Scenario) => React.ReactElement;
   averaged?: boolean;
   className?: string;
-  colorMap?: Map<IdType, string>;
+  colorMap?: ColorMap;
   NoScenariosRow?: React.ReactElement;
   onSelect?: (selections: Scenario[]) => void;
   scenarios?: Scenario[];
@@ -176,7 +178,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
               <Table.Row key={scenario.id}>
                 {colorMap &&
                   <Table.Cell>
-                    <Avatar color={colorMap.get(scenario.id)} size="small">&nbsp;</Avatar>
+                    <Avatar color={colorMap?.getColor(scenario.id)} size="small">&nbsp;</Avatar>
                   </Table.Cell>
                 }
                 <Table.Cell>
@@ -189,7 +191,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                     : scenario.name
                   }
                 </Table.Cell>
-                <Table.Cell>{formatters.standardDate(scenario.created_at)}</Table.Cell>
+                <Table.Cell>{date.standard(scenario.created_at)}</Table.Cell>
                 <Table.Cell>
                   {scenario.meter_group &&
                     <span>{scenario.meter_group.name} ({scenario.meter_group.meter_count})</span>
@@ -213,28 +215,28 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? formatters.maxDecimals(getField(scenario, 'UsageDelta', innerAveraged), 2)
+                      ? maxDecimals(getField(scenario, 'UsageDelta', innerAveraged), 2)
                       : '-'
                   }
                 </Table.Cell>
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? formatters.dollars(getField(scenario, 'BillDelta', innerAveraged))
+                      ? dollars(getField(scenario, 'BillDelta', innerAveraged))
                       : '-'
                   }
                 </Table.Cell>
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? formatters.maxDecimals(getField(scenario, 'CleanNetShort2022Delta', innerAveraged), 2)
+                      ? maxDecimals(getField(scenario, 'CleanNetShort2022Delta', innerAveraged), 2)
                       : '-'
                   }
                 </Table.Cell>
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? formatters.maxDecimals(kwToMw(getField(scenario, 'RADelta', innerAveraged)), 2)
+                      ? maxDecimals(kwToMw(getField(scenario, 'RADelta', innerAveraged)), 2)
                       : '-'
                   }
                 </Table.Cell>

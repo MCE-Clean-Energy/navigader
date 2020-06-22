@@ -1,5 +1,7 @@
-import { getCookie, omitFalsey } from 'navigader/util';
-import { makeQueryString, QueryParams } from './querying';
+import { QueryParams } from 'navigader/types';
+import { omitFalsey } from 'navigader/util';
+import { getCookie } from 'navigader/util/cookies';
+import { makeQueryString} from './querying';
 
 
 /** ============================ Types ===================================== */

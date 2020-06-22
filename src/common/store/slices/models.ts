@@ -1,32 +1,42 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { BatteryConfiguration, BatteryStrategy, BatterySimulation } from 'navigader/models/der';
-import { Meter } from 'navigader/models/meter';
-import { Scenario } from 'navigader/models/scenario';
-import { _ } from 'navigader/util';
+import {
+  BatteryConfiguration, BatterySimulation, BatteryStrategy, Frame288Numeric, GHGRate, Meter,
+  Scenario, StoredGHGRate
+} from 'navigader/types';
+import _ from 'navigader/util/lodash';
 import { RootState, ModelsSlice } from '../types';
 
 
 /** ============================ Actions =================================== */
-type ModelName = keyof ModelsSlice;
-type ModelClass =
+type ModelName = keyof Omit<ModelsSlice, 'hasMeterGroups'>;
+
+// The `Exterior` vs. `Interior` dichotomy distinguishes between model objects internal to the
+// store (i.e. those returned from selectors) and those external to the store (i.e. those provided
+// to the action creators).
+type ModelClassExterior = Exclude<ModelClassInterior, StoredGHGRate> | GHGRate;
+type ModelClassInterior =
   | BatteryConfiguration
   | BatterySimulation
   | BatteryStrategy
+  | StoredGHGRate
   | Meter
   | Scenario;
 
 /** Payloads */
-type RemoveModelAction = PayloadAction<ModelClass>;
-type UpdateModelsAction = PayloadAction<ModelClass[]>;
+type RemoveModelAction = PayloadAction<ModelClassExterior>;
 type UpdateHasMeterGroupsAction = PayloadAction<boolean>;
-type UpdateModelAction = PayloadAction<ModelClass>;
+
+/** Prepared Payloads */
+type UpdateModelAction = PayloadAction<ModelClassInterior>;
+type UpdateModelsAction = PayloadAction<ModelClassInterior[]>;
 
 /** ============================ Slice ===================================== */
 const initialState = {
   derConfigurations: [],
   derSimulations: [],
   derStrategies: [],
+  ghgRates: [],
   hasMeterGroups: null,
   meters: [],
   scenarios: []
@@ -53,11 +63,17 @@ const slice = createSlice({
     updateHasMeterGroups: (state, action: UpdateHasMeterGroupsAction) => {
       state.hasMeterGroups = action.payload
     },
-    updateModels: (state, action: UpdateModelsAction) => {
-      action.payload.forEach(model => addOrUpdateModel(state, model));
+    updateModels: {
+      prepare: (models: ModelClassExterior[]) => ({ payload: models.map(prepareModel) }),
+      reducer: (state, action: UpdateModelsAction) => {
+        action.payload.forEach(model => addOrUpdateModel(state, model));
+      }
     },
-    updateModel: (state, action: UpdateModelAction) => {
-      addOrUpdateModel(state, action.payload);
+    updateModel: {
+      prepare: (model: ModelClassExterior) => ({ payload: prepareModel(model) }),
+      reducer:(state, action: UpdateModelAction) => {
+        addOrUpdateModel(state, action.payload);
+      }
     }
   }
 });
@@ -79,6 +95,16 @@ export function selectModels <Type extends ModelName>(modelType: Type) {
 }
 
 /**
+ * Special selector that retrieves `StoredGHGRate` objects and runs them through an "extraction
+ * function" to instantiate the object's numeric `Frame288` class
+ *
+ * @param {RootState} state: the current state of the store. Typically provided by redux.
+ */
+export function selectGhgRates (state: RootState) {
+  return state.models.ghgRates.map(extractGhgRate);
+}
+
+/**
  * Selects the `hasMeterGroups` state pocket
  */
 export const selectHasMeterGroups = (state: RootState) => state.models.hasMeterGroups;
@@ -89,11 +115,12 @@ export const selectHasMeterGroups = (state: RootState) => state.models.hasMeterG
  * `id` and `object_type` are used to access the model within the slice
  *
  * @param {ModelsSlice} state: the current state of the `models` slice
- * @param {ModelClass} model: the model to add or update to the store
+ * @param {ModelClassInterior} model: the model to add or update to the store
  */
-function addOrUpdateModel (state: ModelsSlice, model: ModelClass) {
+function addOrUpdateModel (state: ModelsSlice, model: ModelClassInterior) {
   const slice = getSliceForModel(state, model);
   const modelIndex = _.findIndex(slice, { id: model.id });
+  
   if (modelIndex === -1) {
     // Add it to the store
     slice.push(model);
@@ -106,7 +133,10 @@ function addOrUpdateModel (state: ModelsSlice, model: ModelClass) {
 }
 
 /** ============================ Helpers =================================== */
-function getSliceForModel (state: ModelsSlice, model: ModelClass): Array<ModelClass> {
+function getSliceForModel (
+  state: ModelsSlice,
+  model: Pick<ModelClassExterior, 'object_type'>
+): Array<ModelClassInterior> {
   switch (model.object_type) {
     case 'BatteryConfiguration':
       return state.derConfigurations;
@@ -119,5 +149,42 @@ function getSliceForModel (state: ModelsSlice, model: ModelClass): Array<ModelCl
       return state.meters;
     case 'SingleScenarioStudy':
       return state.scenarios;
+    case 'GHGRate':
+      return state.ghgRates;
   }
+}
+
+/**
+ * Converts a `GHGRate` to a `StoredGHGRate` by serializing the frame 288 data
+ *
+ * @param {GHGRate} ghgRate: the `GHGRate` object that is entering the store
+ */
+function storeGhgRate (ghgRate: GHGRate): StoredGHGRate {
+  return {
+    ...ghgRate,
+    data: ghgRate.data?.frame
+  };
+}
+
+/**
+ * Converts a `StoredGHGRate` to a `GHGRate` by de-serializing the frame 288 data
+ *
+ * @param {StoredGHGRate} storedRate: the `StoredGHGRate` object that is leaving the store
+ */
+function extractGhgRate (storedRate: StoredGHGRate): GHGRate {
+  return {
+    ...storedRate,
+    data: storedRate.data ? new Frame288Numeric(storedRate.data, { name: storedRate.name }) : undefined,
+  }
+}
+
+/**
+ * Converts a `ModelClassExterior` object to a `ModelClassInterior` object
+ *
+ * @param {ModelClassExterior} model: the model to prepare
+ */
+function prepareModel (model: ModelClassExterior): ModelClassInterior {
+  return model.object_type === 'GHGRate'
+    ? storeGhgRate(model)
+    : model;
 }

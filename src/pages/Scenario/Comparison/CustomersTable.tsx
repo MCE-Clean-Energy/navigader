@@ -1,15 +1,16 @@
 import * as React from 'react';
 
 import { Avatar, PrefetchedTable, Table, Tooltip } from 'navigader/components';
-import { Scenario, ScenarioReportFields } from 'navigader/models/scenario';
-import { IdType } from 'navigader/types';
-import { _, formatters } from 'navigader/util';
+import { ColorMap } from 'navigader/styles';
+import { Scenario, ScenarioReportFields } from 'navigader/types';
+import { dollars, maxDecimals } from 'navigader/util/formatters';
+import _ from 'navigader/util/lodash';
 
 
 /** ============================ Types ===================================== */
 type CustomersTableProps = {
   className?: string;
-  colorMap?: Map<IdType, string>;
+  colorMap?: ColorMap;
   scenarios: Scenario[];
   simulations: ScenarioReportFields[];
   updateHover: (id?: string) => void;
@@ -60,7 +61,10 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                 {colorMap &&
                   <Table.Cell>
                     <Tooltip title={getSimulationName(simulation)}>
-                      <Avatar color={colorMap.get(simulation.SingleScenarioStudy)} size="small">
+                      <Avatar
+                        color={colorMap.getColor(simulation.SingleScenarioStudy)}
+                        size="small"
+                      >
                         &nbsp;
                       </Avatar>
                     </Tooltip>
@@ -68,10 +72,10 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                 }
                 <Table.Cell>{simulation.SA_ID}</Table.Cell>
                 <Table.Cell>{simulation.MeterRatePlan}</Table.Cell>
-                <Table.Cell align="right">{formatters.maxDecimals(simulation.UsageDelta, 2)}</Table.Cell>
-                <Table.Cell align="right">{formatters.dollars(simulation.BillDelta)}</Table.Cell>
-                <Table.Cell align="right">{formatters.maxDecimals(simulation.CleanNetShort2022Delta, 2)}</Table.Cell>
-                <Table.Cell align="right">{formatters.maxDecimals(simulation.RADelta, 2)}</Table.Cell>
+                <Table.Cell align="right">{maxDecimals(simulation.UsageDelta, 2)}</Table.Cell>
+                <Table.Cell align="right">{dollars(simulation.BillDelta)}</Table.Cell>
+                <Table.Cell align="right">{maxDecimals(simulation.CleanNetShort2022Delta, 2)}</Table.Cell>
+                <Table.Cell align="right">{maxDecimals(simulation.RADelta, 2)}</Table.Cell>
               </Table.Row>
             )}
           </Table.Body>

@@ -4,7 +4,7 @@
 import * as React from 'react';
 
 import { makeStylesHook } from 'navigader/styles';
-import { _ } from 'navigader/util';
+import _ from 'navigader/util/lodash';
 import { Typography, TypographyProps } from './Typography';
 
 

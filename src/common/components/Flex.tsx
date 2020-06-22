@@ -3,7 +3,7 @@ import { CreateCSSProperties } from '@material-ui/styles/withStyles';
 import classNames from 'classnames';
 
 import { makeStylesHook } from 'navigader/styles';
-import { _ } from 'navigader/util';
+import _ from 'navigader/util/lodash';
 
 
 /** ============================ Types ===================================== */

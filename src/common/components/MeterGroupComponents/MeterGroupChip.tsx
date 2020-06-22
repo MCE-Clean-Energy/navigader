@@ -1,9 +1,13 @@
 import * as React from 'react';
 
-import { Chip, ChipProps, Flex, Typography } from 'navigader/components';
-import { getMeterGroupDisplayName, MeterGroup } from 'navigader/models/meter';
+import { getMeterGroupDisplayName } from 'navigader/models/meter';
 import { makeStylesHook } from 'navigader/styles';
-import { formatters } from 'navigader/util';
+import { MeterGroup } from 'navigader/types';
+import { pluralize } from 'navigader/util/formatters';
+
+import { Chip, ChipProps } from '../Chip';
+import * as Flex from '../Flex';
+import { Typography } from '../Typography';
 
 
 /** ============================ Types ===================================== */
@@ -56,7 +60,7 @@ export const MeterGroupChip = React.forwardRef<HTMLDivElement, MeterGroupChipPro
         {showCount &&
           <Flex.Item className={classes.numMeters}>
             <Typography variant="body2">
-              {meterGroup.meter_count} {formatters.pluralize('meter', meterGroup.meter_count)}
+              {meterGroup.meter_count} {pluralize('meter', meterGroup.meter_count)}
             </Typography>
           </Flex.Item>
         }

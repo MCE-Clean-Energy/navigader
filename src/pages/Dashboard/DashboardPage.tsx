@@ -4,11 +4,13 @@ import { Route, Switch, useHistory } from 'react-router-dom';
 
 import * as api from 'navigader/api';
 import { Button, Divider, Link, List, Menu, PageHeader, Typography } from 'navigader/components';
-import { Components, Scenario } from 'navigader/models/scenario';
+import { Components } from 'navigader/models/scenario';
 import * as routes from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
-import { _, makeCancelableAsync } from 'navigader/util';
+import { Scenario } from 'navigader/types';
+import { makeCancelableAsync } from 'navigader/util';
+import _ from 'navigader/util/lodash';
 import CreateScenario from './CreateScenario'
 import { DeleteDialog } from './DeleteDialog';
 import RenameDialog from './RenameDialog';

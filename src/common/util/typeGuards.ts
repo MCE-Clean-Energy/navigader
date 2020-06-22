@@ -1,6 +1,5 @@
-import { NavigaderObject } from 'navigader/models';
-import { MeterGroup } from 'navigader/models/meter';
-import { _ } from 'navigader/util';
+import { MeterGroup, NavigaderObject } from 'navigader/types';
+import _ from 'navigader/util/lodash';
 
 
 /** ============================ Navigader Objects ========================= */

@@ -1,9 +1,9 @@
 import {
-  LoadType, parseMeterGroup, Meter, MeterGroup, RawMeterGroup
-} from 'navigader/models/meter';
+  LoadType, Meter, MeterGroup, PaginationQueryParams, RawMeterGroup, RawPaginationSet
+} from 'navigader/types'
+import _ from 'navigader/util/lodash';
 import {
-  appendId, beoRoute, equals_, getRequest, makeFormXhrPost, parsePaginationSet,
-  PaginationQueryParams, RawPaginationSet
+  appendId, beoRoute, equals_, getRequest, makeFormXhrPost, parseMeterGroup, parsePaginationSet
 } from './util';
 
 
@@ -52,7 +52,7 @@ export async function getMeters (queryParams: MeterQueryParams) {
     await getRequest(
       routes.meter(),
       {
-        ...queryParams,
+        ..._.omit(queryParams, 'meterGroupId'),
         filter: {
           meter_groups: equals_(queryParams.meterGroupId)
         }

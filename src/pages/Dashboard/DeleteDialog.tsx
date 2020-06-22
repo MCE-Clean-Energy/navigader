@@ -3,8 +3,8 @@ import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
 import { Button, Dialog } from 'navigader/components';
-import { Scenario } from 'navigader/models/scenario';
 import { slices } from 'navigader/store';
+import { Scenario } from 'navigader/types';
 
 
 /** ============================ Types ===================================== */

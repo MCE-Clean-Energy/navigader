@@ -1,7 +1,7 @@
 import * as React from 'react';
 import MuiThemeProvider from '@material-ui/styles/ThemeProvider';
 
-import theme from 'navigader/styles';
+import { theme } from 'navigader/styles';
 
 
 /** ============================ Components ================================ */

@@ -5,20 +5,19 @@ import {
 } from 'victory';
 
 import { Card, Flex, Grid, List, Typography } from 'navigader/components';
-import { Scenario } from 'navigader/models/scenario';
-import { makeStylesHook, primaryColor } from 'navigader/styles';
+import { ColorMap, makeStylesHook, primaryColor } from 'navigader/styles';
+import { Scenario } from 'navigader/types';
 import { CHART_MARGIN, LARGEST_RADIUS } from './constants';
 import { buildChartConfiguration } from './configuration';
 import { Controls } from './Controls';
 import { ScenarioDatum } from './types';
-import { IdType } from 'navigader/types';
 
 
 /** ============================ Types ===================================== */
 type ScenarioComparisonChartProps = {
   aggregated: boolean;
   averaged: boolean;
-  colorMap: Map<IdType, string>;
+  colorMap: ColorMap;
   highlightedId?: string;
   scenarios: Scenario[];
   updateAggregated: (aggregation: boolean) => void;
@@ -68,7 +67,7 @@ const LegendCard: React.FC<LegendCardProps> = ({ colorMap, scenarios }) => {
         
         {scenarios.map(scenario =>
           <List.Item button={false} key={scenario.id}>
-            <List.Item.Avatar color={colorMap.get(scenario.id)}>
+            <List.Item.Avatar color={colorMap.getColor(scenario.id)}>
               &nbsp;
             </List.Item.Avatar>
             <List.Item.Text>
@@ -132,7 +131,7 @@ export const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (
                       fill: ({ datum }: VictoryCallbackArgs) => {
                         return datum.id === highlightedId
                           ? 'red'
-                          : colorMap.get(datum.scenario) || primaryColor;
+                          : colorMap.getColor(datum.scenario) || primaryColor;
                       },
                       opacity: ({ datum }: VictoryCallbackArgs) => {
                         return datum.id === highlightedId

@@ -39,5 +39,6 @@ export * from './Switch';
 export * from './Table';
 export * from './TextField';
 export * from './ThemeProvider';
+export * from './ToggleButton';
 export * from './Tooltip';
 export * from './Typography';

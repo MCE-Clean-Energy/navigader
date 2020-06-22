@@ -1,5 +1,6 @@
-import { Scenario } from 'navigader/models/scenario';
-import { _, omitFalsey } from 'navigader/util';
+import { Scenario } from 'navigader/types';
+import { omitFalsey } from 'navigader/util';
+import _ from 'navigader/util/lodash';
 import { CustomerWrapper, ScenarioWrapper } from './dataWrappers';
 import { ChartData, ChartDatumWrapper } from './types';
 

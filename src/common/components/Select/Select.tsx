@@ -8,7 +8,8 @@ import useTheme from '@material-ui/core/styles/useTheme';
 
 import { makeStylesHook } from 'navigader/styles';
 import { Nullable } from 'navigader/types';
-import { _, omitFalsey, printWarning, randomString } from 'navigader/util';
+import { omitFalsey, printWarning, randomString } from 'navigader/util';
+import _ from 'navigader/util/lodash';
 
 
 /** ============================ Types ===================================== */

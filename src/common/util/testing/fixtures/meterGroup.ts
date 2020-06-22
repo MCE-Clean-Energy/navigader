@@ -1,4 +1,4 @@
-import { CustomerClusterMeterGroup, OriginFileMeterGroup } from 'navigader/models/meter';
+import { CustomerClusterMeterGroup, OriginFileMeterGroup } from 'navigader/types';
 
 
 /** ============================ Fixture creators ========================== */

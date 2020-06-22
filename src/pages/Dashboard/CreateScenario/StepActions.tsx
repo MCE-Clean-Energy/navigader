@@ -4,10 +4,11 @@ import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
 import { Button, Flex } from 'navigader/components';
-import { MeterGroup } from 'navigader/models/meter';
 import * as routes from 'navigader/routes';
 import { setMessage } from 'navigader/store/slices/ui';
-import { _, omitFalsey, printWarning } from 'navigader/util';
+import { MeterGroup } from 'navigader/types';
+import { omitFalsey, printWarning } from 'navigader/util';
+import _ from 'navigader/util/lodash';
 import {
   DERSelection, stepPaths, stepNumbers, validateCustomerSelections, validateDerSelections
 } from './common';

@@ -1,7 +1,7 @@
-import { DeferrableFields } from 'navigader/api/util';
-import { NavigaderObject } from 'navigader/models';
-import { Frame288Type, MeterDataField } from 'navigader/models/meter';
-import { ScenarioReportFields } from 'navigader/models/scenario';
+import { DeferrableFields } from './api';
+import { NavigaderObject } from './common';
+import { Frame288Type } from './frame288';
+import { MeterDataField } from './meter';
 
 
 export type DerType = 'Battery';
@@ -54,7 +54,4 @@ export type BatterySimulation = NavigaderObject<'StoredBatterySimulation'> & {
   end_limit: string;
   meter: string;
   start: string;
-  
-  // This isn't included in the server response, must be loaded separately with the scenario
-  report?: ScenarioReportFields
 };

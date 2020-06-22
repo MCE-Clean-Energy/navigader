@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { ObjectWithId } from 'navigader/types';
-import { _ } from 'navigader/util';
+import _ from 'navigader/util/lodash';
 import { Table, TableProps } from './Table';
 import { PaginationState, SortState } from './util';
 

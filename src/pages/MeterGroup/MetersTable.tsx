@@ -3,9 +3,9 @@ import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
 import { Table, PaginationState } from 'navigader/components';
-import { MeterGroup } from 'navigader/models/meter';
 import { selectModels, updateModels } from 'navigader/store/slices/models';
 import { makeStylesHook } from 'navigader/styles';
+import { MeterGroup } from 'navigader/types';
 
 
 /** ============================ Types ===================================== */

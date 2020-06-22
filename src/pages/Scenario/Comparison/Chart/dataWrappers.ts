@@ -1,5 +1,6 @@
-import { Scenario, ScenarioReportFields, ScenarioReportSummary } from 'navigader/models/scenario';
-import { formatters, omitFalsey } from 'navigader/util';
+import { Scenario, ScenarioReportFields, ScenarioReportSummary } from 'navigader/types';
+import { omitFalsey } from 'navigader/util';
+import { dollars, maxDecimals, pluralize, truncateAtLength  } from 'navigader/util/formatters';
 import { ChartDatumWrapper } from './types';
 
 
@@ -36,7 +37,7 @@ export class ScenarioWrapper implements ChartDatumWrapper {
     // `getLabel` is only called when the scenario is rendered, which only happens if the bill and
     // GHG impacts are numeric
     const billImpact = this.getBillImpact(averaged) as number;
-    const ghgImpact = formatters.maxDecimals(this.getGhgImpact(averaged) as number, 2);
+    const ghgImpact = maxDecimals(this.getGhgImpact(averaged) as number, 2);
     
     const averagedSuffix = averaged ? '/SAID' : '';
     return omitFalsey([
@@ -44,10 +45,10 @@ export class ScenarioWrapper implements ChartDatumWrapper {
       der?.der_configuration.name,
       der?.der_strategy.name,
       meter_group?.name,
-      `${expected_der_simulation_count} ${formatters.pluralize('customer', expected_der_simulation_count)}`,
-      `${formatters.dollars(billImpact)}/year${averagedSuffix}`,
-      `${ghgImpact} ${formatters.pluralize('ton', ghgImpact)} CO2/year${averagedSuffix}`
-    ]).map(s => formatters.truncateAtLength(s, 50)).join('\n');
+      `${expected_der_simulation_count} ${pluralize('customer', expected_der_simulation_count)}`,
+      `${dollars(billImpact)}/year${averagedSuffix}`,
+      `${ghgImpact} ${pluralize('ton', ghgImpact)} CO2/year${averagedSuffix}`
+    ]).map(s => truncateAtLength(s, 50)).join('\n');
   }
 
   getScenarioId () {
@@ -83,13 +84,13 @@ export class CustomerWrapper implements ChartDatumWrapper {
     // `getLabel` is only called when the scenario is rendered, which only happens if the bill and
     // GHG impacts are numeric
     const billImpact = this.getBillImpact() as number;
-    const ghgImpact = formatters.maxDecimals(this.getGhgImpact() as number, 2);
+    const ghgImpact = maxDecimals(this.getGhgImpact() as number, 2);
     
     return [
       `SA ID: ${this.customer.SA_ID}`,
-      `${formatters.dollars(billImpact)}/year`,
-      `${ghgImpact} ${formatters.pluralize('ton', ghgImpact)} CO2/year`
-    ].map(s => formatters.truncateAtLength(s, 50)).join('\n');
+      `${dollars(billImpact)}/year`,
+      `${ghgImpact} ${pluralize('ton', ghgImpact)} CO2/year`
+    ].map(s => truncateAtLength(s, 50)).join('\n');
   }
   
   getScenarioId () {

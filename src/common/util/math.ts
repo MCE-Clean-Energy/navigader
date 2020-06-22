@@ -44,3 +44,12 @@ export function percentOf (numerator: number, denominator: number) {
   if (denominator === 0) return Infinity;
   return 100 * numerator / denominator;
 }
+
+/**
+ * Performs the basic XOR function on an arbitrary number of arbitrary inputs
+ *
+ * @param {any[]} args: all the operands
+ */
+export function xor (...args: any[]) {
+  return args.filter(arg => Boolean(arg)).length === 1;
+}

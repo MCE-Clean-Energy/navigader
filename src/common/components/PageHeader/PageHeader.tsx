@@ -2,10 +2,11 @@ import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
 
-import { Button, Link } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
-import { _ } from 'navigader/util';
+import _ from 'navigader/util/lodash';
+import { Button } from '../Button';
 import * as Flex from '../Flex';
+import { Link } from '../Link';
 import { Typography } from '../Typography';
 
 

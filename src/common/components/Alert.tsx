@@ -3,7 +3,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import MuiAlertTitle from '@material-ui/lab/AlertTitle';
 
 import { makeStylesHook } from 'navigader/styles';
-import { _ } from 'navigader/util';
+import _ from 'navigader/util/lodash';
 
 
 /** ============================ Types ===================================== */

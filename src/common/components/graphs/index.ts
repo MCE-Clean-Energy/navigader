@@ -1,3 +1,3 @@
 export * from './Frame288Graph';
-export * from './LoadTypeMenu';
-export * from './MonthsMenu';
+export * from './IntervalDataGraph';
+export * from './MonthSelector';

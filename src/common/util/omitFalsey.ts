@@ -1,4 +1,4 @@
-import { _ } from 'navigader/util';
+import _ from 'navigader/util/lodash';
 
 
 /** ============================ Types ===================================== */

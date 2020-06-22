@@ -1,8 +1,11 @@
 import * as React from 'react';
 import MuiMenu from '@material-ui/core/Menu';
 
-import { Button, List, PopoverOrigin, ValidIcon } from 'navigader/components';
 import { printWarning, randomString } from 'navigader/util';
+import { Button } from './Button';
+import { List } from './List';
+import { PopoverOrigin } from './Popover';
+import { ValidIcon } from './Icon';
 
 
 /** ============================ Types ===================================== */

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Button, Grid } from 'navigader/components';
-import { BatteryConfiguration, BatteryStrategy } from 'navigader/models/der';
+import { BatteryConfiguration, BatteryStrategy } from 'navigader/types';
 import { DerSelectionCard, DERSelection } from './common';
 
 

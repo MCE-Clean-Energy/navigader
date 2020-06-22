@@ -1,10 +1,11 @@
-import { LoadType, parseMeterGroup, MeterGroup } from 'navigader/models/meter';
-import { parseScenario, RawScenario, Scenario } from 'navigader/models/scenario';
-import { _ } from 'navigader/util';
 import {
-  appendId, beoRoute, deleteRequest, DynamicRestParams, getRequest, PaginationQueryParams,
-  parsePaginationSet,
-  patchRequest, postRequest, RawPaginationSet
+  DynamicRestParams, Frame288Numeric, GHGRate, LoadType, MeterGroup, PaginationQueryParams,
+  RawGHGRate, RawPaginationSet, RawScenario, Scenario
+} from 'navigader/types';
+import _ from 'navigader/util/lodash';
+import {
+  appendId, beoRoute, deleteRequest, getRequest, parseMeterGroup, parsePaginationSet, parseScenario,
+  patchRequest, postRequest
 } from './util';
 
 
@@ -31,6 +32,16 @@ type GetScenarioResponse = {
 type GetScenarioQueryOptions = Partial<DynamicRestParams> & {
   data_types?: LoadType | LoadType[];
 };
+
+// GET /ghg_rate/
+type GetGHGRatesResponse = {
+  ghg_rates: RawGHGRate[];
+};
+
+type GetGHGRatesQueryOptions = PaginationQueryParams & Partial<DynamicRestParams> & (
+  { data_format: '288'; } |
+  { data_format: 'interval'; period: '1H' | '15M'; start: string; end_limit: string; }
+);
 
 /** ============================ API Methods =============================== */
 export async function postStudy (
@@ -100,11 +111,21 @@ export async function deleteScenario (id: string) {
   return await deleteRequest(routes.scenarios(id));
 }
 
+/** ============================ GHG ======================================= */
+export async function getGhgRates (options?: GetGHGRatesQueryOptions) {
+  const response: RawPaginationSet<GetGHGRatesResponse>
+    = await getRequest(routes.ghg_rate, options).then(res => res.json());
+  
+  // Parse the GHG rate results into full-fledged `NavigaderObjects`
+  return parsePaginationSet(response, ({ ghg_rates }) => ghg_rates.map(parseGhgRate));
+}
+
 /** ============================ Helpers =================================== */
 const baseRoute = (rest: string) => beoRoute.v1(`cost/${rest}`);
 const routes = {
-  scenarios: appendId(baseRoute('study')),
-  postStudy: baseRoute('multiple_scenario_study/')
+  ghg_rate: baseRoute('ghg_rate/'),
+  postStudy: baseRoute('multiple_scenario_study/'),
+  scenarios: appendId(baseRoute('study'))
 };
 
 /**
@@ -130,5 +151,17 @@ function compileScenario (
   return {
     ...parseScenario(scenario),
     meter_group: meterGroup
+  };
+}
+
+function parseGhgRate (rate: RawGHGRate): GHGRate {
+  return {
+    ...rate,
+    data: rate.data ? new Frame288Numeric(rate.data, { name: rate.name, units: 'tCO2/kW' }) : undefined,
+    id: rate.id.toString(),
+    object_type: 'GHGRate',
+    
+    // This data isn't available for `GHGRate` objects
+    created_at: new Date().toString(),
   };
 }

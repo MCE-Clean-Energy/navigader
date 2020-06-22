@@ -3,9 +3,9 @@ import { useHistory } from 'react-router-dom';
 
 import * as api from 'navigader/api';
 import { Button, Grid, PageHeader, Progress } from 'navigader/components';
-import { MeterGroup } from 'navigader/models/meter';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
+import { MeterGroup } from 'navigader/types';
 import { makeCancelableAsync } from 'navigader/util';
 import { MeterGroupCard } from './MeterGroupCard';
 

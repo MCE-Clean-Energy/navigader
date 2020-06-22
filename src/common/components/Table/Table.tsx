@@ -8,14 +8,18 @@ import MuiTableHead from '@material-ui/core/TableHead';
 import MuiTableRow from '@material-ui/core/TableRow';
 import MuiTableSortLabel from '@material-ui/core/TableSortLabel';
 
-import { PaginationSet } from 'navigader/api/util';
-import { Checkbox, Flex, Progress, SortState, Typography } from 'navigader/components';
 import { RootState } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
-import { IdType, ObjectWithId} from 'navigader/types';
-import { _, hooks, makeCancelableAsync } from 'navigader/util';
+import { IdType, ObjectWithId, PaginationSet } from 'navigader/types';
+import { makeCancelableAsync } from 'navigader/util';
+import { useTableSelector } from 'navigader/util/hooks';
+import _ from 'navigader/util/lodash';
+import { Checkbox } from '../Checkbox';
+import * as Flex from '../Flex';
+import { Progress } from '../Progress';
+import { Typography } from '../Typography';
 import { TablePagination } from './Pagination';
-import { PaginationState, TableContext } from './util';
+import { PaginationState, SortState, TableContext } from './util';
 
 
 /** ============================ Types ===================================== */
@@ -132,7 +136,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
   
   // Get the data from the store using the IDs
   const { dataIds, count } = dataState;
-  const data = hooks.useTableSelector(dataSelector, dataIds);
+  const data = useTableSelector(dataSelector, dataIds);
   
   // Build context for child component tree
   const loadedData = !loading && !_.isEmpty(data);

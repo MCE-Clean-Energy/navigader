@@ -3,9 +3,9 @@ import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
 import { Button, Dialog, TextField } from 'navigader/components';
-import { Scenario } from 'navigader/models/scenario';
 import { setMessage } from 'navigader/store/slices/ui';
 import { updateModel } from 'navigader/store/slices/models';
+import { Scenario } from 'navigader/types';
 
 
 /** ============================ Types ===================================== */

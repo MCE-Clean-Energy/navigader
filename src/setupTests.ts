@@ -1,4 +1,4 @@
-import { setCookie } from 'navigader/util';
+import { setCookie } from 'navigader/util/cookies';
 
 // jest-dom adds custom jest matchers for asserting on DOM nodes.
 // allows you to do things like:

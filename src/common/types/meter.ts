@@ -1,12 +1,9 @@
-import { NavigaderObject, ProgressFields } from 'navigader/models';
-import { MonthIndex, Nullable } from 'navigader/types';
+import { NavigaderObject, Nullable, ProgressFields } from './common';
+import { Frame288NumericType } from './frame288';
+
 
 /** ============================ Meter Types =============================== */
-export type Frame288LoadType = 'total' | 'average' | 'maximum' | 'minimum' | 'count';
-export type Frame288Type<T> = {
-  [P in MonthIndex]: T[];
-}
-export type Frame288NumericType = Frame288Type<number>;
+export type Frame288LoadType = 'total' | 'average' | 'maximum' | 'minimum';
 
 export type LoadType = 'default' | Frame288LoadType;
 export type LoadTypeMap = {

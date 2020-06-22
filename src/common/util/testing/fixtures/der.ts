@@ -1,4 +1,4 @@
-import { BatteryConfiguration, BatteryStrategy } from 'navigader/models/der';
+import { BatteryConfiguration, BatteryStrategy } from 'navigader/types';
 
 
 /** ============================ Fixture creators ========================== */

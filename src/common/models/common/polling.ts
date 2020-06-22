@@ -1,7 +1,6 @@
 import * as api from 'navigader/api';
-import { Scenario } from 'navigader/models/scenario';
 import store, { slices } from 'navigader/store';
-import { IdType } from 'navigader/types';
+import { IdType, Scenario } from 'navigader/types';
 import { printWarning } from 'navigader/util';
 
 
@@ -22,12 +21,11 @@ class Poller {
 
   pollFor (models: PollableObject[]) {
     models.forEach((model) => {
-      switch (model.object_type) {
-        case 'SingleScenarioStudy':
-          this.pollingIds.scenario.add(model.id);
-          return;
-        default:
-          printWarning(`Polling module received un-pollable object of type ${model.object_type}`);
+      if (model.object_type === 'SingleScenarioStudy') {
+        this.pollingIds.scenario.add(model.id);
+        return;
+      } else {
+        printWarning(`Polling module received un-pollable object of type ${model.object_type}`);
       }
     });
   }

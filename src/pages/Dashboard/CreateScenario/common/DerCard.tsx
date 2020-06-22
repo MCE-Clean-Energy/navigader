@@ -1,9 +1,10 @@
 import * as React from 'react';
 
 import { Button, Card, Flex, Select } from 'navigader/components';
-import { BatteryConfiguration, BatteryStrategy, Components } from 'navigader/models/der';
+import { Components } from 'navigader/models/der';
 import { makeStylesHook } from 'navigader/styles';
-import { _ } from 'navigader/util';
+import { BatteryConfiguration, BatteryStrategy } from 'navigader/types';
+import _ from 'navigader/util/lodash';
 import { ProgramOptions } from './ProgramOptions';
 import { DERSelection } from './util';
 

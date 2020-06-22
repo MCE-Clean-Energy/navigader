@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { RowsPerPageOption } from 'navigader/api/util';
+import { RowsPerPageOption } from 'navigader/types';
 import { isProduction } from 'navigader/util';
 
 

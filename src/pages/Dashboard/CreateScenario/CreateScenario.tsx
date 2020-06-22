@@ -4,10 +4,10 @@ import { useSelector } from 'react-redux';
 
 import { getMeterGroups } from 'navigader/api';
 import { Button, Flex, PageHeader, Stepper } from 'navigader/components';
-import { MeterGroup } from 'navigader/models/meter';
 import * as routes from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
+import { MeterGroup } from 'navigader/types';
 import { makeCancelableAsync } from 'navigader/util';
 import Review from './Review';
 import { SelectCustomers } from './SelectCustomers';

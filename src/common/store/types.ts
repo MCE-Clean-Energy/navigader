@@ -1,7 +1,7 @@
-import { BatteryConfiguration, BatteryStrategy, BatterySimulation } from 'navigader/models/der';
-import { Meter } from 'navigader/models/meter';
-import { Scenario } from 'navigader/models/scenario';
-import { Nullable } from 'navigader/types';
+import {
+  BatteryConfiguration, BatterySimulation, BatteryStrategy, Meter, Nullable, Scenario,
+  StoredGHGRate
+} from 'navigader/types';
 
 
 /** ============================ Slices ==================================== */
@@ -9,6 +9,7 @@ export type ModelsSlice = {
   derConfigurations: BatteryConfiguration[];
   derSimulations: BatterySimulation[];
   derStrategies: BatteryStrategy[];
+  ghgRates: StoredGHGRate[]
   hasMeterGroups: Nullable<boolean>;
   meters: Meter[];
   scenarios: Scenario[];
