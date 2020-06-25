@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Flex, MeterGroupChip, Tooltip, Typography } from 'navigader/components';
+import { Flex, MeterGroupChip, Tooltip } from 'navigader/components';
 import { isSufficientlyIngested } from 'navigader/models/meter';
 import { makeStylesHook } from 'navigader/styles';
 import { MeterGroup, OriginFileMeterGroup } from 'navigader/types';
@@ -69,13 +69,10 @@ export const SelectCustomers: React.FC<SelectCustomersProps> = (props) => {
             ? '0%'
             : percentage(meter_count, expected_meter_count);
           
-          const explanation = (
-            <Typography variant="body2">
-              This file has successfully uploaded but is still being processed. It is
-              currently {percentComplete} complete. You can run a scenario with this file once it
-              has finished processing.
-            </Typography>
-          );
+          const explanation =
+            'This file has successfully uploaded but is still being processed. It is currently ' +
+            `${percentComplete} complete. You can run a scenario with this file once ` +
+            'it has finished processing.';
           
           return (
             <Tooltip key={meterGroup.id} title={explanation}>

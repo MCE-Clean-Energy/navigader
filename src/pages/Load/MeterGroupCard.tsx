@@ -103,11 +103,7 @@ export const MeterGroupCard: React.FC<MeterGroupCardProps> = (props) => {
   // Render a tooltip if the meter group is still ingesting
   if (isIngested) return card;
   return (
-    <Tooltip title={
-      <Typography variant="body2">
-        This file is being processed. It's currently {percent_complete}% complete
-      </Typography>
-    }>
+    <Tooltip title={`This file is being processed. It's currently ${percent_complete}% complete`}>
       {card}
     </Tooltip>
   );

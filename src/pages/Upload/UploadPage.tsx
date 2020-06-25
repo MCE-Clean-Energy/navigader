@@ -69,9 +69,7 @@ const FileCard: React.FC<FileCardProps> = ({ file, progress, startUpload, status
           <Typography useDiv variant="subtitle2">{file.name}</Typography>
         </Flex.Item>
         <Flex.Item className={classes.fileSize}>
-          <Typography color="textSecondary" variant="body2">
-            {renderFileSize(file.size)}
-          </Typography>
+          <Typography color="textSecondary" variant="body2">{renderFileSize(file.size)}</Typography>
         </Flex.Item>
       </Flex.Container>
       

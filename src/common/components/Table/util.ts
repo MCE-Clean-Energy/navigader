@@ -19,6 +19,7 @@ type TableContext<T> = {
   allSelected: boolean;
   data: T[],
   disableSelect: (datum: T) => boolean;
+  hover: boolean;
   selectable: boolean,
   selections: Set<number>;
   setSortState: (state: SortState) => void;
@@ -32,6 +33,7 @@ export const TableContext = React.createContext<TableContext<any>>({
   allSelected: false,
   data: [],
   disableSelect: () => false,
+  hover: true,
   selectable: false,
   selections: new Set(),
   setSortState: () => {},

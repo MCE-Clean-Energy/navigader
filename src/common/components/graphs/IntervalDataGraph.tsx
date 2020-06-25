@@ -1,8 +1,7 @@
 import * as React from 'react';
-import ContainerDimensions, { Dimensions } from 'react-container-dimensions';
 import {
-  createContainer, VictoryArea, VictoryAxis, VictoryChart, VictoryLabel, VictoryLegend, VictoryLine,
-  VictoryTheme, VictoryTooltip
+  createContainer, VictoryArea, VictoryAxis, VictoryLabel, VictoryLegend, VictoryLine,
+  VictoryTooltip
 } from 'victory';
 import { VictoryVoronoiContainerProps } from 'victory-voronoi-container';
 import { VictoryZoomContainerProps } from 'victory-zoom-container';
@@ -14,6 +13,7 @@ import { omitFalsey } from 'navigader/util';
 import { date } from 'navigader/util/formatters';
 import { useColorMap } from 'navigader/util/hooks';
 import _ from 'navigader/util/lodash';
+import { NavigaderChart } from './components';
 import { getAxisLabel, VictoryCallbackArg } from './util';
 
 
@@ -46,12 +46,10 @@ const chartMargins = {
 };
 
 const areaStyle = (colorMap: ColorMap) => ({
-  fill: colorMap.getColor('delta'),
-  opacity: 0.3
+  fill: colorMap.getColor('delta')
 });
 
 const lineStyle = (intervalName: string, colorMap: ColorMap) => ({
-  opacity: 0.3,
   stroke: colorMap.getColor(intervalName)
 });
 
@@ -90,86 +88,78 @@ export const IntervalDataGraph: React.FC<IntervalDataGraphProps> = (props) => {
   const { areaData, domain, visibleData } = useData(normalizedData, month, timeDomain);
 
   return (
-    <ContainerDimensions>
-      {({ width }: Dimensions) =>
-        <div className={classes.container}>
-          <VictoryChart
-            containerComponent={
-              <VictoryZoomVoronoiContainer
-                labels={getLabelFactory(units)}
-                minimumZoom={{ x: 1000 * 60 * 60 * 3 }}
-                // @ts-ignore
-                onZoomDomainChange={handleZoom}
-                responsive
-                zoomDomain={{ x: timeDomain, y: domain.y }}
-                zoomDimension="x"
-              />
+    <div className={classes.container}>
+      <NavigaderChart
+        containerComponent={
+          <VictoryZoomVoronoiContainer
+            labels={getLabelFactory(units)}
+            minimumZoom={{ x: 1000 * 60 * 60 * 3 }}
+            // @ts-ignore
+            onZoomDomainChange={handleZoom}
+            responsive
+            zoomDomain={{ x: timeDomain, y: domain.y }}
+            zoomDimension="x"
+          />
+        }
+        domain={domain}
+        height={height}
+        padding={{ ...chartMargins, top: 10 }}
+        scale={{ x: 'time' }}
+      >
+        {!hideXAxis && <VictoryAxis tickFormat={date.monthDayHourMinute} />}
+        <VictoryAxis
+          crossAxis={false}
+          dependentAxis
+          label={getAxisLabel(axisLabel, units)}
+          axisLabelComponent={<VictoryLabel dy={-30} />}
+        />
+
+        {areaData &&
+          <VictoryArea
+            data={areaData.data.map(d => ({ ...d, name: 'Delta' }))}
+            interpolation="monotoneX"
+            labelComponent={
+              // @ts-ignore
+              <VictoryTooltip orientation={
+                ({ datum }: VictoryCallbackArg<GraphDatum>) =>
+                  datum.value < 0
+                    ? 'bottom'
+                    : 'top'
+              } />
             }
-            domain={domain}
-            height={height}
-            padding={{ ...chartMargins, top: 10 }}
-            scale={{ x: 'time' }}
-            theme={VictoryTheme.material}
-            width={width}
-          >
-            {!hideXAxis && <VictoryAxis tickFormat={date.monthDayHourMinute} />}
-            <VictoryAxis
-              crossAxis={false}
-              dependentAxis
-              label={getAxisLabel(axisLabel, units)}
-              axisLabelComponent={<VictoryLabel dy={-30} />}
-            />
+            style={{ data: areaStyle(colorMap) }}
+            x="timestamp"
+            y="value"
+          />
+        }
 
-            {areaData &&
-              <VictoryArea
-                data={areaData.data.map(d => ({ ...d, name: 'Delta' }))}
-                interpolation="monotoneX"
-                labelComponent={
-                  // @ts-ignore
-                  <VictoryTooltip orientation={
-                    ({ datum }: VictoryCallbackArg<GraphDatum>) =>
-                      datum.value < 0
-                        ? 'bottom'
-                        : 'top'
-                  } />
-                }
-                style={{ data: areaStyle(colorMap) }}
-                x="timestamp"
-                y="value"
-              />
-            }
+        {visibleData.map(intervalData =>
+          <VictoryLine
+            data={intervalData.data.map(d => ({ ...d, name: intervalData.name }))}
+            interpolation="monotoneX"
+            key={intervalData.name}
+            style={{ data: lineStyle(intervalData.name, colorMap) }}
+            x="timestamp"
+            y="value"
+          />
+        )}
 
-            {visibleData.map(intervalData =>
-              <VictoryLine
-                data={intervalData.data.map(d => ({ ...d, name: intervalData.name }))}
-                interpolation="monotoneX"
-                key={intervalData.name}
-                style={{ data: lineStyle(intervalData.name, colorMap) }}
-                x="timestamp"
-                y="value"
-              />
-            )}
-
-            <VictoryLegend
-              colorScale={
-                // Append the "delta" legend icon if there are 2 intervals
-                normalizedData.map(interval => colorMap.getColor(interval.name)).concat(
-                  normalizedData.length === 2 ? [colorMap.getColor('delta')] : []
-                )
-              }
-              data={
-                normalizedData.map(interval => ({ name: interval.name })).concat(
-                  normalizedData.length === 2 ? [{ name: 'Delta' }] : []
-                )
-              }
-              gutter={20}
-              orientation="horizontal"
-              x={chartMargins.left}
-            />
-          </VictoryChart>
-        </div>
-      }
-    </ContainerDimensions>
+        <VictoryLegend
+          colorScale={
+            // Append the "delta" legend icon if there are 2 intervals
+            normalizedData.map(interval => colorMap.getColor(interval.name)).concat(
+              normalizedData.length === 2 ? [colorMap.getColor('delta')] : []
+            )
+          }
+          data={
+            normalizedData.map(interval => ({ name: interval.name })).concat(
+              normalizedData.length === 2 ? [{ name: 'Delta' }] : []
+            )
+          }
+          x={chartMargins.left}
+        />
+      </NavigaderChart>
+    </div>
   );
   
   /** ============================ Callbacks =============================== */

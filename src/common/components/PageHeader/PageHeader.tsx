@@ -85,20 +85,12 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
             // If we've got an `href` and it isn't the last breadcrumb, render a ling
             if (Array.isArray(breadcrumb) && index !== lastLinkIndex) {
               const [text, href] = breadcrumb;
-              return (
-                <Link color="inherit" key={text} to={href} variant="body2">
-                  {text}
-                </Link>
-              );
+              return <Link color="inherit" key={text} to={href} variant="body2">{text}</Link>;
             }
             
             // Otherwise just return the text
             const text = Array.isArray(breadcrumb) ? breadcrumb[0] : breadcrumb;
-            return (
-              <Typography color="textPrimary" key={text} variant="body2">
-                {text}
-              </Typography>
-            );
+            return <Typography color="textPrimary" key={text} variant="body2">{text}</Typography>;
           })}
         </MuiBreadcrumbs>
       </Flex.Item>

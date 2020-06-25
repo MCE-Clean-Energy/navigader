@@ -26,7 +26,6 @@ export type TypographyProps = React.HTMLAttributes<HTMLSpanElement> & {
   component?: React.ElementType;
   emphasis?: Emphasis;
   noWrap?: boolean;
-  style?: React.CSSProperties;
   useDiv?: boolean;
   variant?: MuiTypographyProps['variant'];
 };
@@ -41,15 +40,10 @@ function getOpacity (emphasis?: Emphasis) {
   }
 }
 
-function getFontWeight (emphasis?: Emphasis) {
-  if (emphasis === 'bold') return 'bold';
-  return 'inherit';
-}
-
 const useStyles = makeStylesHook<TypographyProps>(theme => ({
   text: props => ({
     opacity: getOpacity(props.emphasis),
-    fontWeight: getFontWeight(props.emphasis)
+    fontWeight: props.emphasis === 'bold' ? 'bold' : undefined
   }),
   info: {
     color: theme.palette.info.main
@@ -76,42 +70,37 @@ export const Typography = React.forwardRef<HTMLSpanElement, TypographyProps>(
       component = 'span',
       emphasis = 'normal',
       noWrap,
-      style,
       useDiv = false,
       variant = 'body1',
       ...rest
     } = props;
     const classes = useStyles({ emphasis });
-    const spanClasses = classNames(className, classes.text, {
+    const typographyClasses = classNames(className, classes.text, {
       [classes.info]: color === 'info',
       [classes.noWrap]: noWrap,
       [classes.success]: color === 'success',
       [classes.warning]: color === 'warning'
     });
-  
+
     // If the component is provided both the `useDiv` and `component` props, we will print a warning
-    // (when in development mode) and use a div.
-    const actualComponent = useDiv ? 'div' : component;
     if (props.hasOwnProperty('component') && props.hasOwnProperty('useDiv')) {
       printWarning(
         '`Typography component` received both `useDiv` and `component` props. At most one prop' +
         ' should be provided'
       );
     }
-  
-    const typographyProps = {
-      color: getColor(color),
-      component: 'span',
-      noWrap,
-      ref,
-      style,
-      variant,
-      ...rest
-    };
-  
+
     return (
-      <MuiTypography {...typographyProps}>
-        {React.createElement(actualComponent, { className: spanClasses, children })}
+      <MuiTypography
+        className={typographyClasses}
+        color={getColor(color)}
+        component={useDiv ? 'div' : component}
+        noWrap={noWrap}
+        ref={ref}
+        variant={variant}
+        {...rest}
+      >
+        {children}
       </MuiTypography>
     );
   }

@@ -15,9 +15,12 @@ import { CustomersTable } from './CustomersTable';
 
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(() => ({
+const useStyles = makeStylesHook(theme => ({
   tableContainer: {
     maxHeight: 500
+  },
+  tableWrapper: {
+    marginTop: theme.spacing(2)
   }
 }), 'CompareScenariosPage');
 
@@ -72,27 +75,29 @@ export const CompareScenariosPage: React.FC = () => {
               updateAggregated={updateAggregation}
             />
             
-            {
-              aggregated
-                ? (
-                  <Components.ScenariosTable
-                    averaged={averaged}
-                    className={classes.tableContainer}
-                    colorMap={colorMap}
-                    scenarios={scenarios}
-                    updateAveraged={setAveraged}
-                  />
-                ) : (
-                  // TODO: need to find way to type scenarios as possessing report
-                  <CustomersTable
-                    className={classes.tableContainer}
-                    colorMap={colorMap}
-                    scenarios={scenarios}
-                    simulations={_.flatten(scenarios.map(s => Object.values(s.report!.rows)))}
-                    updateHover={setHoveredId}
-                  />
-                )
-            }
+            <div className={classes.tableWrapper}>
+              {
+                aggregated
+                  ? (
+                    <Components.ScenariosTable
+                      averaged={averaged}
+                      className={classes.tableContainer}
+                      colorMap={colorMap}
+                      scenarios={scenarios}
+                      updateAveraged={setAveraged}
+                    />
+                  ) : (
+                    // TODO: need to find way to type scenarios as possessing report
+                    <CustomersTable
+                      className={classes.tableContainer}
+                      colorMap={colorMap}
+                      scenarios={scenarios}
+                      simulations={_.flatten(scenarios.map(s => Object.values(s.report!.rows)))}
+                      updateHover={setHoveredId}
+                    />
+                  )
+              }
+            </div>
           </>
         )
       }

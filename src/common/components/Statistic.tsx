@@ -107,11 +107,7 @@ export const Statistic: React.FC<StatisticProps> = (props) => {
     <div className={className} style={style}>
       {title && (
         <div>
-          <Typography
-            className={classes.title}
-            emphasis="secondary"
-            variant="body2"
-          >
+          <Typography className={classes.title} emphasis="secondary" variant="body2">
             {title}
           </Typography>
         </div>

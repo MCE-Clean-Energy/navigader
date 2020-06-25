@@ -7,9 +7,10 @@ import MuiTableContainer from '@material-ui/core/TableContainer';
 import MuiTableHead from '@material-ui/core/TableHead';
 import MuiTableRow from '@material-ui/core/TableRow';
 import MuiTableSortLabel from '@material-ui/core/TableSortLabel';
+import MuiToolbar from '@material-ui/core/Toolbar';
 
 import { RootState } from 'navigader/store';
-import { makeStylesHook } from 'navigader/styles';
+import { makeStylesHook, white } from 'navigader/styles';
 import { IdType, ObjectWithId, PaginationSet } from 'navigader/types';
 import { makeCancelableAsync } from 'navigader/util';
 import { useTableSelector } from 'navigader/util/hooks';
@@ -34,6 +35,7 @@ export type TableProps<T extends ObjectWithId> = {
   dataSelector: (state: RootState) => T[];
   disableSelect?: (datum: T) => boolean;
   headerActions?: React.ReactNode;
+  hover?: boolean;
   initialSorting?: SortState;
   onSelect?: (selections: T[]) => void;
   raised?: boolean;
@@ -81,17 +83,23 @@ type DataState = {
 
 /** ============================ Styles ==================================== */
 const useStyles = makeStylesHook(theme => ({
-  header: {
-    // Provides the proper height for the toolbar
-    ...theme.mixins.toolbar
-  },
   progressBarSpacer: {
     height: 4
+  },
+  toolbar: {
+    justifyContent: 'space-between',
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(1)
   }
 }), 'NavigaderTable');
 
+const useTableCellStyles = makeStylesHook(() => ({
+  stickyHeader: {
+    backgroundColor: white,
+  }
+}), 'NavigaderTableCell');
+
 /** ============================ Components ================================ */
-const TableRaiser: React.FC = (props) => <MuiPaper elevation={8} {...props} />;
 export function Table <T extends ObjectWithId>(props: TableProps<T>) {
   const {
     children,
@@ -100,6 +108,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     dataSelector,
     disableSelect = () => false,
     headerActions,
+    hover = true,
     initialSorting,
     onSelect,
     raised = false,
@@ -145,6 +154,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     allSelected: selectables.length > 0 && selectables.length === selections.size,
     data,
     disableSelect,
+    hover,
     selectable: Boolean(onSelect) && loadedData,
     selections,
     setSortState,
@@ -154,8 +164,8 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
   };
 
   return (
-    <div>
-      <Flex.Container alignItems="center" className={classes.header} justifyContent="space-between">
+    <MuiPaper elevation={raised ? 8 : 0}>
+      <MuiToolbar className={classes.toolbar}>
         <Typography variant="h6">{title}</Typography>
         {data &&
           <Flex.Container alignItems="center">
@@ -169,19 +179,16 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
             }
           </Flex.Container>
         }
-      </Flex.Container>
-      <MuiTableContainer className={containerClassName} component={raised ? TableRaiser : MuiPaper}>
+      </MuiToolbar>
+      <MuiTableContainer className={containerClassName}>
         <MuiTable {...rest}>
           <TableContext.Provider value={tableContext}>
             {children(data || [], EmptyRow)}
           </TableContext.Provider>
         </MuiTable>
       </MuiTableContainer>
-      {loading
-        ? <Progress data-testid="table-progress" />
-        : <div className={classes.progressBarSpacer} />
-      }
-    </div>
+      {loading && <Progress />}
+    </MuiPaper>
   );
   
   /** ============================ Callbacks =============================== */
@@ -301,7 +308,7 @@ const TableRow: TableRow = (props) => {
     _onChange,
     _selected
   } = props;
-  const { selectable } = React.useContext(TableContext);
+  const { hover, selectable } = React.useContext(TableContext);
   
   // If the row is selectable, add in a checkbox to the front of the row
   let checkboxCell = null;
@@ -318,7 +325,7 @@ const TableRow: TableRow = (props) => {
   return (
     <MuiTableRow
       className={className}
-      hover
+      hover={hover && !_isHeaderRow}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
@@ -334,9 +341,10 @@ const TableRow: TableRow = (props) => {
 };
 
 const TableCell: TableCell = (props) => {
-  const { sortBy, sortDir, _columnIndex, _isHeaderRow, ...rest } = props;
-  const tableCellProps = { ...rest };
+  const { children, sortBy, sortDir, _columnIndex, _isHeaderRow, ...rest } = props;
   const { setSortState, sortState } = React.useContext(TableContext);
+  const classes = useTableCellStyles();
+  const tableCellProps = { classes, ...rest };
   
   // For accessibility, a table's first column is set to be a <th> element, with a scope of "row",
   // and table header elements are given a scope of "col". This enables screen readers to identify a
@@ -353,19 +361,19 @@ const TableCell: TableCell = (props) => {
   if (sortBy) {
     const active = sortBy === sortState?.key;
     return (
-      <MuiTableCell {..._.omit(tableCellProps, 'children')}>
+      <MuiTableCell {...tableCellProps}>
         <MuiTableSortLabel
           active={active}
           direction={active ? sortState?.dir : getDefaultSortDir()}
           onClick={updateSortState}
         >
-          {rest.children}
+          {children}
         </MuiTableSortLabel>
       </MuiTableCell>
     );
   }
   
-  return <MuiTableCell {...tableCellProps} />;
+  return <MuiTableCell children={children} {...tableCellProps} />;
   
   /** ============================ Callbacks =============================== */
   /**

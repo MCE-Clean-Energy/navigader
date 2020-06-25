@@ -32,10 +32,16 @@ type TimeDomainOption = '1d' | '2d' | '1w' | '1m';
 
 /** ============================ Styles ==================================== */
 const useStyles = makeStylesHook(theme => ({
+  table: {
+    marginTop: theme.spacing(2)
+  }
+}), 'ScenarioResultsPage');
+
+const useScenarioContextStyles = makeStylesHook(theme => ({
   meterGroup: {
     marginLeft: theme.spacing(3)
   }
-}), 'ScenarioResultsPage');
+}), 'ScenarioContext');
 
 const useModalStyles = makeStylesHook<LoadingModalProps>(theme => ({
   modal: props => ({
@@ -73,7 +79,7 @@ const useScenarioGraphStyles = makeStylesHook(theme => ({
 /** ============================ Components ================================ */
 const ScenarioContext: React.FC<ScenarioProp> = ({ scenario }) => {
   const history = useHistory();
-  const classes = useStyles();
+  const classes = useScenarioContextStyles();
   
   return (
     <Flex.Container alignItems="center">
@@ -294,6 +300,7 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
 export const ScenarioResultsPage: React.FC = () => {
   const [scenario, setScenario] = React.useState<Scenario>();
   const { id } = useParams();
+  const classes = useStyles();
   
   // Loads the scenario
   React.useEffect(
@@ -314,9 +321,15 @@ export const ScenarioResultsPage: React.FC = () => {
         title="Scenario Details"
       />
       
-      {scenario && <ScenarioContext scenario={scenario} />}
-      {scenario && <ScenarioGraphs scenario={scenario} />}
-      {scenario && <ScenariosTable scenarios={[scenario]} />}
+      {scenario && (
+        <>
+          <ScenarioContext scenario={scenario} />
+          <ScenarioGraphs scenario={scenario} />
+          <div className={classes.table}>
+            <ScenariosTable scenarios={[scenario]} />
+          </div>
+        </>
+      )}
     </>
   );
 };

@@ -7,6 +7,7 @@ import _ from 'navigader/util/lodash';
 /** ============================ Colors ==================================== */
 export const primaryColor = '#EC0B88';
 export const secondaryColor = '#F8B367';
+export const white = '#FFFFFF';
 
 export type Color = MuiColor;
 export type MaterialColor =
