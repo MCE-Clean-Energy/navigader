@@ -10,6 +10,7 @@ import { makeStylesHook } from 'navigader/styles';
 import { Nullable } from 'navigader/types';
 import { omitFalsey, printWarning, randomString } from 'navigader/util';
 import _ from 'navigader/util/lodash';
+import { Tooltip } from '../Tooltip';
 
 
 /** ============================ Types ===================================== */
@@ -21,6 +22,7 @@ type SelectProps<T> = {
   onChange?: (value: T) => void;
   options?: T[];
   optionSections?: OptionSection<T>[];
+  optionTooltip?: (option: T) => string | undefined;
   renderOption?: ((option: T) => string) | keyof T;
   sorted?: boolean;
   value: T | undefined;
@@ -29,7 +31,8 @@ type SelectProps<T> = {
 type SectionOption<T> = {
   datum: T;
   index: number;
-  rendering: string | T | T[keyof T];
+  text: string | T | T[keyof T];
+  tooltip?: string;
 };
 
 type FormattedSection<T> = {
@@ -41,6 +44,13 @@ type FormattedSection<T> = {
 const useStyles = makeStylesHook(() => ({
   formControl: {
     minWidth: 120
+  },
+  menuItem: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%'
   },
   subheader: {
     cursor: 'default',
@@ -56,6 +66,7 @@ export function Select <T>(props: SelectProps<T>) {
     onChange = () => {},
     options,
     optionSections,
+    optionTooltip,
     renderOption = (option: T) => option,
     sorted = false,
     value,
@@ -83,16 +94,17 @@ export function Select <T>(props: SelectProps<T>) {
     options: section.options.map((option) => ({
       datum: option,
       index: i++,
-      rendering: getOptionRendering(option)
+      text: getOptionRendering(option),
+      tooltip: getOptionTooltip(option)
     }))
   }));
 
-  // If requested, sort the options by their rendering value
+  // If requested, sort the options by their text value
   i = 0;
   const sortedSections = sorted
     ? formattedSections.map(section => ({
         title: section.title,
-        options: _.sortBy(section.options, 'rendering').map(option => ({ ...option, index: i++ }))
+        options: _.sortBy(section.options, 'text').map(option => ({ ...option, index: i++ }))
       }))
     : formattedSections;
   
@@ -122,7 +134,17 @@ export function Select <T>(props: SelectProps<T>) {
           ),
           section.options.map(option =>
             <MuiMenuItem key={option.index} value={option.index}>
-              {option.rendering}
+              {option.tooltip
+                ? (
+                  <Tooltip placement="left" title={option.tooltip}>
+                    <div>
+                      <span className={classes.menuItem} />
+                      {option.text}
+                    </div>
+                  </Tooltip>
+                )
+                : option.text
+              }
             </MuiMenuItem>
           )
         ])))}
@@ -141,6 +163,10 @@ export function Select <T>(props: SelectProps<T>) {
     return typeof renderOption === 'function'
       ? renderOption(option)
       : option[renderOption];
+  }
+  
+  function getOptionTooltip (option: T) {
+    return optionTooltip && optionTooltip(option);
   }
 }
 

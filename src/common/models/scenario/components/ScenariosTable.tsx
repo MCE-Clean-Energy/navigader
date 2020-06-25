@@ -5,6 +5,8 @@ import * as api from 'navigader/api';
 import {
   Avatar, Flex, Icon, Link, PaginationState, PrefetchedTable, Progress, Switch, Table, Tooltip
 } from 'navigader/components';
+import { poller } from 'navigader/models/common';
+import { Components, getStrategyDescription } from 'navigader/models/der';
 import * as routes from 'navigader/routes';
 import { selectModels, updateModels } from 'navigader/store/slices/models';
 import { ColorMap } from 'navigader/styles';
@@ -12,8 +14,6 @@ import { Scenario, ScenarioReportSummary } from 'navigader/types';
 import { kwToMw, printWarning } from 'navigader/util';
 import { date, dollars, maxDecimals } from 'navigader/util/formatters';
 import _ from 'navigader/util/lodash';
-import { poller } from '../../common';
-import { Components } from '../../der';
 
 
 /** ============================ Types ===================================== */
@@ -210,7 +210,11 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                   }
                 </Table.Cell>
                 <Table.Cell>
-                  {scenario.der && scenario.der.der_strategy.name}
+                  {scenario.der &&
+                    <Tooltip title={getStrategyDescription(scenario.der.der_strategy)}>
+                      <span>{scenario.der.der_strategy.name}</span>
+                    </Tooltip>
+                  }
                 </Table.Cell>
                 <Table.Cell align="right">
                   {

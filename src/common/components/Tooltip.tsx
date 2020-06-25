@@ -5,9 +5,24 @@ import { makeStylesHook } from 'navigader/styles';
 
 
 /** ============================ Types ===================================== */
+type TooltipPlacement =
+  | 'bottom-end'
+  | 'bottom-start'
+  | 'bottom'
+  | 'left-end'
+  | 'left-start'
+  | 'left'
+  | 'right-end'
+  | 'right-start'
+  | 'right'
+  | 'top-end'
+  | 'top-start'
+  | 'top';
+
 type TooltipProps = {
   children: React.ReactElement;
   maxWidth?: React.CSSProperties['maxWidth'];
+  placement?: TooltipPlacement;
   title: React.ReactNode;
 };
 
@@ -20,11 +35,9 @@ const useStyles = makeStylesHook<TooltipProps>(theme => ({
 }), 'Tooltip');
 
 /** ============================ Components ================================ */
-export const Tooltip: React.FC<TooltipProps> = (props) => {
-  const classes = useStyles(props);
-  return (
-    <MuiTooltip arrow classes={classes} interactive {...props}>
+export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
+  (props, ref) =>
+    <MuiTooltip arrow classes={useStyles(props)} interactive ref={ref} {...props}>
       {props.children}
     </MuiTooltip>
-  );
-};
+);

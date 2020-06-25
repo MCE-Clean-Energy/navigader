@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { Flex, Select } from 'navigader/components';
+import { getStrategyDescription } from 'navigader/models/der';
 import { makeStylesHook } from 'navigader/styles';
 import { BatteryConfiguration, BatteryStrategy, DerStrategyType } from 'navigader/types';
 import _ from 'navigader/util/lodash';
@@ -70,6 +71,7 @@ const BatteryOptions: React.FC<ProgramOptionsProps> = (props) => {
           label="Strategy"
           onChange={updateStrategy}
           optionSections={strategyGroups}
+          optionTooltip={getStrategyDescription}
           renderOption="name"
           sorted
           value={strategy}
