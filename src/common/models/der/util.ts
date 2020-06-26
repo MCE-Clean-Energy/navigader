@@ -9,6 +9,7 @@ import { BatteryStrategy } from 'navigader/types';
  * @param {BatteryStrategy} strategy: the strategy to retrieve and format the description of
  */
 export function getStrategyDescription (strategy: BatteryStrategy) {
+  if (!strategy.description) return;
   const contentEnd = strategy.description.indexOf('January');
   return contentEnd === -1
     ? strategy.description

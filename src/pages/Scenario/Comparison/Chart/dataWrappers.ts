@@ -31,10 +31,10 @@ export class ScenarioWrapper implements ChartDatumWrapper {
     return this.scenario.id;
   }
   
-  getLabel (averaged: boolean) {
+  getTooltipText (averaged: boolean) {
     const { der, expected_der_simulation_count, meter_group, name } = this.scenario;
     
-    // `getLabel` is only called when the scenario is rendered, which only happens if the bill and
+    // `getTooltipText` is only called when the scenario is rendered, which only happens if the bill and
     // GHG impacts are numeric
     const billImpact = this.getBillImpact(averaged) as number;
     const ghgImpact = maxDecimals(this.getGhgImpact(averaged) as number, 2);
@@ -80,8 +80,8 @@ export class CustomerWrapper implements ChartDatumWrapper {
     return [this.getScenarioId(), this.customer.ID].join('__');
   }
   
-  getLabel () {
-    // `getLabel` is only called when the scenario is rendered, which only happens if the bill and
+  getTooltipText () {
+    // `getTooltipText` is only called when the scenario is rendered, which only happens if the bill and
     // GHG impacts are numeric
     const billImpact = this.getBillImpact() as number;
     const ghgImpact = maxDecimals(this.getGhgImpact() as number, 2);

@@ -1,9 +1,10 @@
 import {
-  MeterGroup, PandasFrame, RawMeterGroup, RawPandasFrame, RawScenario, RawScenarioReport,
-  RawScenarioReportSummary, Scenario, ScenarioReport
+  MeterGroup, PandasFrame, ProcurementReport, RawMeterGroup, RawPandasFrame, RawScenario, Scenario,
+  ScenarioReport, ScenarioReportFields
 } from 'navigader/types';
-import { percentOf } from 'navigader/util/math';
 import _ from 'navigader/util/lodash';
+import { percentOf } from 'navigader/util/math';
+import { isRawScenarioReport, isRawScenarioReportSummary } from 'navigader/util/typeGuards';
 
 
 /** ============================ Meter Groups ============================== */
@@ -55,9 +56,7 @@ export function parseScenario (scenario: RawScenario): Scenario {
   
   const hasRun = percentComplete === 100;
   const report = parseReport(scenario.report);
-  const reportSummary = hasReportSummary(scenario.report_summary)
-    ? scenario.report_summary[0]
-    : undefined;
+  const reportSummary = parseReportSummary(scenario.report_summary);
   
   // If we have the report or the report summary (i.e. it isn't undefined) and it's empty, then the
   // report hasn't been built yet and so the scenario hasn't undergone aggregation. If we have
@@ -87,40 +86,62 @@ export function parseScenario (scenario: RawScenario): Scenario {
 }
 
 export function parseReport (report?: RawScenario['report']): ScenarioReport | undefined {
-  if (!hasReport(report)) return;
+  if (!isRawScenarioReport(report)) return;
   const parsed = parsePandasFrame(report);
   
   // For every simulation ID in the report, gather the values associated with that ID from the
   // other columns and compile them into an object
-  const rows = Object.fromEntries((parsed.ID || []).map((simulationId, rowIndex) => {
-    const simulationFields = Object.entries(parsed).map(
-      ([column, values]) => {
-        const rowValue = values && values[rowIndex];
-        const columnName = column === 'SA ID' ? 'SA_ID' : column;
-        return [columnName, rowValue];
-      }
+  return Object.fromEntries((parsed.ID || []).map((simulationId, rowIndex) => {
+    const simulationFields = Object.fromEntries(
+      Object.entries(parsed).map(
+        ([column, values]) => {
+          const rowValue = values && values[rowIndex];
+          const columnName = column === 'SA ID' ? 'SA_ID' : column;
+          return [columnName, rowValue];
+        }
+      )
     );
-    
-    return [simulationId, Object.fromEntries(simulationFields)];
+
+    return [
+      simulationId,
+      {
+        ...simulationFields,
+        ...parseReportProcurementFields(simulationFields)
+      } as ScenarioReportFields
+    ];
   }));
-  
+}
+
+function parseReportSummary (summary: RawScenario['report_summary']) {
+  if (!isRawScenarioReportSummary(summary)) return undefined;
   return {
-    columns: {
-      ..._.omit(parsed, 'SA ID'),
-      SA_ID: parsed['SA ID']
-    },
-    rows
+    ...summary[0],
+    ...parseReportProcurementFields(summary[0])
   };
 }
 
-function hasReportSummary (
-  summary: RawScenario['report_summary']
-): summary is RawScenarioReportSummary {
-  return Boolean(summary && !_.isEmpty(summary));
-}
-
-function hasReport (report: RawScenario['report']): report is RawScenarioReport {
-  return Boolean(report && !report.hasOwnProperty('index'));
+/**
+ * Reduces the procurement costs from multiple years down to a single value
+ *
+ * @param {ProcurementReport} fields: the procurement data fields
+ */
+function parseReportProcurementFields (fields: ProcurementReport) {
+  const {
+    PRC_LMP2018Delta,
+    PRC_LMP2018PostDER,
+    PRC_LMP2018PreDER,
+    PRC_LMP2019Delta,
+    PRC_LMP2019PostDER,
+    PRC_LMP2019PreDER,
+    ...rest
+  } = fields;
+  
+  return {
+    ...rest,
+    PRC_LMPDelta: _.sumBy([PRC_LMP2018Delta, PRC_LMP2019Delta]),
+    PRC_LMPPostDER: _.sumBy([PRC_LMP2018PostDER, PRC_LMP2019PostDER]),
+    PRC_LMPPreDER: _.sumBy([PRC_LMP2018PreDER, PRC_LMP2019PreDER])
+  };
 }
 
 /** ============================ Miscellaneous ============================= */

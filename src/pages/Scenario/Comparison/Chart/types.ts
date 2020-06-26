@@ -1,6 +1,6 @@
 export type ScenarioDatum = {
   id: string;
-  label: string;
+  tooltip: string;
   scenario: string;
   size: number;
   xValue: number;
@@ -19,7 +19,7 @@ export interface ChartDatumWrapper {
   getBillImpact: (averaged: boolean) => number | null | undefined;
   getGhgImpact: (averaged: boolean) => number | null | undefined;
   getId: () => string;
-  getLabel: (averaged: boolean) => string;
+  getTooltipText: (averaged: boolean) => string;
   getScenarioId: () => string;
   getSize: () => number;
 }

@@ -6,12 +6,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
 import * as api from 'navigader/api';
-import { IdType, ObjectWithId } from 'navigader/types';
+import { GHGRate, IdType, ObjectWithId, PaginationSet, Scenario } from 'navigader/types';
 import { RootState, slices } from 'navigader/store';
 import { ColorMap } from 'navigader/styles';
 import { makeCancelableAsync } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 import { omitFalsey } from './omitFalsey';
+import { GetScenarioQueryOptions } from 'navigader/api';
 
 
 /**
@@ -69,27 +70,69 @@ export function useGhgRates () {
     storedGhgRates.length ? storedGhgRates : undefined
   );
   
-  // Make an API call if we don't have the GHG rates loaded yet
-  React.useEffect(
-    makeCancelableAsync(
-      async () => {
-        if (ghgRates) return ghgRates;
-        
-        // Request the GHG rates and save them to the store
-        const fetchedRates = (await api.getGhgRates({
-          data_format: '288',
-          include: ['data'],
-          page: 1,
-          page_size: 100
-        })).data;
-
-        dispatch(slices.models.updateModels(fetchedRates));
-        return fetchedRates;
-      },
-      setGhgRates
-    ),
-    []
+  useAsync(
+    () => api.getGhgRates({
+      data_format: '288',
+      include: ['data'],
+      page: 1,
+      page_size: 100
+    }),
+    handleGhgRatesRequest,
+    [],
+    // If we've already loaded the rates, we don't need to do so again
+    () => Boolean(ghgRates)
   );
   
   return ghgRates;
+  
+  /**
+   * Handles the API response. The models will be added to the store.
+   *
+   * @param {PaginationSet<GHGRate>} ghgRates: the API response
+   */
+  function handleGhgRatesRequest ({ data }: PaginationSet<GHGRate>) {
+    dispatch(slices.models.updateModels(data));
+    setGhgRates(data);
+  }
+}
+
+export function useGetScenario (scenarioId: string, options?: GetScenarioQueryOptions) {
+  const [scenario, setScenario] = React.useState<Scenario>();
+  const loading = useAsync(() => api.getScenario(scenarioId, options), setScenario, [scenarioId]);
+  return { scenario, loading };
+}
+
+/**
+ * Hook for calling an asynchronous method
+ *
+ * @param {function} fn: the asynchronous function to call
+ * @param {function} callback: a callback to execute once the function has completed
+ * @param {any[]} dependencies: the dependency array
+ * @param {function} [condition]: a conditional function. If this returns `false` the async function
+ *   will not be executed
+ */
+function useAsync <T>(
+  fn: () => Promise<T>,
+  callback: (response: T) => void,
+  dependencies: any[],
+  condition?: () => boolean
+) {
+  const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(
+    makeCancelableAsync(
+      async () => {
+        if (condition && !condition()) return;
+        setLoading(true);
+        return fn();
+      },
+      res => {
+        setLoading(false);
+        res && callback(res);
+      }
+    ),
+    dependencies
+  );
+  
+  return loading;
 }

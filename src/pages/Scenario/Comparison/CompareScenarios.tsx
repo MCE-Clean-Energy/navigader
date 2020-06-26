@@ -92,7 +92,7 @@ export const CompareScenariosPage: React.FC = () => {
                       className={classes.tableContainer}
                       colorMap={colorMap}
                       scenarios={scenarios}
-                      simulations={_.flatten(scenarios.map(s => Object.values(s.report!.rows)))}
+                      simulations={_.flatten(scenarios.map(s => Object.values(s.report!)))}
                       updateHover={setHoveredId}
                     />
                   )

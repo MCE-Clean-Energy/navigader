@@ -36,8 +36,12 @@ const useStyles = makeStylesHook<TooltipProps>(theme => ({
 
 /** ============================ Components ================================ */
 export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
-  (props, ref) =>
-    <MuiTooltip arrow classes={useStyles(props)} interactive ref={ref} {...props}>
-      {props.children}
-    </MuiTooltip>
+  (props, ref) => {
+    if (!props.title) return props.children;
+    return (
+      <MuiTooltip arrow classes={useStyles(props)} interactive ref={ref} {...props}>
+        {props.children}
+      </MuiTooltip>
+    );
+  }
 );

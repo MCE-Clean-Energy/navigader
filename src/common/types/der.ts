@@ -41,7 +41,8 @@ type BatteryStrategyDeferredFields = {
 
 export interface BatteryStrategy extends DeferrableFields<
   NavigaderObject<'BatteryStrategy'> & DerCommonFields & {
-    description: string; objective: DerStrategyType;
+    description?: string;
+    objective: DerStrategyType;
   }, BatteryStrategyDeferredFields
 > {}
 

@@ -182,6 +182,60 @@ describe('API parsing methods', () => {
         expect(hasRunParsed.progress.is_complete).toEqual(hasAggregated);
       });
     });
+
+    it('combines procurement values in the report summary', () => {
+      const parsed = parseScenario(
+        fixtures.makeRawScenario({
+          report_summary: {
+            0: {
+              ...fixtures.scenarioReportSummary[0],
+              PRC_LMP2018Delta: 1,
+              PRC_LMP2018PostDER: 2,
+              PRC_LMP2018PreDER: 3,
+              PRC_LMP2019Delta: 4,
+              PRC_LMP2019PostDER: 5,
+              PRC_LMP2019PreDER: 6,
+            },
+          }
+        })
+      );
+      
+      expect(parsed.report_summary).toMatchObject({
+        PRC_LMPDelta: 5,
+        PRC_LMPPostDER: 7,
+        PRC_LMPPreDER: 9
+      });
+    });
+    
+    it('combines procurement values in the report', () => {
+      const parsed = parseScenario(
+        fixtures.makeRawScenario({
+          report: {
+            ...fixtures.scenarioReport,
+            ID: ['a', 'b'],
+            PRC_LMP2018Delta: [1, 2],
+            PRC_LMP2018PostDER: [3, 4],
+            PRC_LMP2018PreDER: [5, 6],
+            PRC_LMP2019Delta: [7, 8],
+            PRC_LMP2019PostDER: [9, 10],
+            PRC_LMP2019PreDER: [11, 12],
+          }
+        })
+      );
+      
+      expect(parsed.report).toMatchObject({
+        a: {
+          PRC_LMPDelta: 8,
+          PRC_LMPPostDER: 12,
+          PRC_LMPPreDER: 16,
+        },
+        b: {
+          PRC_LMPDelta: 10,
+          PRC_LMPPostDER: 14,
+          PRC_LMPPreDER: 18
+        }
+      });
+    });
   });
   
   describe('`parseReport` method', () => {
@@ -189,12 +243,9 @@ describe('API parsing methods', () => {
       const parsed = parseReport(fixtures.scenarioReport);
 
       // Check that rows are renamed
-      Object.values(parsed!.rows).forEach((simulation, i) => {
+      Object.values(parsed!).forEach((simulation, i) => {
         expect(simulation.SA_ID).toEqual(fixtures.scenarioReport['SA ID'][i]);
       });
-      
-      // Check that columns are renamed
-      expect(parsed?.columns.SA_ID).toEqual(fixtures.scenarioReport['SA ID']);
     });
   });
   

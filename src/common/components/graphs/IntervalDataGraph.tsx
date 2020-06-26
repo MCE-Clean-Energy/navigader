@@ -7,7 +7,7 @@ import { VictoryVoronoiContainerProps } from 'victory-voronoi-container';
 import { VictoryZoomContainerProps } from 'victory-zoom-container';
 
 import { IntervalDataWrapper } from 'navigader/models';
-import { ColorMap, makeStylesHook } from 'navigader/styles';
+import { ColorMap } from 'navigader/styles';
 import { MonthIndex, Tuple } from 'navigader/types';
 import { omitFalsey } from 'navigader/util';
 import { date } from 'navigader/util/formatters';
@@ -53,14 +53,6 @@ const lineStyle = (intervalName: string, colorMap: ColorMap) => ({
   stroke: colorMap.getColor(intervalName)
 });
 
-const useStyles = makeStylesHook(() => ({
-  container: {
-    '& svg': {
-      overflow: 'visible'
-    }
-  }
-}), 'IntervalDataGraph');
-
 /** ============================ Components ================================ */
 const VictoryZoomVoronoiContainer = createContainer<
   VictoryZoomContainerProps,
@@ -79,8 +71,6 @@ export const IntervalDataGraph: React.FC<IntervalDataGraphProps> = (props) => {
     units
   } = props;
 
-  const classes = useStyles();
-  
   // If the data changes without the component unmounting, get a new color map
   const normalizedData = data instanceof IntervalDataWrapper ? [data] : data;
   const colorMap = useColorMap(normalizedData, _.map(normalizedData, 'name').concat('delta'));
@@ -88,78 +78,76 @@ export const IntervalDataGraph: React.FC<IntervalDataGraphProps> = (props) => {
   const { areaData, domain, visibleData } = useData(normalizedData, month, timeDomain);
 
   return (
-    <div className={classes.container}>
-      <NavigaderChart
-        containerComponent={
-          <VictoryZoomVoronoiContainer
-            labels={getLabelFactory(units)}
-            minimumZoom={{ x: 1000 * 60 * 60 * 3 }}
+    <NavigaderChart
+      containerComponent={
+        <VictoryZoomVoronoiContainer
+          labels={getLabelFactory(units)}
+          minimumZoom={{ x: 1000 * 60 * 60 * 3 }}
+          // @ts-ignore
+          onZoomDomainChange={handleZoom}
+          responsive
+          zoomDomain={{ x: timeDomain, y: domain.y }}
+          zoomDimension="x"
+        />
+      }
+      domain={domain}
+      height={height}
+      padding={{ ...chartMargins, top: 10 }}
+      scale={{ x: 'time' }}
+    >
+      {!hideXAxis && <VictoryAxis tickFormat={date.monthDayHourMinute} />}
+      <VictoryAxis
+        crossAxis={false}
+        dependentAxis
+        label={getAxisLabel(axisLabel, units)}
+        axisLabelComponent={<VictoryLabel dy={-30} />}
+      />
+
+      {areaData &&
+        <VictoryArea
+          data={areaData.data.map(d => ({ ...d, name: 'Delta' }))}
+          interpolation="monotoneX"
+          labelComponent={
             // @ts-ignore
-            onZoomDomainChange={handleZoom}
-            responsive
-            zoomDomain={{ x: timeDomain, y: domain.y }}
-            zoomDimension="x"
-          />
-        }
-        domain={domain}
-        height={height}
-        padding={{ ...chartMargins, top: 10 }}
-        scale={{ x: 'time' }}
-      >
-        {!hideXAxis && <VictoryAxis tickFormat={date.monthDayHourMinute} />}
-        <VictoryAxis
-          crossAxis={false}
-          dependentAxis
-          label={getAxisLabel(axisLabel, units)}
-          axisLabelComponent={<VictoryLabel dy={-30} />}
-        />
-
-        {areaData &&
-          <VictoryArea
-            data={areaData.data.map(d => ({ ...d, name: 'Delta' }))}
-            interpolation="monotoneX"
-            labelComponent={
-              // @ts-ignore
-              <VictoryTooltip orientation={
-                ({ datum }: VictoryCallbackArg<GraphDatum>) =>
-                  datum.value < 0
-                    ? 'bottom'
-                    : 'top'
-              } />
-            }
-            style={{ data: areaStyle(colorMap) }}
-            x="timestamp"
-            y="value"
-          />
-        }
-
-        {visibleData.map(intervalData =>
-          <VictoryLine
-            data={intervalData.data.map(d => ({ ...d, name: intervalData.name }))}
-            interpolation="monotoneX"
-            key={intervalData.name}
-            style={{ data: lineStyle(intervalData.name, colorMap) }}
-            x="timestamp"
-            y="value"
-          />
-        )}
-
-        <VictoryLegend
-          colorScale={
-            // Append the "delta" legend icon if there are 2 intervals
-            normalizedData.map(interval => colorMap.getColor(interval.name)).concat(
-              normalizedData.length === 2 ? [colorMap.getColor('delta')] : []
-            )
+            <VictoryTooltip orientation={
+              ({ datum }: VictoryCallbackArg<GraphDatum>) =>
+                datum.value < 0
+                  ? 'bottom'
+                  : 'top'
+            } />
           }
-          data={
-            normalizedData.map(interval => ({ name: interval.name })).concat(
-              normalizedData.length === 2 ? [{ name: 'Delta' }] : []
-            )
-          }
-          x={chartMargins.left}
+          style={{ data: areaStyle(colorMap) }}
+          x="timestamp"
+          y="value"
         />
-      </NavigaderChart>
-    </div>
+      }
+
+      {visibleData.map(intervalData =>
+        <VictoryLine
+          data={intervalData.data.map(d => ({ ...d, name: intervalData.name }))}
+          interpolation="monotoneX"
+          key={intervalData.name}
+          style={{ data: lineStyle(intervalData.name, colorMap) }}
+          x="timestamp"
+          y="value"
+        />
+      )}
+
+      <VictoryLegend
+        colorScale={
+          // Append the "delta" legend icon if there are 2 intervals
+          normalizedData.map(interval => colorMap.getColor(interval.name)).concat(
+            normalizedData.length === 2 ? [colorMap.getColor('delta')] : []
+          )
+        }
+        data={
+          normalizedData.map(interval => ({ name: interval.name })).concat(
+            normalizedData.length === 2 ? [{ name: 'Delta' }] : []
+          )
+        }
+        x={chartMargins.left}
+      />
+    </NavigaderChart>
   );
   
   /** ============================ Callbacks =============================== */

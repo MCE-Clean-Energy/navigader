@@ -29,11 +29,11 @@ export function buildChartConfiguration (
     ? scenarios.map(s => new ScenarioWrapper(s))
     : _.flatten(
         scenarios.map(
-          s => Object.values(s.report!.rows).map(row => new CustomerWrapper(row))
+          s => Object.values(s.report!).map(row => new CustomerWrapper(row))
         )
       );
   
-  const data = omitFalsey(wrappedData.map((datum, i) => {
+  const data = omitFalsey(wrappedData.map((datum) => {
     const xValue = datum.getBillImpact(isAveraged);
     const yValue = datum.getGhgImpact(isAveraged);
     
@@ -49,7 +49,7 @@ export function buildChartConfiguration (
     return {
       ..._.pick(datum, ['name']),
       id: datum.getId(),
-      label: datum.getLabel(isAveraged),
+      tooltip: datum.getTooltipText(isAveraged),
       scenario: datum.getScenarioId(),
       size: datum.getSize(),
       xValue,

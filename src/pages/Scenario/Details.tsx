@@ -14,7 +14,7 @@ import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
 import { Frame288Numeric, MonthIndex, Scenario } from 'navigader/types';
 import { makeCancelableAsync } from 'navigader/util';
-import { useGhgRates } from 'navigader/util/hooks';
+import { useGetScenario, useGhgRates } from 'navigader/util/hooks';
 import _ from 'navigader/util/lodash';
 
 
@@ -125,11 +125,21 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
   const [chartView, setChartView] = React.useState<ChartView>('usage');
   const [meterGroupData, setMeterGroupData] = React.useState<IntervalDataWrapper>();
   const [meterGroupLoading, setMeterGroupLoading] = React.useState(false);
-  const [simulationData, setSimulationData] = React.useState<IntervalDataWrapper>();
-  const [simulationLoading, setSimulationLoading] = React.useState(false);
   const [selectedMonth, setMonth] = React.useState<MonthIndex>(1);
   const [timeDomainOption, setTimeDomainOption] = React.useState<TimeDomainOption>('1m');
   const [timeDomain, setTimeDomain] = React.useState<TimeTuple>();
+
+  const {
+    loading: simulationLoading,
+    scenario: scenarioWithData
+  } = useGetScenario(scenario.id, { data_types: 'default' });
+  
+  const scenarioData = scenarioWithData?.data.default;
+  const simulationData = scenarioData && IntervalDataWrapper.create(
+    {...scenarioData, name: 'Simulated load' },
+    'index',
+    'kw'
+  );
 
   // Load the meter group data
   React.useEffect(
@@ -146,23 +156,6 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
         );
       }
     ), [meter_group?.id]
-  );
-
-  // Load the simulation data
-  React.useEffect(
-    makeCancelableAsync(
-      () => {
-        setSimulationLoading(true);
-        return api.getScenario(scenario.id, { data_types: 'default' });
-      },
-      res => {
-        setSimulationLoading(false);
-        const loadData = res.data.default;
-        loadData && setSimulationData(
-          IntervalDataWrapper.create({ ...loadData, name: 'Simulated load' }, 'index', 'kw')
-        );
-      }
-    ), [scenario.id]
   );
 
   const ghgRates = useGhgRates();
@@ -298,18 +291,12 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
 };
 
 export const ScenarioResultsPage: React.FC = () => {
-  const [scenario, setScenario] = React.useState<Scenario>();
   const { id } = useParams();
   const classes = useStyles();
   
-  // Loads the scenario
-  React.useEffect(
-    makeCancelableAsync(async () => {
-      if (!id) return;
-      return api.getScenario(id, { include: ['ders', 'meter_groups', 'report', 'report_summary'] });
-    }, res => setScenario(res)),
-    [id]
-  );
+  const { loading, scenario } = useGetScenario(id as string, {
+    include: ['ders', 'meter_groups', 'report', 'report_summary']
+  });
 
   return (
     <>
@@ -321,6 +308,7 @@ export const ScenarioResultsPage: React.FC = () => {
         title="Scenario Details"
       />
       
+      {loading && <Progress circular />}
       {scenario && (
         <>
           <ScenarioContext scenario={scenario} />

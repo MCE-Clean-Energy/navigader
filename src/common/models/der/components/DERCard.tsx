@@ -60,7 +60,7 @@ export const DERCard: React.FC<DerCardProps> = (props) => {
               strategy
                 ? (
                   <Tooltip title={getStrategyDescription(strategy)}>
-                    <span>{strategy.name}</span>
+                    <div>{strategy.name}</div>
                   </Tooltip>
                 )
                 : 'None'

@@ -1,3 +1,4 @@
+import _ from 'navigader/util/lodash';
 import { fixtures } from 'navigader/util/testing'
 import * as utils from './util';
 
@@ -6,11 +7,18 @@ import * as utils from './util';
 describe('DER utility methods', () => {
   describe('`getStrategyDescription` method' ,() => {
     it('returns the description unchanged if "January" is not found', () => {
-      const emptyDescription = fixtures.makeDerStrategy({ description: '' });
       const nonDefaultDescription = fixtures.makeDerStrategy({ description: 'Custom description' });
-      
-      expect(utils.getStrategyDescription(emptyDescription)).toEqual('');
       expect(utils.getStrategyDescription(nonDefaultDescription)).toEqual('Custom description');
+    });
+    
+    it('returns `undefined` if the description is missing', () => {
+      const emptyDescription = fixtures.makeDerStrategy({ description: '' });
+      const undefinedDescription = fixtures.makeDerStrategy({ description: undefined });
+      const missingDescription = _.omit(fixtures.makeDerStrategy(), 'description');
+      
+      expect(utils.getStrategyDescription(emptyDescription)).toBeUndefined();
+      expect(utils.getStrategyDescription(undefinedDescription)).toBeUndefined();
+      expect(utils.getStrategyDescription(missingDescription)).toBeUndefined();
     });
     
     it('returns the description truncated if it has the automated description', () => {

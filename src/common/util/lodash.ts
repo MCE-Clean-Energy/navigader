@@ -29,6 +29,7 @@ import sortBy from 'lodash/sortBy';
 import sumBy from 'lodash/sumBy';
 import toPairs from 'lodash/toPairs';
 import without from 'lodash/without';
+import zip from 'lodash/zip';
 
 
 export default {
@@ -54,5 +55,6 @@ export default {
   sortBy,
   sumBy,
   toPairs,
-  without
+  without,
+  zip
 };

@@ -1,5 +1,5 @@
 import { DeferrableFields } from './api';
-import { NavigaderObject, Nullable, PandasFrame, ProgressFields, RawPandasFrame } from './common';
+import { NavigaderObject, Nullable, ProgressFields, RawPandasFrame } from './common';
 import { BatteryConfiguration, BatteryStrategy } from './der';
 import { LoadTypeMap, MeterGroup } from './meter';
 
@@ -65,26 +65,42 @@ export interface Scenario extends DeferrableFields<
 > {}
 
 /** ============================ Report ==================================== */
-type ScenarioReportFieldsCommon = {
-  ID: string;
-  
-  // "Detailed report" attributes
+type ProcurementKeys =
+  | 'PRC_LMP2018Delta'
+  | 'PRC_LMP2018PostDER'
+  | 'PRC_LMP2018PreDER'
+  | 'PRC_LMP2019Delta'
+  | 'PRC_LMP2019PostDER'
+  | 'PRC_LMP2019PreDER';
+
+type AggregatedProcurementKeys =
+  | 'PRC_LMPDelta'
+  | 'PRC_LMPPostDER'
+  | 'PRC_LMPPreDER';
+
+export type ProcurementReport = { [key in ProcurementKeys]?: number; };
+type AggregatedProcurementReport = { [Key in AggregatedProcurementKeys]: number; };
+
+type DetailedReport = {
   DERConfiguration: string;
   DERStrategy: string;
   SimulationRatePlan: string;
   SingleScenarioStudy: string;
-} & Partial<{
-  // "Usage report" attributes
+};
+
+type UsageReport = {
   UsagePreDER: number;
   UsagePostDER: number;
   UsageDelta: number;
-  
-  // "Bill report" attributes
+};
+
+type BillReport = {
   BillPreDER: Nullable<number>;
   BillPostDER: Nullable<number>;
   BillDelta: Nullable<number>;
-  
-  // "GHG report" attributes
+};
+
+type GHGReport = {
   CleanNetShort2018PreDER: Nullable<number>;
   CleanNetShort2018PostDER: Nullable<number>;
   CleanNetShort2018Delta: Nullable<number>;
@@ -100,32 +116,43 @@ type ScenarioReportFieldsCommon = {
   CARBUnspecifiedPower2013PreDER: Nullable<number>;
   CARBUnspecifiedPower2013PostDER: Nullable<number>;
   CARBUnspecifiedPower2013Delta: Nullable<number>;
-  
-  // "Resource adequacy report" attributes
+};
+
+type CustomerMeterReport = {
+  MeterRatePlan: string;
+};
+
+type ResourceAdequacyReport = {
   RAPreDER: Nullable<number>;
   RAPostDER: Nullable<number>;
   RADelta: Nullable<number>;
-  
-  // "Customer meter report" attributes
-  MeterRatePlan: string;
-}>;
+};
+
+type ScenarioReportFieldsCommon = { ID: string; } & DetailedReport & Partial<
+  & UsageReport
+  & BillReport
+  & GHGReport
+  & ResourceAdequacyReport
+  & ProcurementReport
+  & CustomerMeterReport
+>;
 
 export type RawScenarioReportFields = ScenarioReportFieldsCommon & { "SA ID": number; };
-export type ScenarioReportFields = ScenarioReportFieldsCommon & { SA_ID: number; };
+export type ScenarioReportFields =
+  & ScenarioReportFieldsCommon
+  & AggregatedProcurementReport
+  & { SA_ID: number; };
 
 export type EmptyReport = { index: {}; };
 export type RawScenarioReport = RawPandasFrame<RawScenarioReportFields>;
 export type ScenarioReport = {
-  columns: PandasFrame<ScenarioReportFields>;
-  rows: {
-    [id: string]: ScenarioReportFields;
-  };
+  [id: string]: ScenarioReportFields;
 };
 
-type ScenarioReportSummaryFields = Omit<
+export type ScenarioReportSummaryFields = Omit<
   ScenarioReportFieldsCommon,
   'ID' | 'SingleScenarioStudy' | 'SimulationRatePlan' | 'MeterRatePlan'
->;
+> & AggregatedProcurementReport;
 
 type EmptyReportSummary = {};
 export type RawScenarioReportSummary = { 0: ScenarioReportSummaryFields };

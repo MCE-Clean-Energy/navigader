@@ -47,6 +47,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                 <span>GHG Impact (tCO<sub>2</sub>)</span>
               </Table.Cell>
               <Table.Cell align="right" sortBy="RADelta">RA Impact (kW)</Table.Cell>
+              <Table.Cell align="right" sortBy="PRC_LMPDelta">Procurement Cost ($)</Table.Cell>
             </Table.Row>
           </Table.Head>
           <Table.Body>
@@ -76,6 +77,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                 <Table.Cell align="right">{dollars(simulation.BillDelta)}</Table.Cell>
                 <Table.Cell align="right">{maxDecimals(simulation.CleanNetShort2022Delta, 2)}</Table.Cell>
                 <Table.Cell align="right">{maxDecimals(simulation.RADelta, 2)}</Table.Cell>
+                <Table.Cell align="right">{dollars(simulation.PRC_LMPDelta)}</Table.Cell>
               </Table.Row>
             )}
           </Table.Body>

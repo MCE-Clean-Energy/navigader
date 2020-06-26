@@ -29,7 +29,7 @@ type GetScenarioResponse = {
   study: RawScenario;
 };
 
-type GetScenarioQueryOptions = Partial<DynamicRestParams> & {
+export type GetScenarioQueryOptions = Partial<DynamicRestParams> & {
   data_types?: LoadType | LoadType[];
 };
 

@@ -164,6 +164,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 GHG Impact (tCO<sub>2</sub>/year{innerAveraged && '/SAID'})
               </Table.Cell>
               <Table.Cell align="right">RA Impact (MW/year{innerAveraged && '/SAID'})</Table.Cell>
+              <Table.Cell align="right">Procurement Cost ($/year{innerAveraged && '/SAID'})</Table.Cell>
               <Table.Cell>Status</Table.Cell>
               {actionsMenu && <Table.Cell>Menu</Table.Cell>}
             </Table.Row>
@@ -212,7 +213,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 <Table.Cell>
                   {scenario.der &&
                     <Tooltip title={getStrategyDescription(scenario.der.der_strategy)}>
-                      <span>{scenario.der.der_strategy.name}</span>
+                      <div>{scenario.der.der_strategy.name}</div>
                     </Tooltip>
                   }
                 </Table.Cell>
@@ -241,6 +242,13 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                   {
                     scenario.progress.is_complete
                       ? maxDecimals(kwToMw(getField(scenario, 'RADelta', innerAveraged)), 2)
+                      : '-'
+                  }
+                </Table.Cell>
+                <Table.Cell align="right">
+                  {
+                    scenario.progress.is_complete
+                      ? dollars(getField(scenario, 'PRC_LMPDelta', innerAveraged))
                       : '-'
                   }
                 </Table.Cell>

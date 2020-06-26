@@ -1,7 +1,10 @@
 import * as React from 'react';
-import { VictoryAxis, VictoryLabel, VictoryScatter, VictoryTheme, VictoryTooltip } from 'victory';
+import {
+  VictoryAxis, VictoryLabel, VictoryScatter, VictoryTheme, VictoryTooltip, VictoryVoronoiContainer
+} from 'victory';
 
 import { Card, Flex, GraphComponents, Grid, List, Typography } from 'navigader/components';
+import { VictoryCallbackArg } from 'navigader/components/graphs/util';
 import { ColorMap, makeStylesHook, primaryColor } from 'navigader/styles';
 import { Scenario } from 'navigader/types';
 import { buildChartConfiguration } from './configuration';
@@ -90,6 +93,13 @@ export const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (
       <Grid.Item span={8}>
         <Card padding={0} raised>
           <GraphComponents.NavigaderChart
+            containerComponent={
+              <VictoryVoronoiContainer
+                labelComponent={<VictoryTooltip constrainToVisibleArea pointerLength={0} />}
+                labels={pointLabel}
+                responsive
+              />
+            }
             domain={chartConfig.domain}
             domainPadding={30}
             padding={CHART_MARGIN}
@@ -98,24 +108,15 @@ export const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (
               axisLabelComponent={<VictoryLabel y={height - CHART_MARGIN + 10} />}
               label={`${averaged ? 'Avg. ' : ''}Revenue Impacts ($/year)`}
             />
-            
+
             <VictoryAxis
               axisLabelComponent={<VictoryLabel x={CHART_MARGIN - 10} />}
               dependentAxis
               label={`${averaged ? 'Avg. ' : ''}GHG Impacts (tCO2/year)`}
             />
-            
+
             <VictoryScatter
               data={chartConfig.data}
-              labels={d => d.datum.name}
-              labelComponent={
-                <VictoryTooltip
-                  constrainToVisibleArea
-                  labelComponent={<VictoryLabel />}
-                  pointerLength={0}
-                  text={d => d.datum.label}
-                />
-              }
               style={{
                 data: {
                   fill: ({ datum }: VictoryCallbackArgs) => {
@@ -136,7 +137,7 @@ export const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (
           </GraphComponents.NavigaderChart>
         </Card>
       </Grid.Item>
-      
+
       <Grid.Item span={4}>
         <Flex.Container className={classes.rightSideContainer} direction="column">
           <Controls aggregated={aggregated} updateAggregated={updateAggregated} />
@@ -146,3 +147,7 @@ export const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (
     </Grid>
   );
 };
+
+function pointLabel ({ datum }: VictoryCallbackArg<ScenarioDatum>) {
+  return datum.tooltip;
+}
