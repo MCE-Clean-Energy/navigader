@@ -80,7 +80,7 @@ export function useGhgRates () {
     handleGhgRatesRequest,
     [],
     // If we've already loaded the rates, we don't need to do so again
-    () => Boolean(ghgRates)
+    () => !ghgRates
   );
   
   return ghgRates;
