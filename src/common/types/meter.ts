@@ -3,7 +3,7 @@ import { Frame288NumericType } from './frame288';
 
 
 /** ============================ Meter Types =============================== */
-export type Frame288LoadType = 'total' | 'average' | 'maximum' | 'minimum';
+export type Frame288LoadType = 'average' | 'maximum' | 'minimum';
 
 export type LoadType = 'default' | Frame288LoadType;
 export type LoadTypeMap = {

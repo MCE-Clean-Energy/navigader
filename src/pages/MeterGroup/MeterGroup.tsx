@@ -7,7 +7,7 @@ import { getMeterGroupDisplayName, isSufficientlyIngested } from 'navigader/mode
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
 import { Frame288LoadType, MeterGroup } from 'navigader/types';
-import LoadGraph from './LoadGraph';
+import { LoadGraph } from './LoadGraph';
 import MetersTable from './MetersTable';
 
 

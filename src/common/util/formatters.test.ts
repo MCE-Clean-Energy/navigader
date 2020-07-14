@@ -1,5 +1,5 @@
 import {
-  capitalize, date, dollars, maxDecimals, percentage, pluralize, truncateAtLength
+  capitalize, commas, date, dollars, maxDecimals, percentage, pluralize, truncateAtLength
 } from './formatters';
 
 
@@ -91,12 +91,12 @@ describe('formatting methods', () => {
     });
     
     it('handles dollar amounts between -1 and 1', () => {
+      expect(dollars(-0.1)).toEqual('-$0.10');
       expect(dollars(0.1)).toEqual('$0.10');
       expect(dollars(0.999)).toEqual('$1');
       expect(dollars(0.999, { cents: true })).toEqual('$1.00');
       
       // Negatives
-      expect(dollars(-0.1)).toEqual('-$0.10');
       expect(dollars(-0.999)).toEqual('-$1');
       expect(dollars(-0.999, { cents: true })).toEqual('-$1.00');
     });
@@ -119,6 +119,21 @@ describe('formatting methods', () => {
       expect(truncateAtLength(str, 20)).toEqual('the brown dog jumps ...');
       expect(truncateAtLength(str, 30)).toEqual('the brown dog jumps over the l...');
       expect(truncateAtLength(str, 40)).toEqual('the brown dog jumps over the lazy fox');
+    });
+  });
+  
+  describe('`commas`', () => {
+    it('adds commas', () => {
+      expect(commas(1000)).toEqual('1,000');
+      expect(commas(987654321)).toEqual('987,654,321');
+      expect(commas(3456.2)).toEqual('3,456.2');
+      expect(commas(1234.5678)).toEqual('1,234.5678');
+    });
+    
+    it('does not add commas for values less than 1000', () => {
+      expect(commas(999)).toEqual('999');
+      expect(commas(-999)).toEqual('-999');
+      expect(commas(0)).toEqual('0');
     });
   });
 });

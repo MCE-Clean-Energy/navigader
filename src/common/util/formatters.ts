@@ -136,17 +136,7 @@ export function dollars (amt: number | undefined | null, options?: DollarFormatO
   const addDecimals = (options && options.cents) || (lessThanOne && !options?.cents);
   const amtFixed = parseFloat(amt.toFixed(addDecimals ? 2 : 0));
   const roundedTowardsZero = amtFixed >= 0 ? Math.floor(amtFixed) : Math.ceil(amtFixed);
-  const wholeDollars = Math.abs(roundedTowardsZero).toString().split('');
-  
-  let dollarString = '';
-  wholeDollars.reverse().forEach((integer, i) => {
-    // Every 3 digits we insert a comma
-    if (i === 0 || i % 3 !== 0) {
-      dollarString = integer + dollarString;
-    } else {
-      dollarString = integer + ',' + dollarString;
-    }
-  });
+  let dollarString = commas(Math.abs(roundedTowardsZero));
   
   // Append the cents unless omitted
   if (addDecimals) {
@@ -171,4 +161,37 @@ export function truncateAtLength (str: string | undefined, numChars: number) {
   return str.length > numChars
     ? str.slice(0, numChars) + '...'
     : str;
+}
+
+/**
+ * Adds commas to a number at every 3 digits. If a non-number `n` is passed in, returns `null`.
+ *
+ * @param {number} [n]: the number to format. This is made optional to support cases where the
+ *   number may be undefined/null
+ */
+export function commas (n: number): string;
+export function commas (n: any): Nullable<string>;
+export function commas (n: any) {
+  if (typeof n !== 'number') return null;
+
+  const isNegative = n < 0;
+  const roundedTowardsZero = isNegative ? Math.ceil(n) : Math.floor(n);
+  const integerDigits = Math.abs(roundedTowardsZero).toString().split('');
+  
+  let integerStr = '';
+  integerDigits.reverse().forEach((integer, i) => {
+    // Every 3 digits we insert a comma
+    if (i === 0 || i % 3 !== 0) {
+      integerStr = integer + integerStr;
+    } else {
+      integerStr = integer + ',' + integerStr;
+    }
+  });
+
+  // Add the decimals back in
+  const nStr = n.toString();
+  const decimalIndex = nStr.indexOf('.');
+  const decimals = decimalIndex === -1 ? '' : nStr.slice(decimalIndex);
+  const sign = isNegative ? '-' : '';
+  return [sign, integerStr, decimals].join('');
 }

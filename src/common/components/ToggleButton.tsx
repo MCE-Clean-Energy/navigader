@@ -35,7 +35,10 @@ const ToggleButtonGroup: React.ComponentType<ToggleButtonGroupProps> = React.for
   }
 );
 
-const ToggleButton: React.FC<ToggleButtonProps> = (props) => <MuiToggleButton {...props} />;
+const ToggleButton: React.ComponentType<ToggleButtonProps> =
+  React.forwardRef<HTMLButtonElement, ToggleButtonProps>(
+    (props, ref) => <MuiToggleButton ref={ref} {...props} />
+  );
 
 export const Toggle = {
   Button: ToggleButton,

@@ -18,34 +18,14 @@ type ButtonProps = React.HTMLAttributes<HTMLButtonElement> & {
 
 type TextButtonProps = Omit<ButtonProps, 'type'>;
 type FabProps = TextButtonProps & IconProps;
-type Button = React.FC<ButtonProps> & {
+type Button = React.ComponentType<ButtonProps> & {
   Fab: React.FC<FabProps>;
   Text: React.FC<TextButtonProps>;
 };
 
 /** ============================ Components ================================ */
-export const Button: Button = ({ icon, ...rest }) => {
-  const noChildren = React.Children.count(rest.children) === 0;
-  
-  // Render an icon-button if there's an icon but no children
-  if (icon && noChildren) {
-    return (
-      <MuiIconButton {..._.omit(rest, 'size')}>
-        <Icon name={icon} />
-      </MuiIconButton>
-    );
-  }
-  
-  return (
-    <MuiButton
-      startIcon={icon ? <Icon name={icon} /> : null}
-      variant="contained"
-      {...rest}
-    />
-  );
-};
-
-Button.Fab = ({ name, ...rest }) => {
+const Text: React.FC<TextButtonProps> = props => <MuiButton {...props} />;
+const Fab: React.FC<FabProps> = ({ name, ...rest }) => {
   const fabProps = _.omit(rest, 'children');
   return (
     <MuiFab {...fabProps}>
@@ -54,4 +34,31 @@ Button.Fab = ({ name, ...rest }) => {
   );
 };
 
-Button.Text = props => <MuiButton {...props} />;
+export const Button: Button = Object.assign(
+  React.forwardRef<HTMLButtonElement, ButtonProps>(
+    ({ icon, ...rest }, ref) => {
+      const noChildren = React.Children.count(rest.children) === 0;
+      
+      // Render an icon-button if there's an icon but no children
+      if (icon && noChildren) {
+        return (
+          <MuiIconButton ref={ref} {..._.omit(rest, 'size')}>
+            <Icon name={icon} />
+          </MuiIconButton>
+        );
+      }
+      
+      return (
+        <MuiButton
+          ref={ref}
+          startIcon={icon ? <Icon name={icon} /> : null}
+          variant="contained"
+          {...rest}
+        />
+      );
+    }
+  ), {
+    Fab,
+    Text
+  }
+);

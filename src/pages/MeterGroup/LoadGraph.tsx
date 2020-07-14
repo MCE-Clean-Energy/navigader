@@ -1,6 +1,8 @@
 import * as React from 'react';
 
-import { Card, Grid, Flex, Frame288Graph, MonthSelector, Toggle } from 'navigader/components';
+import {
+  Card, Grid, Flex, Frame288Graph, MonthSelector, Toggle, Tooltip
+} from 'navigader/components';
 import { hasDataField } from 'navigader/models/meter';
 import { makeStylesHook } from 'navigader/styles';
 import { Frame288LoadType, MeterGroup, MonthsOption, PowerFrame288 } from 'navigader/types';
@@ -23,7 +25,6 @@ type LoadGraphCardProps = LoadGraphCommonProps & {
 
 type LoadTypeSelectorProps = {
   changeType: (newType: Frame288LoadType) => void;
-  className?: string;
   selectedType: Frame288LoadType;
 };
 
@@ -39,7 +40,7 @@ const useStyles = makeStylesHook(theme => ({
 }), 'NavigaderCard');
 
 /** ============================ Components ================================ */
-const LoadGraph: React.FC<LoadGraphProps> = ({ dataType, meterGroup, months }) => {
+const Graph: React.FC<LoadGraphProps> = ({ dataType, meterGroup, months }) => {
   // If we haven't loaded the data yet, don't render the graph
   if (!hasDataField(meterGroup.data, dataType)) {
     return null;
@@ -49,7 +50,7 @@ const LoadGraph: React.FC<LoadGraphProps> = ({ dataType, meterGroup, months }) =
   return <Frame288Graph axisLabel="Customer Load" months={months} data={data} />;
 };
 
-const LoadGraphCard: React.FC<LoadGraphCardProps> = ({ changeType, dataType, meterGroup }) => {
+export const LoadGraph: React.FC<LoadGraphCardProps> = ({ changeType, dataType, meterGroup }) => {
   const [selectedMonth, setMonth] = React.useState<MonthsOption>('all');
   const classes = useStyles();
   return (
@@ -67,7 +68,7 @@ const LoadGraphCard: React.FC<LoadGraphCardProps> = ({ changeType, dataType, met
         </Grid.Item>
 
         <Grid.Item span={12}>
-          <LoadGraph dataType={dataType} meterGroup={meterGroup} months={selectedMonth} />
+          <Graph dataType={dataType} meterGroup={meterGroup} months={selectedMonth} />
         </Grid.Item>
       </Grid>
     </Card>
@@ -75,29 +76,20 @@ const LoadGraphCard: React.FC<LoadGraphCardProps> = ({ changeType, dataType, met
 };
 
 export const LoadTypeSelector: React.FC<LoadTypeSelectorProps> = (props) => {
-  const { changeType, className, selectedType } = props;
+  const { changeType, selectedType } = props;
   const loadTypeOptions: Frame288LoadType[] = ['average', 'maximum', 'minimum'];
   return (
-    <div className={className}>
-      <Toggle.Group
-        exclusive
-        onChange={selectType}
-        size="small"
-        value={selectedType}
-      >
-        {loadTypeOptions.map(loadType =>
-          <Toggle.Button
-            aria-label="show simulated load"
-            key={loadType}
-            value={loadType}
-          >
+    <Toggle.Group exclusive onChange={selectType} size="small" value={selectedType}>
+      {loadTypeOptions.map(loadType =>
+        <Tooltip key={loadType} title={tooltips[loadType]}>
+          <Toggle.Button aria-label={tooltips[loadType]} value={loadType}>
             {capitalize(loadType)}
           </Toggle.Button>
-        )}
-      </Toggle.Group>
-    </div>
+        </Tooltip>
+      )}
+    </Toggle.Group>
   );
-  
+
   /** ============================ Callbacks =============================== */
   function selectType (loadType: Frame288LoadType) {
     // Don't update if they click the same load type again
@@ -107,5 +99,8 @@ export const LoadTypeSelector: React.FC<LoadTypeSelectorProps> = (props) => {
   }
 };
 
-/** ============================ Exports =================================== */
-export default LoadGraphCard;
+const tooltips = {
+  average: 'The average interval reading at each month-hour of all meters summed',
+  maximum: 'The maximum interval reading at each month-hour of all meters summed',
+  minimum: 'The minimum interval reading at each month-hour of all meters summed'
+};

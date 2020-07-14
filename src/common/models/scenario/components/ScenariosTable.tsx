@@ -12,7 +12,7 @@ import { selectModels, updateModels } from 'navigader/store/slices/models';
 import { ColorMap } from 'navigader/styles';
 import { Scenario, ScenarioReportSummary } from 'navigader/types';
 import { kwToMw, printWarning } from 'navigader/util';
-import { date, dollars, maxDecimals } from 'navigader/util/formatters';
+import { commas, date, dollars, maxDecimals } from 'navigader/util/formatters';
 import _ from 'navigader/util/lodash';
 
 
@@ -151,7 +151,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
               {colorMap && <Table.Cell />}
               <Table.Cell>Name</Table.Cell>
               <Table.Cell>Created</Table.Cell>
-              <Table.Cell>Customer Segment (#)</Table.Cell>
+              <Table.Cell>Customer Segment</Table.Cell>
               <Table.Cell>DER</Table.Cell>
               <Table.Cell>Program Strategy</Table.Cell>
               <Table.Cell align="right">
@@ -161,7 +161,9 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 Revenue Impact ($/year{innerAveraged && '/SAID'})
               </Table.Cell>
               <Table.Cell align="right">
-                GHG Impact (tCO<sub>2</sub>/year{innerAveraged && '/SAID'})
+                <Tooltip title="Calculated using CNS 2022 tables">
+                  <div>GHG Impact (tCO<sub>2</sub>/year{innerAveraged && '/SAID'})</div>
+                </Tooltip>
               </Table.Cell>
               <Table.Cell align="right">RA Impact (MW/year{innerAveraged && '/SAID'})</Table.Cell>
               <Table.Cell align="right">Procurement Cost ($/year{innerAveraged && '/SAID'})</Table.Cell>
@@ -195,7 +197,11 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 <Table.Cell>{date.standard(scenario.created_at)}</Table.Cell>
                 <Table.Cell>
                   {scenario.meter_group &&
-                    <span>{scenario.meter_group.name} ({scenario.meter_group.meter_count})</span>
+                    <Tooltip title={`${scenario.meter_group.meter_count} meters`}>
+                      <Link to={routes.meterGroup(scenario.meter_group.id)}>
+                        {scenario.meter_group.name}
+                      </Link>
+                    </Tooltip>
                   }
                 </Table.Cell>
                 <Table.Cell>
@@ -220,7 +226,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? maxDecimals(getField(scenario, 'UsageDelta', innerAveraged), 2)
+                      ? commas(maxDecimals(getField(scenario, 'UsageDelta', innerAveraged), 2))
                       : '-'
                   }
                 </Table.Cell>
@@ -234,22 +240,27 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? maxDecimals(getField(scenario, 'CleanNetShort2022Delta', innerAveraged), 2)
+                      ? commas(maxDecimals(getField(scenario, 'CleanNetShort2022Delta', innerAveraged), 2))
                       : '-'
                   }
                 </Table.Cell>
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? maxDecimals(kwToMw(getField(scenario, 'RADelta', innerAveraged)), 2)
+                      ? commas(maxDecimals(kwToMw(getField(scenario, 'RADelta', innerAveraged)), 2))
                       : '-'
                   }
                 </Table.Cell>
                 <Table.Cell align="right">
                   {
-                    scenario.progress.is_complete
-                      ? dollars(getField(scenario, 'PRC_LMPDelta', innerAveraged))
-                      : '-'
+                    // IIFE to render the procurement cost, if present
+                    (() => {
+                      if (!scenario.progress.is_complete) return '-';
+                      const procurementValue = getField(scenario, 'PRC_LMPDelta', innerAveraged);
+                      return typeof procurementValue === 'number'
+                        ? dollars(procurementValue)
+                        : '-';
+                    })()
                   }
                 </Table.Cell>
                 <Table.Cell>

@@ -12,18 +12,20 @@ type LinkProps = {
 } & Omit<TypographyProps, 'component'>;
 
 /** ============================ Components ================================ */
-export const Link: React.FC<LinkProps> = (props) => {
-  const { color, download, to, ...rest } = props;
-  const linkProps = {
-    color: getColor(color),
-    component: download ? 'a' : RouterLink,
-    href: download ? to : undefined,
-    to: download ? undefined : to,
-    ...rest
-  };
-  
-  return <MuiLink {...linkProps} underline="hover" />;
-};
+export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
+  (props, ref) => {
+    const { color, download, to, ...rest } = props;
+    const linkProps = {
+      color: getColor(color),
+      component: download ? 'a' : RouterLink,
+      href: download ? to : undefined,
+      to: download ? undefined : to,
+      ...rest
+    };
+    
+    return <MuiLink {...linkProps} ref={ref} underline="hover" />;
+  }
+);
 
 Link.defaultProps = {
   color: 'primary'

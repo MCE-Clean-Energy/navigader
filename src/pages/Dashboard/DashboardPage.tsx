@@ -3,7 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Route, Switch, useHistory } from 'react-router-dom';
 
 import * as api from 'navigader/api';
-import { Button, Divider, Link, List, Menu, PageHeader, Typography } from 'navigader/components';
+import {
+  Button, Divider, Link, List, Menu, PageHeader, Tooltip, Typography
+} from 'navigader/components';
 import { Components } from 'navigader/models/scenario';
 import * as routes from 'navigader/routes';
 import { slices } from 'navigader/store';
@@ -24,6 +26,7 @@ type PageHeaderActionsProps = {
 /** ============================ Styles ==================================== */
 const useStyles = makeStylesHook(theme => ({
   compareButton: {
+    display: 'inline',
     marginRight: theme.spacing(2)
   }
 }), 'PageHeaderActions');
@@ -67,15 +70,19 @@ const PageHeaderActions: React.FC<PageHeaderActionsProps> = ({ selections }) => 
   
   return (
     <>
-      <Button
-        className={classes.compareButton}
-        color="secondary"
-        disabled={selections.length < 2}
-        onClick={compareScenarios}
+      <Tooltip delay title="Select scenarios from the table to compare">
+        <div className={classes.compareButton}>
+          <Button color="secondary" disabled={selections.length < 2} onClick={compareScenarios}>
+            Compare Scenarios
+          </Button>
+        </div>
+      </Tooltip>
+      <Tooltip
+        delay
+        title="A scenario is a simulation of a DER customer program with parameters set by the user"
       >
-        Compare Scenarios
-      </Button>
-      <Button color="secondary" onClick={createScenario}>New Scenario</Button>
+        <Button color="secondary" onClick={createScenario}>New Scenario</Button>
+      </Tooltip>
     </>
   );
   

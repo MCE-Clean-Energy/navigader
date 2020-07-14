@@ -100,13 +100,11 @@ export const MeterGroupCard: React.FC<MeterGroupCardProps> = (props) => {
     </Card>
   );
   
-  // Render a tooltip if the meter group is still ingesting
-  if (isIngested) return card;
-  return (
-    <Tooltip title={`This file is being processed. It's currently ${percent_complete}% complete`}>
-      {card}
-    </Tooltip>
-  );
+  const tooltipTitle = isIngested
+    ? 'Click to see load data details'
+    : `This file is being processed. It's currently ${percent_complete}% complete`;
+
+  return <Tooltip title={tooltipTitle}>{card}</Tooltip>;
   
   /** ============================ Callbacks =============================== */
   function viewMeterGroup (event: React.MouseEvent<HTMLDivElement>) {

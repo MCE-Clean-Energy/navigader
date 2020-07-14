@@ -1,13 +1,12 @@
 import * as React from 'react';
 
 import { getMeterGroupDisplayName } from 'navigader/models/meter';
-import { makeStylesHook } from 'navigader/styles';
 import { MeterGroup } from 'navigader/types';
+import { printWarning } from 'navigader/util';
 import { pluralize } from 'navigader/util/formatters';
 
 import { Chip, ChipProps } from '../Chip';
-import * as Flex from '../Flex';
-import { Typography } from '../Typography';
+import { Tooltip } from '../Tooltip';
 
 
 /** ============================ Types ===================================== */
@@ -15,56 +14,48 @@ type MeterGroupChipProps = Omit<ChipProps, 'label'> & {
   className?: string;
   meterGroup?: MeterGroup;
   showCount?: boolean;
+  tooltipText?: React.ReactNode;
 };
 
-/** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(theme => ({
-  numMeters: {
-    marginLeft: theme.spacing(2)
-  }
-}), 'SelectedCustomers');
-
 /** ============================ Components ================================ */
-export const MeterGroupChip = React.forwardRef<HTMLDivElement, MeterGroupChipProps>(
-  (props, ref) => {
-    const {
-      color = 'secondary',
-      disabled,
-      icon,
-      meterGroup,
-      onClick,
-      showCount = false,
-      ...rest
-    } = props;
-    const classes = useStyles();
-    
-    if (!meterGroup) return null;
-    return (
-      <Flex.Container
-        alignItems="center"
-        key={meterGroup.id}
-        ref={ref}
-        {...rest}
-      >
-        <Flex.Item>
-          <Chip
-            color={color}
-            data-testid="meter-group-chip"
-            disabled={disabled}
-            icon={icon}
-            label={getMeterGroupDisplayName(meterGroup)}
-            onClick={onClick}
-          />
-        </Flex.Item>
-        
-        {showCount &&
-          <Flex.Item className={classes.numMeters}>
-            <Typography variant="body2">
-              {meterGroup.meter_count} {pluralize('meter', meterGroup.meter_count)}
-            </Typography>
-          </Flex.Item>
-        }
-      </Flex.Container>
-    );
+export const MeterGroupChip: React.FC<MeterGroupChipProps> = (props) => {
+  const {
+    color = 'secondary',
+    disabled,
+    icon,
+    meterGroup,
+    onClick,
+    showCount = false,
+    tooltipText,
+    ...rest
+  } = props;
+
+  // Validate props
+  if (tooltipText && showCount) {
+    printWarning(`
+      \`MeterGroupChip\` component received both \`showCount\` and \`tooltipText\` props. At most
+      one should be provided.
+    `);
   }
-);
+
+  if (!meterGroup) return null;
+
+  const chip = (
+    <Chip
+      color={disabled ? 'default' : color}
+      data-testid="meter-group-chip"
+      disabled={disabled}
+      icon={icon}
+      label={getMeterGroupDisplayName(meterGroup)}
+      onClick={onClick}
+      {...rest}
+    />
+  );
+
+  // Render a tooltip if either `showCount` or `tooltipText` was provided
+  if (!showCount && !tooltipText) return chip;
+
+  const numMeterText = `${meterGroup.meter_count} ${pluralize('meter', meterGroup.meter_count)}`;
+  const text = tooltipText || numMeterText;
+  return <Tooltip title={text}>{chip}</Tooltip>;
+};
