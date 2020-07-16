@@ -4,31 +4,25 @@ import moment from 'moment';
 
 import * as api from 'navigader/api';
 import {
-  Card, Centered, Flex, IntervalDataGraph, IntervalDataTuple, MeterGroupChip,
-  MonthSelectorExclusive, PageHeader, Progress, TimeTuple, Toggle, Typography
+  Card, DateTuple, Flex, IntervalDataGraph, IntervalDataTuple, MeterGroupChip, PageHeader, Progress,
+  Typography
 } from 'navigader/components';
-import { IntervalDataWrapper } from 'navigader/models';
 import { DERCard } from 'navigader/models/der/components';
 import { ScenariosTable } from 'navigader/models/scenario/components';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
-import { Frame288Numeric, MonthIndex, Scenario } from 'navigader/types';
+import { IntervalDataWrapper, MonthIndex, Scenario } from 'navigader/types';
 import { makeCancelableAsync } from 'navigader/util';
-import { useGetScenario, useGhgRates } from 'navigader/util/hooks';
-import _ from 'navigader/util/lodash';
+import { useGetScenario } from 'navigader/util/hooks';
+import { ChartControls, ChartView, TimeDomainOption } from './ChartControls';
+import { GHGCharts, ProcurementCharts } from './Charts';
+import { LoadingModal } from './LoadingModal';
 
 
 /** ============================ Types ===================================== */
 type ScenarioProp = {
   scenario: Scenario;
 };
-
-type LoadingModalProps = {
-  loading: boolean;
-};
-
-type ChartView = 'usage' | 'ghg';
-type TimeDomainOption = '1d' | '2d' | '1w' | '1m';
 
 /** ============================ Styles ==================================== */
 const useStyles = makeStylesHook(theme => ({
@@ -42,21 +36,6 @@ const useScenarioContextStyles = makeStylesHook(theme => ({
     marginLeft: theme.spacing(3)
   }
 }), 'ScenarioContext');
-
-const useModalStyles = makeStylesHook<LoadingModalProps>(theme => ({
-  modal: props => ({
-    background: 'rgba(0, 0, 0, 0.3)',
-    left: 0,
-    height: '100%',
-    opacity: props.loading ? 1 : 0,
-    position: 'absolute',
-    top: 0,
-    transition: theme.transitions.create('opacity', {
-      duration: theme.transitions.duration.standard
-    }),
-    width: '100%'
-  })
-}), 'ScenarioResultsLoadingModal');
 
 const useScenarioGraphStyles = makeStylesHook(theme => ({
   headingSpacer: {
@@ -108,15 +87,6 @@ const ScenarioContext: React.FC<ScenarioProp> = ({ scenario }) => {
   }
 };
 
-const LoadingModal: React.FC<LoadingModalProps> = (props) => {
-  const classes = useModalStyles(props);
-  return (
-    <Flex.Container alignItems="center" className={classes.modal} justifyContent="center">
-      <Progress circular />
-    </Flex.Container>
-  );
-};
-
 const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
   const { meter_group } = scenario;
   const classes = useScenarioGraphStyles();
@@ -127,19 +97,14 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
   const [meterGroupLoading, setMeterGroupLoading] = React.useState(false);
   const [selectedMonth, setMonth] = React.useState<MonthIndex>(1);
   const [timeDomainOption, setTimeDomainOption] = React.useState<TimeDomainOption>('1m');
-  const [timeDomain, setTimeDomain] = React.useState<TimeTuple>();
+  const [timeDomain, setTimeDomain] = React.useState<DateTuple>();
 
   const {
     loading: simulationLoading,
     scenario: scenarioWithData
-  } = useGetScenario(scenario.id, { data_types: 'default' });
+  } = useGetScenario(scenario.id, { data_types: 'default', period: 60 });
   
-  const scenarioData = scenarioWithData?.data.default;
-  const simulationData = scenarioData && IntervalDataWrapper.create(
-    {...scenarioData, name: 'Simulated load' },
-    'index',
-    'kw'
-  );
+  const simulationData = scenarioWithData?.data.default;
 
   // Load the meter group data
   React.useEffect(
@@ -147,59 +112,27 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
       async () => {
         if (!meter_group?.id) return;
         setMeterGroupLoading(true);
-        return api.getMeterGroup(meter_group.id, { data_types: 'default' });
+        return api.getMeterGroup(meter_group.id, { data_types: 'default', period: 60 });
       }, (res) => {
         setMeterGroupLoading(false);
-        const loadData = res?.data.default;
-        loadData && setMeterGroupData(
-          IntervalDataWrapper.create({ ...loadData, name: 'Initial load' }, 'index', 'kw')
-        );
+        setMeterGroupData(res?.data.default);
       }
     ), [meter_group?.id]
   );
-
-  const ghgRates = useGhgRates();
-  const cns2022 = ghgRates && _.find(ghgRates,
-      rate => rate.name === 'Clean Net Short' && rate.effective.includes('2022')
-  )?.data?.rename('Clean Net Short 2022');
 
   return (
     <div className={classes.scenarioGraphs}>
       <Typography useDiv variant="h6">Simulation Impacts</Typography>
       <Card className={classes.loadGraphCard} raised>
         <LoadingModal loading={meterGroupLoading || simulationLoading} />
-        <Centered>
-          <Flex.Container alignItems="center" justifyContent="center">
-            <Flex.Item>
-              <MonthSelectorExclusive selected={selectedMonth} onChange={handleMonthChange} />
-            </Flex.Item>
-            <Flex.Item style={{ marginLeft: '1rem' }}>
-              <Toggle.Group
-                exclusive
-                onChange={setChartView}
-                size="small"
-                value={chartView}
-              >
-                <Toggle.Button aria-label="view load curves" value="usage">Load</Toggle.Button>
-                <Toggle.Button aria-label="view GHG curves" value="ghg">GHG</Toggle.Button>
-              </Toggle.Group>
-            </Flex.Item>
-
-            <Flex.Item style={{ marginLeft: '1rem' }}>
-              <Toggle.Group
-                exclusive
-                onChange={handleTimeDomainChange}
-                size="small"
-                value={timeDomainOption}
-              >
-                <Toggle.Button aria-label="one day" value="1d">1D</Toggle.Button>
-                <Toggle.Button aria-label="two days" value="2d">2D</Toggle.Button>
-                <Toggle.Button aria-label="one week" value="1w">1W</Toggle.Button>
-                <Toggle.Button aria-label="one month" value="1m">1M</Toggle.Button>
-              </Toggle.Group>
-            </Flex.Item>
-          </Flex.Container>
-        </Centered>
+        <ChartControls
+          chartView={chartView}
+          selectedMonth={selectedMonth}
+          timeDomainOption={timeDomainOption}
+          updateChartView={setChartView}
+          updateMonth={handleMonthChange}
+          updateTimeDomain={handleTimeDomainChange}
+        />
         {meterGroupData && simulationData &&
           <>
             {chartView === 'usage' &&
@@ -211,29 +144,23 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
                 {...scaleLoadData([meterGroupData, simulationData])}
               />
             }
-            {
-              chartView === 'ghg' && cns2022 &&
-                <>
-                  <IntervalDataGraph
-                    axisLabel="GHG Emissions"
-                    data={[
-                      meterGroupData.multiply288(cns2022, 'Initial GHG emissions'),
-                      simulationData.multiply288(cns2022, 'Simulated GHG emissions')
-                    ]}
-                    month={selectedMonth}
-                    timeDomain={timeDomain}
-                    onTimeDomainChange={setTimeDomain}
-                    units="tCO2"
-                  />
-                  <IntervalDataGraph
-                    height={100}
-                    hideXAxis
-                    month={selectedMonth}
-                    timeDomain={timeDomain}
-                    onTimeDomainChange={setTimeDomain}
-                    {...scaleGhgRatesData(meterGroupData, cns2022)}
-                  />
-                </>
+            {chartView === 'ghg' &&
+              <GHGCharts
+                meterGroupData={meterGroupData}
+                scenarioData={simulationData}
+                selectedMonth={selectedMonth}
+                timeDomain={timeDomain}
+                updateTimeDomain={setTimeDomain}
+              />
+            }
+            {chartView === 'procurement' &&
+              <ProcurementCharts
+                meterGroupData={meterGroupData}
+                scenarioData={simulationData}
+                selectedMonth={selectedMonth}
+                timeDomain={timeDomain}
+                updateTimeDomain={setTimeDomain}
+              />
             }
           </>
         }
@@ -344,30 +271,5 @@ function scaleLoadData (intervals: IntervalDataTuple) {
   return {
     data: intervals.map(interval => interval.divide(divisor)) as IntervalDataTuple,
     units
-  };
-}
-
-/**
- * Scales the GHG rates to show in tCO2 per kW, MW or GW depending on the extent of the frame288.
- * This is very similar to `scaleLoadData`. The difference is that the GHG rates use kW/MW/GW in the
- * denominator rather than the numerator.
- *
- * @param {IntervalDataWrapper} interval: the load interval. This will be used for its domain to
- *   align the frame288
- * @param {Frame288Numeric} ghgRate: the frame288 representing the GHG rates
- */
-function scaleGhgRatesData (interval: IntervalDataWrapper, ghgRate: Frame288Numeric) {
-  const data = interval.align288(ghgRate);
-  const max = data.valueDomain()[1];
-  const magnitude = Math.abs(Math.log10(max));
-  const [scale, units] = magnitude >= 6
-    ? [1e6, 'GW']
-    : magnitude >= 3
-      ? [1e3, 'MW']
-      : [1, 'kW'];
-  
-  return {
-    data: data.multiply(scale),
-    units: `tCO2/${units}`
   };
 }

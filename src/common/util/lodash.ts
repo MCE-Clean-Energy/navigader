@@ -13,6 +13,7 @@ import find from 'lodash/find';
 import findIndex from 'lodash/findIndex';
 import findLast from 'lodash/findLast';
 import flatten from 'lodash/flatten';
+import fromPairs from 'lodash/fromPairs';
 import groupBy from 'lodash/groupBy';
 import isArray from 'lodash/isArray';
 import isEmpty from 'lodash/isEmpty';
@@ -40,6 +41,7 @@ export default {
   findIndex,
   findLast,
   flatten,
+  fromPairs,
   groupBy,
   isArray,
   isEmpty,

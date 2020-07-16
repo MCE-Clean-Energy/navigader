@@ -1,7 +1,8 @@
 import { DeferrableFields } from './api';
 import { NavigaderObject, Nullable, ProgressFields, RawPandasFrame } from './common';
+import { DataTypeMap, RawDataTypeMap } from './data';
 import { BatteryConfiguration, BatteryStrategy } from './der';
-import { LoadTypeMap, MeterGroup } from './meter';
+import { MeterGroup } from './meter';
 
 
 /** ============================ Scenarios ================================= */
@@ -11,7 +12,6 @@ export type DerInfo = {
 };
 
 type ScenarioCommon = {
-  data: Partial<LoadTypeMap>;
   der_simulation_count: number;
   expected_der_simulation_count: number;
   metadata: ScenarioMetadata;
@@ -33,6 +33,7 @@ export type RawScenario = DeferrableFields<
   
   // Fields that can be requested but which are not included by default
   {
+    data: RawDataTypeMap<'kw'>;
     der_simulations: string[];
     ders: [DerInfo];
     meters: string[];
@@ -47,6 +48,7 @@ export interface Scenario extends DeferrableFields<
   ScenarioCommon &
   ProgressFields &
   {
+    data: DataTypeMap;
     progress: {
       is_complete?: boolean;
       has_run: boolean;
@@ -73,7 +75,7 @@ type ProcurementKeys =
   | 'PRC_LMP2019PostDER'
   | 'PRC_LMP2019PreDER';
 
-type AggregatedProcurementKeys =
+export type AggregatedProcurementKeys =
   | 'PRC_LMPDelta'
   | 'PRC_LMPPostDER'
   | 'PRC_LMPPreDER';

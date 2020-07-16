@@ -10,9 +10,7 @@ import _ from 'navigader/util/lodash';
 type QueryParamPair = [string, QueryStringPrimitive | QueryStringPrimitive[]];
 
 /** ============================ Query compilation ========================= */
-function makeFilterQueryParams (
-  filterClauses?: DynamicRestParams['filter']
-): QueryParamPair[] {
+function makeFilterQueryParams (filterClauses: DynamicRestParams['filter']): QueryParamPair[] {
   if (!filterClauses) return [];
   
   // Each of the filters gets its own `filter` query parameter

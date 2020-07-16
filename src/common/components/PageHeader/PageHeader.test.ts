@@ -1,7 +1,7 @@
 import { fireEvent } from '@testing-library/react';
 
 import * as routes from 'navigader/routes';
-import { fixtures, renderAppRoute } from 'navigader/util/testing';
+import { fixtures, makePaginationResponse, mockFetch, renderAppRoute } from 'navigader/util/testing';
 
 
 describe('Back button', () => {
@@ -10,40 +10,15 @@ describe('Back button', () => {
   });
 
   beforeEach(() => {
-    fetchMock.resetMocks();
-
-    // Set up URLs to mock
-    fetchMock.mockResponse(async (req) => {
-      if (req.url.match(/v1\/load\/meter_group\/.+\//)) {
-        return JSON.stringify({
-          meter_group: meterGroup
-        });
-      } else if (req.url.match(/v1\/load\/meter_group\//)) {
-        return JSON.stringify({
-          count: 1,
-          next: null,
-          previous: null,
-          results: {
-            meter_groups: [meterGroup]
-          }
-        });
-      } else if (req.url.match(/v1\/load\/meter/)) {
-        return JSON.stringify({
-          count: 1,
-          next: null,
-          previous: null,
-          results: {
-            meters: [fixtures.meter]
-          }
-        });
-      } else {
-        return "default mock response";
-      }
-    });
+    mockFetch([
+      [/load\/meter_group\/.+\//, { meter_group: meterGroup }],
+      ['/load/meter_group/', makePaginationResponse({ meter_groups: [meterGroup] })],
+      ['/load/meter/', makePaginationResponse({ meters: [fixtures.meter] })]
+    ]);
   });
 
   it('Clicking the back button returns you to the previous page', async () => {
-    const { findByText, getByRole } = renderAppRoute([routes.load, routes.meterGroup('random-id')], 1);
+    const { findByText, getByRole } = renderAppRoute([routes.load, routes.meterGroup(meterGroup.id)], 1);
 
     // Click on the back button
     expect(getByRole('back-button')).toBeInTheDocument();

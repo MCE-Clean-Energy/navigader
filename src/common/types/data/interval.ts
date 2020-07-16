@@ -1,13 +1,17 @@
 import moment from 'moment';
 
-import { Frame288Numeric, MonthIndex } from 'navigader/types';
 import { omitFalsey } from 'navigader/util';
 import _ from 'navigader/util/lodash';
+import { MonthIndex } from '../common';
+import { Frame288Numeric } from './frame288';
 
 
 /** ============================ Types ===================================== */
 type IntervalDatum = { timestamp: Date; value: number };
 type IntervalData = IntervalDatum[];
+export type RawIntervalData<Unit extends string, Column extends string = 'index'> =
+  & { [column in Column]: string[]; }
+  & { [unit in Unit]: number[]; };
 
 type IntervalDataObject<K extends string, V extends string>
   = Record<K, string[]> & Record<V, number[]> & { name: string; };
@@ -26,6 +30,9 @@ type TimeDomainTuple = [Date, Date];
 export class IntervalDataWrapper {
   readonly data: IntervalData;
   name: string;
+  
+  // Memoized fields
+  private _period: number | undefined;
   
   constructor (data: IntervalData, name: string) {
     this.data = data;
@@ -46,6 +53,38 @@ export class IntervalDataWrapper {
       })),
       object.name
     );
+  }
+  
+  /**
+   * Returns the period of the interval data
+   */
+  get period () {
+    if (this._period !== undefined) return this._period;
+    
+    const time1 = moment(this.data[0].timestamp);
+    const time2 = moment(this.data[1].timestamp);
+    return moment.duration(time2.diff(time1)).asMinutes();
+  }
+  
+  /**
+   * Returns an array of the years the interval spans
+   */
+  get years () {
+    const [start, end] = this.timeDomain();
+    return _.range(start.getFullYear(), end.getFullYear() + 1);
+  }
+  
+  /**
+   * Serializes the interval back into its raw form, typically for saving to the store
+   *
+   * @param {string} unit: a key under which the `value` fields will be saved
+   * @param {string} column: a key under which the `timestamp` fields will be saved
+   */
+  serialize <Unit extends string, Column extends string>(unit: Unit, column: Column) {
+    return {
+      [column]: this.data.map(datum => datum.timestamp.toString()),
+      [unit]: _.map(this.data, 'value')
+    } as RawIntervalData<Unit, Column>;
   }
   
   /**
@@ -189,9 +228,7 @@ export class IntervalDataWrapper {
         yield earliest.data;
         
         // Clear the earliest data from their respective intervals
-        earliest.data.forEach(([datum, i]) => {
-          clones[i] = _.without(clones[i], datum);
-        });
+        earliest.data.forEach(([, i]) => clones[i].splice(0, 1));
       }
     }
   }
@@ -246,14 +283,25 @@ export class IntervalDataWrapper {
   divide (n: number) {
     return this.map(datum => datum.value / n);
   }
-
+  
   /**
    * Scales the interval data by multiplying values by a constant
    *
-   * @param {number} n: the number to multiply the interval values by
+   * @param {number} multiplier: the number to multiply the interval values by
+   * @param {string} [name]: the name of the resulting `IntervalDataWrapper`
    */
-  multiply (n: number) {
-    return this.map(datum => datum.value * n);
+  multiply (multiplier: number | IntervalDataWrapper, name: string = this.name) {
+    if (typeof multiplier === 'number') {
+      return this.map(datum => datum.value * multiplier, name);
+    }
+    
+    return new IntervalDataWrapper(
+      this.align(multiplier).map(alignment => ({
+        timestamp: alignment[0].datum.timestamp,
+        value: alignment.reduce((n, { datum }) => n * datum.value, 1)
+      })),
+      name
+    );
   }
   
   /** ============================ 288 Operations ========================== */

@@ -1,6 +1,6 @@
 import { Frame288Numeric } from 'navigader/types'
 import { fixtures } from 'navigader/util/testing';
-import { IntervalDataWrapper } from './IntervalData';
+import { IntervalDataWrapper } from './interval';
 
 
 describe('`IntervalDataWrapper` class', () => {
@@ -40,6 +40,23 @@ describe('`IntervalDataWrapper` class', () => {
   const monthFrame288 = new Frame288Numeric(fixtures.makeFrame288(m => m));
 
   /** ============================ Tests =================================== */
+  describe('`period` getter', () => {
+    it('calculates the period correctly', () => {
+      const hourInterval = new IntervalDataWrapper([
+        { timestamp: new Date('June 2, 2020 18:00:00'), value: 1 },
+        { timestamp: new Date('June 2, 2020 19:00:00'), value: 2 }
+      ], 'Hour interval');
+      
+      const fifteenMinuteInterval = new IntervalDataWrapper([
+        { timestamp: new Date('June 2, 2020 18:00:00'), value: 1 },
+        { timestamp: new Date('June 2, 2020 18:15:00'), value: 2 }
+      ], '15 minute interval');
+      
+      expect(hourInterval.period).toEqual(60);
+      expect(fifteenMinuteInterval.period).toEqual(15);
+    });
+  });
+
   describe('`filter` method', () => {
     it('handles filtering by `start` date', () => {
       const filtered1 = juneInterval.filter({ start: new Date('June 2, 2020 18:15:00') });

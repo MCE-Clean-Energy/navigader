@@ -1,6 +1,5 @@
-/**
- * Contains methods that can be re-used in tests
- */
+import _ from 'lodash';
+
 
 /**
  * Given a URL with a querystring and an array of pairs of strings, asserts that the first string
@@ -49,21 +48,6 @@ export function assertHasQueryParams <T extends string>(
 }
 
 /**
- * Returns a string representing a pagination result. The return value is a string intended to mimic
- * the nature of the server response.
- *
- * @param {object} results: the object to return under the `results` key of the response
- */
-export function makePaginationResponse (results: object) {
-  return JSON.stringify({
-    count: 1,
-    next: null,
-    previous: null,
-    results
-  });
-}
-
-/**
  * jsdom strangely does not allow instantiating a `FileList` object. This method creates and returns
  * an object that mocks the FileList API sufficiently for our needs
  *
@@ -99,4 +83,34 @@ export async function asyncForEach <T>(
   for (let index = 0; index < array.length; index++) {
     await callback(array[index], index, array);
   }
+}
+
+/** ============================ API Helpers =============================== */
+/**
+ * Returns a string representing a pagination result. The return value is a string intended to mimic
+ * the nature of the server response.
+ *
+ * @param {object} results: the object to return under the `results` key of the response
+ * @param {number} [count]: the number of results
+ */
+export function makePaginationResponse (results: object, count: number = 1) {
+  return {
+    count,
+    next: null,
+    previous: null,
+    results
+  };
+}
+
+export function mockFetch (endpoints: Array<[string | RegExp, any]>) {
+  fetchMock.resetMocks();
+  
+  // Set up URLs to mock
+  fetchMock.mockResponse(async (req) => {
+    const match = _.find(endpoints, ([uri]) =>
+      typeof uri === 'string' ? req.url.includes(uri) : uri.test(req.url)
+    );
+    
+    return match ? JSON.stringify(match[1]) : 'default mock response';
+  });
 }

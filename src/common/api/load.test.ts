@@ -1,23 +1,22 @@
-import { assertHasQueryParams, makePaginationResponse } from 'navigader/util/testing';
+import { assertHasQueryParams, makePaginationResponse, mockFetch } from 'navigader/util/testing';
 import { getMeters } from './load';
 
 
 describe('`getMeters` method', () => {
   beforeEach(() => {
-    fetchMock.resetMocks();
-    fetchMock.mockResponse(async () => makePaginationResponse({
-      meters: []
-    }));
+    mockFetch([['/load/meter/', makePaginationResponse({ meters: [] })]]);
   });
   
   it('Constructs the URI correctly', () => {
-    getMeters({ meterGroupId: '1', data_types: ['default'] });
+    getMeters({ data_types: ['default'], meterGroupId: '1', page: 1, page_size: 10 });
     expect(fetchMock).toHaveBeenCalledTimes(1);
     
     const callArgs = fetchMock.mock.calls[0];
     assertHasQueryParams(callArgs[0] as string, [
       ['data_types', 'default'],
-      ['filter{meter_groups}', '1']
+      ['filter{meter_groups}', '1'],
+      ['page', '1'],
+      ['page_size', '10']
     ]);
   });
 });

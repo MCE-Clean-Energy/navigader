@@ -1,19 +1,20 @@
 import {
-  LoadType, Meter, MeterGroup, PaginationQueryParams, RawMeterGroup, RawPaginationSet
-} from 'navigader/types'
+  DataTypeParams, MeterGroup, PaginationQueryParams, RawMeter, RawMeterGroup, RawPaginationSet
+} from 'navigader/types';
+import { serializers } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 import {
-  appendId, beoRoute, equals_, getRequest, makeFormXhrPost, parseMeterGroup, parsePaginationSet
+  appendId, beoRoute, equals_, getRequest, makeFormXhrPost, parsePaginationSet
 } from './util';
 
 
 /** ============================ Types ===================================== */
-type MeterQueryParams = PaginationQueryParams & {
+type MeterQueryParams = PaginationQueryParams & DataTypeParams & {
   meterGroupId: MeterGroup['id'];
 };
 
-type MeterGroupQueryParams = { data_types?: LoadType | LoadType[]; };
-type MeterGroupsQueryParams = PaginationQueryParams & MeterGroupQueryParams;
+type MeterGroupQueryParams = Partial<DataTypeParams>;
+type MeterGroupsQueryParams = PaginationQueryParams & Partial<DataTypeParams>;
 
 /** ============================ API Methods =============================== */
 export async function getMeterGroups (queryParams: MeterGroupsQueryParams) {
@@ -25,7 +26,7 @@ export async function getMeterGroups (queryParams: MeterGroupsQueryParams) {
   
   return parsePaginationSet(
     response,
-    ({ meter_groups }) => meter_groups.map(parseMeterGroup)
+    ({ meter_groups }) => meter_groups.map(serializers.parseMeterGroup)
   );
 }
 
@@ -33,14 +34,14 @@ export async function getMeterGroup (
   uuid: string,
   queryParams?: MeterGroupQueryParams
 ) {
-  const response: Record<'meter_group', MeterGroup> =
+  const response: Record<'meter_group', RawMeterGroup> =
     await getRequest(
       routes.meterGroup(uuid),
       queryParams
     ).then(res => res.json());
   
   // Parse the meter group results
-  return parseMeterGroup(response.meter_group);
+  return serializers.parseMeterGroup(response.meter_group);
 }
 
 export function postOriginFile (file: File, name: string) {
@@ -48,7 +49,7 @@ export function postOriginFile (file: File, name: string) {
 }
 
 export async function getMeters (queryParams: MeterQueryParams) {
-  const response: RawPaginationSet<{ meters: Meter[] }> =
+  const response: RawPaginationSet<{ meters: RawMeter[] }> =
     await getRequest(
       routes.meter(),
       {
@@ -60,7 +61,7 @@ export async function getMeters (queryParams: MeterQueryParams) {
     ).then(res => res.json());
   
   // Parse the meter results
-  return parsePaginationSet(response, 'meters');
+  return parsePaginationSet(response, ({ meters }) => meters.map(serializers.parseMeter));
 }
 
 /** ============================ Helpers =================================== */

@@ -1,8 +1,9 @@
 import _ from 'navigader/util/lodash';
-import { MonthIndex } from './common';
+import { MonthIndex } from '../common';
 
 
 /** ============================ Types ===================================== */
+export type Frame288DataType = 'average' | 'maximum' | 'minimum';
 export type Frame288NumericType = Frame288Type<number>;
 export type Frame288Type<T> = {
   [P in MonthIndex]: T[];

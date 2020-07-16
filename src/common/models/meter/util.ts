@@ -1,22 +1,6 @@
-import { LoadType, LoadTypeMap, MeterDataField, MeterGroup } from 'navigader/types';
-import _ from 'navigader/util/lodash';
+import { MeterGroup } from 'navigader/types';
 import { isMeterGroup } from 'navigader/util/typeGuards';
 
-
-/**
- * A type guard for checking that the meter has a particular data field or fields.
- *
- * @param {MeterDataField} data - The meter's data object
- * @param {LoadType | LoadType[]} loadType - The load type(s) to check for in the meter data
- */
-export function hasDataField <T extends LoadType>(
-  data: MeterDataField,
-  loadType: T | T[]
-): data is Pick<LoadTypeMap, T> {
-  return _.isArray(loadType)
-    ? _.every(loadType, t => data.hasOwnProperty(t))
-    : data.hasOwnProperty(loadType);
-}
 
 /**
  * Returns a display name for the given meter group

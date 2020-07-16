@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import {
   Card, Grid, Frame288Graph, Statistic, MeterGroupChip, Progress, Typography, Tooltip
 } from 'navigader/components';
-import { hasDataField, isSufficientlyIngested } from 'navigader/models/meter';
+import { isSufficientlyIngested } from 'navigader/models/meter';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
 import { MeterGroup, PowerFrame288 } from 'navigader/types';
@@ -54,7 +54,7 @@ export const CardContent: React.FC<MeterGroupCardProps> = ({ meterGroup }) => {
         value={Math.max(meterGroup.progress.percent_complete, 3)}
       />
     );
-  } else if (hasDataField(meterGroup.data, 'average')) {
+  } else if (meterGroup.data.average) {
     return (
       <Frame288Graph
         axisLabel="Customer Load"

@@ -1,5 +1,5 @@
 import { NavigaderObject } from './common';
-import { Frame288Numeric, Frame288NumericType } from './frame288';
+import { Frame288Numeric, Frame288NumericType } from './data';
 
 
 export type RawGHGRate = {
@@ -7,6 +7,7 @@ export type RawGHGRate = {
   effective: string;
   id: number;
   name: string;
+  object_type: 'GHGRate';
   rate_unit: number;
   source: string;
 };
@@ -14,7 +15,3 @@ export type RawGHGRate = {
 export type GHGRate = NavigaderObject<'GHGRate'> & Omit<RawGHGRate, 'id' | 'data'> & {
   data?: Frame288Numeric
 };
-
-// The `GHGRate` isn't serializable with a `Frame288Numeric` member. This type is what will be
-// stored instead
-export type StoredGHGRate = Omit<GHGRate, 'data'> & Pick<RawGHGRate, 'data'>;

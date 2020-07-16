@@ -6,7 +6,7 @@ import { Button, Fade, Grid, PageHeader, Progress, Typography } from 'navigader/
 import { getMeterGroupDisplayName, isSufficientlyIngested } from 'navigader/models/meter';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
-import { Frame288LoadType, MeterGroup } from 'navigader/types';
+import { Frame288DataType, MeterGroup } from 'navigader/types';
 import { LoadGraph } from './LoadGraph';
 import MetersTable from './MetersTable';
 
@@ -21,7 +21,7 @@ const useStyles = makeStylesHook(theme => ({
 /** ============================ Components ================================ */
 export const MeterGroupPage: React.FC = () => {
   const [meterGroup, setMeterGroup] = React.useState<MeterGroup>();
-  const [graphDataType, setGraphDataType] = React.useState<Frame288LoadType>('average');
+  const [graphDataType, setGraphDataType] = React.useState<Frame288DataType>('average');
   const history = useHistory();
   const { id } = useParams();
   const classes = useStyles();
@@ -76,7 +76,7 @@ export const MeterGroupPage: React.FC = () => {
   );
   
   /** ============================ Callbacks =============================== */
-  function changeGraphType (newType: Frame288LoadType) {
+  function changeGraphType (newType: Frame288DataType) {
     setGraphDataType(newType);
   }
   

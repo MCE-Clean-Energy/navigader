@@ -1,18 +1,17 @@
 import {
-  BatteryConfiguration, BatterySimulation, BatteryStrategy, Meter, Nullable, Scenario,
-  StoredGHGRate
+  BatteryConfiguration, BatteryStrategy, Nullable, RawCAISORate, RawGHGRate, RawMeter, RawScenario
 } from 'navigader/types';
 
 
 /** ============================ Slices ==================================== */
 export type ModelsSlice = {
+  caisoRates: RawCAISORate[];
   derConfigurations: BatteryConfiguration[];
-  derSimulations: BatterySimulation[];
   derStrategies: BatteryStrategy[];
-  ghgRates: StoredGHGRate[]
+  ghgRates: RawGHGRate[]
   hasMeterGroups: Nullable<boolean>;
-  meters: Meter[];
-  scenarios: Scenario[];
+  meters: RawMeter[];
+  scenarios: RawScenario[];
 };
 
 export type UiSlice = {

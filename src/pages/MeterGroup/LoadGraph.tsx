@@ -1,17 +1,14 @@
 import * as React from 'react';
 
-import {
-  Card, Grid, Flex, Frame288Graph, MonthSelector, Toggle, Tooltip
-} from 'navigader/components';
-import { hasDataField } from 'navigader/models/meter';
+import { Card, Flex, Frame288Graph, MonthSelector, Toggle, Tooltip } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
-import { Frame288LoadType, MeterGroup, MonthsOption, PowerFrame288 } from 'navigader/types';
+import { Frame288DataType, MeterGroup, MonthsOption, PowerFrame288 } from 'navigader/types';
 import { capitalize } from 'navigader/util/formatters';
 
 
 /** ============================ Types ===================================== */
 type LoadGraphCommonProps = {
-  dataType: Frame288LoadType;
+  dataType: Frame288DataType;
   meterGroup: MeterGroup;
 };
 
@@ -20,12 +17,12 @@ type LoadGraphProps = LoadGraphCommonProps & {
 };
 
 type LoadGraphCardProps = LoadGraphCommonProps & {
-  changeType: (newType: Frame288LoadType) => void;
+  changeType: (newType: Frame288DataType) => void;
 };
 
 type LoadTypeSelectorProps = {
-  changeType: (newType: Frame288LoadType) => void;
-  selectedType: Frame288LoadType;
+  changeType: (newType: Frame288DataType) => void;
+  selectedType: Frame288DataType;
 };
 
 /** ============================ Styles ==================================== */
@@ -37,16 +34,25 @@ const useStyles = makeStylesHook(theme => ({
   loadTypeMenu: {
     marginTop: theme.spacing(1)
   }
-}), 'NavigaderCard');
+}), 'LoadGraph');
+
+const useLoadTypeSelectorStyles = makeStylesHook(() => ({
+  tooltipAnchor: {
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0
+  }
+}), 'LoadTypeSelector');
 
 /** ============================ Components ================================ */
 const Graph: React.FC<LoadGraphProps> = ({ dataType, meterGroup, months }) => {
   // If we haven't loaded the data yet, don't render the graph
-  if (!hasDataField(meterGroup.data, dataType)) {
-    return null;
-  }
+  const dataOfType = meterGroup.data[dataType];
+  if (!dataOfType) return null;
 
-  const data = new PowerFrame288(meterGroup.data[dataType]).scale();
+  const data = new PowerFrame288(dataOfType).scale();
   return <Frame288Graph axisLabel="Customer Load" months={months} data={data} />;
 };
 
@@ -55,43 +61,41 @@ export const LoadGraph: React.FC<LoadGraphCardProps> = ({ changeType, dataType, 
   const classes = useStyles();
   return (
     <Card className={classes.card} raised>
-      <Grid>
-        <Grid.Item span={12}>
-          <Flex.Container alignItems="center" justifyContent="center">
-            <Flex.Item>
-              <MonthSelector selected={selectedMonth} onChange={setMonth}/>
-            </Flex.Item>
-            <Flex.Item style={{ marginLeft: '1rem' }}>
-              <LoadTypeSelector changeType={changeType} selectedType={dataType} />
-            </Flex.Item>
-          </Flex.Container>
-        </Grid.Item>
+      <Flex.Container alignItems="center" justifyContent="center">
+        <Flex.Item>
+          <MonthSelector selected={selectedMonth} onChange={setMonth}/>
+        </Flex.Item>
+        <Flex.Item style={{ marginLeft: '1rem' }}>
+          <LoadTypeSelector changeType={changeType} selectedType={dataType} />
+        </Flex.Item>
+      </Flex.Container>
 
-        <Grid.Item span={12}>
-          <Graph dataType={dataType} meterGroup={meterGroup} months={selectedMonth} />
-        </Grid.Item>
-      </Grid>
+      <Graph dataType={dataType} meterGroup={meterGroup} months={selectedMonth} />
     </Card>
   );
 };
 
 export const LoadTypeSelector: React.FC<LoadTypeSelectorProps> = (props) => {
   const { changeType, selectedType } = props;
-  const loadTypeOptions: Frame288LoadType[] = ['average', 'maximum', 'minimum'];
+  const classes = useLoadTypeSelectorStyles();
+  const loadTypeOptions: Frame288DataType[] = ['average', 'maximum', 'minimum'];
   return (
     <Toggle.Group exclusive onChange={selectType} size="small" value={selectedType}>
       {loadTypeOptions.map(loadType =>
-        <Tooltip key={loadType} title={tooltips[loadType]}>
-          <Toggle.Button aria-label={tooltips[loadType]} value={loadType}>
-            {capitalize(loadType)}
-          </Toggle.Button>
-        </Tooltip>
+        <Toggle.Button aria-label={tooltips[loadType]} key={loadType} value={loadType}>
+          {capitalize(loadType)}
+          
+          {/** The tooltip can't wrap the Button because MUI passes props from the Group */}
+          <Tooltip title={tooltips[loadType]}>
+            <span className={classes.tooltipAnchor} />
+          </Tooltip>
+        </Toggle.Button>
       )}
     </Toggle.Group>
   );
 
   /** ============================ Callbacks =============================== */
-  function selectType (loadType: Frame288LoadType) {
+  function selectType (loadType: Frame288DataType) {
     // Don't update if they click the same load type again
     if (selectedType !== loadType) {
       changeType(loadType);

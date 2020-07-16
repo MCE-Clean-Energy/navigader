@@ -6,15 +6,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
 import * as api from 'navigader/api';
-import { GHGRate, IdType, ObjectWithId, PaginationSet, Scenario } from 'navigader/types';
+import {
+  GHGRate, IdType, ObjectWithId, PaginationSet, Scenario, CAISORate, DataTypeParams
+} from 'navigader/types';
 import { RootState, slices } from 'navigader/store';
 import { ColorMap } from 'navigader/styles';
 import { makeCancelableAsync } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 import { omitFalsey } from './omitFalsey';
-import { GetScenarioQueryOptions } from 'navigader/api';
 
 
+/** ============================ Types ===================================== */
+type DataTypeFilters = Pick<DataTypeParams, 'data_types' | 'period'>;
+type CAISORateFilters = DataTypeFilters & { year: number; }
+
+/** ============================ Hooks ===================================== */
 /**
  * A custom hook that builds on `useLocation` to parse the query string. Note that `URLSearchParams`
  * is not supported by Internet Explorer (eye roll...) but there is a polyfill included from the
@@ -65,7 +71,7 @@ export function useColorMap (dependencies: any[], initialElements?: any[]) {
  */
 export function useGhgRates () {
   const dispatch = useDispatch();
-  const storedGhgRates = useSelector(slices.models.selectGhgRates);
+  const storedGhgRates = useSelector(slices.models.selectGHGRates);
   const [ghgRates, setGhgRates] = React.useState(
     storedGhgRates.length ? storedGhgRates : undefined
   );
@@ -96,7 +102,68 @@ export function useGhgRates () {
   }
 }
 
-export function useGetScenario (scenarioId: string, options?: GetScenarioQueryOptions) {
+/**
+ * Loads the CAISO rates if they haven't been loaded already. Once loaded they will be added to
+ * the store
+ */
+export function useCAISORates (filters: Partial<CAISORateFilters> = {}) {
+  const dispatch = useDispatch();
+  
+  // Check the store for CAISO rates that match the provided filters
+  const storedCAISORates = useSelector(slices.models.selectCAISORates);
+  const caisoRates = storedCAISORates.filter((caisoRate) => {
+    if (filters.year && caisoRate.year !== filters.year) return false;
+    if (filters.data_types) {
+      const typesNeeded = _.isArray(filters.data_types) ? filters.data_types : [filters.data_types];
+      const typesPresent = Object.keys(caisoRate.data);
+      if (!_.every(typesNeeded.map(type => typesPresent.includes(type)))) {
+        return false;
+      }
+    }
+    if (filters.period) {
+      const intervalData = caisoRate.data.default;
+      if (!intervalData) return false;
+      if (intervalData.period !== filters.period) return false;
+    }
+    return true;
+  });
+
+  useAsync(
+    () => api.getCAISORates({
+      ...omitFalsey({
+        data_types: filters.data_types,
+        period: filters.period
+      }),
+      page: 1,
+      page_size: 100
+    }),
+    handleCAISORatesRequest,
+    [],
+    // If we've already loaded the rates, we don't need to do so again
+    () => !caisoRates.length
+  );
+
+  // If we don't yet have the CAISO rates (or if filters were provided that don't match any existing
+  // CAISO rates) return undefined
+  return caisoRates.length ? caisoRates : undefined;
+
+  /**
+   * Handles the API response. The models will be added to the store.
+   *
+   * @param {PaginationSet<GHGRate>} ghgRates: the API response
+   */
+  function handleCAISORatesRequest ({ data }: PaginationSet<CAISORate>) {
+    dispatch(slices.models.updateModels(data));
+  }
+}
+
+/**
+ * Loads a scenario given its ID and options for querying
+ *
+ * @param {string} scenarioId: the ID of the scenario to get
+ * @param {GetScenarioQueryOptions} [options]: additional options for querying
+ */
+export function useGetScenario (scenarioId: string, options?: api.GetScenarioQueryOptions) {
   const [scenario, setScenario] = React.useState<Scenario>();
   const loading = useAsync(() => api.getScenario(scenarioId, options), setScenario, [scenarioId]);
   return { scenario, loading };
@@ -122,6 +189,9 @@ function useAsync <T>(
   React.useEffect(
     makeCancelableAsync(
       async () => {
+        // If the condition for making the request is not met, or if another request is already
+        // underway, return
+        if (loading) return;
         if (condition && !condition()) return;
         setLoading(true);
         return fn();

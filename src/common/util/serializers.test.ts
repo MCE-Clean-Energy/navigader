@@ -1,7 +1,9 @@
-import { RawScenario, RawPandasFrame } from 'navigader/types';
-import _ from 'navigader/util/lodash';
+import { RawScenario } from 'navigader/types';
 import { fixtures } from 'navigader/util/testing';
-import { parseMeterGroup, parsePandasFrame, parseReport, parseScenario } from './parsing';
+import {
+  parseMeterGroup, parsePandasFrame, parseReport, parseScenario, serializePandasFrame,
+  serializeReport
+} from './serializers';
 
 
 describe('API parsing methods', () => {
@@ -238,56 +240,64 @@ describe('API parsing methods', () => {
     });
   });
   
-  describe('`parseReport` method', () => {
-    it('renames certain fields', () => {
-      const parsed = parseReport(fixtures.scenarioReport);
-
-      // Check that rows are renamed
-      Object.values(parsed!).forEach((simulation, i) => {
-        expect(simulation.SA_ID).toEqual(fixtures.scenarioReport['SA ID'][i]);
+  describe('Report methods', () => {
+    describe('`parseReport` method', () => {
+      it('renames certain fields', () => {
+        const parsed = parseReport(fixtures.scenarioReport);
+  
+        // Check that rows are renamed
+        Object.values(parsed!).forEach((simulation, i) => {
+          expect(simulation.SA_ID).toEqual(fixtures.scenarioReport['SA ID'][i]);
+        });
+      });
+    });
+    
+    describe('`serializeReport` method', () => {
+      it('renames certain fields', () => {
+        const rawReport = serializeReport(parseReport(fixtures.scenarioReport));
+        expect(rawReport).toEqual(fixtures.scenarioReport);
       });
     });
   });
   
-  describe('`parsePandasFrame` method', () => {
-    function makeRawPandasFrame <RowType extends Record<string, any>>(
-      pandaRow: RowType,
-      numRows: number
-    ) {
-      return Object.keys(pandaRow).reduce((frame, key: keyof RowType) => {
-        frame[key] = _.range(numRows).reduce((frameObj, i) => {
-          frameObj[i] = pandaRow[key];
-          return frameObj;
-        }, {} as { [i: number]: any });
-        return frame;
-      }, {} as RawPandasFrame<RowType>);
-    }
-  
-    it('parses values', () => {
-      const parsed = parsePandasFrame(
-        makeRawPandasFrame({
-          propA: 1,
-          propB: 'c'
-        }, 3)
-      );
-      
-      expect(parsed.propA.length).toEqual(3);
-      expect(parsed.propB.length).toEqual(3);
-      expect(parsed.propA).toEqual([1, 1, 1]);
-      expect(parsed.propB).toEqual(['c', 'c', 'c']);
-    });
-    
-    it('should maintain alphanumeric order', () => {
-      const parsed = parsePandasFrame({
-        propA: {
-          '1': 1,
-          '3': 3,
-          '0': 'b',
-          '2': null
-        }
+  describe('Pandas methods', () => {
+    describe('`parsePandasFrame` method', () => {
+      it('parses values', () => {
+        const parsed = parsePandasFrame({
+          propA: { 0: 0, 1: 1, 2: 2 },
+          propB: { 0: 'a', 1: 'b', 2: 'c' }
+        });
+        
+        expect(parsed.propA.length).toEqual(3);
+        expect(parsed.propB.length).toEqual(3);
+        expect(parsed.propA).toEqual([0, 1, 2]);
+        expect(parsed.propB).toEqual(['a', 'b', 'c']);
       });
       
-      expect(parsed.propA).toEqual(['b', 1, null, 3]);
+      it('should maintain alphanumeric order', () => {
+        const parsed = parsePandasFrame({
+          propA: {
+            '1': 1,
+            '3': 3,
+            '0': 'b',
+            '2': null
+          }
+        });
+
+        expect(parsed.propA).toEqual(['b', 1, null, 3]);
+      });
+    });
+    
+    describe('`serializePandasFrame` method', () => {
+      it('serializes correctly', () => {
+        const rawFrame = serializePandasFrame({
+          propA: [0, 1, 2],
+          propB: ['a', 'b', 'c']
+        });
+        
+        expect(rawFrame.propA).toEqual({ 0: 0, 1: 1, 2: 2 });
+        expect(rawFrame.propB).toEqual({ 0: 'a', 1: 'b', 2: 'c' });
+      });
     });
   });
 });

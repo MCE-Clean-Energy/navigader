@@ -1,3 +1,6 @@
+import { Frame288DataType } from './data';
+
+
 /** ============================ Pagination  =============================== */
 export type PaginationSet<Datum> = {
   count: number;
@@ -37,10 +40,18 @@ export type FilterEqualClause = {
 }
 
 export type IncludeExcludeFields = string | string[];
-export type DynamicRestParams = {
+export type DynamicRestParams = Partial<{
   exclude: IncludeExcludeFields;
   include: IncludeExcludeFields;
   filter: {
     [key: string]: FilterEqualClause | FilterInClause;
   };
-};
+}>;
+
+export type DataType = 'default' | Frame288DataType;
+export type DataTypeParams = Partial<{
+  data_types: DataType | DataType[];
+  end_limit: string;
+  period: number;
+  start: string;
+}>

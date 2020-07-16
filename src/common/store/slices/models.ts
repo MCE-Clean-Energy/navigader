@@ -1,28 +1,35 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import {
-  BatteryConfiguration, BatterySimulation, BatteryStrategy, Frame288Numeric, GHGRate, Meter,
-  Scenario, StoredGHGRate
+  BatteryConfiguration, BatteryStrategy, CAISORate, GHGRate, Meter, RawCAISORate, RawGHGRate,
+  RawMeter, RawScenario, Scenario
 } from 'navigader/types';
+import { serializers } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 import { RootState, ModelsSlice } from '../types';
 
 
-/** ============================ Actions =================================== */
-type ModelName = keyof Omit<ModelsSlice, 'hasMeterGroups'>;
-
+/** ============================ Types ===================================== */
 // The `Exterior` vs. `Interior` dichotomy distinguishes between model objects internal to the
 // store (i.e. those returned from selectors) and those external to the store (i.e. those provided
 // to the action creators).
-type ModelClassExterior = Exclude<ModelClassInterior, StoredGHGRate> | GHGRate;
 type ModelClassInterior =
+  | RawCAISORate
   | BatteryConfiguration
-  | BatterySimulation
   | BatteryStrategy
-  | StoredGHGRate
+  | RawGHGRate
+  | RawMeter
+  | RawScenario;
+
+type ModelClassExterior =
+  | CAISORate
+  | BatteryConfiguration
+  | BatteryStrategy
+  | GHGRate
   | Meter
   | Scenario;
 
+/** ============================ Actions =================================== */
 /** Payloads */
 type RemoveModelAction = PayloadAction<ModelClassExterior>;
 type UpdateHasMeterGroupsAction = PayloadAction<boolean>;
@@ -33,8 +40,8 @@ type UpdateModelsAction = PayloadAction<ModelClassInterior[]>;
 
 /** ============================ Slice ===================================== */
 const initialState = {
+  caisoRates: [],
   derConfigurations: [],
-  derSimulations: [],
   derStrategies: [],
   ghgRates: [],
   hasMeterGroups: null,
@@ -82,31 +89,12 @@ export const { reducer } = slice;
 export const { removeModel, updateHasMeterGroups, updateModels, updateModel } = slice.actions;
 
 /** ============================ Selectors ================================= */
-/**
- * A "selector creator" that accepts a type of model and returns a selector that will return the
- * models of that type
- *
- * @param {ModelName} modelType: the type of model to retrieve from the store
- */
-export function selectModels <Type extends ModelName>(modelType: Type) {
-  return function (state: RootState): ModelsSlice[Type] {
-    return state.models[modelType];
-  };
-}
-
-/**
- * Special selector that retrieves `StoredGHGRate` objects and runs them through an "extraction
- * function" to instantiate the object's numeric `Frame288` class
- *
- * @param {RootState} state: the current state of the store. Typically provided by redux.
- */
-export function selectGhgRates (state: RootState) {
-  return state.models.ghgRates.map(extractGhgRate);
-}
-
-/**
- * Selects the `hasMeterGroups` state pocket
- */
+export const selectCAISORates = (state: RootState) => state.models.caisoRates.map(serializers.parseCAISORate);
+export const selectDERConfigurations = (state: RootState) => state.models.derConfigurations;
+export const selectDERStrategies = (state: RootState) => state.models.derStrategies;
+export const selectGHGRates = (state: RootState) => state.models.ghgRates.map(serializers.parseGHGRate);
+export const selectMeters = (state: RootState) => state.models.meters.map(serializers.parseMeter);
+export const selectScenarios = (state: RootState) => state.models.scenarios.map(serializers.parseScenario);
 export const selectHasMeterGroups = (state: RootState) => state.models.hasMeterGroups;
 
 /** ============================ Reducer methods =========================== */
@@ -142,8 +130,8 @@ function getSliceForModel (
       return state.derConfigurations;
     case 'BatteryStrategy':
       return state.derStrategies;
-    case 'StoredBatterySimulation':
-      return state.derSimulations;
+    case 'CAISORate':
+      return state.caisoRates;
     case 'CustomerMeter':
     case 'ReferenceMeter':
       return state.meters;
@@ -155,36 +143,23 @@ function getSliceForModel (
 }
 
 /**
- * Converts a `GHGRate` to a `StoredGHGRate` by serializing the frame 288 data
- *
- * @param {GHGRate} ghgRate: the `GHGRate` object that is entering the store
- */
-function storeGhgRate (ghgRate: GHGRate): StoredGHGRate {
-  return {
-    ...ghgRate,
-    data: ghgRate.data?.frame
-  };
-}
-
-/**
- * Converts a `StoredGHGRate` to a `GHGRate` by de-serializing the frame 288 data
- *
- * @param {StoredGHGRate} storedRate: the `StoredGHGRate` object that is leaving the store
- */
-function extractGhgRate (storedRate: StoredGHGRate): GHGRate {
-  return {
-    ...storedRate,
-    data: storedRate.data ? new Frame288Numeric(storedRate.data, { name: storedRate.name }) : undefined,
-  }
-}
-
-/**
  * Converts a `ModelClassExterior` object to a `ModelClassInterior` object
  *
  * @param {ModelClassExterior} model: the model to prepare
  */
 function prepareModel (model: ModelClassExterior): ModelClassInterior {
-  return model.object_type === 'GHGRate'
-    ? storeGhgRate(model)
-    : model;
+  switch (model.object_type) {
+    case 'BatteryStrategy':
+    case 'BatteryConfiguration':
+      return model;
+    case 'CAISORate':
+      return serializers.serializeCAISORate(model);
+    case 'CustomerMeter':
+    case 'ReferenceMeter':
+      return serializers.serializeMeter(model);
+    case 'GHGRate':
+      return serializers.serializeGHGRate(model);
+    case 'SingleScenarioStudy':
+      return serializers.serializeScenario(model);
+  }
 }

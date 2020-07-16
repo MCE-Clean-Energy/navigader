@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
 import { Table, PaginationState } from 'navigader/components';
-import { selectModels, updateModels } from 'navigader/store/slices/models';
+import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { MeterGroup } from 'navigader/types';
 
@@ -34,7 +34,7 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
       });
       
       // Add the models to the store and yield the pagination results
-      dispatch(updateModels(response.data));
+      dispatch(slices.models.updateModels(response.data));
       return response;
     },
     [meterGroupId, dispatch]
@@ -45,7 +45,7 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
     <Table
       aria-label="meter table"
       dataFn={getMeters}
-      dataSelector={selectModels('meters')}
+      dataSelector={slices.models.selectMeters}
       containerClassName={classes.tableContainer}
       raised
       stickyHeader

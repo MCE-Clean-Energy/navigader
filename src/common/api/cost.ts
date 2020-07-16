@@ -1,11 +1,11 @@
 import {
-  DynamicRestParams, Frame288Numeric, GHGRate, LoadType, MeterGroup, PaginationQueryParams,
-  RawGHGRate, RawPaginationSet, RawScenario, Scenario
+  RawCAISORate, DataTypeParams, DynamicRestParams, PaginationQueryParams, RawGHGRate,
+  RawPaginationSet, RawScenario, Scenario, RawMeterGroup
 } from 'navigader/types';
 import _ from 'navigader/util/lodash';
+import { serializers } from 'navigader/util';
 import {
-  appendId, beoRoute, deleteRequest, getRequest, parseMeterGroup, parsePaginationSet, parseScenario,
-  patchRequest, postRequest
+  appendId, beoRoute, deleteRequest, getRequest, parsePaginationSet, patchRequest, postRequest
 } from './util';
 
 
@@ -16,34 +16,43 @@ type DerSelection = {
 };
 
 // GET /study/
-type GetScenariosQueryOptions = PaginationQueryParams & Partial<DynamicRestParams>;
+type GetScenariosQueryOptions = PaginationQueryParams & DynamicRestParams;
 
 type GetScenariosResponse = {
-  meter_groups?: MeterGroup[];
+  meter_groups?: RawMeterGroup[];
   studies: RawScenario[];
 };
 
 // GET /study/:id
 type GetScenarioResponse = {
-  meter_groups?: [MeterGroup];
+  meter_groups?: [RawMeterGroup];
   study: RawScenario;
 };
 
-export type GetScenarioQueryOptions = Partial<DynamicRestParams> & {
-  data_types?: LoadType | LoadType[];
-};
+export type GetScenarioQueryOptions = DynamicRestParams & DataTypeParams;
 
 // GET /ghg_rate/
 type GetGHGRatesResponse = {
   ghg_rates: RawGHGRate[];
 };
 
-type GetGHGRatesQueryOptions = PaginationQueryParams & Partial<DynamicRestParams> & (
+type GetGHGRatesQueryOptions = PaginationQueryParams & DynamicRestParams & (
   { data_format: '288'; } |
   { data_format: 'interval'; period: '1H' | '15M'; start: string; end_limit: string; }
 );
 
-/** ============================ API Methods =============================== */
+// GET /caiso_rate/
+type GetCAISORatesResponse = {
+  caiso_rates: RawCAISORate[];
+};
+
+export type GetCAISORatesQueryOptions =
+  & PaginationQueryParams
+  & DynamicRestParams
+  & DataTypeParams
+  & { year?: number };
+
+/** ============================ Scenarios =============================== */
 export async function postStudy (
   scenarioName: string,
   meterGroupIds: string[],
@@ -117,12 +126,22 @@ export async function getGhgRates (options?: GetGHGRatesQueryOptions) {
     = await getRequest(routes.ghg_rate, options).then(res => res.json());
   
   // Parse the GHG rate results into full-fledged `NavigaderObjects`
-  return parsePaginationSet(response, ({ ghg_rates }) => ghg_rates.map(parseGhgRate));
+  return parsePaginationSet(response, ({ ghg_rates }) => ghg_rates.map(serializers.parseGHGRate));
+}
+
+/** ============================ Procurement =============================== */
+export async function getCAISORates (options?: GetCAISORatesQueryOptions) {
+  const response: RawPaginationSet<GetCAISORatesResponse>
+    = await getRequest(routes.caiso_rate, options).then(res => res.json());
+  
+  // Parse the GHG rate results into full-fledged `NavigaderObjects`
+  return parsePaginationSet(response, ({ caiso_rates }) => caiso_rates.map(serializers.parseCAISORate));
 }
 
 /** ============================ Helpers =================================== */
 const baseRoute = (rest: string) => beoRoute.v1(`cost/${rest}`);
 const routes = {
+  caiso_rate: baseRoute('caiso_rate/'),
   ghg_rate: baseRoute('ghg_rate/'),
   postStudy: baseRoute('multiple_scenario_study/'),
   scenarios: appendId(baseRoute('study'))
@@ -133,35 +152,20 @@ const routes = {
  * the application
  *
  * @param {RawScenario} scenario: the server-supplied scenario object
- * @param {MeterGroup} meterGroups: the server-supplied meter group objects
+ * @param {RawMeterGroup} meterGroups: the server-supplied meter group objects
  */
-function compileScenario (
-  scenario: RawScenario,
-  meterGroups?: MeterGroup[]
-): Scenario {
+function compileScenario (scenario: RawScenario, meterGroups?: RawMeterGroup[]): Scenario {
   // Mix in the meter group
   let meterGroup;
   if (scenario.meter_groups && scenario.meter_groups.length > 0) {
     const scenarioMeterGroup = _.find(meterGroups, { id: scenario.meter_groups[0] });
     if (scenarioMeterGroup) {
-      meterGroup = parseMeterGroup(scenarioMeterGroup);
+      meterGroup = serializers.parseMeterGroup(scenarioMeterGroup);
     }
   }
-  
-  return {
-    ...parseScenario(scenario),
-    meter_group: meterGroup
-  };
-}
 
-function parseGhgRate (rate: RawGHGRate): GHGRate {
   return {
-    ...rate,
-    data: rate.data ? new Frame288Numeric(rate.data, { name: rate.name, units: 'tCO2/kW' }) : undefined,
-    id: rate.id.toString(),
-    object_type: 'GHGRate',
-    
-    // This data isn't available for `GHGRate` objects
-    created_at: new Date().toString(),
+    ...serializers.parseScenario(scenario),
+    meter_group: meterGroup
   };
 }

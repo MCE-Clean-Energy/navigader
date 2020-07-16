@@ -1,7 +1,6 @@
 import { DeferrableFields } from './api';
 import { NavigaderObject } from './common';
-import { Frame288Type } from './frame288';
-import { MeterDataField } from './meter';
+import { Frame288Type } from './data';
 
 
 export type DerType = 'Battery';
@@ -45,14 +44,3 @@ export interface BatteryStrategy extends DeferrableFields<
     objective: DerStrategyType;
   }, BatteryStrategyDeferredFields
 > {}
-
-/** ============================ DER Simulations =========================== */
-export type BatterySimulation = NavigaderObject<'StoredBatterySimulation'> & {
-  data: MeterDataField;
-  der_columns: string[];
-  der_configuration: string;
-  der_strategy: string;
-  end_limit: string;
-  meter: string;
-  start: string;
-};

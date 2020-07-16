@@ -8,7 +8,7 @@ import {
 import { poller } from 'navigader/models/common';
 import { Components, getStrategyDescription } from 'navigader/models/der';
 import * as routes from 'navigader/routes';
-import { selectModels, updateModels } from 'navigader/store/slices/models';
+import { slices } from 'navigader/store';
 import { ColorMap } from 'navigader/styles';
 import { Scenario, ScenarioReportSummary } from 'navigader/types';
 import { kwToMw, printWarning } from 'navigader/util';
@@ -111,7 +111,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
       poller.pollFor(unfinished);
 
       // Add the models to the store and yield the pagination results
-      dispatch(updateModels(scenarios));
+      dispatch(slices.models.updateModels(scenarios));
       return response
     },
     [dispatch]
@@ -120,7 +120,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
   const TableComponent: React.ElementType = scenarios ? PrefetchedTable : Table;
   const tableProps = scenarios
     ? { data: scenarios }
-    : { dataFn: getScenarios, dataSelector: selectModels('scenarios') };
+    : { dataFn: getScenarios, dataSelector: slices.models.selectScenarios };
   
   return (
     <TableComponent

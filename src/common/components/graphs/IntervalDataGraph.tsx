@@ -6,9 +6,8 @@ import {
 import { VictoryVoronoiContainerProps } from 'victory-voronoi-container';
 import { VictoryZoomContainerProps } from 'victory-zoom-container';
 
-import { IntervalDataWrapper } from 'navigader/models';
 import { ColorMap } from 'navigader/styles';
-import { MonthIndex, Tuple } from 'navigader/types';
+import { IntervalDataWrapper, MonthIndex, Tuple } from 'navigader/types';
 import { omitFalsey } from 'navigader/util';
 import { date } from 'navigader/util/formatters';
 import { useColorMap } from 'navigader/util/hooks';
@@ -28,15 +27,16 @@ type IntervalDataGraphProps = {
   height?: number;
   hideXAxis?: boolean;
   month: MonthIndex;
-  onTimeDomainChange?: (domain: TimeTuple) => void;
-  renderInterval?: [Timestamp, Timestamp];
-  timeDomain?: TimeTuple;
+  onTimeDomainChange?: (domain: DateTuple) => void;
+  precision?: number;
+  renderInterval?: Tuple<Timestamp>;
+  timeDomain?: DateTuple;
   units?: string;
 };
 
-export type IntervalDataTuple = [IntervalDataWrapper, IntervalDataWrapper];
-export type TimeTuple = [Date, Date];
-type TimeDomain = { x: TimeTuple };
+export type IntervalDataTuple = Tuple<IntervalDataWrapper>;
+export type DateTuple = Tuple<Date>;
+type TimeDomain = { x: DateTuple };
 
 /** ============================ Styles ===================================== */
 const DEFAULT_CHART_HEIGHT = 300;
@@ -67,6 +67,7 @@ export const IntervalDataGraph: React.FC<IntervalDataGraphProps> = (props) => {
     hideXAxis,
     month,
     onTimeDomainChange,
+    precision,
     timeDomain,
     units
   } = props;
@@ -81,7 +82,7 @@ export const IntervalDataGraph: React.FC<IntervalDataGraphProps> = (props) => {
     <NavigaderChart
       containerComponent={
         <VictoryZoomVoronoiContainer
-          labels={getLabelFactory(units)}
+          labels={getLabelFactory(units, precision)}
           minimumZoom={{ x: 1000 * 60 * 60 * 3 }}
           // @ts-ignore
           onZoomDomainChange={handleZoom}
@@ -162,14 +163,15 @@ export const IntervalDataGraph: React.FC<IntervalDataGraphProps> = (props) => {
 /**
  * Returns a function that will be used by Victory to generate tooltips for the interval data
  *
- * @param {string} units: the units of the data being represented (e.g. `kW`, `$`)
+ * @param {string} [units]: the units of the data being represented (e.g. `kW`, `$`)
+ * @param {number} [precision]: the number of decimal places to include in the value
  */
-function getLabelFactory (units?: string) {
+function getLabelFactory (units?: string, precision: number = 2) {
   return function ({ datum }: VictoryCallbackArg<GraphDatum>) {
     return omitFalsey([
       datum.name,
       date.monthDayHourMinute(datum.timestamp) + ':',
-      datum.value.toFixed(2),
+      datum.value.toFixed(precision),
       units
     ]).join(' ');
   }
@@ -180,12 +182,12 @@ function getLabelFactory (units?: string) {
  *
  * @param {IntervalDataWrapper[]} data: the component `data` prop
  * @param {MonthIndex} month: the month currently being rendered
- * @param {TimeTuple} timeDomain: the domain of the x-axis
+ * @param {DateTuple} timeDomain: the domain of the x-axis
  */
 function useData (
   data: IntervalDataWrapper[],
   month: MonthIndex,
-  timeDomain?: TimeTuple
+  timeDomain?: DateTuple
 ) {
   const monthData = React.useMemo(
     () => data.map(interval => interval.filter({ month })),

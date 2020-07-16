@@ -4,9 +4,13 @@ import * as slices from './slices';
 
 
 /** ============================ Store ===================================== */
-export default configureStore({
-  reducer: {
-    models: slices.models.reducer,
-    ui: slices.ui.reducer
-  }
-});
+export function makeStore () {
+  return configureStore({
+    reducer: {
+      models: slices.models.reducer,
+      ui: slices.ui.reducer
+    }
+  });
+}
+
+export default makeStore();
