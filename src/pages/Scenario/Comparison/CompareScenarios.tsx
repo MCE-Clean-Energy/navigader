@@ -1,13 +1,12 @@
 import * as React from 'react';
 
 import * as api from 'navigader/api';
-import { in_ } from 'navigader/api/util';
 import { PageHeader, Progress, Typography } from 'navigader/components';
 import { Components } from 'navigader/models/scenario';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
 import { Scenario } from 'navigader/types';
-import { makeCancelableAsync } from 'navigader/util';
+import { filterClause, makeCancelableAsync } from 'navigader/util';
 import { useColorMap, useQuery } from 'navigader/util/hooks';
 import _ from 'navigader/util/lodash';
 import { ScenarioComparisonChart } from './Chart';
@@ -43,7 +42,7 @@ export const CompareScenariosPage: React.FC = () => {
       const ids = idsParam.split(',');
       return api.getScenarios({
         include: ['ders', 'meter_groups', 'report', 'report_summary'],
-        filter: { id: in_(ids) },
+        filter: { id: filterClause.in(ids) },
         page: 1,
         page_size: 100
       });

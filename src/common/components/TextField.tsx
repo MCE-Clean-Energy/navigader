@@ -11,11 +11,12 @@ type TextFieldProps = PaperProps & {
   color?: 'primary' | 'secondary';
   error?: boolean;
   helperText?: string | null;
-  id: string;
+  id?: string;
   label?: string;
   name?: string;
   onChange?: (value: string, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void,
   outlined?: boolean;
+  placeholder?: string;
   tabIndex?: number;
   type?: string;
   value?: string;

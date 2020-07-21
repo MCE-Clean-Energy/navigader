@@ -15,10 +15,13 @@ export type SortState = {
   key: string;
 };
 
+export type DisabledSelectComponent<T> = React.FC<{ datum: T }>;
+
 type TableContext<T> = {
   allSelected: boolean;
   data: T[],
   disableSelect: (datum: T) => boolean;
+  DisabledSelectComponent?: DisabledSelectComponent<T>;
   hover: boolean;
   selectable: boolean,
   selections: Set<number>;
@@ -33,6 +36,7 @@ export const TableContext = React.createContext<TableContext<any>>({
   allSelected: false,
   data: [],
   disableSelect: () => false,
+  DisabledSelectComponent: undefined,
   hover: true,
   selectable: false,
   selections: new Set(),

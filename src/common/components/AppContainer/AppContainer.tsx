@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Container from '@material-ui/core/Container';
 
 import { makeStylesHook } from 'navigader/styles';
 import * as Flex from '../Flex';
@@ -12,16 +11,14 @@ const useStyles = makeStylesHook(theme => ({
   appBarSpacer: {
     ...theme.mixins.toolbar,
   },
-  center: {
-    display: 'flex',
-    flexDirection: 'column'
-  },
   container: {
     backgroundColor: theme.palette.grey[50],
     boxSizing: 'border-box',
     display: 'flex',
+    flexFlow: 'column nowrap',
     height: '100vh',
-    overflow: 'auto'
+    overflow: 'auto',
+    padding: `0 ${theme.spacing(3)}px`
   },
   content: {
     flexGrow: 1,
@@ -41,13 +38,11 @@ export const AppContainer: React.FC = ({ children }) => {
       <AppBar />
       <SideDrawer />
       <Flex.Item className={classes.container} grow>
-        <Container className={classes.center}>
-          <div className={classes.appBarSpacer} />
-          <Flex.Container alignItems="stretch" className={classes.content} direction="column" justifyContent="flex-start">
-            {/** Actual page content */}
-            {children}
-          </Flex.Container>
-        </Container>
+        <div className={classes.appBarSpacer} />
+        <Flex.Container alignItems="stretch" className={classes.content} direction="column" justifyContent="flex-start">
+          {/** Actual page content */}
+          {children}
+        </Flex.Container>
       </Flex.Item>
     </Flex.Container>
   );

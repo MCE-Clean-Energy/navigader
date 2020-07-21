@@ -1,11 +1,9 @@
 import {
   DataTypeParams, MeterGroup, PaginationQueryParams, RawMeter, RawMeterGroup, RawPaginationSet
 } from 'navigader/types';
-import { serializers } from 'navigader/util';
+import { filterClause, serializers } from 'navigader/util';
 import _ from 'navigader/util/lodash';
-import {
-  appendId, beoRoute, equals_, getRequest, makeFormXhrPost, parsePaginationSet
-} from './util';
+import { appendId, beoRoute, getRequest, makeFormXhrPost, parsePaginationSet } from './util';
 
 
 /** ============================ Types ===================================== */
@@ -55,7 +53,7 @@ export async function getMeters (queryParams: MeterQueryParams) {
       {
         ..._.omit(queryParams, 'meterGroupId'),
         filter: {
-          meter_groups: equals_(queryParams.meterGroupId)
+          meter_groups: filterClause.equals(queryParams.meterGroupId)
         }
       }
     ).then(res => res.json());

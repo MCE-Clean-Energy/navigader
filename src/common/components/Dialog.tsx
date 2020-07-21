@@ -8,6 +8,7 @@ import MuiDialogTitle from '@material-ui/core/DialogTitle';
 
 /** ============================ Types ===================================== */
 type DialogProps = React.HTMLAttributes<HTMLDivElement> & {
+  fullWidth?: boolean;
   onClose: () => void;
   open: boolean;
 }

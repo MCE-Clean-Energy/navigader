@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { DateTuple, IntervalDataGraph } from 'navigader/components';
-import { IntervalDataWrapper, MonthIndex } from 'navigader/types';
+import { IntervalDataGraph } from 'navigader/components';
+import { DateTuple, IntervalData, MonthIndex } from 'navigader/types';
 import { useCAISORates, useGhgRates } from 'navigader/util/hooks';
 import _ from 'navigader/util/lodash';
 import { LoadingModal } from './LoadingModal';
@@ -9,8 +9,8 @@ import { LoadingModal } from './LoadingModal';
 
 /** ============================ Types ====================================== */
 type ChartProps = {
-  meterGroupData: IntervalDataWrapper;
-  scenarioData: IntervalDataWrapper;
+  meterGroupData: IntervalData;
+  scenarioData: IntervalData;
   selectedMonth: MonthIndex;
   timeDomain?: DateTuple;
   updateTimeDomain: (domain: DateTuple) => void;
@@ -109,10 +109,10 @@ export const ProcurementCharts: React.FC<ChartProps> = (props) => {
 /**
  * Scales the data to show in kW, MW or GW depending on the extent of the interval's values
  *
- * @param {IntervalDataWrapper} interval: the load interval being scaled
+ * @param {IntervalData} interval: the load interval being scaled
  * @param {string} units: the units of the data being scaled
  */
-function scaleInvertedData (interval: IntervalDataWrapper, units: string) {
+function scaleInvertedData (interval: IntervalData, units: string) {
   const max = interval.valueDomain()[1];
   const magnitude = Math.abs(Math.log10(max));
   const [scale, wattage] = magnitude >= 6

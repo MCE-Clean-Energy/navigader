@@ -1,14 +1,7 @@
+import { Falsey } from 'navigader/types';
 import _ from 'navigader/util/lodash';
+import { isTruthy } from './typeGuards';
 
-
-/** ============================ Types ===================================== */
-/**
- * This is meant to capture all values in JS that evaluate to `false` when passed through the
- * Boolean constructor. This is incomplete, and perhaps impossible to do with TypeScript because
- * there are some language values which types can't capture. For example, the type of `NaN` is
- * `number`, yet `Boolean(NaN) === false`.
- */
-export type Falsey = false | 0 | '' | null | undefined;
 
 /** ============================ Method ==================================== */
 /**
@@ -28,11 +21,9 @@ export function omitFalsey <T>(obj: Record<string, T | Falsey>): Record<string, 
 
 export function omitFalsey (arrayOrObject: any) {
   return Array.isArray(arrayOrObject)
-    ? arrayOrObject.filter(notFalsey)
-    : _.pickBy(arrayOrObject, notFalsey);
+    ? arrayOrObject.filter(isTruthy)
+    : _.pickBy(arrayOrObject, isTruthy);
 }
 
 /** ============================ Helpers ===================================== */
-function notFalsey <T>(x: T | Falsey): x is T {
-  return Boolean(x);
-}
+

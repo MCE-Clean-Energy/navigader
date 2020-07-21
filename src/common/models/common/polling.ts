@@ -1,7 +1,7 @@
 import * as api from 'navigader/api';
 import store, { slices } from 'navigader/store';
 import { IdType, Scenario } from 'navigader/types';
-import { printWarning } from 'navigader/util';
+import { filterClause, printWarning } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -43,7 +43,7 @@ class Poller {
     if (scenarios.length === 0) return;
 
     const response = await api.getScenarios({
-      filter: { id: api.util.in_(scenarios) },
+      filter: { id: filterClause.in(scenarios) },
       include: 'report_summary',
       page: 1,
       page_size: 100

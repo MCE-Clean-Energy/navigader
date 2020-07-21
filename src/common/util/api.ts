@@ -2,8 +2,9 @@ import {
   DynamicRestParams, FilterEqualClause, FilterInClause, IncludeExcludeFields, QueryParams,
   QueryStringPrimitive
 } from 'navigader/types';
-import { omitFalsey, printWarning } from 'navigader/util';
-import _ from 'navigader/util/lodash';
+import _ from './lodash';
+import { omitFalsey } from './omitFalsey';
+import { printWarning } from './printWarning';
 
 
 /** ============================ Types ===================================== */
@@ -89,12 +90,17 @@ export function makeQueryString (params?: QueryParams): string {
 }
 
 /** ============================ Clause builders =========================== */
-export const in_ = (values?: Array<QueryStringPrimitive>) => ({
+const in_ = (values?: Array<QueryStringPrimitive>) => ({
   operation: 'in',
   value: values
 }) as FilterInClause;
 
-export const equals_ = (value: QueryStringPrimitive) => ({
+const equals_ = (value: QueryStringPrimitive) => ({
   operation: 'equals',
   value
 }) as FilterEqualClause;
+
+export const filterClause = {
+  in: in_,
+  equals: equals_
+};

@@ -1,4 +1,4 @@
-import { Frame288Numeric, Frame288NumericType, MonthIndex } from 'navigader/types';
+import { Frame288NumericType, MonthIndex } from 'navigader/types';
 import _ from 'navigader/util/lodash';
 
 
@@ -326,6 +326,7 @@ export const makeFrame288 = (
   fn: (month: MonthIndex, hour: number) => number
 ): Frame288NumericType => {
   const frame288 = {} as Record<MonthIndex, number[]>;
-  Frame288Numeric.months.forEach(m => frame288[m] = _.range(24).map(h => fn(m, h)));
+  const months = _.range(1, 13) as MonthIndex[];
+  months.forEach(m => frame288[m] = _.range(24).map(h => fn(m, h)));
   return frame288;
 };

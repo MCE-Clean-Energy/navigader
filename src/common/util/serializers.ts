@@ -1,13 +1,11 @@
 import {
-  AggregatedProcurementKeys,
-  CAISORate, DataTypeMap, Frame288Numeric, GHGRate, IntervalDataWrapper, Meter, MeterGroup,
-  PandasFrame,
-  ProcurementReport, RawCAISORate, RawDataTypeMap, RawGHGRate, RawMeter, RawMeterGroup,
-  RawPandasFrame,
-  RawScenario, Scenario, ScenarioReport, ScenarioReportFields
+  AggregatedProcurementKeys, CAISORate, DataTypeMap, Frame288Numeric, GHGRate, Meter, MeterGroup,
+  PandasFrame, ProcurementReport, RawCAISORate, RawDataTypeMap, RawGHGRate, RawMeter, RawMeterGroup,
+  RawPandasFrame, RawScenario, Scenario, ScenarioReport, ScenarioReportFields
 } from 'navigader/types';
-import { percentOf } from './math';
+import { makeIntervalData } from 'navigader/util/data';
 import _ from './lodash';
+import { percentOf } from './math';
 import { isRawScenarioReport, isRawScenarioReportSummary } from './typeGuards';
 
 
@@ -338,7 +336,7 @@ function parseDataField <Column extends string, Unit extends string>(
   return {
     ...obj,
     default: obj.default
-      ? IntervalDataWrapper.create(
+      ? makeIntervalData(
         {...obj.default, name },
         column,
         unit

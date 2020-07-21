@@ -12,15 +12,11 @@ import * as pages from './pages';
 
 /** ============================ Components ================================ */
 const AppSnackbar: React.FC = () => {
-  const { msg, open, type } = useSelector(slices.ui.selectSnackbar);
+  const { duration, msg, open, type } = useSelector(slices.ui.selectSnackbar);
   const dispatch = useDispatch();
   
   return (
-    <Snackbar
-      autoHideDuration={6000}
-      onClose={handleClose}
-      open={open}
-    >
+    <Snackbar autoHideDuration={duration} onClose={handleClose} open={open}>
       {msg && type && <Alert onClose={handleClose} type={type}>{msg}</Alert>}
     </Snackbar>
   );

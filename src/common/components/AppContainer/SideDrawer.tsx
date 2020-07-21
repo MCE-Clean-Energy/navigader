@@ -4,7 +4,7 @@ import ButtonBase from '@material-ui/core/ButtonBase';
 import Drawer from '@material-ui/core/Drawer';
 
 import * as routes from 'navigader/routes';
-import { makeStylesHook } from 'navigader/styles';
+import { makeStylesHook, white } from 'navigader/styles';
 import { Centered } from '../Centered';
 import * as Flex from '../Flex';
 
@@ -32,7 +32,7 @@ const useDrawerStyles = makeStylesHook(theme => ({
   drawerPaper: {
     backgroundColor: theme.palette.primary.main,
     borderRight: 'none',
-    color: '#fff',
+    color: white,
     width: drawerWidth
   },
   flexContainer: {

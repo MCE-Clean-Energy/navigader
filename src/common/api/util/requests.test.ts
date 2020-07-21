@@ -1,5 +1,5 @@
+import { filterClause } from 'navigader/util';
 import { assertHasQueryParams } from 'navigader/util/testing';
-import { equals_ } from './querying';
 import { getRequest } from './requests';
 
 
@@ -44,8 +44,8 @@ describe('`getRequest` method', () => {
     it('Handles `filter` as expected', () => {
       getRequest('myRoute', {
         filter: {
-          meter_group: equals_(123),
-          'scenario.name': equals_('my-scenario')
+          meter_group: filterClause.equals(123),
+          'scenario.name': filterClause.equals('my-scenario')
         }
       });
       

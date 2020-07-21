@@ -1,4 +1,5 @@
 import * as React from 'react';
+import moment from 'moment';
 import {
   createContainer, VictoryArea, VictoryAxis, VictoryLabel, VictoryLegend, VictoryLine,
   VictoryTooltip
@@ -7,7 +8,7 @@ import { VictoryVoronoiContainerProps } from 'victory-voronoi-container';
 import { VictoryZoomContainerProps } from 'victory-zoom-container';
 
 import { ColorMap } from 'navigader/styles';
-import { IntervalDataWrapper, MonthIndex, Tuple } from 'navigader/types';
+import { DateTuple, IntervalData, MonthIndex, Tuple } from 'navigader/types';
 import { omitFalsey } from 'navigader/util';
 import { date } from 'navigader/util/formatters';
 import { useColorMap } from 'navigader/util/hooks';
@@ -23,7 +24,7 @@ type GraphDatum = { name: string; timestamp: Timestamp; value: number };
 type IntervalDataGraphProps = {
   animate?: boolean;
   axisLabel?: string;
-  data: IntervalDataWrapper | Tuple<IntervalDataWrapper>;
+  data: IntervalData | IntervalDataTuple;
   height?: number;
   hideXAxis?: boolean;
   month: MonthIndex;
@@ -34,8 +35,7 @@ type IntervalDataGraphProps = {
   units?: string;
 };
 
-export type IntervalDataTuple = Tuple<IntervalDataWrapper>;
-export type DateTuple = Tuple<Date>;
+export type IntervalDataTuple = Tuple<IntervalData>;
 type TimeDomain = { x: DateTuple };
 
 /** ============================ Styles ===================================== */
@@ -73,7 +73,7 @@ export const IntervalDataGraph: React.FC<IntervalDataGraphProps> = (props) => {
   } = props;
 
   // If the data changes without the component unmounting, get a new color map
-  const normalizedData = data instanceof IntervalDataWrapper ? [data] : data;
+  const normalizedData = Array.isArray(data) ? data: [data];
   const colorMap = useColorMap(normalizedData, _.map(normalizedData, 'name').concat('delta'));
 
   const { areaData, domain, visibleData } = useData(normalizedData, month, timeDomain);
@@ -180,24 +180,39 @@ function getLabelFactory (units?: string, precision: number = 2) {
 /**
  * React hook that organizes the component props into data groups for rendering
  *
- * @param {IntervalDataWrapper[]} data: the component `data` prop
+ * @param {IntervalData[]} data: the component `data` prop
  * @param {MonthIndex} month: the month currently being rendered
  * @param {DateTuple} timeDomain: the domain of the x-axis
  */
-function useData (
-  data: IntervalDataWrapper[],
-  month: MonthIndex,
-  timeDomain?: DateTuple
-) {
+function useData (data: IntervalData[], month: MonthIndex, timeDomain?: DateTuple) {
   const monthData = React.useMemo(
     () => data.map(interval => interval.filter({ month })),
     [data, month]
   );
   
-  // Extend the time domain outwards to the nearest hour. This resolves an issue where the data is
-  // truncated prematurely on the sides of the graph because the time domain is off-hour
   const visibleData = React.useMemo(
-    () => monthData.map(interval => interval.filter({ range: timeDomain })),
+    () => {
+      /**
+       * Extend the time domain outwards by finding the greatest period of all the intervals being
+       * graphed and subtracting it from the start of the domain and adding it to the end of the
+       * domain. This resolves an issue where the data is truncated prematurely on the sides of
+       * the graph because the time domain is off-hour
+       */
+      const extendedTimeDomain = (() => {
+        if (!timeDomain) return;
+        const [start, end] = timeDomain;
+    
+        // Find the greatest period amongst the intervals. This is the period we will use to round
+        const greatestPeriod = Math.max(...monthData.map(datum => datum.period));
+        const periodDuration = moment.duration(greatestPeriod, 'minutes');
+        return [
+          moment(start).subtract(periodDuration).toDate(),
+          moment(end).add(periodDuration).toDate()
+        ] as DateTuple;
+      })();
+      
+      return monthData.map(interval => interval.filter({ range: extendedTimeDomain }))
+    },
     [monthData, timeDomain]
   );
   

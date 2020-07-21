@@ -7,7 +7,8 @@ import {
 import { isSufficientlyIngested } from 'navigader/models/meter';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
-import { MeterGroup, PowerFrame288 } from 'navigader/types';
+import { MeterGroup } from 'navigader/types';
+import { PowerFrame288 } from 'navigader/util/data';
 import { date } from 'navigader/util/formatters';
 
 

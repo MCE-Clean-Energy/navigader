@@ -1,10 +1,13 @@
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
 
+import { Nullable } from 'navigader/types';
+import _ from 'navigader/util/lodash';
 import { RootState, UiSlice } from '../types';
 
 
 /** ============================ Types ===================================== */
 type SetMessagePayload = {
+  duration?: Nullable<number>
   msg: string;
   type: 'success' | 'error';
 };
@@ -23,9 +26,15 @@ const slice = createSlice({
   } as UiSlice,
   reducers: {
     setMessage: (state, action: PayloadAction<SetMessagePayload>) => {
-      state.snackbar = { ...action.payload, open: true };
+      state.snackbar = _.defaults({
+        ...action.payload,
+        open: true
+      }, {
+        duration: 6000
+      });
     },
     clearMessage: state => {
+      delete state.snackbar.duration;
       delete state.snackbar.msg;
       delete state.snackbar.type;
     },

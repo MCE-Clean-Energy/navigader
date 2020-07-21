@@ -29,11 +29,11 @@ type ScenariosTableProps = {
 };
 
 type ScenarioStatusProps = {
-  scenario: Scenario;
+  datum: Scenario;
 };
 
 /** ============================ Components ================================ */
-const ScenarioStatus: React.FC<ScenarioStatusProps> = ({ scenario }) => {
+const ScenarioStatus: React.FC<ScenarioStatusProps> = ({ datum: scenario }) => {
   const { has_run, is_complete, percent_complete } = scenario.progress;
 
   // Show the checkmark if the report has completed and aggregated
@@ -128,6 +128,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
       aria-label="scenarios table"
       containerClassName={className}
       disableSelect={(scenario: Scenario) => !scenario.progress.is_complete}
+      DisabledSelectComponent={ScenarioStatus}
       headerActions={
         <Tooltip title="Shows the scenario's impacts averaged across all customers">
           <div>
@@ -167,7 +168,6 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
               </Table.Cell>
               <Table.Cell align="right">RA Impact (MW/year{innerAveraged && '/SAID'})</Table.Cell>
               <Table.Cell align="right">Procurement Cost ($/year{innerAveraged && '/SAID'})</Table.Cell>
-              <Table.Cell>Status</Table.Cell>
               {actionsMenu && <Table.Cell>Menu</Table.Cell>}
             </Table.Row>
           </Table.Head>
@@ -262,9 +262,6 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                         : '-';
                     })()
                   }
-                </Table.Cell>
-                <Table.Cell>
-                  <ScenarioStatus scenario={scenario} />
                 </Table.Cell>
                 {actionsMenu && <Table.Cell>{actionsMenu(scenario)}</Table.Cell>}
               </Table.Row>

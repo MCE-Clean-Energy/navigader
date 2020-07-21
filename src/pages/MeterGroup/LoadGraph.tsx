@@ -2,7 +2,8 @@ import * as React from 'react';
 
 import { Card, Flex, Frame288Graph, MonthSelector, Toggle, Tooltip } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
-import { Frame288DataType, MeterGroup, MonthsOption, PowerFrame288 } from 'navigader/types';
+import { Frame288DataType, MeterGroup, MonthsOption } from 'navigader/types';
+import { PowerFrame288 } from 'navigader/util';
 import { capitalize } from 'navigader/util/formatters';
 
 

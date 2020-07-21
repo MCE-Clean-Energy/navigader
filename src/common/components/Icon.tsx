@@ -5,6 +5,7 @@ import BatteryChargingFull from '@material-ui/icons/BatteryChargingFull';
 import CreateIcon from '@material-ui/icons/Create';
 import DoneIcon from '@material-ui/icons/Done';
 import DeleteIcon from '@material-ui/icons/Delete';
+import FeedbackIcon from '@material-ui/icons/Feedback';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Schedule from '@material-ui/icons/Schedule';
 import WbSunny from '@material-ui/icons/WbSunny';
@@ -26,6 +27,7 @@ export type ValidIcon =
   | 'battery'
   | 'checkMark'
   | 'clock'
+  | 'feedback'
   | 'pencil'
   | 'plus'
   | 'sun'
@@ -59,6 +61,7 @@ const iconMap = {
   battery: BatteryChargingFull,
   checkMark: DoneIcon,
   clock: Schedule,
+  feedback: FeedbackIcon,
   pencil: CreateIcon,
   plus: AddIcon,
   sun: WbSunny,

@@ -1,4 +1,5 @@
 import {
+  Falsey,
   MeterGroup, NavigaderObject, RawScenario, RawScenarioReport, RawScenarioReportSummary
 } from 'navigader/types';
 import _ from 'navigader/util/lodash';
@@ -22,4 +23,9 @@ export function isRawScenarioReportSummary (
 
 export function isRawScenarioReport (report: RawScenario['report']): report is RawScenarioReport {
   return Boolean(report && !report.hasOwnProperty('index'));
+}
+
+/** ============================ Miscellaneous ============================= */
+export function isTruthy <T>(x: T | Falsey): x is T {
+  return Boolean(x);
 }

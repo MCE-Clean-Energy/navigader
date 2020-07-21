@@ -4,16 +4,15 @@ import moment from 'moment';
 
 import * as api from 'navigader/api';
 import {
-  Card, DateTuple, Flex, IntervalDataGraph, IntervalDataTuple, MeterGroupChip, PageHeader, Progress,
-  Typography
+  Card, Flex, IntervalDataGraph, IntervalDataTuple, MeterGroupChip, PageHeader, Progress, Typography
 } from 'navigader/components';
 import { DERCard } from 'navigader/models/der/components';
 import { ScenariosTable } from 'navigader/models/scenario/components';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
-import { IntervalDataWrapper, MonthIndex, Scenario } from 'navigader/types';
+import { DateTuple, IntervalData, MonthIndex, Scenario } from 'navigader/types';
 import { makeCancelableAsync } from 'navigader/util';
-import { useGetScenario } from 'navigader/util/hooks';
+import { useScenario } from 'navigader/util/hooks';
 import { ChartControls, ChartView, TimeDomainOption } from './ChartControls';
 import { GHGCharts, ProcurementCharts } from './Charts';
 import { LoadingModal } from './LoadingModal';
@@ -93,7 +92,7 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
 
   // State
   const [chartView, setChartView] = React.useState<ChartView>('usage');
-  const [meterGroupData, setMeterGroupData] = React.useState<IntervalDataWrapper>();
+  const [meterGroupData, setMeterGroupData] = React.useState<IntervalData>();
   const [meterGroupLoading, setMeterGroupLoading] = React.useState(false);
   const [selectedMonth, setMonth] = React.useState<MonthIndex>(1);
   const [timeDomainOption, setTimeDomainOption] = React.useState<TimeDomainOption>('1m');
@@ -102,7 +101,7 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
   const {
     loading: simulationLoading,
     scenario: scenarioWithData
-  } = useGetScenario(scenario.id, { data_types: 'default', period: 60 });
+  } = useScenario(scenario.id, { data_types: 'default', period: 60 });
   
   const simulationData = scenarioWithData?.data.default;
 
@@ -221,7 +220,7 @@ export const ScenarioResultsPage: React.FC = () => {
   const { id } = useParams();
   const classes = useStyles();
   
-  const { loading, scenario } = useGetScenario(id as string, {
+  const { loading, scenario } = useScenario(id as string, {
     include: ['ders', 'meter_groups', 'report', 'report_summary']
   });
 
@@ -253,7 +252,7 @@ export const ScenarioResultsPage: React.FC = () => {
 /**
  * Scales the data to show in kW, MW or GW depending on the extent of the interval's power values
  *
- * @param {IntervalDataWrapper[]} intervals: the pre-DER and post-DER load interval data
+ * @param {IntervalData[]} intervals: the pre-DER and post-DER load interval data
  */
 function scaleLoadData (intervals: IntervalDataTuple) {
   const [min, max] = intervals.reduce(([curMin, curMax], interval) => {

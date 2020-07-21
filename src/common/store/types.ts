@@ -16,6 +16,7 @@ export type ModelsSlice = {
 
 export type UiSlice = {
   snackbar: {
+    duration?: number;
     msg?: string;
     open: boolean;
     type?: 'success' | 'error';

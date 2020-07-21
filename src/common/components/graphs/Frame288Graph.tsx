@@ -2,7 +2,8 @@ import * as React from 'react';
 import { VictoryAxis, VictoryLabel, VictoryLine, VictoryVoronoiContainer } from 'victory';
 
 import { ColorMap } from 'navigader/styles';
-import { Frame288Numeric, Frame288NumericType, MonthIndex, MonthsOption } from 'navigader/types';
+import { Frame288NumericType, MonthIndex, MonthsOption } from 'navigader/types';
+import { Frame288Numeric } from 'navigader/util/data';
 import { getMonthName } from 'navigader/util/formatters';
 import { useColorMap } from 'navigader/util/hooks';
 import _ from 'navigader/util/lodash';

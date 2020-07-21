@@ -163,7 +163,7 @@ export function useCAISORates (filters: Partial<CAISORateFilters> = {}) {
  * @param {string} scenarioId: the ID of the scenario to get
  * @param {GetScenarioQueryOptions} [options]: additional options for querying
  */
-export function useGetScenario (scenarioId: string, options?: api.GetScenarioQueryOptions) {
+export function useScenario (scenarioId: string, options?: api.GetScenarioQueryOptions) {
   const [scenario, setScenario] = React.useState<Scenario>();
   const loading = useAsync(() => api.getScenario(scenarioId, options), setScenario, [scenarioId]);
   return { scenario, loading };

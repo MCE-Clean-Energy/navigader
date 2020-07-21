@@ -1,9 +1,12 @@
 import _ from 'lodash';
 
-import { MonthIndex } from 'navigader/types';
+import { Frame288NumericType, Frame288Options, MonthIndex } from 'navigader/types';
 import { fixtures } from 'navigader/util/testing';
-import { Frame288Numeric, Frame288NumericType, Frame288Options, PowerFrame288 } from './frame288';
+import { Frame288Numeric, PowerFrame288 } from './frame288';
 
+
+/** ============================ Constants ================================= */
+const months = _.range(1, 13) as MonthIndex[];
 
 /** ============================ Tests ===================================== */
 describe('Frame288Numeric', () => {
@@ -12,7 +15,7 @@ describe('Frame288Numeric', () => {
     
     it('divides all values in the frame', () => {
       const divided = frame.divide(100);
-      Frame288Numeric.months.forEach(
+      months.forEach(
         monthIndex => divided.getMonth(monthIndex).forEach(
           (val, hour) => expect(val === hour)
         )
@@ -80,7 +83,7 @@ describe('PowerFrame288', () => {
 /** ============================ Helpers =================================== */
 function makeFrame288 (fn: (month: MonthIndex, hour: number) => number, options?: Frame288Options) {
   return new Frame288Numeric(
-    Frame288Numeric.months.reduce(
+    months.reduce(
       (memo, monthIndex) => {
         memo[monthIndex] = _.range(24).map(hour => fn(monthIndex, hour));
         return memo;

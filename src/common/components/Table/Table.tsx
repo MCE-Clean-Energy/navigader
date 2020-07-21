@@ -14,13 +14,12 @@ import { makeStylesHook, white } from 'navigader/styles';
 import { IdType, ObjectWithId, PaginationSet } from 'navigader/types';
 import { makeCancelableAsync } from 'navigader/util';
 import { useTableSelector } from 'navigader/util/hooks';
-import _ from 'navigader/util/lodash';
 import { Checkbox } from '../Checkbox';
 import * as Flex from '../Flex';
 import { Progress } from '../Progress';
 import { Typography } from '../Typography';
 import { TablePagination } from './Pagination';
-import { PaginationState, SortState, TableContext } from './util';
+import { DisabledSelectComponent, PaginationState, SortState, TableContext } from './util';
 
 
 /** ============================ Types ===================================== */
@@ -34,6 +33,7 @@ export type TableProps<T extends ObjectWithId> = {
   dataFn: (state: PaginationState & Partial<SortState>) => Promise<PaginationSet<T>>;
   dataSelector: (state: RootState) => T[];
   disableSelect?: (datum: T) => boolean;
+  DisabledSelectComponent?: DisabledSelectComponent<T>;
   headerActions?: React.ReactNode;
   hover?: boolean;
   initialSorting?: SortState;
@@ -56,25 +56,19 @@ type TableCellProps = {
   _isHeaderRow?: boolean;
 };
 
-type TableHeadProps = {};
-type TableBodyProps = {};
-
-type TableRowProps = {
+type TableRowProps<T extends ObjectWithId> = React.PropsWithChildren<{
   className?: string;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+
   // These props should not be provided by consuming components-- they are provided by the
   // `TableHead` and `TableBody` components
+  _datum?: T;
   _disableSelect?: boolean;
   _isHeaderRow?: boolean;
   _onChange?: (checked: boolean) => void;
   _selected?: boolean;
-};
-
-type TableBody = React.FC<TableBodyProps>;
-type TableCell = React.FC<TableCellProps>;
-type TableHead = React.FC<TableHeadProps>;
-type TableRow = React.FC<TableRowProps>;
+}>;
 
 type DataState = {
   dataIds: IdType[] | null;
@@ -85,6 +79,14 @@ type DataState = {
 const useStyles = makeStylesHook(theme => ({
   progressBarSpacer: {
     height: 4
+  },
+  table: {
+    '& .disabled-select-component': {
+      display: 'flex',
+      flexFlow: 'row nowrap',
+      justifyContent: 'center',
+      width: '100%'
+    }
   },
   toolbar: {
     justifyContent: 'space-between',
@@ -107,6 +109,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     dataFn,
     dataSelector,
     disableSelect = () => false,
+    DisabledSelectComponent,
     headerActions,
     hover = true,
     initialSorting,
@@ -134,7 +137,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
   // Load data
   React.useEffect(makeCancelableAsync(() => {
     setLoading(true);
-    return dataFn({ ...paginationState, ...sortState })
+    return dataFn({ ...paginationState, ...sortState });
   }, (paginationSet) => {
     setLoading(false);
     setDataState({
@@ -148,14 +151,14 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
   const data = useTableSelector(dataSelector, dataIds);
   
   // Build context for child component tree
-  const loadedData = !loading && !_.isEmpty(data);
   const selectables = data.filter(d => !disableSelect(d));
   const tableContext = {
     allSelected: selectables.length > 0 && selectables.length === selections.size,
     data,
     disableSelect,
+    DisabledSelectComponent,
     hover,
-    selectable: Boolean(onSelect) && loadedData,
+    selectable: Boolean(onSelect),
     selections,
     setSortState,
     sortState,
@@ -181,7 +184,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
         }
       </MuiToolbar>
       <MuiTableContainer className={containerClassName}>
-        <MuiTable {...rest}>
+        <MuiTable className={classes.table} {...rest}>
           <TableContext.Provider value={tableContext}>
             {children(data || [], EmptyRow)}
           </TableContext.Provider>
@@ -253,7 +256,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
   }
 }
 
-const TableBody: TableBody = (props) => {
+const TableBody: React.FC = (props) => {
   const { data, disableSelect, selections, toggleRowSelection } = React.useContext(TableContext);
   
   // Keeps track of the index of each row. This is augmented once per table row in the loop
@@ -268,24 +271,26 @@ const TableBody: TableBody = (props) => {
         
         // Augment the row index
         const index = rowIndex++;
-        return React.cloneElement<TableRowProps>(child, {
+        const datum = data[index];
+        return React.cloneElement<TableRowProps<ObjectWithId>>(child, {
+          _datum: datum,
           _isHeaderRow: false,
           _onChange: (checked: boolean) => toggleRowSelection(index, checked),
           _selected: selections.has(index),
-          _disableSelect: disableSelect(data[index])
+          _disableSelect: disableSelect(datum)
         });
       })}
     </MuiTableBody>
   );
 };
 
-const TableHead: TableHead = (props) => {
+const TableHead: React.FC = (props) => {
   const { allSelected, data, toggleAllSelections, disableSelect } = React.useContext(TableContext);
   const selectables = data.filter(d => !disableSelect(d));
   return (
     <MuiTableHead>
       {React.isValidElement(props.children)
-        ? React.cloneElement<TableRowProps>(props.children, {
+        ? React.cloneElement<TableRowProps<never>>(props.children, {
           _isHeaderRow: true,
           _onChange: toggleAllSelections,
           _selected: allSelected,
@@ -297,18 +302,19 @@ const TableHead: TableHead = (props) => {
   );
 };
 
-const TableRow: TableRow = (props) => {
+function TableRow<T extends ObjectWithId> (props: TableRowProps<T>) {
   const {
     children,
     className,
     onMouseEnter,
     onMouseLeave,
+    _datum,
     _disableSelect,
     _isHeaderRow,
     _onChange,
     _selected
   } = props;
-  const { hover, selectable } = React.useContext(TableContext);
+  const { DisabledSelectComponent, hover, selectable } = React.useContext(TableContext);
   
   // If the row is selectable, add in a checkbox to the front of the row
   let checkboxCell = null;
@@ -317,7 +323,13 @@ const TableRow: TableRow = (props) => {
     // The `onChange` callback depends on the cell's context
     checkboxCell = (
       <Table.Cell _columnIndex={colIndex++} _isHeaderRow={_isHeaderRow}>
-        <Checkbox checked={_selected} disabled={_disableSelect} onChange={_onChange} />
+        {_disableSelect && !_isHeaderRow && DisabledSelectComponent
+          ? (
+            <div className="disabled-select-component">
+              <DisabledSelectComponent datum={_datum} />
+            </div>
+          ) : <Checkbox checked={_selected} disabled={_disableSelect} onChange={_onChange} />
+        }
       </Table.Cell>
     );
   }
@@ -338,9 +350,9 @@ const TableRow: TableRow = (props) => {
       )}
     </MuiTableRow>
   );
-};
+}
 
-const TableCell: TableCell = (props) => {
+const TableCell: React.FC<TableCellProps> = (props) => {
   const { children, sortBy, sortDir, _columnIndex, _isHeaderRow, ...rest } = props;
   const { setSortState, sortState } = React.useContext(TableContext);
   const classes = useTableCellStyles();

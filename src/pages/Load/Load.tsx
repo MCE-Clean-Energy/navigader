@@ -14,6 +14,9 @@ import { MeterGroupCard } from './MeterGroupCard';
 const useStyles = makeStylesHook(theme => ({
   pageContent: {
     marginTop: theme.spacing(1)
+  },
+  uploadButton: {
+    marginRight: theme.spacing(2)
   }
 }), 'LoadPage');
 
@@ -35,7 +38,14 @@ export const LoadPage = () => {
   return (
     <>
       <PageHeader
-        actions={<Button color="secondary" onClick={goToUpload}>Add File</Button>}
+        actions={
+          <>
+            <Button className={classes.uploadButton} color="secondary" onClick={goToUpload}>
+              Upload New File
+            </Button>
+            <Button color="secondary" onClick={createScenario}>Create New Scenario</Button>
+          </>
+        }
         title="Uploaded Files"
       />
       <div className={classes.pageContent}>
@@ -57,5 +67,9 @@ export const LoadPage = () => {
   /** ============================ Callbacks =============================== */
   function goToUpload () {
     history.push(routes.upload);
+  }
+  
+  function createScenario () {
+    history.push(routes.dashboard.createScenario.selectDers);
   }
 };

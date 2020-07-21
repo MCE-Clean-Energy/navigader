@@ -1,8 +1,7 @@
 import * as React from 'react';
 
+import { SUPPORT_EMAIL } from 'navigader/util';
 
-/** ============================ Constants ================================= */
-const SUPPORT_EMAIL = 'support@navigader.com';
 
 /** ============================ Components ================================ */
 export const ContactSupport: React.FC = props => (
