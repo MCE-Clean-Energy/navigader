@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import {
-  BatteryConfiguration, BatteryStrategy, CAISORate, GHGRate, Meter, RawCAISORate, RawGHGRate,
-  RawMeter, RawScenario, Scenario
+  BatteryConfiguration, BatteryStrategy, CAISORate, GHGRate, Meter, MeterGroup, RawCAISORate,
+  RawGHGRate,
+  RawMeter, RawMeterGroup, RawScenario, Scenario
 } from 'navigader/types';
 import { serializers } from 'navigader/util';
 import _ from 'navigader/util/lodash';
@@ -19,6 +20,7 @@ type ModelClassInterior =
   | BatteryStrategy
   | RawGHGRate
   | RawMeter
+  | RawMeterGroup
   | RawScenario;
 
 type ModelClassExterior =
@@ -27,6 +29,7 @@ type ModelClassExterior =
   | BatteryStrategy
   | GHGRate
   | Meter
+  | MeterGroup
   | Scenario;
 
 /** ============================ Actions =================================== */
@@ -45,6 +48,7 @@ const initialState = {
   derStrategies: [],
   ghgRates: [],
   hasMeterGroups: null,
+  meterGroups: [],
   meters: [],
   scenarios: []
 } as ModelsSlice;
@@ -93,6 +97,7 @@ export const selectCAISORates = (state: RootState) => state.models.caisoRates.ma
 export const selectDERConfigurations = (state: RootState) => state.models.derConfigurations;
 export const selectDERStrategies = (state: RootState) => state.models.derStrategies;
 export const selectGHGRates = (state: RootState) => state.models.ghgRates.map(serializers.parseGHGRate);
+export const selectMeterGroups = (state: RootState) => state.models.meterGroups.map(serializers.parseMeterGroup);
 export const selectMeters = (state: RootState) => state.models.meters.map(serializers.parseMeter);
 export const selectScenarios = (state: RootState) => state.models.scenarios.map(serializers.parseScenario);
 export const selectHasMeterGroups = (state: RootState) => state.models.hasMeterGroups;
@@ -132,6 +137,9 @@ function getSliceForModel (
       return state.derStrategies;
     case 'CAISORate':
       return state.caisoRates;
+    case 'CustomerCluster':
+    case 'OriginFile':
+      return state.meterGroups;
     case 'CustomerMeter':
     case 'ReferenceMeter':
       return state.meters;
@@ -154,6 +162,9 @@ function prepareModel (model: ModelClassExterior): ModelClassInterior {
       return model;
     case 'CAISORate':
       return serializers.serializeCAISORate(model);
+    case 'CustomerCluster':
+    case 'OriginFile':
+      return serializers.serializeMeterGroup(model);
     case 'CustomerMeter':
     case 'ReferenceMeter':
       return serializers.serializeMeter(model);

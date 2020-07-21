@@ -1,32 +1,38 @@
 import * as api from 'navigader/api';
 import store, { slices } from 'navigader/store';
-import { IdType, Scenario } from 'navigader/types';
-import { filterClause, printWarning } from 'navigader/util';
+import { DataTypeParams, DynamicRestParams, IdType, MeterGroup, Scenario } from 'navigader/types';
+import { filterClause } from 'navigader/util';
+import _ from 'navigader/util/lodash';
 
 
 /** ============================ Types ===================================== */
-type PollableObject = Scenario;
+type MeterGroupsQueryParams = DynamicRestParams & DataTypeParams;
 
 /** ============================ Polling =================================== */
 class Poller {
-  private pollingIds = {
-    scenario: new Set()
-  };
-
   private pollInterval: number;
+  private pollingIds = {
+    meterGroups: new Map<MeterGroupsQueryParams, Set<IdType>>(),
+    scenarios: new Set<IdType>()
+  };
 
   constructor (interval: number) {
     this.pollInterval = window.setInterval(this.poll.bind(this), interval);
   }
 
-  pollFor (models: PollableObject[]) {
+  addMeterGroups (models: MeterGroup[], options?: MeterGroupsQueryParams) {
+    const modelIds = _.map(models, 'id');
+    const optionsKey = options || {};
+    if (this.pollingIds.meterGroups.has(optionsKey)) {
+      modelIds.forEach(id => this.pollingIds.meterGroups.get(optionsKey)!.add(id));
+    } else {
+      this.pollingIds.meterGroups.set(optionsKey, new Set([...modelIds]));
+    }
+  }
+
+  addScenarios (models: Scenario[]) {
     models.forEach((model) => {
-      if (model.object_type === 'SingleScenarioStudy') {
-        this.pollingIds.scenario.add(model.id);
-        return;
-      } else {
-        printWarning(`Polling module received un-pollable object of type ${model.object_type}`);
-      }
+      this.pollingIds.scenarios.add(model.id);
     });
   }
 
@@ -35,29 +41,57 @@ class Poller {
    * request for each of the possible model types that have IDs to poll for.
    */
   private async poll () {
+    this.pollMeterGroups();
     this.pollScenarios();
+  }
+  
+  private pollMeterGroups () {
+    const queries = [...this.pollingIds.meterGroups.entries()];
+    if (queries.length === 0) return;
+
+    queries.forEach(async ([queryOptions, meterGroupIdSet]) => {
+      const meterGroups = (await api.getMeterGroups({
+        ...queryOptions,
+        filter: {
+          ...queryOptions.filter,
+          id: filterClause.in([...meterGroupIdSet.values()])
+        },
+        page: 1,
+        page_size: 100
+      })).data;
+  
+      // Remove finished meterGroups
+      meterGroups.forEach((meterGroup) => {
+        if (meterGroup.progress.is_complete) {
+          meterGroupIdSet.delete(meterGroup.id);
+        }
+      });
+  
+      // Update the store
+      store.dispatch(slices.models.updateModels(meterGroups));
+    });
   }
 
   private async pollScenarios () {
-    const scenarios = [...this.pollingIds.scenario.values()] as IdType[];
-    if (scenarios.length === 0) return;
+    const scenarioIds = [...this.pollingIds.scenarios.values()] as IdType[];
+    if (scenarioIds.length === 0) return;
 
-    const response = await api.getScenarios({
-      filter: { id: filterClause.in(scenarios) },
+    const scenarios = (await api.getScenarios({
+      filter: { id: filterClause.in(scenarioIds) },
       include: 'report_summary',
       page: 1,
       page_size: 100
-    });
+    })).data;
 
     // Remove finished scenarios
-    response.data.forEach((scenario) => {
+    scenarios.forEach((scenario) => {
       if (scenario.progress.is_complete) {
-        this.pollingIds.scenario.delete(scenario.id);
+        this.pollingIds.scenarios.delete(scenario.id);
       }
     });
 
     // Update the store
-    store.dispatch(slices.models.updateModels(response.data));
+    store.dispatch(slices.models.updateModels(scenarios));
   }
 }
 

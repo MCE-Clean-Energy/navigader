@@ -6,11 +6,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
 import * as api from 'navigader/api';
+import { poller } from 'navigader/models/common';
+import { RootState, slices } from 'navigader/store';
+import { ColorMap } from 'navigader/styles';
 import {
   GHGRate, IdType, ObjectWithId, PaginationSet, Scenario, CAISORate, DataTypeParams
 } from 'navigader/types';
-import { RootState, slices } from 'navigader/store';
-import { ColorMap } from 'navigader/styles';
 import { makeCancelableAsync } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 import { omitFalsey } from './omitFalsey';
@@ -167,6 +168,27 @@ export function useScenario (scenarioId: string, options?: api.GetScenarioQueryO
   const [scenario, setScenario] = React.useState<Scenario>();
   const loading = useAsync(() => api.getScenario(scenarioId, options), setScenario, [scenarioId]);
   return { scenario, loading };
+}
+
+export function useMeterGroups (options: api.MeterGroupsQueryParams) {
+  const dispatch = useDispatch();
+  
+  // Fetch the meter groups
+  const loading = useAsync(
+    () => api.getMeterGroups(options),
+    ({ data }) => {
+      // Continue polling for meter groups that haven't finished ingesting
+      const unfinished = _.filter(data, meterGroup => !meterGroup.progress.is_complete);
+      poller.addMeterGroups(unfinished, options);
+      
+      // Add all of them to the store
+      dispatch(slices.models.updateModels(data))
+    },
+    []
+  );
+  
+  // Return the meter groups in the store
+  return { loading, meterGroups: useSelector(slices.models.selectMeterGroups) };
 }
 
 /**

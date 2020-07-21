@@ -63,6 +63,13 @@ export function parseMeterGroup (meterGroup: RawMeterGroup): MeterGroup {
   };
 }
 
+export function serializeMeterGroup(meterGroup: MeterGroup): RawMeterGroup {
+  return {
+    ...meterGroup,
+    data: serializeDataField(meterGroup.data, 'kw', 'index')
+  };
+}
+
 /** ============================ Scenarios ================================= */
 /**
  * Basic parsing function for converting a RawScenario into a Scenario

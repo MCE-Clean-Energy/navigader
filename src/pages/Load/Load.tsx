@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 
-import * as api from 'navigader/api';
 import { Button, Grid, PageHeader, Progress } from 'navigader/components';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
-import { MeterGroup } from 'navigader/types';
-import { makeCancelableAsync } from 'navigader/util';
+import { useMeterGroups } from 'navigader/util/hooks';
+import _ from 'navigader/util/lodash';
 import { MeterGroupCard } from './MeterGroupCard';
 
 
@@ -22,19 +21,16 @@ const useStyles = makeStylesHook(theme => ({
 
 /** ============================ Components ================================ */
 export const LoadPage = () => {
-  const [meterGroups, setMeterGroups] = React.useState<MeterGroup[]>();
   const history = useHistory();
   const classes = useStyles();
   
-  React.useEffect(makeCancelableAsync(
-    () => api.getMeterGroups({
-      data_types: 'average',
-      page: 1,
-      page_size: 20
-    }),
-    res => setMeterGroups(res.data)
-  ), []);
+  const { loading, meterGroups } = useMeterGroups({
+    data_types: 'average',
+    page: 1,
+    page_size: 50
+  });
 
+  const sortedMeterGroups = _.sortBy(meterGroups, 'created_at').reverse();
   return (
     <>
       <PageHeader
@@ -51,13 +47,15 @@ export const LoadPage = () => {
       <div className={classes.pageContent}>
         <Grid>
           {
-            meterGroups
-              ? meterGroups.map(meterGroup =>
+            loading
+              ? <Progress circular />
+              : (
+                sortedMeterGroups.map(meterGroup =>
                   <Grid.Item key={meterGroup.id} span={6}>
                     <MeterGroupCard meterGroup={meterGroup} />
                   </Grid.Item>
                 )
-              : <Progress circular />
+              )
           }
         </Grid>
       </div>

@@ -108,7 +108,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
       // Unfinished scenarios should be polled for
       const scenarios = response.data;
       const unfinished = _.filter(scenarios, s => !s.progress.is_complete);
-      poller.pollFor(unfinished);
+      poller.addScenarios(unfinished);
 
       // Add the models to the store and yield the pagination results
       dispatch(slices.models.updateModels(scenarios));

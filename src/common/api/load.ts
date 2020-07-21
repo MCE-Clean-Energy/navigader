@@ -1,5 +1,6 @@
 import {
-  DataTypeParams, MeterGroup, PaginationQueryParams, RawMeter, RawMeterGroup, RawPaginationSet
+  DataTypeParams, DynamicRestParams, MeterGroup, PaginationQueryParams, RawMeter, RawMeterGroup,
+  RawPaginationSet
 } from 'navigader/types';
 import { filterClause, serializers } from 'navigader/util';
 import _ from 'navigader/util/lodash';
@@ -12,7 +13,7 @@ type MeterQueryParams = PaginationQueryParams & DataTypeParams & {
 };
 
 type MeterGroupQueryParams = Partial<DataTypeParams>;
-type MeterGroupsQueryParams = PaginationQueryParams & Partial<DataTypeParams>;
+export type MeterGroupsQueryParams = PaginationQueryParams & DynamicRestParams & DataTypeParams;
 
 /** ============================ API Methods =============================== */
 export async function getMeterGroups (queryParams: MeterGroupsQueryParams) {
