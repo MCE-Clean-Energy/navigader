@@ -51,7 +51,7 @@ const useStyles = makeStylesHook(theme => ({
 export const AppBar: React.FC = () => {
   const classes = useStyles();
   const history = useHistory();
-  
+
   return (
     <MuiAppBar position="fixed" className={classes.appBar}>
       <MuiToolbar className={classes.toolbar}>
@@ -61,7 +61,7 @@ export const AppBar: React.FC = () => {
               <Flex.Item grow>
                 <img src={navigaderImage} className={classes.navigaderText} alt="NavigaDER" />
               </Flex.Item>
-              
+
               <Flex.Item>
                 <Flex.Container alignItems="center" className={classes.rightSide}>
                   <Button.Text onClick={goToRoadmap}>Roadmap</Button.Text>
@@ -75,8 +75,8 @@ export const AppBar: React.FC = () => {
       </MuiToolbar>
     </MuiAppBar>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function goToRoadmap () {
     history.push(routes.roadmap);
   }

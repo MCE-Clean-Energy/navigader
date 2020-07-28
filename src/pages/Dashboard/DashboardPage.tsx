@@ -54,7 +54,7 @@ const EmptyTableRow: React.FC = () => {
         <Link to={routes.dashboard.createScenario.selectDers}>Create one.</Link>
       </>
   }
-  
+
   return <Typography>{rowContent}</Typography>;
 };
 
@@ -62,12 +62,12 @@ const PageHeaderActions: React.FC<PageHeaderActionsProps> = ({ selections }) => 
   const history = useHistory();
   const classes = useStyles();
   const hasMeterGroups = useSelector(slices.models.selectHasMeterGroups);
-  
+
   if (hasMeterGroups === null) return null;
   if (!hasMeterGroups) {
     return <Button color="secondary" onClick={goToUpload}>Upload Data</Button>;
   }
-  
+
   return (
     <>
       <Tooltip delay title="Select scenarios from the table to compare">
@@ -85,16 +85,16 @@ const PageHeaderActions: React.FC<PageHeaderActionsProps> = ({ selections }) => 
       </Tooltip>
     </>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function compareScenarios () {
     history.push(routes.scenario.compare(_.map(selections, 'id')));
   }
-  
+
   function createScenario () {
     history.push(routes.dashboard.createScenario.selectDers);
   }
-  
+
   function goToUpload () {
     history.push(routes.upload);
   }
@@ -107,7 +107,7 @@ const ScenariosTable: React.FC = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const hasMeterGroups = useSelector(slices.models.selectHasMeterGroups);
-  
+
   // Check if there are any meter groups-- if not, we link to the upload page
   React.useEffect(
     makeCancelableAsync(
@@ -122,14 +122,14 @@ const ScenariosTable: React.FC = () => {
       }
     )
   );
-  
+
   return (
     <>
       <PageHeader
         actions={<PageHeaderActions selections={selections} />}
         title="Dashboard"
       />
-      
+
       <Components.ScenariosTable
         actionsMenu={
           (scenario) =>
@@ -149,7 +149,7 @@ const ScenariosTable: React.FC = () => {
                 <List.Item.Icon icon="pencil" />
                 <List.Item.Text>Rename</List.Item.Text>
               </List.Item>
-              
+
               <Divider />
               <List.Item onClick={() => openDeleteScenarioDialog(scenario)}>
                 <List.Item.Icon icon="trash" />
@@ -160,14 +160,14 @@ const ScenariosTable: React.FC = () => {
         NoScenariosRow={<EmptyTableRow />}
         onSelect={setSelections}
       />
-      
+
       {renameScenario &&
         <RenameDialog
           onClose={() => setRenameScenario(undefined)}
           scenario={renameScenario}
         />
       }
-      
+
       {deleteScenario &&
         <DeleteDialog
           onClose={() => setDeleteScenario(undefined)}
@@ -176,8 +176,8 @@ const ScenariosTable: React.FC = () => {
       }
     </>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function openRenameScenarioDialog (scenario: Scenario) {
     setRenameScenario(scenario);
   }
@@ -185,7 +185,7 @@ const ScenariosTable: React.FC = () => {
   function viewScenario (scenarioId: string) {
     history.push(routes.scenario(scenarioId));
   }
-  
+
   async function openDeleteScenarioDialog (scenario: Scenario) {
     setDeleteScenario(scenario);
   }

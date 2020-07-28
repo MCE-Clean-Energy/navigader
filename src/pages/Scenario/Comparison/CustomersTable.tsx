@@ -87,8 +87,8 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
       }
     </PrefetchedTable>
   );
-  
-  /** ============================ Helpers ================================= */
+
+  /** ========================== Helpers =================================== */
   function getSimulationName (simulation: ScenarioReportFields) {
     const scenarioId = simulation.SingleScenarioStudy;
     return scenarioMap.hasOwnProperty(scenarioId)

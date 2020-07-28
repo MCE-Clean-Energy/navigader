@@ -58,13 +58,13 @@ const CustomerChip: React.FC<CustomerChipProps> = ({ meterGroup, onClick, select
       />
     );
   }
-  
+
   // If the meter group can not yet be run in a scenario, disable the chip and render a tooltip
   // explaining why
   const percentComplete = expected_meter_count === null
     ? '0%'
     : percentage(meter_count, expected_meter_count);
-  
+
   return (
     <MeterGroupChip
       className={classes.meterGroupChip}
@@ -83,12 +83,12 @@ export const SelectCustomers: React.FC<SelectCustomersProps> = (props) => {
   const { meterGroups, selectedMeterGroupIds, updateMeterGroups } = props;
   const classes = useStyles();
   if (meterGroups === null) return null;
-  
+
   const selectedMeterCount = selectedMeterGroupIds.reduce((curCount, meterId) => {
     const meter = _.find(meterGroups, { id: meterId });
     return meter ? meter.meter_count + curCount : curCount;
   }, 0);
-  
+
   return (
     <>
       <Flex.Container className={classes.chipContainer} justifyContent="center" wrap>
@@ -106,8 +106,8 @@ export const SelectCustomers: React.FC<SelectCustomersProps> = (props) => {
       </div>
     </>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function toggleMeterGroup (id: string) {
     updateMeterGroups(
       selectedMeterGroupIds.includes(id)

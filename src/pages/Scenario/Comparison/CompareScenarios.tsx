@@ -7,7 +7,7 @@ import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
 import { Scenario } from 'navigader/types';
 import { filterClause, makeCancelableAsync } from 'navigader/util';
-import { useColorMap, useQuery } from 'navigader/util/hooks';
+import { useColorMap, useQueryParams } from 'navigader/util/hooks';
 import _ from 'navigader/util/lodash';
 import { ScenarioComparisonChart } from './Chart';
 import { CustomersTable } from './CustomersTable';
@@ -26,15 +26,14 @@ const useStyles = makeStylesHook(theme => ({
 /** ============================ Components ================================ */
 export const CompareScenariosPage: React.FC = () => {
   const classes = useStyles();
-  const params = useQuery();
-  const idsParam = params.get('ids');
-  
+  const [idsParam] = useQueryParams(['ids']);
+
   // State
   const [aggregated, setAggregated] = React.useState(true);
   const [averaged, setAveraged] = React.useState(false);
   const [hoveredId, setHoveredId] = React.useState<string>();
   const [scenarios, setScenarios] = React.useState<Scenario[]>();
-  
+
   // Loads the scenario
   React.useEffect(
     makeCancelableAsync(async () => {
@@ -73,7 +72,7 @@ export const CompareScenariosPage: React.FC = () => {
               scenarios={scenarios}
               updateAggregated={updateAggregation}
             />
-            
+
             <div className={classes.tableWrapper}>
               {
                 aggregated
@@ -102,8 +101,8 @@ export const CompareScenariosPage: React.FC = () => {
       }
     </>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   /**
    * Updates the aggregation state and resets the hovered ID
    *
@@ -113,8 +112,8 @@ export const CompareScenariosPage: React.FC = () => {
     setHoveredId(undefined);
     setAggregated(aggregated);
   }
-  
-  /** ============================ Helpers =================================== */
+
+  /** ========================== Helpers ===================================== */
   function getChartTitle () {
     if (aggregated) {
       return averaged

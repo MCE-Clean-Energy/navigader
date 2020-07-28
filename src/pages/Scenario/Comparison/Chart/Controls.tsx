@@ -22,8 +22,8 @@ export const Controls: React.FC<ControlsProps> = (props) => {
       />
     </Card>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function handleSwitchChange (checked: boolean) {
     updateAggregated(checked);
   }

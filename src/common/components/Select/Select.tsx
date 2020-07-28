@@ -74,19 +74,19 @@ export function Select <T>(props: SelectProps<T>) {
   } = props;
   const theme = useTheme();
   const classes = useStyles(theme);
-  
+
   let inputLabel: React.ReactNode = null;
   if (label) {
     inputLabel = <MuiInputLabel id={id}>{label}</MuiInputLabel>;
   }
-  
+
   if (!options && !optionSections) printWarning(warnings.noOptions);
   if (options && optionSections) printWarning(warnings.tooManyOptions);
-  
+
   const sections: OptionSection<T>[] = options
     ? [{ options, title: null }]
     : optionSections || [];
-  
+
   // Format the sections
   let i = 0;
   const formattedSections: FormattedSection<T>[] = sections.map(section => ({
@@ -107,7 +107,7 @@ export function Select <T>(props: SelectProps<T>) {
         options: _.sortBy(section.options, 'text').map(option => ({ ...option, index: i++ }))
       }))
     : formattedSections;
-  
+
   const sortedOptions = _.flatten(_.map(sortedSections, 'options'));
   const unselectedValue = '';
   const selectValue = _.isUndefined(value)
@@ -151,20 +151,20 @@ export function Select <T>(props: SelectProps<T>) {
       </MuiSelect>
     </MuiFormControl>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function handleChange (event: React.ChangeEvent<{ name?: string; value: unknown; }>) {
     const index = +(event.target.value as string);
     onChange(sortedOptions[index].datum);
   }
-  
-  /** ============================ Helpers ================================= */
+
+  /** ========================== Helpers =================================== */
   function getOptionRendering (option: T) {
     return typeof renderOption === 'function'
       ? renderOption(option)
       : option[renderOption];
   }
-  
+
   function getOptionTooltip (option: T) {
     return optionTooltip && optionTooltip(option);
   }

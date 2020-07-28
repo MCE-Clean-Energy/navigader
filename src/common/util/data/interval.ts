@@ -229,7 +229,7 @@ export class IntervalData implements IntervalDataInterface {
     );
   }
 
-  /** ============================ Transformations ============================ */
+  /** ========================== Transformations ============================== */
   /**
    * Subtracts one interval dataset from another after aligning them.
    *
@@ -280,7 +280,7 @@ export class IntervalData implements IntervalDataInterface {
     );
   }
 
-  /** ============================ 288 Operations ========================== */
+  /** ========================== 288 Operations ============================ */
   /**
    * Creates a new `IntervalData` by calling a function on every datum within the series. The
    * function will be called with the interval datum and the 288 value corresponding with the

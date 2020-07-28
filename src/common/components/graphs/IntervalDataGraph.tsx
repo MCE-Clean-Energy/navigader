@@ -150,8 +150,8 @@ export const IntervalDataGraph: React.FC<IntervalDataGraphProps> = (props) => {
       />
     </NavigaderChart>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function handleZoom (domain: TimeDomain) {
     if (onTimeDomainChange) {
       onTimeDomainChange(domain.x);
@@ -189,7 +189,7 @@ function useData (data: IntervalData[], month: MonthIndex, timeDomain?: DateTupl
     () => data.map(interval => interval.filter({ month })),
     [data, month]
   );
-  
+
   const visibleData = React.useMemo(
     () => {
       /**
@@ -201,7 +201,7 @@ function useData (data: IntervalData[], month: MonthIndex, timeDomain?: DateTupl
       const extendedTimeDomain = (() => {
         if (!timeDomain) return;
         const [start, end] = timeDomain;
-    
+
         // Find the greatest period amongst the intervals. This is the period we will use to round
         const greatestPeriod = Math.max(...monthData.map(datum => datum.period));
         const periodDuration = moment.duration(greatestPeriod, 'minutes');
@@ -210,18 +210,18 @@ function useData (data: IntervalData[], month: MonthIndex, timeDomain?: DateTupl
           moment(end).add(periodDuration).toDate()
         ] as DateTuple;
       })();
-      
+
       return monthData.map(interval => interval.filter({ range: extendedTimeDomain }))
     },
     [monthData, timeDomain]
   );
-  
+
   // Compute the area between the two intervals (if 2 are provided)
   const areaData = React.useMemo(
     () => visibleData.length === 2 ? visibleData[1].subtract(visibleData[0]) : undefined,
     [visibleData]
   );
-  
+
   // Get the domain
   const allIntervals = omitFalsey([...monthData, areaData]);
   const valueDomain: [number, number] = allIntervals.reduce(([curMin, curMax], interval) => {
@@ -231,7 +231,7 @@ function useData (data: IntervalData[], month: MonthIndex, timeDomain?: DateTupl
       Math.max(curMax, intervalDomain[1])
     ];
   }, [Infinity, -Infinity]);
-  
+
   return {
     areaData,
     domain: {

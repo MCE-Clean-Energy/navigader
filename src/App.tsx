@@ -10,6 +10,9 @@ import { userIsAuthenticated } from 'navigader/models/user';
 import * as pages from './pages';
 
 
+/** ============================ Types ===================================== */
+type UnauthenticatedRouteProps = RouteProps & Required<Pick<RouteProps, 'component'>>;
+
 /** ============================ Components ================================ */
 const AppSnackbar: React.FC = () => {
   const { duration, msg, open, type } = useSelector(slices.ui.selectSnackbar);
@@ -21,7 +24,7 @@ const AppSnackbar: React.FC = () => {
     </Snackbar>
   );
 
-  /** ============================ Callbacks =============================== */
+  /** ========================== Callbacks ================================= */
   function handleClose () {
     dispatch(slices.ui.closeSnackbar());
   }
@@ -34,9 +37,10 @@ const AppSnackbar: React.FC = () => {
 export const AppRoutes: React.FC = () =>
   <ThemeProvider>
     <Switch>
-      <Route path={routes.login} component={pages.LoginPage} />
-      <Route path={routes.resetPassword} component={pages.ResetPasswordPage} />
-      <AuthenticatedRoute>
+      <UnauthenticatedRoute path={routes.login} component={pages.LoginPage} />
+      <UnauthenticatedRoute path={routes.resetPassword} component={pages.ResetPasswordPage} />
+
+      <RequireAuth>
         <AppContainer>
           <Switch>
             <Route path={routes.settings} component={pages.SettingsPage} />
@@ -52,31 +56,25 @@ export const AppRoutes: React.FC = () =>
             <Redirect to={routes.dashboard.base} />
           </Switch>
         </AppContainer>
-      </AuthenticatedRoute>
+      </RequireAuth>
     </Switch>
     <AppSnackbar />
   </ThemeProvider>;
 
-/**
- * A wrapper for <Route> that redirects to the login screen if the user isn't authenticated.
- */
-const AuthenticatedRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
-  return (
-    <Route
-      {...rest}
-      render={({ location }) =>
-        userIsAuthenticated() ? children : (
-          <Redirect
-            to={{
-              pathname: routes.login,
-              state: { from: location }
-            }}
-          />
-        )
-      }
-    />
-  );
-};
+const UnauthenticatedRoute: React.FC<UnauthenticatedRouteProps> = ({ component, ...rest }) =>
+  <Route
+    {...rest}
+    render={props =>
+      userIsAuthenticated()
+        ? <Redirect to={{ pathname: routes.dashboard.base, state: { from: props.location } }} />
+        : React.createElement(component, props)
+    }
+  />;
+
+const RequireAuth: React.FC<{ children: React.ReactElement }> = ({ children }) =>
+  userIsAuthenticated()
+    ? children
+    : <Redirect to={routes.login} />;
 
 /**
  * The application's root component. This component is not rendered by tests

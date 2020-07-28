@@ -19,7 +19,7 @@ const RenameDialog: React.FC<RenameDialogProps> = (props) => {
   const { onClose, scenario } = props;
   const [name, setName] = React.useState(scenario.name);
   const dispatch = useDispatch();
-  
+
   return (
     <Dialog open onClose={onClose} aria-labelledby="rename-dialog-title">
       <Dialog.Title id="rename-dialog-title">Rename Scenario</Dialog.Title>
@@ -38,15 +38,15 @@ const RenameDialog: React.FC<RenameDialogProps> = (props) => {
       </Dialog.Actions>
     </Dialog>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   async function renameScenario () {
     onClose();
-    
+
     // Optimistically update the scenario. This will be reverted if the update fails
     const originalName = scenario.name;
     dispatch(updateModel({ ...scenario, name }));
-    
+
     // Make the PATCH request and set a success or failure message
     const response = await api.patchScenario(scenario.id, { name });
     if (response.ok) {
@@ -57,7 +57,7 @@ const RenameDialog: React.FC<RenameDialogProps> = (props) => {
       dispatch(setMessage({ msg: 'Rename failed! Please try again.', type: 'error' }));
     }
   }
-  
+
   function updateName (newName: string) {
     setName(newName);
   }

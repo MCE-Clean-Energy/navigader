@@ -36,12 +36,12 @@ const SelectDERs: React.FC<SelectDERsProps> = (props) => {
       </Grid.Item>
     </Grid>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function addDer () {
     updateDerSelections([...selectedDers, {}]);
   }
-  
+
   /**
    * Deletes the DER selection at the provided index
    *
@@ -53,7 +53,7 @@ const SelectDERs: React.FC<SelectDERsProps> = (props) => {
       ...selectedDers.slice(index + 1)
     ]);
   }
-  
+
   /**
    * Updates the attributes of a DER
    *

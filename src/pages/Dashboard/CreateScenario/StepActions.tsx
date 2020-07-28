@@ -17,7 +17,7 @@ import {
 /** ============================ Types ===================================== */
 type StepActionProps = {
   activeStep: number;
-  
+
   // Props needed for validation
   meterGroups: MeterGroup[] | null;
   scenarioName: string | null;
@@ -33,7 +33,7 @@ const StepActions: React.FC<StepActionProps> = (props) => {
   const prevButton = activeStep === 0
     ? null
     : <Button onClick={goBack}>Back</Button>;
-  
+
   const nextButtonText = activeStep === 2 ? 'Create Scenario' : 'Next';
   const nextButtonCb = activeStep === 2 ? createScenario : goForward;
   const nextButton =
@@ -44,25 +44,25 @@ const StepActions: React.FC<StepActionProps> = (props) => {
     >
       {nextButtonText}
     </Button>;
-  
+
   return (
     <Flex.Container justifyContent="space-between">
       <Flex.Item>{prevButton}</Flex.Item>
       <Flex.Item>{nextButton}</Flex.Item>
     </Flex.Container>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function goBack () {
     if (activeStep === 0) return;
     history.push(stepPaths[activeStep - 1]);
   }
-  
+
   function goForward () {
     if (activeStep === stepPaths.length - 1) return;
     history.push(stepPaths[activeStep + 1]);
   }
-  
+
   /**
    * Validates all inputs and makes a POST request to the back end to create a study/scenarios.
    */
@@ -76,7 +76,7 @@ const StepActions: React.FC<StepActionProps> = (props) => {
       printWarning('`createScenario` method ran with invalid inputs!');
       return;
     }
-    
+
     try {
       const response = await api.postStudy(scenarioName, selectedMeterGroupIds, selectedDers);
       if (response.ok) {
@@ -88,7 +88,7 @@ const StepActions: React.FC<StepActionProps> = (props) => {
       handleStudyCreationFailure();
     }
   }
-  
+
   /**
    * Triggered when the POST request succeeds. Shows a success message and redirects the user to
    * the dashboard.
@@ -97,7 +97,7 @@ const StepActions: React.FC<StepActionProps> = (props) => {
     dispatch(setMessage({ msg: 'Scenario created!', type: 'success' }));
     history.push(routes.dashboard.base);
   }
-  
+
   /**
    * Triggered when the POST request fails. Shows an error message.
    */
@@ -106,7 +106,7 @@ const StepActions: React.FC<StepActionProps> = (props) => {
       setMessage({ msg: 'An error occurred. Please try submitting again.', type: 'error' })
     );
   }
-  
+
   /**
    * Performs validation on the current step.
    *   - On the "DER Selection" page, at least one DER must be selected and filled out
@@ -119,7 +119,7 @@ const StepActions: React.FC<StepActionProps> = (props) => {
     const hasValidCustomerSelections = validateCustomerSelections(
       getSelectedMeterGroups(meterGroups, selectedMeterGroupIds)
     );
-    
+
     switch (activeStep) {
       case stepNumbers.selectDers:
         return !hasValidDerSelections;

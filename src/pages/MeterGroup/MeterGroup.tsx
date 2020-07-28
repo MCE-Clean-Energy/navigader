@@ -25,13 +25,13 @@ export const MeterGroupPage: React.FC = () => {
   const history = useHistory();
   const { id } = useParams();
   const classes = useStyles();
-  
+
   React.useEffect(() => {
     if (!id) return;
     api.getMeterGroup(id, { data_types: graphDataType })
       .then(res => setMeterGroup(res));
   }, [id, graphDataType]);
-  
+
   return (
     <>
       <PageHeader
@@ -49,7 +49,7 @@ export const MeterGroupPage: React.FC = () => {
         ]}
         title={getMeterGroupDisplayName(meterGroup)}
       />
-      
+
       {meterGroup ? (
         <Grid>
           <Grid.Item span={12}>
@@ -62,7 +62,7 @@ export const MeterGroupPage: React.FC = () => {
               meterGroup={meterGroup}
             />
           </Grid.Item>
-          
+
           <Grid.Item span={12}>
             <MetersTable meterGroupId={meterGroup.id} />
           </Grid.Item>
@@ -74,12 +74,12 @@ export const MeterGroupPage: React.FC = () => {
       )}
     </>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function changeGraphType (newType: Frame288DataType) {
     setGraphDataType(newType);
   }
-  
+
   function goToScenarioCreation () {
     history.push(routes.dashboard.createScenario.selectDers);
   }

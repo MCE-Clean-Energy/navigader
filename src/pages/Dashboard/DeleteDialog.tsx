@@ -17,7 +17,7 @@ type DeleteDialogProps = {
 export const DeleteDialog: React.FC<DeleteDialogProps> = (props) => {
   const { onClose, scenario } = props;
   const dispatch = useDispatch();
-  
+
   return (
     <Dialog open onClose={onClose} aria-labelledby="delete-dialog-title">
       <Dialog.Title id="delete-dialog-title">Delete Scenario?</Dialog.Title>
@@ -33,14 +33,14 @@ export const DeleteDialog: React.FC<DeleteDialogProps> = (props) => {
       </Dialog.Actions>
     </Dialog>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   async function deleteScenario () {
     onClose();
-    
+
     // Optimistically delete the scenario. This will be reverted if the request fails.
     dispatch(slices.models.removeModel(scenario));
-    
+
     // Make the DELETE request and set a success or failure message
     const response = await api.deleteScenario(scenario.id);
     if (response.ok) {

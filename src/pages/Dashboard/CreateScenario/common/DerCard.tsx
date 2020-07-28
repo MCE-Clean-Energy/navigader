@@ -15,7 +15,7 @@ type DerSelectionCardReadOnlyProps = {
   der: Partial<DERSelection>;
   numDers: number;
   strategies?: BatteryStrategy[];
-  
+
 };
 
 type DerSelectionCardProps = DerSelectionCardReadOnlyProps & {
@@ -56,7 +56,7 @@ const useStyles = makeStylesHook<DerSelectionCardReadOnlyProps>(theme => ({
 /** ============================ Components ================================ */
 export const DerSelectionCard: React.FC<DerSelectionCardProps> = (props) => {
   const classes = useStyles(props);
-  
+
   return (
     <Card className={classes.derCard} raised>
       <Flex.Container className={classes.flexContainer}>
@@ -69,17 +69,17 @@ export const DerSelectionCard: React.FC<DerSelectionCardProps> = (props) => {
             value={props.der.type}
           />
         </Flex.Item>
-        
+
         <ProgramOptions {...props} />
-        
+
         <Flex.Item className={classes.deleteIconContainer}>
           <Button className={classes.deleteIcon} icon="trash" onClick={deleteDer}/>
         </Flex.Item>
       </Flex.Container>
     </Card>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   /**
    * Updates the DER's type. Additionally resets the configuration and strategy when the type
    * changes
@@ -93,7 +93,7 @@ export const DerSelectionCard: React.FC<DerSelectionCardProps> = (props) => {
       type
     });
   }
-  
+
   /**
    * Removes the DER configuration from the list of selected DERs. Doesn't allow deleting the
    * last DER selection
@@ -107,11 +107,11 @@ export const DerSelectionCard: React.FC<DerSelectionCardProps> = (props) => {
 export const DerCardReadOnly: React.FC<DerSelectionCardReadOnlyProps> = (props) => {
   const { configurations, der, strategies } = props;
   const classes = useStyles();
-  
+
   // Get selected configuration and strategy
   const configuration = _.find(configurations, { id: der.configurationId });
   const strategy = _.find(strategies, { id: der.strategyId });
-  
+
   if (!configuration || !strategy) return null;
   return (
     <Components.DERCard

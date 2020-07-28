@@ -85,7 +85,7 @@ export const LoadTypeSelector: React.FC<LoadTypeSelectorProps> = (props) => {
       {loadTypeOptions.map(loadType =>
         <Toggle.Button aria-label={tooltips[loadType]} key={loadType} value={loadType}>
           {capitalize(loadType)}
-          
+
           {/** The tooltip can't wrap the Button because MUI passes props from the Group */}
           <Tooltip title={tooltips[loadType]}>
             <span className={classes.tooltipAnchor} />
@@ -95,7 +95,7 @@ export const LoadTypeSelector: React.FC<LoadTypeSelectorProps> = (props) => {
     </Toggle.Group>
   );
 
-  /** ============================ Callbacks =============================== */
+  /** ========================== Callbacks ================================= */
   function selectType (loadType: Frame288DataType) {
     // Don't update if they click the same load type again
     if (selectedType !== loadType) {

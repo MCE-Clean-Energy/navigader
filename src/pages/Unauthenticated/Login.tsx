@@ -64,6 +64,7 @@ export const LoginPage: React.FC = () => {
     </UnauthenticatedPage>
   );
 
+  /** ========================== Callbacks ================================= */
   /**
    * Handles form submission, showing errors if the login is unsuccessful.
    *

@@ -26,9 +26,12 @@ type CAISORateFilters = DataTypeFilters & { year: number; }
  * A custom hook that builds on `useLocation` to parse the query string. Note that `URLSearchParams`
  * is not supported by Internet Explorer (eye roll...) but there is a polyfill included from the
  * application entrypoint.
+ *
+ * * @param {string[]} params: the names of the query parameters of interest
  */
-export function useQuery() {
-  return new URLSearchParams(useLocation().search);
+export function useQueryParams (params: string[]): Array<string | null> {
+  const urlSearchParams = new URLSearchParams(useLocation().search);
+  return params.map(param => urlSearchParams.get(param))
 }
 
 /**

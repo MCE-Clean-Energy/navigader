@@ -20,7 +20,7 @@ export const Feedback: React.FC = () => {
       <Tooltip title="Submit Feedback">
         <Button icon="feedback" onClick={() => setDialogOpen(true)} />
       </Tooltip>
-      
+
       <Dialog fullWidth open={dialogOpen} onClose={closeDialog} aria-labelledby={dialogId}>
         <Dialog.Title id={dialogId}>Help us improve NavigaDER</Dialog.Title>
         <Dialog.Content>
@@ -41,7 +41,7 @@ export const Feedback: React.FC = () => {
     </>
   );
 
-  /** ============================ Callbacks =============================== */
+  /** ========================== Callbacks ================================= */
   function closeDialog () {
     setDialogOpen(false);
   }

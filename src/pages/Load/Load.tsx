@@ -23,7 +23,7 @@ const useStyles = makeStylesHook(theme => ({
 export const LoadPage = () => {
   const history = useHistory();
   const classes = useStyles();
-  
+
   const { loading, meterGroups } = useMeterGroups({
     data_types: 'average',
     page: 1,
@@ -62,11 +62,11 @@ export const LoadPage = () => {
     </>
   );
 
-  /** ============================ Callbacks =============================== */
+  /** ========================== Callbacks ================================= */
   function goToUpload () {
     history.push(routes.upload);
   }
-  
+
   function createScenario () {
     history.push(routes.dashboard.createScenario.selectDers);
   }

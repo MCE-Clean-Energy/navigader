@@ -4,7 +4,7 @@ import { IntervalData, makeIntervalData } from './interval';
 
 
 describe('`IntervalData` class', () => {
-  /** ============================ Test fixtures =========================== */
+  /** ========================== Test fixtures ============================= */
   const kwInterval = makeIntervalData({
     times: ['June 2, 2020 18:00:00', 'June 2, 2020 18:15:00', 'June 2, 2020 18:30:00'],
     kw: [1, 2, 3],
@@ -39,7 +39,7 @@ describe('`IntervalData` class', () => {
   // Frame288 where each month's hour values are the same across the day, set to the month index
   const monthFrame288 = new Frame288Numeric(fixtures.makeFrame288(m => m));
 
-  /** ============================ Tests =================================== */
+  /** ========================== Tests ===================================== */
   describe('`period` getter', () => {
     it('calculates the period correctly', () => {
       const hourInterval = new IntervalData([

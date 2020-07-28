@@ -34,24 +34,24 @@ const CreateScenarioPage: React.FC = () => {
   const classes = useStyles();
   const derConfigurations = useSelector(slices.models.selectDERConfigurations);
   const derStrategies = useSelector(slices.models.selectDERStrategies);
-  
+
   // All state for the page is handled here
   const [meterGroups, setMeterGroups] = React.useState<MeterGroup[] | null>(null);
   const [selectedMeterGroupIds, setSelectedMeterGroupIds] = React.useState<string[]>([]);
   const [selectedDers, setSelectedDers] = React.useState<Partial<DERSelection>[]>([{}]);
   const [scenarioName, setScenarioName] = React.useState<string | null>(null);
-  
+
   // Load meter groups
   React.useEffect(makeCancelableAsync(
     () => getMeterGroups({ page: 1, page_size: 100 }),
     res => setMeterGroups(res.data)
   ), []);
-  
+
   const stepLabels = ['Select DERs', 'Select Customers', 'Review'];
   const activeStep = stepPaths.includes(location.pathname)
     ? stepPaths.indexOf(location.pathname)
     : 0;
-  
+
   return (
     <>
       <Flex.Container direction="column" grow>
@@ -102,7 +102,7 @@ const CreateScenarioPage: React.FC = () => {
           />
         </Switch>
       </Flex.Container>
-      
+
       <Flex.Item className={classes.stepActions}>
         <StepActions
           activeStep={activeStep}
@@ -114,8 +114,8 @@ const CreateScenarioPage: React.FC = () => {
       </Flex.Item>
     </>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function cancel () {
     history.push(routes.dashboard.base);
   }

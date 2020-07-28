@@ -27,8 +27,8 @@ export const Radio: RadioExport =
 
 const RadioGroup: RadioGroup = (props) => {
   return <MuiRadioGroup {...props} onChange={handleChange} />;
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   /**
    * Simply flips the order of the arguments to the `onChange` callback, because I think this order
    * is easier to use

@@ -46,21 +46,21 @@ const useBackButtonStyles = makeStylesHook(theme => ({
 const BackButton: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
   const classes = useBackButtonStyles();
   const history = useHistory();
-  
+
   // If there's 1 or fewer links, don't show a button
   if (!breadcrumbs) return null;
   if (breadcrumbs.length <= 1) return null;
-  
+
   // Find the last link with an `href`
   const lastLink = _.findLast(breadcrumbs.slice(0, breadcrumbs.length - 1), (breadcrumb) => {
     return typeof breadcrumb !== 'string';
   });
-  
+
   return lastLink
     ? <Button className={classes.backButton} icon="back" onClick={goBack} role="back-button" />
     : null;
- 
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function goBack () {
     history.goBack();
   }
@@ -68,11 +68,11 @@ const BackButton: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
 
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
   const classes = useBreadcrumbStyles();
-  
+
   // If there's 1 or fewer links, don't render the breadcrumbs-- the page title will suffice
   if (!breadcrumbs) return null;
   if (breadcrumbs.length <= 1) return null;
-  
+
   const lastLinkIndex = breadcrumbs.length - 1;
   return (
     <Flex.Container alignItems="center" className={classes.breadcrumbsWrapper}>
@@ -87,7 +87,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
               const [text, href] = breadcrumb;
               return <Link color="inherit" key={text} to={href} variant="body2">{text}</Link>;
             }
-            
+
             // Otherwise just return the text
             const text = Array.isArray(breadcrumb) ? breadcrumb[0] : breadcrumb;
             return <Typography color="textPrimary" key={text} variant="body2">{text}</Typography>;

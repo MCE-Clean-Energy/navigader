@@ -26,7 +26,7 @@ export const AccountMenu: React.FC = () => {
     </Menu>
   );
 
-  /** ============================ Callbacks =============================== */
+  /** ========================== Callbacks ================================= */
   function goToSettingsPage () {
     history.push(routes.settings);
   }

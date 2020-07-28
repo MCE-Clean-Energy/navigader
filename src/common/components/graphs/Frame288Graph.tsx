@@ -80,7 +80,7 @@ export const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
     </NavigaderChart>
   );
 
-  /** ============================ Callbacks =============================== */
+  /** ========================== Callbacks ================================= */
   /**
    * Turns a 0-indexed hour into a human-friendly format (e.g. 0 --> "12am", 17 --> "5pm")
    *
@@ -97,7 +97,7 @@ export const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
 
     return formattedHour + suffix;
   }
-  
+
   /**
    * Creates the label for a point along a month-line
    *

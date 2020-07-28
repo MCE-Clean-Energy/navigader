@@ -76,19 +76,19 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
     updateAveraged
   } = props;
   const dispatch = useDispatch();
-  
+
   // The averaged state can be either maintained by the `ScenariosTable` component itself, or by a
   // parent component
   const hasAveragedProp = props.hasOwnProperty('averaged') && props.averaged !== undefined;
   const hasUpdateAveragedProp = Boolean(updateAveraged);
-  
+
   if ((hasAveragedProp && !hasUpdateAveragedProp) || (hasUpdateAveragedProp && !hasAveragedProp)) {
     printWarning(
       '`ScenariosTable` component expects both or neither of the `averaged` and ' +
       '`updateAveraged` props.'
     );
   }
-  
+
   const [innerAveraged, setAveraged] = React.useState(averaged);
   React.useEffect(() => {
     if (hasAveragedProp) {
@@ -96,7 +96,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
       setAveraged(averaged);
     }
   }, [averaged, hasAveragedProp]);
-  
+
   const getScenarios = React.useCallback(
     async (state: PaginationState) => {
       const response = await api.getScenarios({
@@ -116,12 +116,12 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
     },
     [dispatch]
   );
-  
+
   const TableComponent: React.ElementType = scenarios ? PrefetchedTable : Table;
   const tableProps = scenarios
     ? { data: scenarios }
     : { dataFn: getScenarios, dataSelector: slices.models.selectScenarios };
-  
+
   return (
     <TableComponent
       {...tableProps}
@@ -176,7 +176,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
             <EmptyRow colSpan={10}>
               {NoScenariosRow}
             </EmptyRow>
-            
+
             {scenarios.map(scenario =>
               <Table.Row key={scenario.id}>
                 {colorMap &&
@@ -271,8 +271,8 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
       }
     </TableComponent>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   /**
    * Updates the `averaged` state. If the state is managed by a parent component, this will call the
    * `updateAveraged` prop; otherwise the component state itself is updated
@@ -287,8 +287,8 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
       setAveraged(checked);
     }
   }
-  
-  /** ============================ Helpers ================================= */
+
+  /** ========================== Helpers =================================== */
   function getField (scenario: Scenario, field: keyof ScenarioReportSummary, averaged: boolean) {
     const value = scenario.report_summary?.[field];
     if (typeof value !== 'number') return;

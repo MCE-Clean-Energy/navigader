@@ -19,7 +19,7 @@ const useStyles = makeStylesHook(theme => ({
   hoverText: {
     cursor: 'default',
     textDecoration: `underline dotted ${theme.palette.primary.main}`,
-    
+
     '&:hover': {
       color: theme.palette.primary.main
     }
@@ -33,10 +33,10 @@ const useStyles = makeStylesHook(theme => ({
 export const HoverText: React.FC<HoverTextProps> = (props) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLSpanElement | null>(null);
   const classes = useStyles();
-  
+
   const popoverId = randomString();
   const open = Boolean(anchorEl);
-  
+
   return (
     <div>
       <Typography
@@ -48,7 +48,7 @@ export const HoverText: React.FC<HoverTextProps> = (props) => {
       >
         {props.children}
       </Typography>
-      
+
       <Popover
         anchorEl={anchorEl}
         anchorOrigin={{
@@ -70,12 +70,12 @@ export const HoverText: React.FC<HoverTextProps> = (props) => {
       </Popover>
     </div>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function handlePopoverClose () {
     setAnchorEl(null);
   }
-  
+
   function handlePopoverOpen (event: React.MouseEvent<HTMLElement, MouseEvent>) {
     setAnchorEl(event.currentTarget);
   }

@@ -34,9 +34,12 @@ const slice = createSlice({
       });
     },
     clearMessage: state => {
-      delete state.snackbar.duration;
-      delete state.snackbar.msg;
-      delete state.snackbar.type;
+      // Don't clear the message if the snackbar is still open
+      if (!state.snackbar.open) {
+        delete state.snackbar.duration;
+        delete state.snackbar.msg;
+        delete state.snackbar.type;
+      }
     },
     closeSnackbar: state => {
       state.snackbar.open = false;

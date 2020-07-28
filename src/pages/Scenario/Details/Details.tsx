@@ -58,7 +58,7 @@ const useScenarioGraphStyles = makeStylesHook(theme => ({
 const ScenarioContext: React.FC<ScenarioProp> = ({ scenario }) => {
   const history = useHistory();
   const classes = useScenarioContextStyles();
-  
+
   return (
     <Flex.Container alignItems="center">
       <Flex.Item>
@@ -78,8 +78,8 @@ const ScenarioContext: React.FC<ScenarioProp> = ({ scenario }) => {
       </Flex.Item>
     </Flex.Container>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function goToMeterGroup () {
     if (!scenario || !scenario.meter_group) return;
     history.push(routes.meterGroup(scenario.meter_group.id));
@@ -102,7 +102,7 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
     loading: simulationLoading,
     scenario: scenarioWithData
   } = useScenario(scenario.id, { data_types: 'default', period: 60 });
-  
+
   const simulationData = scenarioWithData?.data.default;
 
   // Load the meter group data
@@ -167,7 +167,7 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
     </div>
   );
 
-  /** ============================ Callbacks =============================== */
+  /** ========================== Callbacks ================================= */
   /**
    * Called when the month selector changes. This changes the selected month and resets the time
    * domain to a month
@@ -178,7 +178,7 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
     setMonth(month);
     handleTimeDomainChange('1m', month);
   }
-  
+
   /**
    * Called when the time domain selector changes. This changes the active time domain by setting
    * the domain start to the start of the given month, and the domain end to the appropriate
@@ -194,7 +194,7 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
     setTimeDomainOption(timeDomainOption);
     const monthStart = meterGroupData?.startOfMonth(month);
     if (!monthStart) return;
-    
+
     const domainEnd = moment(monthStart);
     switch (timeDomainOption) {
       case '1d':
@@ -210,7 +210,7 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
         domainEnd.endOf('month');
         break;
     }
-    
+
     // Update the state variable
     setTimeDomain([monthStart, domainEnd.toDate()]);
   }
@@ -219,7 +219,7 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
 export const ScenarioResultsPage: React.FC = () => {
   const { id } = useParams();
   const classes = useStyles();
-  
+
   const { loading, scenario } = useScenario(id as string, {
     include: ['ders', 'meter_groups', 'report', 'report_summary']
   });
@@ -233,7 +233,7 @@ export const ScenarioResultsPage: React.FC = () => {
         ]}
         title="Scenario Details"
       />
-      
+
       {loading && <Progress circular />}
       {scenario && (
         <>
@@ -266,7 +266,7 @@ function scaleLoadData (intervals: IntervalDataTuple) {
     : magnitude >= 3
       ? [1e3, 'MW']
       : [1, 'kW'];
-  
+
   return {
     data: intervals.map(interval => interval.divide(divisor)) as IntervalDataTuple,
     units

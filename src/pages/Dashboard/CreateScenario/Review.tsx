@@ -46,7 +46,7 @@ const SelectedCustomers: React.FC<ReviewProps> = (props) => {
   return (
     <div>
       <SectionHeading>Selected Customers</SectionHeading>
-      
+
       {(() => {
         // If there aren't any meter groups selected...
         if (selectedMeterGroupIds.length === 0) {
@@ -58,7 +58,7 @@ const SelectedCustomers: React.FC<ReviewProps> = (props) => {
             </Card>
           );
         }
-        
+
         return selectedMeterGroupIds.map((meterGroupId) =>
           <MeterGroupChip
             className={classes.meterGroupChip}
@@ -79,7 +79,7 @@ const SelectedDers: React.FC<ReviewProps> = (props) => {
   return (
     <div>
       <SectionHeading>Selected DERs</SectionHeading>
-      
+
       {(() => {
         // If there aren't any DERs selected or any are invalid...
         if (!validateDerSelections(selectedDers)) {
@@ -91,7 +91,7 @@ const SelectedDers: React.FC<ReviewProps> = (props) => {
             </Card>
           );
         }
-        
+
         return selectedDers.map((selectedDer, index) =>
           <DerCardReadOnly
             configurations={derConfigurations}
@@ -113,13 +113,13 @@ const Review: React.FC<ReviewProps> = (props) => {
         <Grid.Item span={7}>
           <SelectedDers {...props} />
         </Grid.Item>
-        
+
         <Grid.Item span={1} />
-        
+
         <Grid.Item span={4}>
           <SelectedCustomers {...props} />
         </Grid.Item>
-        
+
         <Grid.Item span={6}>
           <TextField
             autoFocus
@@ -132,11 +132,11 @@ const Review: React.FC<ReviewProps> = (props) => {
           />
         </Grid.Item>
       </Grid>
-      
+
     </>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function handleNameChange (newName: string) {
     props.updateScenarioName(newName === '' ? null : newName);
   }

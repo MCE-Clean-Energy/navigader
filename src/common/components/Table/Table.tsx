@@ -118,9 +118,9 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     title,
     ...rest
   } = props;
-  
+
   const classes = useStyles();
-  
+
   // State
   const [loading, setLoading] = React.useState(true);
   const [selections, setSelections] = React.useState<Set<number>>(new Set());
@@ -133,7 +133,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     rowsPerPage: 20
   });
   const [sortState, setSortState] = React.useState(initialSorting);
-  
+
   // Load data
   React.useEffect(makeCancelableAsync(() => {
     setLoading(true);
@@ -145,11 +145,11 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
       dataIds: paginationSet.data.map(datum => datum.id)
     });
   }), [dataFn, paginationState, sortState]);
-  
+
   // Get the data from the store using the IDs
   const { dataIds, count } = dataState;
   const data = useTableSelector(dataSelector, dataIds);
-  
+
   // Build context for child component tree
   const selectables = data.filter(d => !disableSelect(d));
   const tableContext = {
@@ -193,8 +193,8 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
       {loading && <Progress />}
     </MuiPaper>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function EmptyRow (props: EmptyRowProps) {
     if (count !== 0) return null;
     return (
@@ -203,12 +203,12 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
       </Table.Row>
     );
   }
-  
+
   function updatePaginationState (newState: PaginationState) {
     setPaginationState(newState);
     updateSelections(new Set());
   }
-  
+
   /**
    * Called when the header's selection checkbox changes state
    *
@@ -225,7 +225,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
       updateSelections(new Set());
     }
   }
-  
+
   /**
    * Called when a row's selection checkbox changes state
    *
@@ -234,13 +234,13 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
    */
   function toggleRowSelection (rowIndex: number, checked: boolean) {
     const newSelections = new Set(selections);
-    
+
     if (checked) newSelections.add(rowIndex);
     else newSelections.delete(rowIndex);
-    
+
     updateSelections(newSelections);
   }
-  
+
   /**
    * Updates the selection state and calls the `onSelect` callback if provided
    *
@@ -248,7 +248,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
    */
   function updateSelections (indices: Set<number>) {
     setSelections(indices);
-    
+
     if (data && onSelect) {
       // Map the indices to the actual data
       onSelect([...indices].map(index => data[index]));
@@ -258,17 +258,17 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
 
 const TableBody: React.FC = (props) => {
   const { data, disableSelect, selections, toggleRowSelection } = React.useContext(TableContext);
-  
+
   // Keeps track of the index of each row. This is augmented once per table row in the loop
   let rowIndex = 0;
-  
+
   return (
     <MuiTableBody>
       {React.Children.map(props.children, (child) => {
         // If the child is not a valid element or if it isn't a table row component, return
         // unchanged
         if (!React.isValidElement(child) || child.type !== Table.Row) return child;
-        
+
         // Augment the row index
         const index = rowIndex++;
         const datum = data[index];
@@ -315,7 +315,7 @@ function TableRow<T extends ObjectWithId> (props: TableRowProps<T>) {
     _selected
   } = props;
   const { DisabledSelectComponent, hover, selectable } = React.useContext(TableContext);
-  
+
   // If the row is selectable, add in a checkbox to the front of the row
   let checkboxCell = null;
   let colIndex = 0;
@@ -333,7 +333,7 @@ function TableRow<T extends ObjectWithId> (props: TableRowProps<T>) {
       </Table.Cell>
     );
   }
-  
+
   return (
     <MuiTableRow
       className={className}
@@ -357,7 +357,7 @@ const TableCell: React.FC<TableCellProps> = (props) => {
   const { setSortState, sortState } = React.useContext(TableContext);
   const classes = useTableCellStyles();
   const tableCellProps = { classes, ...rest };
-  
+
   // For accessibility, a table's first column is set to be a <th> element, with a scope of "row",
   // and table header elements are given a scope of "col". This enables screen readers to identify a
   // cell's value by its row and column name.
@@ -369,7 +369,7 @@ const TableCell: React.FC<TableCellProps> = (props) => {
       scope: _isHeaderRow ? 'col' : 'row'
     });
   }
-  
+
   if (sortBy) {
     const active = sortBy === sortState?.key;
     return (
@@ -384,10 +384,10 @@ const TableCell: React.FC<TableCellProps> = (props) => {
       </MuiTableCell>
     );
   }
-  
+
   return <MuiTableCell children={children} {...tableCellProps} />;
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   /**
    * Triggered when the user clicks the sort label, indicating they want to sort on a given column
    */
@@ -395,7 +395,7 @@ const TableCell: React.FC<TableCellProps> = (props) => {
     const newDir = sortState?.key === sortBy
       ? toggleSortDir(sortState?.dir)
       : getDefaultSortDir();
-    
+
     setSortState({
       dir: newDir,
       // `sortBy` isn't a required column, but is required for rendering the sort label and thus
@@ -403,7 +403,7 @@ const TableCell: React.FC<TableCellProps> = (props) => {
       key: sortBy!
     });
   }
-  
+
   /**
    * Returns the column's default sorting direction, falling back on the global default sort
    * direction if no sort direction is provided
@@ -411,7 +411,7 @@ const TableCell: React.FC<TableCellProps> = (props) => {
   function getDefaultSortDir () {
     return sortDir || DEFAULT_SORT_DIR;
   }
-  
+
   /**
    * Toggles sort direction from ascending to descending or vice versa. If not provided an initial
    * direction, returns the global default sorting direction

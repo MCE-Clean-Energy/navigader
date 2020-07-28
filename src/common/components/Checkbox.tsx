@@ -12,8 +12,8 @@ type CheckboxProps = {
 /** ============================ Components ================================ */
 export const Checkbox: React.FC<CheckboxProps> = (props) => {
   return <MuiCheckbox {...props} onChange={handleChange} />;
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   /**
    * Simply flips the order of the arguments to the `onChange` callback, because I think this order
    * is more useful

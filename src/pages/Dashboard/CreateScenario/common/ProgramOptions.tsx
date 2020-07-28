@@ -39,7 +39,7 @@ const BatteryOptions: React.FC<ProgramOptionsProps> = (props) => {
   const classes = useStyles();
   const configuration = _.find(configurations, { id: der.configurationId });
   const strategy = _.find(strategies, { id: der.strategyId });
-  
+
   // Split the strategies by objective
   const strategyGroups = _.sortBy(
     _.toPairs(
@@ -64,7 +64,7 @@ const BatteryOptions: React.FC<ProgramOptionsProps> = (props) => {
           value={configuration}
         />
       </Flex.Item>
-      
+
       <Flex.Item>
         <Select
           className={classes.strategySelect}
@@ -79,17 +79,17 @@ const BatteryOptions: React.FC<ProgramOptionsProps> = (props) => {
       </Flex.Item>
     </>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function updateConfiguration (configuration: BatteryConfiguration) {
     update({ configurationId: configuration.id });
   }
-  
+
   function updateStrategy (strategy: BatteryStrategy) {
     update({ strategyId: strategy.id });
   }
-  
-  /** ============================ Helpers ================================= */
+
+  /** ========================== Helpers =================================== */
   function formatStrategyType (type: DerStrategyType) {
     switch (type) {
       case 'load_flattening':
@@ -108,10 +108,10 @@ const BatteryOptions: React.FC<ProgramOptionsProps> = (props) => {
 
 export const ProgramOptions: React.FC<ProgramOptionsWhileLoadingProps> = (props) => {
   const { configurations, der, strategies } = props;
-  
+
   // If we don't yet have the configurations/strategies, don't render
   if (!configurations || !strategies) return null;
-  
+
   // This is functionally the same as just `{ ...props }`, but specifying the `configurations` and
   // `strategies` props explicitly is necessary for the type-guard above to work
   const optionProps = {
@@ -119,7 +119,7 @@ export const ProgramOptions: React.FC<ProgramOptionsWhileLoadingProps> = (props)
     configurations,
     strategies,
   };
-  
+
   if (der.type === 'Battery') {
     return <BatteryOptions {...optionProps} />;
   } else {

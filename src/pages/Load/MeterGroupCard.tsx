@@ -72,7 +72,7 @@ export const MeterGroupCard: React.FC<MeterGroupCardProps> = (props) => {
   const { meterGroup } = props;
   const classes = useStyles(props);
   const history = useHistory();
-  
+
   // Card behavior depends on if the meter group has finished ingesting
   const isIngested = isSufficientlyIngested(meterGroup);
   const { percent_complete } = meterGroup.progress;
@@ -80,7 +80,7 @@ export const MeterGroupCard: React.FC<MeterGroupCardProps> = (props) => {
   const statisticProps = isIngested
     ? { title: '# of Meters', value: meterGroup.meter_count }
     : { suffix: '%', title: 'Progress', value: percent_complete };
-  
+
   const card = (
     <Card raised className={classes.card} onClick={onClick} padding={cardPadding}>
       <MeterGroupChip
@@ -100,14 +100,14 @@ export const MeterGroupCard: React.FC<MeterGroupCardProps> = (props) => {
       </Grid>
     </Card>
   );
-  
+
   const tooltipTitle = isIngested
     ? 'Click to see load data details'
     : `This file is being processed. It's currently ${percent_complete}% complete`;
 
   return <Tooltip title={tooltipTitle}>{card}</Tooltip>;
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function viewMeterGroup (event: React.MouseEvent<HTMLDivElement>) {
     // If the user clicks on the meter group chip, the event will propagate up to the card and this
     // method will be called again. Stopping the propagation prevents that second call

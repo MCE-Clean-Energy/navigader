@@ -53,14 +53,14 @@ const FileCard: React.FC<FileCardProps> = ({ file, progress, startUpload, status
   const [name, setFileName] = React.useState('');
   const classes = useFileCardStyles();
   const canUpload = Boolean(name) && statusAllowsUpload(status);
-  
+
   React.useEffect(() => {
     // Strip the `.csv` from the end of the file name
     if (file) {
       setFileName(file.name.replace(/.csv$/, ''));
     }
   }, [file]);
-  
+
   if (!file) return null;
   return (
     <Card raised>
@@ -72,7 +72,7 @@ const FileCard: React.FC<FileCardProps> = ({ file, progress, startUpload, status
           <Typography color="textSecondary" variant="body2">{renderFileSize(file.size)}</Typography>
         </Flex.Item>
       </Flex.Container>
-      
+
       <Flex.Container className={classes.row2}>
         <Flex.Item grow>
           <TextField
@@ -84,7 +84,7 @@ const FileCard: React.FC<FileCardProps> = ({ file, progress, startUpload, status
             value={name}
           />
         </Flex.Item>
-        
+
         <Flex.Item grow textAlign="right">
           <Button
             color="secondary"
@@ -96,7 +96,7 @@ const FileCard: React.FC<FileCardProps> = ({ file, progress, startUpload, status
           </Button>
         </Flex.Item>
       </Flex.Container>
-      
+
       {status !== 'not started' &&
         <div className={classes.uploadingStatus}>
           {status === 'uploading' && <Progress value={progress} />}
@@ -118,12 +118,12 @@ const FileCard: React.FC<FileCardProps> = ({ file, progress, startUpload, status
       }
     </Card>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function handleNameChange (newName: string) {
     setFileName(newName);
   }
-  
+
   function handleUploadClick () {
     if (statusAllowsUpload(status)) {
       startUpload(name);
@@ -137,7 +137,7 @@ const FileFormatAlert: React.FC = () => {
     <Alert outlined title="File Format" type="info">
       NavigaDER expects customer data to be provided in the "Item 17" format. See the examples
       below:
-      
+
       <ul className={classes.bulletList}>
         <li>
           <Link to="/example_item_17_15_min.csv" download="example_item_17_15_min.csv">
@@ -160,16 +160,16 @@ export const UploadPage: React.FC = () => {
   const [uploadProgress, setUploadProgress] = React.useState<number>();
   const fileUpload = React.useRef<HTMLInputElement>(null);
   const classes = useStyles();
-  
+
   return (
     <>
       <PageHeader title="Upload" />
       <FileFormatAlert />
-      
+
       <div className={classes.uploadButton}>
         <Button color="primary" onClick={openFileSelector}>Select File</Button>
       </div>
-      
+
       {/** Deliberately hidden input. This is controlled programmatically */}
       <input
         accept=".csv"
@@ -179,7 +179,7 @@ export const UploadPage: React.FC = () => {
         ref={fileUpload}
         type="file"
       />
-      
+
       <FileCard
         file={file}
         progress={uploadProgress}
@@ -188,45 +188,45 @@ export const UploadPage: React.FC = () => {
       />
     </>
   );
-  
-  /** ============================ Callbacks =============================== */
+
+  /** ========================== Callbacks ================================= */
   function openFileSelector () {
     if (fileUpload.current) {
       fileUpload.current.click();
     }
   }
-  
+
   function selectFile (event: React.ChangeEvent<HTMLInputElement>) {
     if (!event.target.files) {
       // Not sure why this would happen, but TypeScript thinks it can be `null`
       setFile(undefined);
       return;
     }
-    
+
     const file = event.target.files.item(0);
     if (!file) {
       // File was de-selected
       setFile(undefined);
       return;
     }
-    
+
     setFile(file);
     setUploadStatus('not started');
   }
-  
+
   async function startUpload (name: string) {
     if (!file) return;
-    
+
     setUploadStatus('uploading');
     setUploadProgress(0);
     const xhr = api.postOriginFile(file, name);
-    
+
     // Update the progress bar with the `progress` event
     xhr.upload.addEventListener('progress', (evt) => {
       const percentComplete = (evt.loaded / evt.total * 100);
       setUploadProgress(percentComplete);
     });
-    
+
     // When the request completes, update the status
     xhr.addEventListener('readystatechange', () => {
       if (xhr.readyState === 4) {
@@ -248,9 +248,9 @@ export function renderFileSize (size: number) {
   if (power > maxIndex) {
     power = maxIndex;
   }
-  
+
   const val = size / Math.pow(1000, power);
-  
+
   let suffix;
   if (power === 0) {
     // If the power is 0, we may pluralize the unit ("byte" vs "bytes")
@@ -258,7 +258,7 @@ export function renderFileSize (size: number) {
   } else {
     suffix = units[power];
   }
-  
+
   return `${parseFloat(val.toFixed(1))} ${suffix}`;
 }
 

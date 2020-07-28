@@ -6,12 +6,15 @@ import { makeStylesHook } from 'navigader/styles';
 
 
 /** ============================ Styles ==================================== */
+const LOGO_WIDTH = 300;
 const useStyles = makeStylesHook(theme => ({
   container: {
     height: '100vh'
   },
   content: {
-    marginTop: theme.spacing(6)
+    marginTop: theme.spacing(6),
+    maxWidth: LOGO_WIDTH,
+    width: LOGO_WIDTH
   },
   gradient: {
     width: '50%'
@@ -55,7 +58,7 @@ export const UnauthenticatedPage: React.FC = ({ children }) => {
           direction="column"
           justifyContent="center"
         >
-          <Branding.Logo width={300} />
+          <Branding.Logo width={LOGO_WIDTH} />
           <div className={classes.content}>{children}</div>
         </Flex.Container>
       </Card>
