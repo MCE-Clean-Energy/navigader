@@ -1,7 +1,7 @@
 import moment, { MomentInput } from 'moment';
 
 import { Nullable } from 'navigader/types';
-import { clamp, percentOf } from './math';
+import { clamp, percentOf } from '../data';
 
 
 /** ============================ Types ===================================== */
@@ -50,7 +50,7 @@ export function getMonthName (monthIndex: number) {
     'November',
     'December'
   ];
-  
+
   return months[monthIndex - 1];
 }
 
@@ -76,16 +76,16 @@ export const date = {
  */
 export function pluralize (singularForm: string, count: number, pluralForm?: string) {
   if (count === 1) return singularForm;
-  
+
   // The plural form is determined crudely. If the word ends in `y`, its plural form will end
   // with `ies`. Otherwise the plural form is inferred to be the singular form plus `s`. Many
   // English words will fail here (e.g. `octopus` --> `octopi`). For such cases we have the
   // `pluralForm` fallback
   if (pluralForm) return pluralForm;
-  
+
   const endsInYRegex =  /^(?<wordMinusY>[a-zA-Z]+)y$/;
   const match = singularForm.match(endsInYRegex);
-  
+
   if (match && match.groups) {
     return match.groups.wordMinusY + 'ies';
   } else {
@@ -130,21 +130,21 @@ export function percentage (numerator: number, denominator: number, n: number = 
  */
 export function dollars (amt: number | undefined | null, options?: DollarFormatOptions) {
   if (amt === undefined || amt === null) return;
-  
+
   const roundsToOne = [-1, 1].includes(+amt.toFixed(2));
   const lessThanOne = clamp(amt, -1, 1) === amt && !roundsToOne;
   const addDecimals = (options && options.cents) || (lessThanOne && !options?.cents);
   const amtFixed = parseFloat(amt.toFixed(addDecimals ? 2 : 0));
   const roundedTowardsZero = amtFixed >= 0 ? Math.floor(amtFixed) : Math.ceil(amtFixed);
   let dollarString = commas(Math.abs(roundedTowardsZero));
-  
+
   // Append the cents unless omitted
   if (addDecimals) {
     let decimalString = amtFixed.toFixed(2).split('.')[1];
     if (decimalString && decimalString.length === 1) decimalString += '0';
     dollarString += '.' + decimalString;
   }
-  
+
   // Add a minus sign if negative
   const prefix = amtFixed < 0 ? '-' : '';
   return prefix + '$' + dollarString;
@@ -177,7 +177,7 @@ export function commas (n: any) {
   const isNegative = n < 0;
   const roundedTowardsZero = isNegative ? Math.ceil(n) : Math.floor(n);
   const integerDigits = Math.abs(roundedTowardsZero).toString().split('');
-  
+
   let integerStr = '';
   integerDigits.reverse().forEach((integer, i) => {
     // Every 3 digits we insert a comma

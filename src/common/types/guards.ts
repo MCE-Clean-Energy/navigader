@@ -1,8 +1,7 @@
-import {
-  Falsey,
-  MeterGroup, NavigaderObject, RawScenario, RawScenarioReport, RawScenarioReportSummary
-} from 'navigader/types';
 import _ from 'navigader/util/lodash';
+import { Falsey, NavigaderObject } from './common';
+import { MeterGroup } from './meter';
+import { RawScenario, RawScenarioReport, RawScenarioReportSummary } from './scenario';
 
 
 /** ============================ Navigader Objects ========================= */

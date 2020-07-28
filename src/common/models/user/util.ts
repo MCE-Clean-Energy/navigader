@@ -1,9 +1,9 @@
-import { getCookie } from 'navigader/util/cookies';
+import { cookieManager } from 'navigader/util/cookies';
 
 
 /**
  * Determines if a user is authenticated
  */
 export function userIsAuthenticated () {
-  return getCookie('authToken') !== undefined;
+  return cookieManager.authToken !== undefined;
 }

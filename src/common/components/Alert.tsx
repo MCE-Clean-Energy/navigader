@@ -1,18 +1,20 @@
 import * as React from 'react';
 import MuiAlert from '@material-ui/lab/Alert';
 import MuiAlertTitle from '@material-ui/lab/AlertTitle';
+import classNames from 'classnames';
 
 import { makeStylesHook } from 'navigader/styles';
 import _ from 'navigader/util/lodash';
 
 
 /** ============================ Types ===================================== */
-type AlertProps = {
+type AlertProps = React.PropsWithChildren<{
+  className?: string;
   onClose?: () => void;
   outlined?: boolean;
   title?: React.ReactNode;
   type: 'error' | 'warning' | 'info' | 'success';
-};
+}>;
 
 /** ============================ Styles ==================================== */
 const useStyles = makeStylesHook<AlertProps>(theme => ({
@@ -24,19 +26,22 @@ const useStyles = makeStylesHook<AlertProps>(theme => ({
 }), 'NavigaderAlert');
 
 /** ============================ Components ================================ */
-export const Alert: React.FC<AlertProps> = (props) => {
-  const { children, title, type, ...rest } = props;
-  const classes = useStyles(props);
-  const alertProps = {
-    ..._.omit(rest, 'outlined'),
-    className: classes.alert,
-    severity: type
-  };
-  
-  return (
-    <MuiAlert {...alertProps}>
-      {title && <MuiAlertTitle>{title}</MuiAlertTitle>}
-      {children}
-    </MuiAlert>
-  );
-};
+export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
+  (props, ref) => {
+    const { children, className, title, type, ...rest } = props;
+    const classes = useStyles(props);
+    const alertProps = {
+      ..._.omit(rest, 'outlined'),
+      className: classNames(className, classes.alert),
+      ref,
+      severity: type
+    };
+
+    return (
+      <MuiAlert {...alertProps}>
+        {title && <MuiAlertTitle>{title}</MuiAlertTitle>}
+        {children}
+      </MuiAlert>
+    );
+  }
+);

@@ -1,7 +1,6 @@
 import moment from 'moment';
 
 import _ from 'navigader/util/lodash';
-import { isTruthy } from 'navigader/util/typeGuards';
 import {
   DateTuple,
   Frame288Numeric,
@@ -9,6 +8,7 @@ import {
   IntervalDataFilters,
   IntervalData as IntervalDataInterface,
   IntervalDatum,
+  isTruthy,
   MonthIndex,
   NumberTuple,
   RawIntervalData
@@ -24,26 +24,26 @@ type IntervalDataObject<K extends string, V extends string>
 export class IntervalData implements IntervalDataInterface {
   readonly data: IntervalDataArray;
   name: string;
-  
+
   // Memoized fields
   private _period: number | undefined;
-  
+
   constructor (data: IntervalDataArray, name: string) {
     this.data = data;
     this.name = name;
   }
-  
+
   /**
    * Returns the period of the interval data
    */
   get period () {
     if (this._period !== undefined) return this._period;
-    
+
     const time1 = moment(this.data[0].timestamp);
     const time2 = moment(this.data[1].timestamp);
     return moment.duration(time2.diff(time1)).asMinutes();
   }
-  
+
   /**
    * Returns an array of the years the interval spans
    */
@@ -51,7 +51,7 @@ export class IntervalData implements IntervalDataInterface {
     const [start, end] = this.timeDomain();
     return _.range(start.getFullYear(), end.getFullYear() + 1);
   }
-  
+
   /**
    * Serializes the interval back into its raw form, typically for saving to the store
    *
@@ -64,7 +64,7 @@ export class IntervalData implements IntervalDataInterface {
       [unit]: _.map(this.data, 'value')
     } as RawIntervalData<Unit, Column>;
   }
-  
+
   /**
    * Filters the interval data to a subset which passes the given filters. If no filters are
    * provided, the `IntervalData` is returned unchanged. Several different types of filters
@@ -80,41 +80,41 @@ export class IntervalData implements IntervalDataInterface {
   filter (filters?: IntervalDataFilters) {
     if (!filters) return this;
     const { month, range } = filters;
-    
+
     // Set start and end, using the range if provided
     let { start, end } = filters;
     if (range) [start, end] = range;
-    
+
     // Only data that pass all filter functions will be returned
     const filterFns: Array<(datum: IntervalDatum) => boolean> = [];
-    
+
     if (month) {
       filterFns.push(datum => datum.timestamp.getMonth() + 1 === month);
     }
-    
+
     if (start) {
       const intervalStart = moment(start);
       filterFns.push(datum => intervalStart.isSameOrBefore(datum.timestamp));
     }
-    
+
     if (end) {
       const intervalEnd = moment(end);
       filterFns.push(datum => intervalEnd.isSameOrAfter(datum.timestamp));
     }
-    
+
     return new IntervalData(
       this.data.filter(datum => _.every(filterFns.map(fn => fn(datum)))),
       this.name
     );
   }
-  
+
   /**
    * Returns an ordered array of the dataset's values
    */
   values () {
     return _.map(this.data, 'value');
   }
-  
+
   /**
    * Returns the dataset's domain, both in the time dimension and value dimension
    */
@@ -124,7 +124,7 @@ export class IntervalData implements IntervalDataInterface {
       value: this.valueDomain()
     };
   }
-  
+
   /**
    * Returns the dataset's time domain. This assumes the data is already ordered
    */
@@ -134,7 +134,7 @@ export class IntervalData implements IntervalDataInterface {
       this.data[this.data.length - 1].timestamp
     ];
   }
-  
+
   /**
    * Returns the first timestamp that occurs in the given month
    *
@@ -145,10 +145,10 @@ export class IntervalData implements IntervalDataInterface {
       this.data,
       datum => datum.timestamp.getMonth() + 1 === month
     );
-    
+
     return firstTimestampInMonth?.timestamp;
   }
-  
+
   /**
    * Returns the dataset's value domain
    */
@@ -156,7 +156,7 @@ export class IntervalData implements IntervalDataInterface {
     const values = this.values();
     return [Math.min(...values), Math.max(...values)];
   }
-  
+
   /**
    * Aligns one interval dataset with others according to their timestamps. Returns an array of
    * `IntervalDatum` arrays, each subarray a set of data that are aligned
@@ -166,7 +166,7 @@ export class IntervalData implements IntervalDataInterface {
   private align (...others: IntervalData[]): DatumAlignment[] {
     const clonedData = [...this.data];
     const alignments = [];
-    
+
     for (let alignment of alignmentIter()) {
       alignments.push(
         alignment.map(([datum, i]) => ({
@@ -175,23 +175,23 @@ export class IntervalData implements IntervalDataInterface {
         }))
       );
     }
-    
+
     return alignments;
-    
+
     /**
      * Generator yielding intervals aligned by their timestamps
      */
     function* alignmentIter () {
       const otherClones = others.map(other => [...other.data]);
       const clones = [clonedData, ...otherClones];
-      
+
       // While any of the data arrays have any data left in them...
       while (_.some(clones.map(arr => arr.length !== 0))) {
         let earliest = {
           time: Infinity,
           data: [] as [IntervalDatum, number][]
         };
-        
+
         // Find the earliest data
         clones.forEach((clone, i) => {
           if (clone.length === 0) return;
@@ -202,15 +202,15 @@ export class IntervalData implements IntervalDataInterface {
             earliest.data.push([firstDatum, i]);
           }
         });
-        
+
         yield earliest.data;
-        
+
         // Clear the earliest data from their respective intervals
         earliest.data.forEach(([, i]) => clones[i].splice(0, 1));
       }
     }
   }
-  
+
   /**
    * Creates a new `IntervalData` by calling a function on every datum within the series. The
    * timestamps will not be changed.
@@ -228,7 +228,7 @@ export class IntervalData implements IntervalDataInterface {
       name
     );
   }
-  
+
   /** ============================ Transformations ============================ */
   /**
    * Subtracts one interval dataset from another after aligning them.
@@ -239,7 +239,7 @@ export class IntervalData implements IntervalDataInterface {
     return new IntervalData(
         this.align(other).map((alignment) => {
           if (alignment.length < 2) return null;
-          
+
           // Subtract the aligned value from this value
           const [thisDatum, otherDatum] = _.map(alignment, 'datum');
           return {
@@ -250,7 +250,7 @@ export class IntervalData implements IntervalDataInterface {
       this.name
     );
   }
-  
+
   /**
    * Scales the interval data by dividing values by a constant
    *
@@ -259,7 +259,7 @@ export class IntervalData implements IntervalDataInterface {
   divide (n: number) {
     return this.map(datum => datum.value / n);
   }
-  
+
   /**
    * Scales the interval data by multiplying values by a constant
    *
@@ -270,7 +270,7 @@ export class IntervalData implements IntervalDataInterface {
     if (typeof multiplier === 'number') {
       return this.map(datum => datum.value * multiplier, name);
     }
-    
+
     return new IntervalData(
       this.align(multiplier).map(alignment => ({
         timestamp: alignment[0].datum.timestamp,
@@ -279,7 +279,7 @@ export class IntervalData implements IntervalDataInterface {
       name
     );
   }
-  
+
   /** ============================ 288 Operations ========================== */
   /**
    * Creates a new `IntervalData` by calling a function on every datum within the series. The
@@ -294,7 +294,7 @@ export class IntervalData implements IntervalDataInterface {
   map288 (frame: Frame288Numeric, fn: (datum: IntervalDatum, n: number) => number, name?: string) {
     return this.map(datum => fn(datum, frame.getValueByDate(datum.timestamp)), name);
   }
-  
+
   /**
    * Transforms the interval data by multiplying each datum by the timestamp's corresponding value
    * in the provided 288. The timestamp will be used to determine each datum's month and hour, and
@@ -306,7 +306,7 @@ export class IntervalData implements IntervalDataInterface {
   multiply288 (frame: Frame288Numeric, name?: string) {
     return this.map288(frame, (datum, value288) => datum.value * value288, name);
   }
-  
+
   /**
    * Produces an `IntervalData` with the same domain, with values taken from a provided
    * `Frame288Numeric`

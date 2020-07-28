@@ -1,12 +1,11 @@
 import {
-  AggregatedProcurementKeys, CAISORate, DataTypeMap, Frame288Numeric, GHGRate, Meter, MeterGroup,
-  PandasFrame, ProcurementReport, RawCAISORate, RawDataTypeMap, RawGHGRate, RawMeter, RawMeterGroup,
-  RawPandasFrame, RawScenario, Scenario, ScenarioReport, ScenarioReportFields
+  AggregatedProcurementKeys, CAISORate, DataTypeMap, Frame288Numeric, GHGRate, isRawScenarioReport,
+  isRawScenarioReportSummary, Meter, MeterGroup, PandasFrame, ProcurementReport, RawCAISORate,
+  RawDataTypeMap, RawGHGRate, RawMeter, RawMeterGroup, RawPandasFrame, RawScenario, Scenario,
+  ScenarioReport, ScenarioReportFields
 } from 'navigader/types';
-import { makeIntervalData } from 'navigader/util/data';
-import _ from './lodash';
-import { percentOf } from './math';
-import { isRawScenarioReport, isRawScenarioReportSummary } from './typeGuards';
+import { makeIntervalData, percentOf } from '../data';
+import _ from '../lodash';
 
 
 /** ============================ Meters ==================================== */
@@ -32,7 +31,7 @@ export function serializeMeter (meter: Meter): RawMeter {
  */
 export function parseMeterGroup (meterGroup: RawMeterGroup): MeterGroup {
   const data = parseDataField(meterGroup.data, meterGroup.name, 'kw', 'index');
-  
+
   // customer clusters are always considered to be completed
   if (meterGroup.object_type === 'CustomerCluster') {
     return {
@@ -41,14 +40,14 @@ export function parseMeterGroup (meterGroup: RawMeterGroup): MeterGroup {
       progress: { is_complete: true, percent_complete: 100 }
     };
   }
-  
+
   const percentComplete = meterGroup.metadata.expected_meter_count === null
     ? 0
     : percentOf(
       meterGroup.meter_count,
       meterGroup.metadata.expected_meter_count
     );
-  
+
   return {
     ...meterGroup,
     data,
@@ -81,11 +80,11 @@ export function parseScenario (scenario: RawScenario): Scenario {
   const percentComplete = expected_der_simulation_count === 0
     ? 0
     : percentOf(der_simulation_count, expected_der_simulation_count);
-  
+
   const hasRun = percentComplete === 100;
   const report = parseReport(scenario.report);
   const reportSummary = parseReportSummary(scenario.report_summary);
-  
+
   // If we have the report or the report summary (i.e. it isn't undefined) and it's empty, then the
   // report hasn't been built yet and so the scenario hasn't undergone aggregation. If we have
   // neither the report nor the summary, it's likely that the request didn't ask for them and we
@@ -93,7 +92,7 @@ export function parseScenario (scenario: RawScenario): Scenario {
   const hasAggregated = scenario.report === undefined && scenario.report_summary === undefined
     ? false
     : Boolean(hasRun && (report || reportSummary));
-  
+
   const unchangedFields = _.pick(scenario,
     'created_at',
     'der_simulation_count',
@@ -106,7 +105,7 @@ export function parseScenario (scenario: RawScenario): Scenario {
     'name',
     'object_type'
   );
-  
+
   return {
     ...unchangedFields,
     data: parseDataField(scenario.data || {}, scenario.name, 'kw', 'index'),
@@ -124,7 +123,7 @@ export function parseScenario (scenario: RawScenario): Scenario {
 export function parseReport (report: RawScenario['report']): ScenarioReport | undefined {
   if (!isRawScenarioReport(report)) return;
   const parsed = parsePandasFrame(report);
-  
+
   // For every simulation ID in the report, gather the values associated with that ID from the
   // other columns and compile them into an object
   return Object.fromEntries((parsed.ID || []).map((simulationId, rowIndex) => {
@@ -137,7 +136,7 @@ export function parseReport (report: RawScenario['report']): ScenarioReport | un
         }
       )
     );
-    
+
     return [
       simulationId,
       {
@@ -171,7 +170,7 @@ function parseReportProcurementFields (fields: ProcurementReport) {
     PRC_LMP2019PreDER,
     ...rest
   } = fields;
-  
+
   return {
     ...rest,
     PRC_LMPDelta: _.sumBy([PRC_LMP2018Delta, PRC_LMP2019Delta]),
@@ -182,24 +181,24 @@ function parseReportProcurementFields (fields: ProcurementReport) {
 
 export function serializeReport (report: Scenario['report']) {
   if (!report) return;
-  
+
   // First we collect all the report fields
   const reportRows = Object.values(report);
   const reportFields = new Set(
     ...reportRows.map(obj => Object.keys(obj))
   ) as Set<keyof ScenarioReportFields>;
-  
+
   // Omit the aggregated procurement fields as they are computed
   const procKeys: AggregatedProcurementKeys[] = ['PRC_LMPDelta', 'PRC_LMPPostDER', 'PRC_LMPPreDER'];
   procKeys.forEach((field) => reportFields.delete(field));
-  
+
   // For each of the fields, get each row's value
   const reportPairs = Array.from(reportFields).map((field) => {
     // "SA_ID" is handled specially
     const fieldName = field === 'SA_ID' ? 'SA ID' : field;
     return [fieldName, _.map(reportRows, field)]
   });
-  
+
   return _.fromPairs(reportPairs) as RawScenario['report'];
 }
 
@@ -243,10 +242,10 @@ export function parseGHGRate (rate: RawGHGRate): GHGRate {
       units: 'tCO2/kW'
     }) : undefined,
     id: rate.id.toString(),
-    
+
     // This is declared as part of the `RawGHGRate` type but it isn't provided by the backend
     object_type: 'GHGRate',
-    
+
     // This data isn't available for `GHGRate` objects
     created_at: new Date().toString()
   };
@@ -265,7 +264,7 @@ export function parseCAISORate (rate: RawCAISORate): CAISORate {
   return {
     ...rate,
     data: parseDataField(rate.data || {}, rate.name, '$/kwh', 'start'),
-    
+
     // This is declared as part of the `RawCAISORate` type but it isn't
     // provided by the backend
     object_type: 'CAISORate'
@@ -295,15 +294,15 @@ export function parsePandasFrame<T extends Record<string, any>> (
     const orderedIndices = Object.keys(frame[key]).sort((index1, index2) => {
       const numeric1 = +index1;
       const numeric2 = +index2;
-      
+
       if (numeric1 < numeric2) return -1;
       if (numeric2 < numeric1) return 1;
       return 0;
     });
-    
+
     return [key, orderedIndices.map(index => frame[key][+index])];
   });
-  
+
   return _.fromPairs(frameProps) as PandasFrame<T>;
 }
 

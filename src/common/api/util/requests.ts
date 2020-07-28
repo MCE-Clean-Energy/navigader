@@ -1,6 +1,6 @@
 import { QueryParams } from 'navigader/types';
 import { makeQueryString, omitFalsey } from 'navigader/util';
-import { getCookie } from 'navigader/util/cookies';
+import { cookieManager } from 'navigader/util/cookies';
 
 
 /** ============================ Types ===================================== */
@@ -50,10 +50,10 @@ export function makeFormXhrPost (route: string, formFields: object) {
   // Make the XHR object
   const xhr = new XMLHttpRequest();
   xhr.open('POST', route);
-  
+
   // Add headers
   getRequestHeaders().forEach((value, key) => xhr.setRequestHeader(key, value));
-  
+
   // Send the request after a delay, so that calling code can add event listeners and modify the
   // request in whatever manner seems fitting
   Promise.resolve().then(() => xhr.send(objToFormData(formFields)));
@@ -68,7 +68,7 @@ export function getRequest (route: string, queryParams?: QueryParams) {
   return makeJsonRequest('GET', route.concat(makeQueryString(queryParams)));
 }
 
-export function postRequest (route: string, body: object) {
+export function postRequest (route: string, body: object = {}) {
   return makeJsonRequest('POST', route, JSON.stringify(body));
 }
 
@@ -83,12 +83,12 @@ export function patchRequest (route: string, body: object) {
  * @param {ContentType} contentType: the value for the 'Content-Type` header
  */
 function getRequestHeaders (contentType?: ContentType) {
-  const authToken = getCookie('authToken');
+  const authToken = cookieManager.authToken;
   return new Headers(
     omitFalsey({
       'Authorization': authToken && `Token ${authToken}`,
       'Content-Type': contentType,
-      'X-CSRFToken': getCookie('csrftoken')
+      'X-CSRFToken': cookieManager.csrfToken
     })
   );
 }

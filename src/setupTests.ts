@@ -1,4 +1,4 @@
-import { setCookie } from 'navigader/util/cookies';
+import { cookieManager } from 'navigader/util/cookies';
 
 // jest-dom adds custom jest matchers for asserting on DOM nodes.
 // allows you to do things like:
@@ -11,7 +11,7 @@ beforeEach(() => {
   process.env = Object.assign(process.env, {
     REACT_APP_BEO_URI: 'http://test-domain.com'
   });
-  
+
   // Fake authorization
-  setCookie('authToken', 'fakeAuth');
+  cookieManager.authToken = 'fakeAuth';
 });

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import AccountIcon from '@material-ui/icons/AccountCircle';
 import AddIcon from '@material-ui/icons/Add';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import BatteryChargingFull from '@material-ui/icons/BatteryChargingFull';
@@ -23,6 +24,7 @@ type IconColor =
   | 'error';
 
 export type ValidIcon =
+  | 'account'
   | 'back'
   | 'battery'
   | 'checkMark'
@@ -57,6 +59,7 @@ export const Icon: React.ComponentType<IconProps> = React.forwardRef<SVGSVGEleme
  * Maps a valid icon name to the corresponding icon component
  */
 const iconMap = {
+  account: AccountIcon,
   back: ArrowBack,
   battery: BatteryChargingFull,
   checkMark: DoneIcon,

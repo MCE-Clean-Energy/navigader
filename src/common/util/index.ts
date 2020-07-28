@@ -2,7 +2,6 @@ import * as serializers from './serializers';
 
 
 export * from './api';
-export * from './conversions';
 export * from './data';
 export * from './isProduction';
 export * from './makeCancelableAsync';

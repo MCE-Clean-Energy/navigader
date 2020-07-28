@@ -23,20 +23,22 @@ type TextFieldProps = PaperProps & {
 }
 
 /** ============================ Components ================================ */
-export const TextField: React.FC<TextFieldProps> = (props) => {
-  const { className, elevation = 0, onChange, outlined, ...rest } = props;
-  const textFieldProps: MuiTextFieldProps = {
-    ...rest,
-    onChange: e => onChange && onChange(e.target.value, e),
-    variant: outlined ? 'outlined' : 'standard'
-  };
-  
-  return (
-    <Paper elevation={elevation} className={className}>
-      <MuiTextField autoComplete="off" {...textFieldProps} fullWidth />
-    </Paper>
-  );
-};
+export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
+  (props, ref) => {
+    const { className, elevation = 0, onChange, outlined, ...rest } = props;
+    const textFieldProps: MuiTextFieldProps = {
+      ...rest,
+      onChange: e => onChange && onChange(e.target.value, e),
+      variant: outlined ? 'outlined' : 'standard'
+    };
+
+    return (
+      <Paper elevation={elevation} className={className}>
+        <MuiTextField autoComplete="off" fullWidth inputRef={ref} {...textFieldProps} />
+      </Paper>
+    );
+  }
+);
 
 TextField.defaultProps = {
   color: 'primary',

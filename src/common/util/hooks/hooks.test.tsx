@@ -5,8 +5,8 @@ import { renderHook, HookResult } from '@testing-library/react-hooks'
 import { makeStore, slices } from 'navigader/store';
 import { CAISORate, RawCAISORate } from 'navigader/types';
 import { serializers } from 'navigader/util';
+import { fixtures, makePaginationResponse, mockFetch } from '../testing';
 import { useCAISORates } from './hooks';
-import { fixtures, makePaginationResponse, mockFetch } from './testing';
 
 
 describe('Custom React hooks', () => {
@@ -26,17 +26,17 @@ describe('Custom React hooks', () => {
       const { result, waitForNextUpdate } = renderHook(() => useCAISORates(...args), {
         wrapper: ({ children }) => <Provider store={store} >{children}</Provider>
       });
-      
+
       // Wait for the async API calls to complete
       await waitForNextUpdate();
       return result;
     }
-    
+
     function assertAPICalled (result: HookResult<CAISORate[] | undefined>) {
       expect(fetchMock).toHaveBeenCalledTimes(1);
       const callArgs = fetchMock.mock.calls[0];
       expect(callArgs[0]).toContain('/cost/caiso_rate/');
-      
+
       // Hook should return the rate
       expect(result.current).toHaveLength(1);
       expect(result.current![0].id).toEqual(fixtures.caisoRate.id);
@@ -47,11 +47,11 @@ describe('Custom React hooks', () => {
         ['/cost/caiso_rate/', makePaginationResponse({ caiso_rates: [fixtures.caisoRate] })]
       ]);
     });
-    
+
     it('uses the API if there are no rates in the store', async () => {
       assertAPICalled(await testHook());
     });
-    
+
     it('uses the API if there are no rates in the store which match the filters', async () => {
       const rateDifferentYear = { ...fixtures.caisoRate, id: 2, name: 'PRC_LMP 2019', year: 2019 };
       const rateNoData = { ...fixtures.caisoRate, id: 3, data: {} };
@@ -65,16 +65,16 @@ describe('Custom React hooks', () => {
           }
         }
       };
-      
+
       // Request rate from 2018 with 1-hour period data
       const rates = [rateDifferentYear, rateNoData, rateDifferentPeriod];
       const rateFilters = { year: 2018, data: 'default', period: 60 };
       const result = await testHook(rates, rateFilters);
-      
+
       expect(result.current).toHaveLength(1);
       assertAPICalled(result);
     });
-    
+
     it('skips the API if rate matching the filters is in the store', async () => {
       // Request rate from 2018 with 1-hour period data
       const rateFilters = { year: 2018, data: 'default', period: 60 };

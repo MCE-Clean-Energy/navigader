@@ -1,5 +1,4 @@
-import { MeterGroup } from 'navigader/types';
-import { isMeterGroup } from 'navigader/util/typeGuards';
+import { isMeterGroup, MeterGroup } from 'navigader/types';
 
 
 /**
@@ -30,7 +29,7 @@ export function getMeterGroupDisplayName (meterGroup: any) {
 export function isSufficientlyIngested (meterGroup: MeterGroup | undefined) {
   if (!meterGroup) return false;
   if (meterGroup.object_type === 'CustomerCluster') return true;
-  
+
   // If origin files have sufficiently finished ingesting, they are selectable. We don't
   // require 100% completion in case a few meters fail to ingest.
   const sufficientlyFinishedPercent = 95;

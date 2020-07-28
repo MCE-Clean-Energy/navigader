@@ -51,7 +51,7 @@ export const Menu: MenuExport = (props) => {
     : <Button {...menuOpenerProps}>{label}</Button>;
   
   return (
-    <div>
+    <>
       {MenuOpener}
       <MuiMenu
         anchorEl={anchorEl}
@@ -63,7 +63,7 @@ export const Menu: MenuExport = (props) => {
         transformOrigin={transformOrigin}
         {...rest}
       />
-    </div>
+    </>
   );
   
   function handleClick (event: React.MouseEvent<HTMLElement>) {

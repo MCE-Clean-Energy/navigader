@@ -1,6 +1,5 @@
-import { Falsey } from 'navigader/types';
+import { Falsey, isTruthy } from 'navigader/types';
 import _ from 'navigader/util/lodash';
-import { isTruthy } from './typeGuards';
 
 
 /** ============================ Method ==================================== */

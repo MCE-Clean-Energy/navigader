@@ -14,7 +14,7 @@ import {
 } from 'navigader/types';
 import { makeCancelableAsync } from 'navigader/util';
 import _ from 'navigader/util/lodash';
-import { omitFalsey } from './omitFalsey';
+import { omitFalsey } from '../omitFalsey';
 
 
 /** ============================ Types ===================================== */
@@ -45,9 +45,9 @@ export function useTableSelector <Datum extends ObjectWithId>(
   ids: IdType[] | null
 ): Datum[] {
   const allData = useSelector(dataSelector);
-  
+
   if (ids === null) return [];
-  
+
   // TODO: the property shorthand `_.find(allData, { id })` is preferable and should work-- I'm
   //  confused why it doesn't
   return omitFalsey(ids.map((id) => _.find(allData, ['id', id])));
@@ -76,7 +76,7 @@ export function useGhgRates () {
   const [ghgRates, setGhgRates] = React.useState(
     storedGhgRates.length ? storedGhgRates : undefined
   );
-  
+
   useAsync(
     () => api.getGhgRates({
       data_format: '288',
@@ -89,9 +89,9 @@ export function useGhgRates () {
     // If we've already loaded the rates, we don't need to do so again
     () => !ghgRates
   );
-  
+
   return ghgRates;
-  
+
   /**
    * Handles the API response. The models will be added to the store.
    *
@@ -109,7 +109,7 @@ export function useGhgRates () {
  */
 export function useCAISORates (filters: Partial<CAISORateFilters> = {}) {
   const dispatch = useDispatch();
-  
+
   // Check the store for CAISO rates that match the provided filters
   const storedCAISORates = useSelector(slices.models.selectCAISORates);
   const caisoRates = storedCAISORates.filter((caisoRate) => {
@@ -172,7 +172,7 @@ export function useScenario (scenarioId: string, options?: api.GetScenarioQueryO
 
 export function useMeterGroups (options: api.MeterGroupsQueryParams) {
   const dispatch = useDispatch();
-  
+
   // Fetch the meter groups
   const loading = useAsync(
     () => api.getMeterGroups(options),
@@ -180,13 +180,13 @@ export function useMeterGroups (options: api.MeterGroupsQueryParams) {
       // Continue polling for meter groups that haven't finished ingesting
       const unfinished = _.filter(data, meterGroup => !meterGroup.progress.is_complete);
       poller.addMeterGroups(unfinished, options);
-      
+
       // Add all of them to the store
       dispatch(slices.models.updateModels(data))
     },
     []
   );
-  
+
   // Return the meter groups in the store
   return { loading, meterGroups: useSelector(slices.models.selectMeterGroups) };
 }
@@ -225,6 +225,6 @@ function useAsync <T>(
     ),
     dependencies
   );
-  
+
   return loading;
 }

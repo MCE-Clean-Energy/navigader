@@ -14,13 +14,13 @@ import * as pages from './pages';
 const AppSnackbar: React.FC = () => {
   const { duration, msg, open, type } = useSelector(slices.ui.selectSnackbar);
   const dispatch = useDispatch();
-  
+
   return (
     <Snackbar autoHideDuration={duration} onClose={handleClose} open={open}>
       {msg && type && <Alert onClose={handleClose} type={type}>{msg}</Alert>}
     </Snackbar>
   );
-  
+
   /** ============================ Callbacks =============================== */
   function handleClose () {
     dispatch(slices.ui.closeSnackbar());
@@ -35,9 +35,11 @@ export const AppRoutes: React.FC = () =>
   <ThemeProvider>
     <Switch>
       <Route path={routes.login} component={pages.LoginPage} />
+      <Route path={routes.resetPassword} component={pages.ResetPasswordPage} />
       <AuthenticatedRoute>
         <AppContainer>
           <Switch>
+            <Route path={routes.settings} component={pages.SettingsPage} />
             <Route path={routes.meterGroup(':id')} component={pages.MeterGroupPage} />
             <Route path={routes.load} component={pages.LoadPage} />
             <Route path={routes.upload} component={pages.UploadPage} />
@@ -45,7 +47,7 @@ export const AppRoutes: React.FC = () =>
             <Route path={routes.scenario.compare()} component={pages.CompareScenariosPage} />
             <Route path={routes.scenario(':id')} component={pages.ScenarioResultsPage} />
             <Route path={routes.roadmap} component={pages.RoadmapPage} />
-          
+
             {/** Route of last resort */}
             <Redirect to={routes.dashboard.base} />
           </Switch>
@@ -81,7 +83,7 @@ const AuthenticatedRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
  */
 const App: React.FC = () => {
   const dispatch = useDispatch();
-  
+
   // Load DER configurations
   React.useEffect(() => {
     if (!userIsAuthenticated()) return;
@@ -93,7 +95,7 @@ const App: React.FC = () => {
         );
       });
   });
-  
+
   // Load DER strategies
   React.useEffect(() => {
     if (!userIsAuthenticated()) return;
@@ -105,7 +107,7 @@ const App: React.FC = () => {
         );
       });
   });
-  
+
   return (
     <Router>
       <AppRoutes />

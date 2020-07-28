@@ -8,13 +8,13 @@ export function makeCancelableAsync <T>(
 ) {
   return () => {
     let shouldUpdate = true;
-    
+
     asyncFn().then((res) => {
       if (shouldUpdate) {
         callbackFn(res);
       }
     });
-    
+
     // This is called when the component unmounts
     return () => {
       shouldUpdate = false;

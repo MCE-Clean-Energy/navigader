@@ -6,11 +6,11 @@ import MuiToolbar from '@material-ui/core/Toolbar';
 import navigaderImage from 'navigader/images/navigader.png';
 import * as routes from 'navigader/routes';
 import { makeStylesHook, white } from 'navigader/styles';
-import { removeCookie } from 'navigader/util/cookies';
 import { Gradient } from '../branding';
 import { Button } from '../Button';
 import * as Flex from '../Flex';
 import { Padding } from '../Padding';
+import { AccountMenu } from './AccountMenu';
 import { Feedback } from './Feedback';
 
 
@@ -64,9 +64,9 @@ export const AppBar: React.FC = () => {
               
               <Flex.Item>
                 <Flex.Container alignItems="center" className={classes.rightSide}>
-                  <Feedback />
                   <Button.Text onClick={goToRoadmap}>Roadmap</Button.Text>
-                  <Button.Text onClick={logout}>Logout</Button.Text>
+                  <Feedback />
+                  <AccountMenu />
                 </Flex.Container>
               </Flex.Item>
             </Flex.Container>
@@ -79,9 +79,5 @@ export const AppBar: React.FC = () => {
   /** ============================ Callbacks =============================== */
   function goToRoadmap () {
     history.push(routes.roadmap);
-  }
-  function logout () {
-    removeCookie('authToken');
-    history.push(routes.login);
   }
 };

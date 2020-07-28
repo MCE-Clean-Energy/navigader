@@ -16,11 +16,11 @@ class Poller {
     scenarios: new Set<IdType>()
   };
 
-  constructor (interval: number) {
+  public constructor (interval: number) {
     this.pollInterval = window.setInterval(this.poll.bind(this), interval);
   }
 
-  addMeterGroups (models: MeterGroup[], options?: MeterGroupsQueryParams) {
+  public addMeterGroups (models: MeterGroup[], options?: MeterGroupsQueryParams) {
     const modelIds = _.map(models, 'id');
     const optionsKey = options || {};
     if (this.pollingIds.meterGroups.has(optionsKey)) {
@@ -30,10 +30,21 @@ class Poller {
     }
   }
 
-  addScenarios (models: Scenario[]) {
+  public addScenarios (models: Scenario[]) {
     models.forEach((model) => {
       this.pollingIds.scenarios.add(model.id);
     });
+  }
+
+  /**
+   * Clears out any IDs that are currently being polled for. This is useful when the user logs out
+   * and is no longer permitted to access the resources
+   */
+  public reset () {
+    this.pollingIds = {
+      meterGroups: new Map(),
+      scenarios: new Set()
+    };
   }
 
   /**
@@ -44,7 +55,7 @@ class Poller {
     this.pollMeterGroups();
     this.pollScenarios();
   }
-  
+
   private pollMeterGroups () {
     const queries = [...this.pollingIds.meterGroups.entries()];
     if (queries.length === 0) return;
@@ -59,14 +70,14 @@ class Poller {
         page: 1,
         page_size: 100
       })).data;
-  
+
       // Remove finished meterGroups
       meterGroups.forEach((meterGroup) => {
         if (meterGroup.progress.is_complete) {
           meterGroupIdSet.delete(meterGroup.id);
         }
       });
-  
+
       // Update the store
       store.dispatch(slices.models.updateModels(meterGroups));
     });

@@ -19,13 +19,15 @@ scenario.compare = (ids?: string[]) => {
   const qs = ids && ids.length
     ? `?ids=${ids.join(',')}`
     : '';
-    
+
   return `/scenario/compare/${qs}`;
 };
 
 /** ============================ Other Routes ============================== */
+export const settings = '/settings';
 export const login = '/login';
 export const load = '/load';
 export const meterGroup = (id: string) => `/load/group/${id}`;
+export const resetPassword = '/reset_password';
 export const roadmap = '/roadmap';
 export const upload = '/upload';
