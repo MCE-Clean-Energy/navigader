@@ -1,10 +1,10 @@
 import {
-  AggregatedProcurementKeys, CAISORate, DataTypeMap, Frame288Numeric, GHGRate, isRawScenarioReport,
+  AggregatedProcurementKeys, CAISORate, DataTypeMap, GHGRate, isRawScenarioReport,
   isRawScenarioReportSummary, Meter, MeterGroup, PandasFrame, ProcurementReport, RawCAISORate,
   RawDataTypeMap, RawGHGRate, RawMeter, RawMeterGroup, RawPandasFrame, RawScenario, Scenario,
   ScenarioReport, ScenarioReportFields
 } from 'navigader/types';
-import { makeIntervalData, percentOf } from '../data';
+import { Frame288Numeric, makeIntervalData, percentOf } from '../data';
 import _ from '../lodash';
 
 
