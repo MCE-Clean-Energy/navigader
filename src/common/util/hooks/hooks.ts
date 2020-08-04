@@ -181,8 +181,7 @@ export function useMeterGroups (options: api.MeterGroupsQueryParams) {
     () => api.getMeterGroups(options),
     ({ data }) => {
       // Continue polling for meter groups that haven't finished ingesting
-      const unfinished = _.filter(data, meterGroup => !meterGroup.progress.is_complete);
-      poller.addMeterGroups(unfinished, options);
+      poller.addMeterGroups(data, options);
 
       // Add all of them to the store
       dispatch(slices.models.updateModels(data))

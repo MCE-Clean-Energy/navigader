@@ -11,7 +11,7 @@ import * as routes from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { ColorMap } from 'navigader/styles';
 import { Scenario, ScenarioReportSummary } from 'navigader/types';
-import { kwToMw, printWarning } from 'navigader/util';
+import { kwToMw, omitFalsey, printWarning } from 'navigader/util';
 import { commas, date, dollars, maxDecimals } from 'navigader/util/formatters';
 import _ from 'navigader/util/lodash';
 
@@ -107,11 +107,12 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
 
       // Unfinished scenarios should be polled for
       const scenarios = response.data;
-      const unfinished = _.filter(scenarios, s => !s.progress.is_complete);
-      poller.addScenarios(unfinished);
+      const meterGroups = omitFalsey(_.map(scenarios, 'meter_group'));
+      poller.addScenarios(scenarios);
+      poller.addMeterGroups(meterGroups);
 
       // Add the models to the store and yield the pagination results
-      dispatch(slices.models.updateModels(scenarios));
+      dispatch(slices.models.updateModels([...meterGroups, ...scenarios]));
       return response
     },
     [dispatch]

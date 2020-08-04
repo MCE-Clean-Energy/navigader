@@ -64,7 +64,7 @@ const slice = createSlice({
     removeModel: (state, action: RemoveModelAction) => {
       const model = action.payload;
       const slice = getSliceForModel(state, model);
-      
+
       // If we find the model in the slice, splice it out
       const modelIndex = _.findIndex(slice, { id: model.id });
       if (modelIndex !== -1) {
@@ -99,8 +99,11 @@ export const selectDERStrategies = (state: RootState) => state.models.derStrateg
 export const selectGHGRates = (state: RootState) => state.models.ghgRates.map(serializers.parseGHGRate);
 export const selectMeterGroups = (state: RootState) => state.models.meterGroups.map(serializers.parseMeterGroup);
 export const selectMeters = (state: RootState) => state.models.meters.map(serializers.parseMeter);
-export const selectScenarios = (state: RootState) => state.models.scenarios.map(serializers.parseScenario);
 export const selectHasMeterGroups = (state: RootState) => state.models.hasMeterGroups;
+export const selectScenarios = (state: RootState) =>
+  state.models.scenarios.map(
+    scenario => serializers.parseScenario(scenario, state.models.meterGroups)
+  );
 
 /** ============================ Reducer methods =========================== */
 /**
@@ -113,13 +116,13 @@ export const selectHasMeterGroups = (state: RootState) => state.models.hasMeterG
 function addOrUpdateModel (state: ModelsSlice, model: ModelClassInterior) {
   const slice = getSliceForModel(state, model);
   const modelIndex = _.findIndex(slice, { id: model.id });
-  
+
   if (modelIndex === -1) {
     // Add it to the store
     slice.push(model);
     return;
   }
-  
+
   // Splice it into the slice
   const merged = _.merge({}, slice[modelIndex], model);
   slice.splice(modelIndex, 1, merged);

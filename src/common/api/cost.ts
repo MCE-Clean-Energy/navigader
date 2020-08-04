@@ -2,7 +2,6 @@ import {
   RawCAISORate, DataTypeParams, DynamicRestParams, PaginationQueryParams, RawGHGRate,
   RawPaginationSet, RawScenario, Scenario, RawMeterGroup
 } from 'navigader/types';
-import _ from 'navigader/util/lodash';
 import { serializers } from 'navigader/util';
 import {
   appendId, beoRoute, deleteRequest, getRequest, parsePaginationSet, patchRequest, postRequest
@@ -85,12 +84,12 @@ export async function getScenarios (queryParams: GetScenariosQueryOptions) {
         object_type: 'SingleScenarioStudy'
       }
     ).then(res => res.json());
-  
+
   // Parse the meter results
   return parsePaginationSet(
     response,
-    ({ meter_groups, studies: scenarios }) =>
-      scenarios.map(scenario => compileScenario(scenario, meter_groups))
+    ({ meter_groups = [], studies: scenarios }) =>
+      scenarios.map(scenario => serializers.parseScenario(scenario, meter_groups))
   );
 }
 
@@ -107,8 +106,8 @@ export async function getScenario (id: string, options?: GetScenarioQueryOptions
       routes.scenarios(id),
       options
     ).then(res => res.json());
-  
-  return compileScenario(response.study, response.meter_groups);
+
+  return serializers.parseScenario(response.study, response.meter_groups || []);
 }
 
 /**
@@ -124,7 +123,7 @@ export async function deleteScenario (id: string) {
 export async function getGhgRates (options?: GetGHGRatesQueryOptions) {
   const response: RawPaginationSet<GetGHGRatesResponse>
     = await getRequest(routes.ghg_rate, options).then(res => res.json());
-  
+
   // Parse the GHG rate results into full-fledged `NavigaderObjects`
   return parsePaginationSet(response, ({ ghg_rates }) => ghg_rates.map(serializers.parseGHGRate));
 }
@@ -133,7 +132,7 @@ export async function getGhgRates (options?: GetGHGRatesQueryOptions) {
 export async function getCAISORates (options?: GetCAISORatesQueryOptions) {
   const response: RawPaginationSet<GetCAISORatesResponse>
     = await getRequest(routes.caiso_rate, options).then(res => res.json());
-  
+
   // Parse the GHG rate results into full-fledged `NavigaderObjects`
   return parsePaginationSet(response, ({ caiso_rates }) => caiso_rates.map(serializers.parseCAISORate));
 }
@@ -146,26 +145,3 @@ const routes = {
   postStudy: baseRoute('multiple_scenario_study/'),
   scenarios: appendId(baseRoute('study'))
 };
-
-/**
- * Takes a raw scenario and array of raw meter groups and compiles the parsed scenario for use in
- * the application
- *
- * @param {RawScenario} scenario: the server-supplied scenario object
- * @param {RawMeterGroup} meterGroups: the server-supplied meter group objects
- */
-function compileScenario (scenario: RawScenario, meterGroups?: RawMeterGroup[]): Scenario {
-  // Mix in the meter group
-  let meterGroup;
-  if (scenario.meter_groups && scenario.meter_groups.length > 0) {
-    const scenarioMeterGroup = _.find(meterGroups, { id: scenario.meter_groups[0] });
-    if (scenarioMeterGroup) {
-      meterGroup = serializers.parseMeterGroup(scenarioMeterGroup);
-    }
-  }
-
-  return {
-    ...serializers.parseScenario(scenario),
-    meter_group: meterGroup
-  };
-}

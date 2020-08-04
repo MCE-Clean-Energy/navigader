@@ -73,9 +73,11 @@ export function serializeMeterGroup(meterGroup: MeterGroup): RawMeterGroup {
 /**
  * Basic parsing function for converting a RawScenario into a Scenario
  *
- * @param {RawScenario} scenario - The raw scenario object to parse
+ * @param {RawScenario} scenario: The raw scenario object to parse
+ * @param {RawMeterGroup[]} rawMeterGroups: set of raw meter groups from which to draw the one
+ *   associated with the scenario
  */
-export function parseScenario (scenario: RawScenario): Scenario {
+export function parseScenario (scenario: RawScenario, rawMeterGroups: RawMeterGroup[]): Scenario {
   const { der_simulation_count, expected_der_simulation_count } = scenario;
   const percentComplete = expected_der_simulation_count === 0
     ? 0
@@ -106,10 +108,20 @@ export function parseScenario (scenario: RawScenario): Scenario {
     'object_type'
   );
 
+  // Mix in the meter group
+  let meterGroup;
+  if (scenario.meter_groups && scenario.meter_groups.length > 0) {
+    const scenarioMeterGroup = _.find(rawMeterGroups, { id: scenario.meter_groups[0] });
+    if (scenarioMeterGroup) {
+      meterGroup = parseMeterGroup(scenarioMeterGroup);
+    }
+  }
+
   return {
     ...unchangedFields,
     data: parseDataField(scenario.data || {}, scenario.name, 'kw', 'index'),
     der: scenario.ders ? scenario.ders[0] : undefined,
+    meter_group: meterGroup,
     progress: {
       is_complete: hasAggregated,
       has_run: hasRun,
@@ -228,6 +240,7 @@ export function serializeScenario (scenario: Scenario): RawScenario {
     ...unchangedFields,
     data: serializeDataField(scenario.data, 'kw', 'index'),
     ders: scenario.der && [scenario.der],
+    meter_groups: scenario.meter_group ? [scenario.meter_group.id] : undefined,
     report: serializeReport(scenario.report),
     report_summary: serializeReportSummary(scenario.report_summary)
   };

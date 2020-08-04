@@ -21,7 +21,8 @@ class Poller {
   }
 
   public addMeterGroups (models: MeterGroup[], options?: MeterGroupsQueryParams) {
-    const modelIds = _.map(models, 'id');
+    const unfinished = _.filter(models, s => !s.progress.is_complete);
+    const modelIds = _.map(unfinished, 'id');
     const optionsKey = options || {};
     if (this.pollingIds.meterGroups.has(optionsKey)) {
       modelIds.forEach(id => this.pollingIds.meterGroups.get(optionsKey)!.add(id));
@@ -31,9 +32,8 @@ class Poller {
   }
 
   public addScenarios (models: Scenario[]) {
-    models.forEach((model) => {
-      this.pollingIds.scenarios.add(model.id);
-    });
+    const unfinished = _.filter(models, s => !s.progress.is_complete);
+    unfinished.forEach(({ id }) => this.pollingIds.scenarios.add(id));
   }
 
   /**
