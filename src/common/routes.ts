@@ -31,3 +31,11 @@ export const meterGroup = (id: string) => `/load/group/${id}`;
 export const resetPassword = '/reset_password';
 export const roadmap = '/roadmap';
 export const upload = '/upload';
+
+export const registration = {
+  signup: '/registration/signup',
+
+  // BEWARE!! This route is referenced explicitly on the back end. Changing it
+  // here without changing it there will COMPLETELY BREAK SIGN UP!
+  verify: '/registration/verify'
+};

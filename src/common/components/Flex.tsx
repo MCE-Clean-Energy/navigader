@@ -2,7 +2,9 @@ import * as React from 'react';
 import { CreateCSSProperties } from '@material-ui/styles/withStyles';
 import classNames from 'classnames';
 
-import { makeStylesHook } from 'navigader/styles';
+import {
+  makeStylesHook, AlignItemsValue, FlexDirection, JustifyContentValue
+} from 'navigader/styles';
 import _ from 'navigader/util/lodash';
 
 
@@ -13,9 +15,6 @@ type FlexItemProps = React.HTMLAttributes<HTMLDivElement> & {
   textAlign?: 'right' | 'left';
 }
 
-type AlignItemsValue = 'center' | 'stretch';
-type JustifyContentValue = 'center' | 'flex-start' | 'space-between' | 'space-around';
-type FlexDirection = 'row' | 'column';
 type FlexContainerProps = React.HTMLAttributes<HTMLDivElement> & FlexItemProps & {
   alignItems?: AlignItemsValue;
   className?: string;
@@ -25,8 +24,14 @@ type FlexContainerProps = React.HTMLAttributes<HTMLDivElement> & FlexItemProps &
 };
 
 /** ============================ Styles ==================================== */
-const useContainerStyles = makeStylesHook<FlexContainerProps>(() => ({
-  flexContainer: containerStyles
+const useContainerStyles = makeStylesHook<FlexContainerProps>(theme => ({
+  flexContainer: props =>
+    theme.mixins.flex({
+      direction: props.direction,
+      wrap: props.wrap ? 'wrap' : 'nowrap',
+      justify: props.justifyContent,
+      align: props.alignItems
+    })
 }), 'FlexContainer');
 
 const useItemStyles = makeStylesHook<FlexItemProps>(() => ({
@@ -37,16 +42,16 @@ const useItemStyles = makeStylesHook<FlexItemProps>(() => ({
 export const Container = React.forwardRef<HTMLDivElement, FlexContainerProps>(
   (props, ref) => {
     const { className, ...rest } = props;
-    
+
     // Compile all classes for the container
     const classes = classNames(
       useContainerStyles(props).flexContainer,
       useItemStyles(props).flexItem,
       className
     );
-    
+
     const childProps = _.omit(rest, 'alignItems', 'basis', 'grow', 'justifyContent', 'textAlign', 'wrap');
-    
+
     return <div {...childProps} className={classes} ref={ref} />;
   }
 );
@@ -69,16 +74,6 @@ export const Item = React.forwardRef<HTMLDivElement, FlexItemProps>(
 Item.displayName = 'FlexItem';
 
 /** ============================ Helpers =================================== */
-export function containerStyles (props: FlexContainerProps): CreateCSSProperties {
-  return {
-    alignItems: props.alignItems,
-    display: 'flex',
-    flexDirection: props.direction,
-    flexWrap: props.wrap ? 'wrap' : 'nowrap',
-    justifyContent: props.justifyContent
-  };
-}
-
 function itemStyles (props: FlexItemProps): CreateCSSProperties {
   return {
     flexBasis: props.basis

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Card, PageHeader, PrefetchedTable, Table, Typography } from 'navigader/components';
+import { Card, Link, PageHeader, PrefetchedTable, Table, Typography } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
 
 
@@ -35,7 +35,7 @@ export const RoadmapPage: React.FC = () => {
   return (
     <>
       <PageHeader title="Roadmap" />
-      
+
       <Card raised>
         <Typography useDiv variant="body1">
           NavigaDER runs detailed analyses on the anticipated economic and environmental impacts of
@@ -44,7 +44,7 @@ export const RoadmapPage: React.FC = () => {
           scenario, NavigaDER enables CCAs to make informed decisions about which DER technologies
           to promote to which specific customers so as to optimize GHG and financial benefits.
         </Typography>
-        
+
         <Typography className={classes.boldParagraph} emphasis="bold" useDiv variant="body1">
           The table below shows NavigaDER’s existing feature-sets as well as the roadmap for
           additional feature development. The software will be continually updated through Q3 2020
@@ -64,7 +64,7 @@ export const RoadmapPage: React.FC = () => {
                   <Table.Cell>Status</Table.Cell>
                 </Table.Row>
               </Table.Head>
-        
+
               <Table.Body>
                 <Table.Row>
                   <FirstColumn>DER Technology</FirstColumn>
@@ -78,7 +78,7 @@ export const RoadmapPage: React.FC = () => {
                   </Table.Cell>
                 </Table.Row>
                 <Table.Row>
-                  <FirstColumn rowSpan={4}>Impact Calculations</FirstColumn>
+                  <FirstColumn rowSpan={5}>Impact Calculations</FirstColumn>
                   <Table.Cell>CCA Revenue Impacts: NEM Payouts</Table.Cell>
                   <Table.Cell>
                     For each modeled DER program simulation, NavigaDER can determine which NEM
@@ -146,6 +146,22 @@ export const RoadmapPage: React.FC = () => {
                     <Complete />
                   </Table.Cell>
                 </Table.Row>
+                <Table.Row>
+                  <Table.Cell>Wholesale Procurement Costs</Table.Cell>
+                  <Table.Cell>
+                    For each modeled DER program simulation, NavigaDER will assess opportunities for
+                    DER programs to reduce a CCA's procurement costs. Any method that implements a
+                    battery that allows a customer to purchase less electricity from the grid is
+                    simultaneously reducing the amount of energy a CCA has to procure, thus reducing
+                    their procurement costs. Alternatively, any method that implements EVSE or
+                    fuel-switching that allows a customer to purchase more electricity from the grid
+                    is simultaneously increasing the amount of energy a CCA has to procure, thus
+                    increasing their procurement costs.
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Complete />
+                  </Table.Cell>
+                </Table.Row>
               </Table.Body>
             </>
           }
@@ -163,23 +179,10 @@ export const RoadmapPage: React.FC = () => {
                   <Table.Cell>Description</Table.Cell>
                 </Table.Row>
               </Table.Head>
-              
+
               <Table.Body>
                 <Table.Row>
-                  <FirstColumn rowSpan={2}>Impact Calculations</FirstColumn>
-                  <Table.Cell>Wholesale Procurement Costs</Table.Cell>
-                  <Table.Cell>
-                    For each modeled DER program simulation, NavigaDER will assess opportunities for
-                    DER programs to reduce a CCA's procurement costs. Any method that implements a
-                    battery that allows a customer to purchase less electricity from the grid is
-                    simultaneously reducing the amount of energy a CCA has to procure, thus reducing
-                    their procurement costs. Alternatively, any method that implements EVSE or
-                    fuel-switching that allows a customer to purchase more electricity from the grid
-                    is simultaneously increasing the amount of energy a CCA has to procure, thus
-                    increasing their procurement costs.
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row>
+                  <FirstColumn rowSpan={1}>Impact Calculations</FirstColumn>
                   <Table.Cell>GHG Impacts from Fuel Switching</Table.Cell>
                   <Table.Cell>
                     For each modeled fuel-switching program simulation, NavigaDER quantifies avoided
@@ -190,7 +193,7 @@ export const RoadmapPage: React.FC = () => {
                   </Table.Cell>
                 </Table.Row>
                 <Table.Row>
-                  <FirstColumn rowSpan={2}>DER Technology</FirstColumn>
+                  <FirstColumn rowSpan={3}>DER Technology</FirstColumn>
                   <Table.Cell>Electric Vehicle Supply Equipment (EVSE)</Table.Cell>
                   <Table.Cell>
                     Multiple EVSE strategies will be available to the user for selection when
@@ -202,6 +205,14 @@ export const RoadmapPage: React.FC = () => {
                   <Table.Cell>
                     Multiple fuel-switching strategies will be available to the user for selection
                     when creating DER program scenarios
+                  </Table.Cell>
+                </Table.Row>
+                <Table.Row>
+                  <Table.Cell>Photovoltaic (PV)</Table.Cell>
+                  <Table.Cell>
+                    Multiple PV strategies will be available to the user for selection when creating
+                    a DER program scenario (powered by NREL's&nbsp;
+                    <Link.NewTab to="https://pvwatts.nrel.gov/" useAnchor>PVWatts</Link.NewTab>).
                   </Table.Cell>
                 </Table.Row>
                 <Table.Row>

@@ -3,11 +3,12 @@ import { beoRoute, postRequest } from './util';
 
 
 /** ============================ Types ===================================== */
+type ErrorArray = string[];
 type LoginResponse = {
   key: string;
+  non_field_errors?: ErrorArray;
 };
 
-type ErrorArray = string[];
 type ChangePasswordResponse = Partial<{
   old_password: ErrorArray;
   new_password1: ErrorArray;
@@ -25,8 +26,15 @@ type ConfirmPasswordResetResponse = Partial<{
   uid: ErrorArray;
 }>;
 
+type SignupResponse = Partial<{
+  username: ErrorArray;
+  password1: ErrorArray;
+  password2: ErrorArray;
+  email: ErrorArray;
+}>;
+
 /** ============================ API Methods =============================== */
-export async function login (email: string, password: string): Promise<Response> {
+export async function login (email: string, password: string) {
   const response = await postRequest(routes.login, { email, password });
   const json: LoginResponse = await response.json();
 
@@ -35,7 +43,10 @@ export async function login (email: string, password: string): Promise<Response>
     cookieManager.authToken = json.key;
   }
 
-  return response;
+  return {
+    response,
+    error: (json.non_field_errors || [])[0]
+  }
 }
 
 export async function logout () {
@@ -62,7 +73,7 @@ export async function sendResetPasswordEmail (email: string) {
   return {
     response,
     error: (json.email || [])[0]
-  }
+  };
 }
 
 export async function confirmPasswordReset (
@@ -77,11 +88,40 @@ export async function confirmPasswordReset (
   return {
     response,
     error: (json.new_password1 || json.new_password2 || json.token || json.uid || [])[0]
-  }
+  };
+}
+
+export async function signUp (
+  email: string,
+  password1: string,
+  password2: string,
+  username: string
+) {
+  const requestBody = { email, password1, password2, username };
+  const response = await postRequest(routes.registration.signup, requestBody);
+  const json: SignupResponse = await response.json();
+  return {
+    response,
+    error: (json.username || json.password1 || json.password2 || json.email || [])[0]
+  };
+}
+
+export async function resendVerificationEmail (email: string) {
+  const response = await postRequest(routes.registration.resendVerification, { email });
+  const json: SignupResponse = await response.json();
+  return {
+    response,
+    error: (json.username || json.password1 || json.password2 || json.email || [])[0]
+  };
+}
+
+export async function verifyEmail (key: string) {
+  return await postRequest(routes.registration.verifyEmail, { key });
 }
 
 /** ============================ Helpers =================================== */
 const passwordRoute = (rest: string) => beoRoute.restAuth(`password/${rest}`);
+const registrationRoute = (rest: string = '') => beoRoute.restAuth(`registration/${rest}`);
 const routes = {
   login: beoRoute.restAuth('login/'),
   logout: beoRoute.restAuth('logout/'),
@@ -89,5 +129,10 @@ const routes = {
     change: passwordRoute('change/'),
     confirmReset: passwordRoute('reset/confirm/'),
     reset: passwordRoute('reset/')
+  },
+  registration: {
+    resendVerification: registrationRoute('resend-verification/'),
+    signup: registrationRoute(),
+    verifyEmail: registrationRoute('verify-email/')
   }
 };

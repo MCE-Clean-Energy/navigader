@@ -58,14 +58,14 @@ const useStyles = makeStylesHook(() => ({
 const ListItemIcon: ListItemIcon = React.forwardRef(
   (props, ref) => {
     const { children, icon } = props;
-    
+
     // Only one of the `icon` and `label` props should be provided
     const hasBoth = Boolean(children && icon);
     const hasNeither = !Boolean(children || icon);
     if (hasBoth || hasNeither) {
       printWarning('`Menu` component expects one of `icon` or `label` prop');
     }
-    
+
     if (icon) {
       return (
         <MuiListItemIcon ref={ref}>
@@ -90,7 +90,7 @@ const ListItemAvatar: ListItemAvatar = React.forwardRef(
   }
 );
 
-const ListItemText: ListItemText = ({ children}) =>
+const ListItemText: ListItemText = ({ children }) =>
   <MuiListItemText primary={children} />;
 
 const ListItemComponent: ListItem = React.forwardRef(
@@ -99,13 +99,13 @@ const ListItemComponent: ListItem = React.forwardRef(
     const className = classNames({
       [classes.disabled]: disabled
     });
-    
+
     const listItemProps = {
       className,
       disabled,
       ...rest
     };
-    
+
     if (button) {
       return <MuiListItem button {...listItemProps} ref={ref as React.RefObject<HTMLDivElement>} />;
     } else {

@@ -5,25 +5,31 @@ import { getColor, TypographyProps } from './Typography';
 
 
 /** ============================ Types ===================================== */
-type LinkProps = {
-  download?: string;
-  replace?: boolean;
-  to: string;
-} & Omit<TypographyProps, 'component'>;
+type LinkProps =
+  & React.AnchorHTMLAttributes<HTMLAnchorElement>
+  & Omit<TypographyProps, 'component'>
+  & { replace?: boolean; to: string; useAnchor?: boolean; };
 
 /** ============================ Components ================================ */
-export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
-  (props, ref) => {
-    const { color, download, to, ...rest } = props;
-    const linkProps = {
-      color: getColor(color),
-      component: download ? 'a' : RouterLink,
-      href: download ? to : undefined,
-      to: download ? undefined : to,
-      ...rest
-    };
-    
-    return <MuiLink {...linkProps} ref={ref} underline="hover" />;
+const NewTabLink = React.forwardRef<HTMLAnchorElement, LinkProps>(
+  (props, ref) => <Link {...props} ref={ref} rel="noopener noreferrer" target="_blank" />
+);
+
+export const Link = Object.assign(
+  React.forwardRef<HTMLAnchorElement, LinkProps>(
+    ({ color, useAnchor, to, ...rest }, ref) => {
+      const linkProps = {
+        color: getColor(color),
+        component: useAnchor ? 'a' : RouterLink,
+        href: useAnchor ? to : undefined,
+        to: useAnchor ? undefined : to,
+        ...rest
+      };
+
+      return <MuiLink {...linkProps} ref={ref} underline="hover" />;
+    }
+  ), {
+    NewTab: NewTabLink
   }
 );
 

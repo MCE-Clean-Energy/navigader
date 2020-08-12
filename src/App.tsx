@@ -39,6 +39,8 @@ export const AppRoutes: React.FC = () =>
     <Switch>
       <UnauthenticatedRoute path={routes.login} component={pages.LoginPage} />
       <UnauthenticatedRoute path={routes.resetPassword} component={pages.ResetPasswordPage} />
+      <UnauthenticatedRoute path={routes.registration.signup} component={pages.SignupPage} />
+      <UnauthenticatedRoute path={routes.registration.verify} component={pages.VerifyEmailPage} />
 
       <RequireAuth>
         <AppContainer>

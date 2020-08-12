@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useHistory } from 'react-router-dom';
 
 import * as api from 'navigader/api';
 import { Button, Link, TextField } from 'navigader/components';
@@ -9,14 +10,17 @@ import { UnauthenticatedPage } from './UnauthenticatedPage';
 
 /** ============================ Styles ==================================== */
 const useStyles = makeStylesHook(theme => ({
-  forgotPassword: {
-    display: 'block',
-    marginTop: theme.spacing(2)
+  links: {
+    marginTop: theme.spacing(2),
+    '& > a': {
+      display: 'block',
+      lineHeight: '1.5rem'
+    }
   },
   loginField: {
     width: '100%',
     '& + &': {
-      marginTop: theme.spacing(2)
+      margin: theme.spacing(2, 0, 1)
     }
   }
 }), 'LoginPage');
@@ -24,6 +28,7 @@ const useStyles = makeStylesHook(theme => ({
 /** ============================ Components ================================ */
 export const LoginPage: React.FC = () => {
   const classes = useStyles();
+  const history = useHistory();
 
   // Component state
   const [email, setEmail] = React.useState('');
@@ -57,9 +62,11 @@ export const LoginPage: React.FC = () => {
         />
 
         <Button color="primary" type="submit">Log in</Button>
-        <Link className={classes.forgotPassword} to={routes.resetPassword} variant="body2">
-          Forgot password?
-        </Link>
+
+        <div className={classes.links}>
+          <Link to={routes.resetPassword} variant="body2">Forgot password?</Link>
+          <Link to={routes.registration.signup} variant="body2">Sign up</Link>
+        </div>
       </form>
     </UnauthenticatedPage>
   );
@@ -75,18 +82,21 @@ export const LoginPage: React.FC = () => {
     setError(false);
     event.preventDefault();
 
-    let response;
     try {
-      response = await api.login(email, password);
+      const { response, error } = await api.login(email, password);
+
+      if (response.ok) {
+        // Redirect to the dashboard if login was successful
+        window.location.assign(routes.dashboard.base);
+      } else if (error === 'E-mail is not verified.') {
+        // If the message is about email verification, redirect to the verification page
+        history.push(routes.registration.verify);
+      } else {
+        setError(true);
+      }
     } catch (e) {
       setError(true);
       return;
-    }
-
-    if (!response.ok) {
-      setError(true);
-    } else {
-      window.location.assign(routes.dashboard.base);
     }
   }
 };
