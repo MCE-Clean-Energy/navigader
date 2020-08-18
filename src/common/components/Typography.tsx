@@ -48,10 +48,6 @@ const useStyles = makeStylesHook<TypographyProps>(theme => ({
   info: {
     color: theme.palette.info.main
   },
-  noWrap: {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis'
-  },
   success: {
     color: theme.palette.success.main
   },
@@ -69,7 +65,6 @@ export const Typography = React.forwardRef<HTMLSpanElement, TypographyProps>(
       color = 'initial',
       component = 'span',
       emphasis = 'normal',
-      noWrap,
       useDiv = false,
       variant = 'body1',
       ...rest
@@ -77,7 +72,6 @@ export const Typography = React.forwardRef<HTMLSpanElement, TypographyProps>(
     const classes = useStyles({ emphasis });
     const typographyClasses = classNames(className, classes.text, {
       [classes.info]: color === 'info',
-      [classes.noWrap]: noWrap,
       [classes.success]: color === 'success',
       [classes.warning]: color === 'warning'
     });
@@ -95,7 +89,6 @@ export const Typography = React.forwardRef<HTMLSpanElement, TypographyProps>(
         className={typographyClasses}
         color={getColor(color)}
         component={useDiv ? 'div' : component}
-        noWrap={noWrap}
         ref={ref}
         variant={variant}
         {...rest}

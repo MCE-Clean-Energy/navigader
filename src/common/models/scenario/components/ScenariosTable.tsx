@@ -3,7 +3,8 @@ import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
 import {
-  Avatar, Flex, Icon, Link, PaginationState, PrefetchedTable, Progress, Switch, Table, Tooltip
+  Avatar, Flex, Icon, Link, PaginationState, PrefetchedTable, Progress, Switch, Table, Tooltip,
+  Typography
 } from 'navigader/components';
 import { poller } from 'navigader/models/common';
 import { Components, getStrategyDescription } from 'navigader/models/der';
@@ -160,15 +161,21 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 Usage Impact (kWh/year{innerAveraged && '/SAID'})
               </Table.Cell>
               <Table.Cell align="right">
-                Revenue Impact ($/year{innerAveraged && '/SAID'})
-              </Table.Cell>
-              <Table.Cell align="right">
                 <Tooltip title="Calculated using CNS 2022 tables">
                   <div>GHG Impact (tCO<sub>2</sub>/year{innerAveraged && '/SAID'})</div>
                 </Tooltip>
               </Table.Cell>
+              <Table.Cell align="right">
+                <Tooltip title="CCA’s electricity sales impact">
+                  <div>
+                    Revenue Impact ($/year{innerAveraged && '/SAID'})
+                  </div>
+                </Tooltip>
+              </Table.Cell>
+              <Table.Cell align="right">
+                Procurement Cost ($/year{innerAveraged && '/SAID'})
+              </Table.Cell>
               <Table.Cell align="right">RA Impact (MW/year{innerAveraged && '/SAID'})</Table.Cell>
-              <Table.Cell align="right">Procurement Cost ($/year{innerAveraged && '/SAID'})</Table.Cell>
               {actionsMenu && <Table.Cell>Menu</Table.Cell>}
             </Table.Row>
           </Table.Head>
@@ -195,7 +202,9 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                     : scenario.name
                   }
                 </Table.Cell>
-                <Table.Cell>{date.standard(scenario.created_at)}</Table.Cell>
+                <Table.Cell>
+                  <Typography noWrap variant="body2">{date.standard(scenario.created_at)}</Typography>
+                </Table.Cell>
                 <Table.Cell>
                   {scenario.meter_group &&
                     <Tooltip title={`${scenario.meter_group.meter_count} meters`}>
@@ -234,13 +243,6 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? dollars(getField(scenario, 'BillDelta', innerAveraged))
-                      : '-'
-                  }
-                </Table.Cell>
-                <Table.Cell align="right">
-                  {
-                    scenario.progress.is_complete
                       ? commas(maxDecimals(getField(scenario, 'CleanNetShort2022Delta', innerAveraged), 2))
                       : '-'
                   }
@@ -248,7 +250,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? commas(maxDecimals(kwToMw(getField(scenario, 'RADelta', innerAveraged)), 2))
+                      ? dollars(getField(scenario, 'BillDelta', innerAveraged))
                       : '-'
                   }
                 </Table.Cell>
@@ -262,6 +264,13 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                         ? dollars(procurementValue)
                         : '-';
                     })()
+                  }
+                </Table.Cell>
+                <Table.Cell align="right">
+                  {
+                    scenario.progress.is_complete
+                      ? commas(maxDecimals(kwToMw(getField(scenario, 'RADelta', innerAveraged)), 2))
+                      : '-'
                   }
                 </Table.Cell>
                 {actionsMenu && <Table.Cell>{actionsMenu(scenario)}</Table.Cell>}
