@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 import MuiAppBar from '@material-ui/core/AppBar';
 import MuiToolbar from '@material-ui/core/Toolbar';
+import classNames from 'classnames';
 
 import navigaderImage from 'navigader/images/navigader.png';
 import * as routes from 'navigader/routes';
@@ -11,12 +12,32 @@ import { Button } from '../Button';
 import * as Flex from '../Flex';
 import { Padding } from '../Padding';
 import { AccountMenu } from './AccountMenu';
+import { DRAWER_WIDTH } from './common';
 import { Feedback } from './Feedback';
 
 
+/** ============================ Types ===================================== */
+type AppBarProps = {
+  drawerOpen: boolean;
+  openDrawer: () => void;
+};
+
+/** ============================ Styles ==================================== */
+const barMargin = DRAWER_WIDTH - 60;
 const useStyles = makeStylesHook(theme => ({
   appBar: {
-    zIndex: theme.zIndex.drawer + 1,
+    transition: theme.transitions.create(['margin', 'width'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  },
+  appBarShift: {
+    width: `calc(100% - ${barMargin}px)`,
+    marginLeft: barMargin,
+    transition: theme.transitions.create(['margin', 'width'], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
   },
   container: {
     boxSizing: 'border-box',
@@ -31,6 +52,9 @@ const useStyles = makeStylesHook(theme => ({
     position: 'absolute',
     right: 0,
     top: 0
+  },
+  menuButton: {
+    marginRight: theme.spacing(2)
   },
   rightSide: {
     color: white,
@@ -48,16 +72,27 @@ const useStyles = makeStylesHook(theme => ({
 }), 'AppBar');
 
 /** ============================ Components ================================ */
-export const AppBar: React.FC = () => {
+export const AppBar: React.FC<AppBarProps> = ({ drawerOpen, openDrawer }) => {
   const classes = useStyles();
   const history = useHistory();
 
   return (
-    <MuiAppBar position="fixed" className={classes.appBar}>
+    <MuiAppBar
+      position="fixed"
+      className={classNames(classes.appBar, { [classes.appBarShift]: drawerOpen })}
+    >
       <MuiToolbar className={classes.toolbar}>
         <Gradient className={classes.gradient} invert orientation="horizontal" startPercent={20}>
           <Padding className={classes.container}>
             <Flex.Container alignItems="center">
+              <Flex.Item>
+                <Button
+                  aria-label="open drawer"
+                  icon="menu"
+                  onClick={openDrawer}
+                  className={classes.menuButton}
+                />
+              </Flex.Item>
               <Flex.Item grow>
                 <img src={navigaderImage} className={classes.navigaderText} alt="NavigaDER" />
               </Flex.Item>

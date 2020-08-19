@@ -3,10 +3,12 @@ import AccountIcon from '@material-ui/icons/AccountCircle';
 import AddIcon from '@material-ui/icons/Add';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import BatteryChargingFull from '@material-ui/icons/BatteryChargingFull';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import CreateIcon from '@material-ui/icons/Create';
 import DoneIcon from '@material-ui/icons/Done';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FeedbackIcon from '@material-ui/icons/Feedback';
+import MenuIcon from '@material-ui/icons/Menu';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Schedule from '@material-ui/icons/Schedule';
 import WbSunny from '@material-ui/icons/WbSunny';
@@ -28,8 +30,10 @@ export type ValidIcon =
   | 'back'
   | 'battery'
   | 'checkMark'
+  | 'chevronLeft'
   | 'clock'
   | 'feedback'
+  | 'menu'
   | 'pencil'
   | 'plus'
   | 'sun'
@@ -49,7 +53,7 @@ export const Icon: React.ComponentType<IconProps> = React.forwardRef<SVGSVGEleme
     const colorProps = isMaterialColor(color)
       ? { style: { color: materialColors[color][500] }}
       : { color };
-    
+
     return <IconComponent ref={ref} {...colorProps} {...rest} />;
   }
 );
@@ -63,8 +67,10 @@ const iconMap = {
   back: ArrowBack,
   battery: BatteryChargingFull,
   checkMark: DoneIcon,
+  chevronLeft: ChevronLeftIcon,
   clock: Schedule,
   feedback: FeedbackIcon,
+  menu: MenuIcon,
   pencil: CreateIcon,
   plus: AddIcon,
   sun: WbSunny,

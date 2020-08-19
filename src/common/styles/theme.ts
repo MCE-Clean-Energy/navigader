@@ -12,8 +12,13 @@ import { materialColors, primaryColor, secondaryColor } from './colors';
 // Flex types
 export type AlignItemsValue = 'center' | 'flex-start' | 'stretch';
 export type FlexDirection = 'row' | 'column';
-export type JustifyContentValue = 'center' | 'flex-start' | 'space-between' | 'space-around';
 export type WrapValue = 'wrap' | 'nowrap';
+export type JustifyContentValue =
+  | 'center'
+  | 'flex-start'
+  | 'flex-end'
+  | 'space-between'
+  | 'space-around';
 
 type FlexArgs = Partial<{
   direction: FlexDirection;
@@ -55,6 +60,9 @@ export const theme = createMuiTheme({
     secondary: {
       main: secondaryColor
     }
+  },
+  typography: {
+    fontSize: 16
   }
 });
 
