@@ -13,7 +13,7 @@ type QueryParamPair = [string, QueryStringPrimitive | QueryStringPrimitive[]];
 /** ============================ Query compilation ========================= */
 function makeFilterQueryParams (filterClauses: DynamicRestParams['filter']): QueryParamPair[] {
   if (!filterClauses) return [];
-  
+
   // Each of the filters gets its own `filter` query parameter
   const queryParamPairs: QueryParamPair[] = [];
   Object.entries(filterClauses)
@@ -26,7 +26,7 @@ function makeFilterQueryParams (filterClauses: DynamicRestParams['filter']): Que
         queryParamPairs.push([`filter{${field}}`, filterClause.value]);
       }
     });
-  
+
   return queryParamPairs;
 }
 
@@ -35,7 +35,7 @@ function makeIncludeExcludeQueryParam (
   fields?: IncludeExcludeFields
 ): QueryParamPair[] {
   if (!fields) return [];
-  
+
   // If the value is an array, repeat the parameter key once per element
   const paramKey = `${key}[]`;
   return Array.isArray(fields)
@@ -53,14 +53,14 @@ function makeIncludeExcludeQueryParam (
  */
 export function makeQueryString (params?: QueryParams): string {
   if (!params) return '';
-  
+
   // Handle any dynamic rest params
   const drQueryParamPairs = [
     ...makeIncludeExcludeQueryParam('include', params.include),
     ...makeIncludeExcludeQueryParam('exclude', params.exclude),
     ...makeFilterQueryParams(params.filter)
   ];
-  
+
   // Handle all other params
   const nonDynamicRestParams = _.omit(params, ['exclude', 'include', 'filter']);
   const nonDRQueryParamPairs: QueryParamPair[] = omitFalsey(Object.entries(nonDynamicRestParams)
@@ -73,17 +73,17 @@ export function makeQueryString (params?: QueryParams): string {
       ) {
         return [key, value];
       }
-      
+
       // Print a warning and return `null`. The `null` value will be removed by `omitFalsey`
       printWarning(`Query parameter "${key}" received invalid value: ${value}`);
       return null;
     }));
-    
+
   // Reduce the array of pairs
   const queryString = [...drQueryParamPairs, ...nonDRQueryParamPairs]
     .map(([param, value]) => [param, encodeURIComponent(value.toString())].join('='))
     .join('&');
-  
+
   return queryString.length === 0
     ? ''
     : `?${queryString}`;
@@ -104,3 +104,27 @@ export const filterClause = {
   in: in_,
   equals: equals_
 };
+
+/** ============================ Downloads ================================= */
+export async function download (uri: string, name?: string) {
+  // Fetch the file
+  const response = await fetch(uri);
+  const blob = await response.blob();
+
+  // Create a string containing a URL representing the blob (file)
+  const url = window.URL.createObjectURL(blob);
+
+  // Make an invisible anchor to download the file
+  const a = document.createElement('a');
+  a.style.display = 'none';
+  a.href = url;
+  a.download = name || '';
+  document.body.appendChild(a);
+
+  // Download the file
+  a.click();
+
+  // Delete the URL string and remove the anchor element
+  window.URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+}

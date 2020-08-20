@@ -30,6 +30,7 @@ export type RawPandasFrame<RowType extends Record<string, any>> = {
 // `number`, yet `Boolean(NaN) === false`.
 export type Falsey = false | 0 | '' | null | undefined;
 export type Nullable<T> = T | null;
+export type Maybe<T> = T | undefined;
 
 // Used in places where a generic `id` field is expected
 export type IdType = string | number;
