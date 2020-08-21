@@ -12,7 +12,7 @@ import * as routes from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { ColorMap } from 'navigader/styles';
 import { Scenario, ScenarioReportSummary } from 'navigader/types';
-import { kwToMw, omitFalsey, printWarning } from 'navigader/util';
+import { omitFalsey, printWarning } from 'navigader/util';
 import { commas, date, dollars, maxDecimals } from 'navigader/util/formatters';
 import _ from 'navigader/util/lodash';
 
@@ -26,6 +26,7 @@ type ScenariosTableProps = {
   NoScenariosRow?: React.ReactElement;
   onSelect?: (selections: Scenario[]) => void;
   scenarios?: Scenario[];
+  title?: React.ReactNode;
   updateAveraged?: (averaged: boolean) => void;
 };
 
@@ -74,6 +75,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
     NoScenariosRow,
     onSelect,
     scenarios,
+    title = 'Scenarios',
     updateAveraged
   } = props;
   const dispatch = useDispatch();
@@ -145,7 +147,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
       onSelect={onSelect}
       raised
       stickyHeader
-      title="Scenarios"
+      title={title}
     >
       {(scenarios: Scenario[], EmptyRow: React.ElementType) =>
         <>
@@ -175,7 +177,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
               <Table.Cell align="right">
                 Procurement Cost ($/year{innerAveraged && '/SAID'})
               </Table.Cell>
-              <Table.Cell align="right">RA Impact (MW/year{innerAveraged && '/SAID'})</Table.Cell>
+              <Table.Cell align="right">RA Impact (kW/year{innerAveraged && '/SAID'})</Table.Cell>
               {actionsMenu && <Table.Cell>Menu</Table.Cell>}
             </Table.Row>
           </Table.Head>
@@ -269,7 +271,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? commas(maxDecimals(kwToMw(getField(scenario, 'RADelta', innerAveraged)), 2))
+                      ? commas(maxDecimals(getField(scenario, 'RADelta', innerAveraged), 2))
                       : '-'
                   }
                 </Table.Cell>

@@ -240,7 +240,10 @@ export const ScenarioResultsPage: React.FC = () => {
           <ScenarioContext scenario={scenario} />
           <ScenarioGraphs scenario={scenario} />
           <div className={classes.table}>
-            <ScenariosTable scenarios={[scenario]} />
+            <ScenariosTable
+              scenarios={[scenario]}
+              title="DER Program Scenario Impacts: Delta between Initial Load and Simulated Load"
+            />
           </div>
         </>
       )}
