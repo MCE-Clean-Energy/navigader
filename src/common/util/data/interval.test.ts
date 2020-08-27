@@ -77,20 +77,20 @@ describe('`IntervalData` class', () => {
   describe('`filter` method', () => {
     it('handles filtering by `start` date', () => {
       const filtered1 = juneInterval.filter({ start: new Date('2020-06-02T18:15:00') });
-      expect(filtered1.values()).toEqual([2, 3, 4]);
+      expect(filtered1.values).toEqual([2, 3, 4]);
 
       // 1 second later and we lose the first datum
       const filtered2 = juneInterval.filter({ start: new Date('2020-06-02T18:15:01') });
-      expect(filtered2.values()).toEqual([3, 4]);
+      expect(filtered2.values).toEqual([3, 4]);
     });
 
     it('handles filtering by `end` date', () => {
       const filtered1 = juneInterval.filter({ end: new Date('2020-06-02T18:30:00') });
-      expect(filtered1.values()).toEqual([1, 2, 3]);
+      expect(filtered1.values).toEqual([1, 2, 3]);
 
       // 1 second earlier and we lose the last datum
       const filtered2 = juneInterval.filter({ end: new Date('2020-06-02T18:29:59') });
-      expect(filtered2.values()).toEqual([1, 2]);
+      expect(filtered2.values).toEqual([1, 2]);
     });
 
     it('handles filtering by `range`', () => {
@@ -99,7 +99,7 @@ describe('`IntervalData` class', () => {
           new Date('2020-06-02T18:15:00'),
           new Date('2020-06-02T18:45:00')
         ]
-      }).values()).toEqual([2, 3, 4]);
+      }).values).toEqual([2, 3, 4]);
 
       // start 1 second later and we lose the first datum
       expect(juneInterval.filter({
@@ -107,7 +107,7 @@ describe('`IntervalData` class', () => {
           new Date('2020-06-02T18:15:01'),
           new Date('2020-06-02T18:45:00')
         ]
-      }).values()).toEqual([3, 4]);
+      }).values).toEqual([3, 4]);
 
       // end 1 second earlier and we lose the last datum
       expect(juneInterval.filter({
@@ -115,13 +115,13 @@ describe('`IntervalData` class', () => {
           new Date('2020-06-02T18:15:01'),
           new Date('2020-06-02T18:44:59')
         ]
-      }).values()).toEqual([3]);
+      }).values).toEqual([3]);
     });
 
     it('handles filtering by `month`', () => {
-      expect(juneInterval.filter({ month: 5 }).values()).toEqual([]);
-      expect(juneInterval.filter({ month: 6 }).values()).toEqual([1, 2, 3, 4]);
-      expect(juneInterval.filter({ month: 7 }).values()).toEqual([]);
+      expect(juneInterval.filter({ month: 5 }).values).toEqual([]);
+      expect(juneInterval.filter({ month: 6 }).values).toEqual([1, 2, 3, 4]);
+      expect(juneInterval.filter({ month: 7 }).values).toEqual([]);
 
       const monthInterval = new IntervalData([
         { timestamp: new Date('2020-06-02T18:00:00'), value: 1 },
@@ -130,17 +130,17 @@ describe('`IntervalData` class', () => {
         { timestamp: new Date('2020-09-02T18:45:00'), value: 4 }
       ], 'summer');
 
-      expect(monthInterval.filter({ month: 6 }).values()).toEqual([1]);
-      expect(monthInterval.filter({ month: 7 }).values()).toEqual([2]);
-      expect(monthInterval.filter({ month: 8 }).values()).toEqual([3]);
-      expect(monthInterval.filter({ month: 9 }).values()).toEqual([4]);
+      expect(monthInterval.filter({ month: 6 }).values).toEqual([1]);
+      expect(monthInterval.filter({ month: 7 }).values).toEqual([2]);
+      expect(monthInterval.filter({ month: 8 }).values).toEqual([3]);
+      expect(monthInterval.filter({ month: 9 }).values).toEqual([4]);
     });
   });
 
   describe('`subtract` method', () => {
     it('subtracts corresponding values', () => {
       const juneSquaredInterval = juneInterval.map(({ value }) => value ** 2);
-      expect(juneSquaredInterval.subtract(juneInterval).values()).toEqual([0, 2, 6, 12]);
+      expect(juneSquaredInterval.subtract(juneInterval).values).toEqual([0, 2, 6, 12]);
     });
 
     it('drops intervals that do not align', () => {
@@ -158,7 +158,7 @@ describe('`IntervalData` class', () => {
         { timestamp: new Date('2020-06-02T18:45:00'), value: 1 }
       ], 'later');
 
-      expect(interval1.subtract(interval2).values()).toEqual([-2, 0, 2]);
+      expect(interval1.subtract(interval2).values).toEqual([-2, 0, 2]);
 
       // Dates don't align
       const june1Interval = new IntervalData([
@@ -175,7 +175,7 @@ describe('`IntervalData` class', () => {
         { timestamp: new Date('2020-06-02T18:45:00'), value: 1 }
       ], 'June 2');
 
-      expect(june1Interval.subtract(june2Interval).values()).toEqual([]);
+      expect(june1Interval.subtract(june2Interval).values).toEqual([]);
     });
   });
 
@@ -188,7 +188,7 @@ describe('`IntervalData` class', () => {
         { timestamp: new Date('2020-06-02T18:45:00'), value: 827 }
       ], 'large');
 
-      expect(largeInterval.divide(100).values()).toEqual([1, 2, 4.5, 8.27]);
+      expect(largeInterval.divide(100).values).toEqual([1, 2, 4.5, 8.27]);
     });
   });
 
@@ -201,7 +201,7 @@ describe('`IntervalData` class', () => {
         { timestamp: new Date('2020-06-02T18:45:00'), value: 4 }
       ], 'multiplier');
 
-      expect(largeInterval.multiply(5).values()).toEqual([5, 10, 15, 20]);
+      expect(largeInterval.multiply(5).values).toEqual([5, 10, 15, 20]);
     });
   });
 
@@ -219,7 +219,7 @@ describe('`IntervalData` class', () => {
   describe('`map` method', () => {
     it('applies the mapping function to each datum', () => {
       const squared = kwInterval.map(n => n.value ** 2);
-      expect(squared.values()).toEqual([1, 4, 9]);
+      expect(squared.values).toEqual([1, 4, 9]);
     });
 
     it('renames the interval if a name is provided', () => {
@@ -235,12 +235,12 @@ describe('`IntervalData` class', () => {
   describe('`multiply288` method', () => {
     it('properly multiplies the 288 by hour of the day', () => {
       const multiplied = kwInterval.multiply288(hourFrame288);
-      expect(multiplied.values()).toEqual([18, 36, 54]);
+      expect(multiplied.values).toEqual([18, 36, 54]);
     });
 
     it('properly multiplies the 288 by month of the year', () => {
       const multiplied = sparseInterval.multiply288(monthFrame288);
-      expect(multiplied.values()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+      expect(multiplied.values).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
     });
 
     it('renames the interval if a name is provided', () => {
@@ -258,8 +258,8 @@ describe('`IntervalData` class', () => {
   describe('`align288` method', () => {
     it('properly creates interval data with 288 values and the same domain', () => {
       const aligned = sparseInterval.align288(monthFrame288);
-      expect(aligned.domain()).toEqual({
-        timestamp: sparseInterval.domain().timestamp,
+      expect(aligned.domain).toEqual({
+        timestamp: sparseInterval.domain.timestamp,
         value: [
           monthFrame288.getValueByMonthHour(1, 18),
           monthFrame288.getValueByMonthHour(12, 18)
@@ -285,6 +285,20 @@ describe('`IntervalData` class', () => {
     it('returns `undefined` if there is no interval in the given month', () => {
       expect(juneInterval.startOfMonth(5)).toBeUndefined();
       expect(juneInterval.startOfMonth(7)).toBeUndefined();
+    });
+  });
+
+  describe('`rename` method', () => {
+    it('renames the interval', () => {
+      const hourInterval = new IntervalData([
+        { timestamp: new Date('June 2, 2020 18:00:00'), value: 1 },
+        { timestamp: new Date('June 2, 2020 19:00:00'), value: 2 }
+      ], 'Hour interval');
+      expect(hourInterval.name).toEqual('Hour interval');
+
+      const renamed = hourInterval.rename('60-minute interval');
+      expect(renamed.name).toEqual('60-minute interval');
+      expect(renamed).toStrictEqual(hourInterval);
     });
   });
 });

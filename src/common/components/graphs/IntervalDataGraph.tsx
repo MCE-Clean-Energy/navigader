@@ -225,7 +225,7 @@ function useData (data: IntervalData[], month: MonthIndex, timeDomain?: DateTupl
   // Get the domain
   const allIntervals = omitFalsey([...monthData, areaData]);
   const valueDomain: [number, number] = allIntervals.reduce(([curMin, curMax], interval) => {
-    const intervalDomain = interval.valueDomain();
+    const intervalDomain = interval.valueDomain;
     return [
       Math.min(curMin, intervalDomain[0]),
       Math.max(curMax, intervalDomain[1])
@@ -235,7 +235,7 @@ function useData (data: IntervalData[], month: MonthIndex, timeDomain?: DateTupl
   return {
     areaData,
     domain: {
-      x: monthData[0].timeDomain(),
+      x: monthData[0].timeDomain,
       y: valueDomain
     },
     visibleData,

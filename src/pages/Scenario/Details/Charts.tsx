@@ -23,7 +23,7 @@ export const GHGCharts: React.FC<ChartProps> = (props) => {
   const cns2022 = ghgRates && _.find(ghgRates,
       rate => rate.name === 'Clean Net Short' && rate.effective.includes('2022')
   )?.data?.rename('Clean Net Short 2022');
-  
+
   return (
     <>
       <LoadingModal loading={!cns2022} />
@@ -56,7 +56,7 @@ export const GHGCharts: React.FC<ChartProps> = (props) => {
 
 export const ProcurementCharts: React.FC<ChartProps> = (props) => {
   const { meterGroupData, scenarioData, selectedMonth, timeDomain, updateTimeDomain } = props;
-  
+
   // TODO: support scenarios with multiple years of data
   const year = scenarioData?.years[0];
   const caisoRates = useCAISORates({
@@ -64,19 +64,19 @@ export const ProcurementCharts: React.FC<ChartProps> = (props) => {
     data_types: 'default',
     period: 60
   });
-  
+
   const caisoRate = caisoRates && caisoRates[0].data.default;
-  
+
   const initialProcurement = React.useMemo(() =>
     meterGroupData && caisoRate && meterGroupData.multiply(caisoRate, 'Initial procurement cost'),
     [meterGroupData, caisoRate]
   );
-  
+
   const simulatedProcurement = React.useMemo(() =>
     scenarioData && caisoRate && scenarioData.multiply(caisoRate, 'Simulated procurement cost'),
     [scenarioData, caisoRate]
   );
-  
+
   return (
     <>
       <LoadingModal loading={!(caisoRate && initialProcurement && simulatedProcurement)} />
@@ -113,14 +113,14 @@ export const ProcurementCharts: React.FC<ChartProps> = (props) => {
  * @param {string} units: the units of the data being scaled
  */
 function scaleInvertedData (interval: IntervalData, units: string) {
-  const max = interval.valueDomain()[1];
+  const max = interval.valueDomain[1];
   const magnitude = Math.abs(Math.log10(max));
   const [scale, wattage] = magnitude >= 6
     ? [1e6, 'GW']
     : magnitude >= 3
       ? [1e3, 'MW']
       : [1, 'kW'];
-  
+
   return {
     data: interval.multiply(scale),
     units: `${units}/${wattage}`

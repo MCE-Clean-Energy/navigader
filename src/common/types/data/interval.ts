@@ -26,25 +26,30 @@ export declare class IntervalData {
   serialize <U extends string, C extends string>(unit: U, column: C): RawIntervalData<U, C>;
 
   // Getters
-  domain (): { timestamp: DateTuple; value: NumberTuple; };
+  get domain (): { timestamp: DateTuple; value: NumberTuple; };
   get period (): number;
-  startOfMonth (month: MonthIndex): Date | undefined;
-  timeDomain (): DateTuple;
-  valueDomain (): NumberTuple;
-  values (): number[];
+  get timeDomain (): DateTuple;
+  get valueDomain (): NumberTuple;
+  get values (): number[];
   get years (): number[];
-  
+
+  // Accessors
+  startOfMonth (month: MonthIndex): Date | undefined;
+
+  // Mutators
+  rename (name: string): IntervalData;
+
   // Iteration methods
-  map (fn: (datum: IntervalDatum) => number, name: string): IntervalData;
   filter (filters?: IntervalDataFilters): IntervalData;
-  
-  // Mathematical operations
-  subtract (other: IntervalData): IntervalData;
+  map (fn: (datum: IntervalDatum) => number, name: string): IntervalData;
+
+  // Transformations
   divide (n: number): IntervalData;
   multiply (multiplier: number | IntervalData, name?: string): IntervalData;
-  
+  subtract (other: IntervalData): IntervalData;
+
   // 288 methods
+  align288 (frame: Frame288Numeric): IntervalData;
   map288 (frame: Frame288Numeric, fn: (datum: IntervalDatum, n: number) => number, name?: string): IntervalData;
   multiply288 (frame: Frame288Numeric, name?: string): IntervalData;
-  align288 (frame: Frame288Numeric): IntervalData;
 }

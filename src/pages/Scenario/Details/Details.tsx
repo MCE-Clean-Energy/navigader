@@ -140,7 +140,12 @@ const ScenarioGraphs: React.FC<ScenarioProp> = ({ scenario }) => {
                 month={selectedMonth}
                 onTimeDomainChange={setTimeDomain}
                 timeDomain={timeDomain}
-                {...scaleLoadData([meterGroupData, simulationData])}
+                {
+                  ...scaleLoadData([
+                    meterGroupData.rename('Initial load'),
+                    simulationData?.rename('Simulated load')
+                  ])
+                }
               />
             }
             {chartView === 'ghg' &&
@@ -259,7 +264,7 @@ export const ScenarioResultsPage: React.FC = () => {
  */
 function scaleLoadData (intervals: IntervalDataTuple) {
   const [min, max] = intervals.reduce(([curMin, curMax], interval) => {
-    const [minInterval, maxInterval] = interval.valueDomain();
+    const [minInterval, maxInterval] = interval.valueDomain;
     return [Math.min(curMin, minInterval), Math.max(curMax, maxInterval)];
   }, [Infinity, -Infinity]);
 
