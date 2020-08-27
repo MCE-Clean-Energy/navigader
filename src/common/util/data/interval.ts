@@ -60,7 +60,7 @@ export class IntervalData implements IntervalDataInterface {
    */
   serialize <Unit extends string, Column extends string>(unit: Unit, column: Column) {
     return {
-      [column]: this.data.map(datum => datum.timestamp.toString()),
+      [column]: this.data.map(datum => datum.timestamp.toISOString()),
       [unit]: _.map(this.data, 'value')
     } as RawIntervalData<Unit, Column>;
   }
@@ -343,7 +343,7 @@ export function makeIntervalData <K extends string, V extends string> (
   const values = object[valueKey];
   return new IntervalData(
     _.range(timestamps.length).map(index => ({
-      timestamp: new Date(timestamps[index]),
+      timestamp: moment(timestamps[index]).toDate(),
       value: values[index]
     })),
     object.name
