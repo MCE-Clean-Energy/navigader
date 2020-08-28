@@ -1,5 +1,6 @@
 export * from './api';
 export * from './common';
+export * from './components';
 export * from './cost';
 export * from './data';
 export * from './der';

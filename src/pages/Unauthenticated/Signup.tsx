@@ -54,10 +54,6 @@ export const SignupPage: React.FC = () => {
   return (
     <UnauthenticatedPage>
       <form onSubmit={signup}>
-        <Typography variant="body1">
-          Enter your account's verified email address and you will receive a password reset link.
-        </Typography>
-
         <TextField
           className={classes.textField}
           label="Username"

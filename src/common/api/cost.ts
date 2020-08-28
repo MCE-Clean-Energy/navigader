@@ -2,9 +2,10 @@ import {
   RawCAISORate, DataTypeParams, DynamicRestParams, PaginationQueryParams, RawGHGRate,
   RawPaginationSet, RawScenario, Scenario, RawMeterGroup
 } from 'navigader/types';
-import { serializers } from 'navigader/util';
+import { appendQueryString, serializers } from 'navigader/util';
 import {
-  appendId, beoRoute, deleteRequest, getRequest, parsePaginationSet, patchRequest, postRequest
+  appendId, beoRoute, deleteRequest, downloadFile, getRequest, parsePaginationSet, patchRequest,
+  postRequest, ProgressCallback
 } from './util';
 
 
@@ -119,6 +120,34 @@ export async function deleteScenario (id: string) {
   return await deleteRequest(routes.scenarios(id));
 }
 
+/**
+ * Downloads a CSV of summary-level scenario data
+ *
+ * @param {string[]} ids: the IDs of the scenarios to fetch summary data from
+ */
+export async function downloadSummaryData (ids: string[]) {
+  const url = appendQueryString(routes.scenarios.download, {
+    ids,
+    level: 'summary'
+  });
+  return downloadFile(url, 'scenario-summary-data.csv');
+}
+
+/**
+ * Downloads a CSV of customer-level scenario data
+ *
+ * @param {string[]} ids: the IDs of the scenarios to fetch customer data from
+ * @param {ProgressCallback} onProgress: callback to execute when the download progresses
+ */
+export async function downloadCustomerData (ids: string[], onProgress?: ProgressCallback) {
+  const url = appendQueryString(routes.scenarios.download, {
+    ids,
+    level: 'customer'
+  });
+
+  return downloadFile(url, 'scenario-customer-data.csv', onProgress);
+}
+
 /** ============================ GHG ======================================= */
 export async function getGhgRates (options?: GetGHGRatesQueryOptions) {
   const response: RawPaginationSet<GetGHGRatesResponse>
@@ -143,5 +172,9 @@ const routes = {
   caiso_rate: baseRoute('caiso_rate/'),
   ghg_rate: baseRoute('ghg_rate/'),
   postStudy: baseRoute('multiple_scenario_study/'),
-  scenarios: appendId(baseRoute('study'))
+  scenarios: Object.assign(
+    appendId(baseRoute('study')), {
+      download: baseRoute('study/download/')
+    }
+  )
 };

@@ -4,6 +4,7 @@ import MuiAlertTitle from '@material-ui/lab/AlertTitle';
 import classNames from 'classnames';
 
 import { makeStylesHook } from 'navigader/styles';
+import { AlertType } from 'navigader/types';
 import _ from 'navigader/util/lodash';
 
 
@@ -13,7 +14,7 @@ type AlertProps = React.PropsWithChildren<{
   onClose?: () => void;
   outlined?: boolean;
   title?: React.ReactNode;
-  type: 'error' | 'warning' | 'info' | 'success';
+  type: AlertType;
 }>;
 
 /** ============================ Styles ==================================== */

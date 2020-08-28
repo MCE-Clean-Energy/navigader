@@ -42,7 +42,7 @@ type UpdateModelAction = PayloadAction<ModelClassInterior>;
 type UpdateModelsAction = PayloadAction<ModelClassInterior[]>;
 
 /** ============================ Slice ===================================== */
-const initialState = {
+const initialState: ModelsSlice = {
   caisoRates: [],
   derConfigurations: [],
   derStrategies: [],
@@ -51,7 +51,7 @@ const initialState = {
   meterGroups: [],
   meters: [],
   scenarios: []
-} as ModelsSlice;
+};
 
 /**
  * Global UI slice. This will hold state for certain global UI state parameters, such as whether a

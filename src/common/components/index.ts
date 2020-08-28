@@ -18,6 +18,7 @@ export * from './Container';
 export * from './Dialog';
 export * from './Divider';
 export * from './Fade';
+export * from './FileDownload';
 export * from './graphs';
 export * from './Grid';
 export * from './HoverText';

@@ -1,6 +1,7 @@
 import * as React from 'react';
 
-import { Avatar, PrefetchedTable, Table, Tooltip } from 'navigader/components';
+import * as api from 'navigader/api';
+import { Avatar, FileDownload, PrefetchedTable, Table, Tooltip } from 'navigader/components';
 import { ColorMap } from 'navigader/styles';
 import { Scenario, ScenarioReportFields } from 'navigader/types';
 import { commas, dollars, maxDecimals } from 'navigader/util/formatters';
@@ -26,6 +27,9 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
       containerClassName={className}
       // Give the simulation an ID that is a combination of the meter ID and the scenario ID
       data={simulations.map(s => ({ ...s, id: s.ID + s.SingleScenarioStudy }))}
+      headerActions={
+        <FileDownload downloadFn={cb => api.downloadCustomerData(_.map(scenarios, 'id'), cb)} />
+      }
       initialSorting={{
         dir: 'desc',
         key: 'UsageDelta'

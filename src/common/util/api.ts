@@ -2,6 +2,7 @@ import {
   DynamicRestParams, FilterEqualClause, FilterInClause, IncludeExcludeFields, QueryParams,
   QueryStringPrimitive
 } from 'navigader/types';
+import { cookieManager } from './cookies';
 import _ from './lodash';
 import { omitFalsey } from './omitFalsey';
 import { printWarning } from './printWarning';
@@ -9,6 +10,7 @@ import { printWarning } from './printWarning';
 
 /** ============================ Types ===================================== */
 type QueryParamPair = [string, QueryStringPrimitive | QueryStringPrimitive[]];
+type ContentType = 'application/json' | 'multipart/form-data';
 
 /** ============================ Query compilation ========================= */
 function makeFilterQueryParams (filterClauses: DynamicRestParams['filter']): QueryParamPair[] {
@@ -48,11 +50,12 @@ function makeIncludeExcludeQueryParam (
  * Produces the querystring for a request, given an object representing the key-value pairs to
  * include in the querystring.
  *
+ * @param {string} route: the base route to which the querystring will be appended
  * @param {QueryParams} params: the object of key-value pairs that should be converted into a
  *   querystring
  */
-export function makeQueryString (params?: QueryParams): string {
-  if (!params) return '';
+export function appendQueryString (route: string, params?: QueryParams): string {
+  if (!params) return route;
 
   // Handle any dynamic rest params
   const drQueryParamPairs = [
@@ -84,9 +87,11 @@ export function makeQueryString (params?: QueryParams): string {
     .map(([param, value]) => [param, encodeURIComponent(value.toString())].join('='))
     .join('&');
 
-  return queryString.length === 0
-    ? ''
-    : `?${queryString}`;
+  return route.concat(
+    queryString.length === 0
+      ? ''
+      : `?${queryString}`
+  );
 }
 
 /** ============================ Clause builders =========================== */
@@ -105,26 +110,19 @@ export const filterClause = {
   equals: equals_
 };
 
-/** ============================ Downloads ================================= */
-export async function download (uri: string, name?: string) {
-  // Fetch the file
-  const response = await fetch(uri);
-  const blob = await response.blob();
-
-  // Create a string containing a URL representing the blob (file)
-  const url = window.URL.createObjectURL(blob);
-
-  // Make an invisible anchor to download the file
-  const a = document.createElement('a');
-  a.style.display = 'none';
-  a.href = url;
-  a.download = name || '';
-  document.body.appendChild(a);
-
-  // Download the file
-  a.click();
-
-  // Delete the URL string and remove the anchor element
-  window.URL.revokeObjectURL(url);
-  document.body.removeChild(a);
+/** ============================ Headers =================================== */
+/**
+ * Produces the headers to send with a request
+ *
+ * @param {ContentType} contentType: the value for the 'Content-Type` header
+ */
+export function getRequestHeaders (contentType?: ContentType) {
+  const authToken = cookieManager.authToken;
+  return new Headers(
+    omitFalsey({
+      'Authorization': authToken && `Token ${authToken}`,
+      'Content-Type': contentType,
+      'X-CSRFToken': cookieManager.csrfToken
+    })
+  );
 }

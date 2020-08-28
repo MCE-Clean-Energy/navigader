@@ -1,4 +1,5 @@
 import * as React from 'react';
+import SvgIcon from '@material-ui/core/SvgIcon';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import AddIcon from '@material-ui/icons/Add';
 import ArrowBack from '@material-ui/icons/ArrowBack';
@@ -11,6 +12,7 @@ import FeedbackIcon from '@material-ui/icons/Feedback';
 import MenuIcon from '@material-ui/icons/Menu';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Schedule from '@material-ui/icons/Schedule';
+import SystemUpdateAltIcon from '@material-ui/icons/SystemUpdateAlt';
 import WbSunny from '@material-ui/icons/WbSunny';
 
 import { MaterialColor, materialColors } from 'navigader/styles';
@@ -32,6 +34,7 @@ export type ValidIcon =
   | 'checkMark'
   | 'chevronLeft'
   | 'clock'
+  | 'download'
   | 'feedback'
   | 'menu'
   | 'pencil'
@@ -62,13 +65,14 @@ export const Icon: React.ComponentType<IconProps> = React.forwardRef<SVGSVGEleme
 /**
  * Maps a valid icon name to the corresponding icon component
  */
-const iconMap = {
+const iconMap: Record<ValidIcon, typeof SvgIcon> = {
   account: AccountIcon,
   back: ArrowBack,
   battery: BatteryChargingFull,
   checkMark: DoneIcon,
   chevronLeft: ChevronLeftIcon,
   clock: Schedule,
+  download: SystemUpdateAltIcon,
   feedback: FeedbackIcon,
   menu: MenuIcon,
   pencil: CreateIcon,

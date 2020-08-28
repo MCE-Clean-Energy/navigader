@@ -1,5 +1,5 @@
 import {
-  BatteryConfiguration, BatteryStrategy, Nullable, RawCAISORate, RawGHGRate, RawMeter,
+  AlertType, BatteryConfiguration, BatteryStrategy, Nullable, RawCAISORate, RawGHGRate, RawMeter,
   RawMeterGroup, RawScenario
 } from 'navigader/types';
 
@@ -21,7 +21,7 @@ export type UiSlice = {
     duration?: number;
     msg?: string;
     open: boolean;
-    type?: 'success' | 'error';
+    type?: AlertType;
   }
 };
 

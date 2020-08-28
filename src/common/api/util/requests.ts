@@ -1,13 +1,11 @@
 import { QueryParams } from 'navigader/types';
-import { makeQueryString, omitFalsey } from 'navigader/util';
-import { cookieManager } from 'navigader/util/cookies';
+import { appendQueryString, getRequestHeaders } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
 // Needless to say, this is not a complete set of HTTP method types. It is the set of the ones used
 // in the NavigaDER application.
 type HttpMethodType = 'DELETE' | 'GET' | 'PATCH' | 'POST';
-type ContentType = 'application/json' | 'multipart/form-data';
 
 /** ============================ API Methods =============================== */
 /**
@@ -65,7 +63,7 @@ export function deleteRequest(route: string) {
 }
 
 export function getRequest (route: string, queryParams?: QueryParams) {
-  return makeJsonRequest('GET', route.concat(makeQueryString(queryParams)));
+  return makeJsonRequest('GET', appendQueryString(route, queryParams));
 }
 
 export function postRequest (route: string, body: object = {}) {
@@ -77,22 +75,6 @@ export function patchRequest (route: string, body: object) {
 }
 
 /** ============================ Helpers =============================== */
-/**
- * Produces the headers to send with a request
- *
- * @param {ContentType} contentType: the value for the 'Content-Type` header
- */
-function getRequestHeaders (contentType?: ContentType) {
-  const authToken = cookieManager.authToken;
-  return new Headers(
-    omitFalsey({
-      'Authorization': authToken && `Token ${authToken}`,
-      'Content-Type': contentType,
-      'X-CSRFToken': cookieManager.csrfToken
-    })
-  );
-}
-
 /**
  * Given an object, creates a FormData object with the object's keys and corresponding values as
  * fields

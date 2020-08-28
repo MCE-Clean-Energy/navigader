@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Switch, Redirect, Route, RouteProps } from 're
 import { useSelector, useDispatch } from 'react-redux';
 
 import { getDerConfigurations, getDerStrategies } from 'navigader/api';
-import { Alert, AppContainer, Snackbar, ThemeProvider } from 'navigader/components';
+import { AlertSnackbar, AppContainer, ThemeProvider } from 'navigader/components';
 import * as routes from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { userIsAuthenticated } from 'navigader/models/user';
@@ -14,14 +14,48 @@ import * as pages from './pages';
 type UnauthenticatedRouteProps = RouteProps & Required<Pick<RouteProps, 'component'>>;
 
 /** ============================ Components ================================ */
-const AppSnackbar: React.FC = () => {
-  const { duration, msg, open, type } = useSelector(slices.ui.selectSnackbar);
+/**
+ * This is separated from the `App` component so that we can provide a different router inside
+ * tests. This enables us to test that we transition from page to page successfully.
+ */
+export const AppRoutes: React.FC = () => {
   const dispatch = useDispatch();
-
+  const { duration, msg, open, type } = useSelector(slices.ui.selectSnackbar);
   return (
-    <Snackbar autoHideDuration={duration} onClose={handleClose} open={open}>
-      {msg && type && <Alert onClose={handleClose} type={type}>{msg}</Alert>}
-    </Snackbar>
+    <ThemeProvider>
+      <Switch>
+        <UnauthenticatedRoute path={routes.login} component={pages.LoginPage} />
+        <UnauthenticatedRoute path={routes.resetPassword} component={pages.ResetPasswordPage} />
+        <UnauthenticatedRoute path={routes.registration.signup} component={pages.SignupPage} />
+        <UnauthenticatedRoute path={routes.registration.verify} component={pages.VerifyEmailPage} />
+
+        <RequireAuth>
+          <AppContainer>
+            <Switch>
+              <Route path={routes.settings} component={pages.SettingsPage} />
+              <Route path={routes.meterGroup(':id')} component={pages.MeterGroupPage} />
+              <Route path={routes.load} component={pages.LoadPage} />
+              <Route path={routes.upload} component={pages.UploadPage} />
+              <Route path={routes.dashboard.base} component={pages.DashboardPage} />
+              <Route path={routes.scenario.compare()} component={pages.CompareScenariosPage} />
+              <Route path={routes.scenario(':id')} component={pages.ScenarioResultsPage} />
+              <Route path={routes.roadmap} component={pages.RoadmapPage} />
+
+              {/** Route of last resort */}
+              <Redirect to={routes.dashboard.base} />
+            </Switch>
+          </AppContainer>
+        </RequireAuth>
+      </Switch>
+
+      <AlertSnackbar
+        autoHideDuration={duration}
+        onClose={handleClose}
+        open={open}
+        msg={msg}
+        type={type}
+      />
+    </ThemeProvider>
   );
 
   /** ========================== Callbacks ================================= */
@@ -29,39 +63,6 @@ const AppSnackbar: React.FC = () => {
     dispatch(slices.ui.closeSnackbar());
   }
 };
-
-/**
- * This is separated from the `App` component so that we can provide a different router inside
- * tests. This enables us to test that we transition from page to page successfully.
- */
-export const AppRoutes: React.FC = () =>
-  <ThemeProvider>
-    <Switch>
-      <UnauthenticatedRoute path={routes.login} component={pages.LoginPage} />
-      <UnauthenticatedRoute path={routes.resetPassword} component={pages.ResetPasswordPage} />
-      <UnauthenticatedRoute path={routes.registration.signup} component={pages.SignupPage} />
-      <UnauthenticatedRoute path={routes.registration.verify} component={pages.VerifyEmailPage} />
-
-      <RequireAuth>
-        <AppContainer>
-          <Switch>
-            <Route path={routes.settings} component={pages.SettingsPage} />
-            <Route path={routes.meterGroup(':id')} component={pages.MeterGroupPage} />
-            <Route path={routes.load} component={pages.LoadPage} />
-            <Route path={routes.upload} component={pages.UploadPage} />
-            <Route path={routes.dashboard.base} component={pages.DashboardPage} />
-            <Route path={routes.scenario.compare()} component={pages.CompareScenariosPage} />
-            <Route path={routes.scenario(':id')} component={pages.ScenarioResultsPage} />
-            <Route path={routes.roadmap} component={pages.RoadmapPage} />
-
-            {/** Route of last resort */}
-            <Redirect to={routes.dashboard.base} />
-          </Switch>
-        </AppContainer>
-      </RequireAuth>
-    </Switch>
-    <AppSnackbar />
-  </ThemeProvider>;
 
 const UnauthenticatedRoute: React.FC<UnauthenticatedRouteProps> = ({ component, ...rest }) =>
   <Route

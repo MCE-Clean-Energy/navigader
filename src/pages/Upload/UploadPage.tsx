@@ -10,7 +10,6 @@ import * as routes from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { Maybe } from 'navigader/types';
-import { download } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -237,7 +236,7 @@ const UploadCard: React.FC<UploadCardProps> = ({ minutes }) => {
   /** ========================== Callbacks ================================= */
   function downloadExample () {
     const csvName = fileName + '.csv';
-    download('/' + csvName, csvName)
+    api.util.downloadFile('/' + csvName, csvName)
       .catch(() => dispatch(
         slices.ui.setMessage({
           msg: 'Something went wrong.',

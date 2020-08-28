@@ -1,15 +1,18 @@
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
 
-import { Nullable } from 'navigader/types';
+import { AlertType, Nullable } from 'navigader/types';
 import _ from 'navigader/util/lodash';
 import { RootState, UiSlice } from '../types';
 
+
+// The default snackbar duration in ms
+const DEFAULT_DURATION = 6000;
 
 /** ============================ Types ===================================== */
 type SetMessagePayload = {
   duration?: Nullable<number>
   msg: string;
-  type: 'success' | 'error';
+  type: AlertType;
 };
 
 /** ============================ Slice ===================================== */
@@ -25,14 +28,6 @@ const slice = createSlice({
     }
   } as UiSlice,
   reducers: {
-    setMessage: (state, action: PayloadAction<SetMessagePayload>) => {
-      state.snackbar = _.defaults({
-        ...action.payload,
-        open: true
-      }, {
-        duration: 6000
-      });
-    },
     clearMessage: state => {
       // Don't clear the message if the snackbar is still open
       if (!state.snackbar.open) {
@@ -43,10 +38,19 @@ const slice = createSlice({
     },
     closeSnackbar: state => {
       state.snackbar.open = false;
+    },
+    setMessage: (state, action: PayloadAction<SetMessagePayload>) => {
+      state.snackbar = _.defaults({
+        ...action.payload,
+        open: true
+      }, {
+        duration: DEFAULT_DURATION
+      });
     }
   }
 });
 
+/** ============================ Actions =================================== */
 /**
  * Closes the snackbar and then clears the message following the close animation
  */
@@ -57,7 +61,8 @@ export const closeSnackbar = () => (dispatch: Dispatch) => {
   }, 1000);
 };
 
-/** ============================ Exports =================================== */
 export const { reducer } = slice;
-export const { clearMessage, setMessage } = slice.actions;
+export const { setMessage } = slice.actions;
+
+/** ============================ Selectors ================================= */
 export const selectSnackbar = (state: RootState) => state.ui.snackbar;

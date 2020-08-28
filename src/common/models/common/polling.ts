@@ -1,18 +1,100 @@
+import deepEqual from 'fast-deep-equal';
+
 import * as api from 'navigader/api';
 import store, { slices } from 'navigader/store';
-import { DataTypeParams, DynamicRestParams, IdType, MeterGroup, Scenario } from 'navigader/types';
+import { IdType, MeterGroup, PaginationQueryParams, Scenario, Without } from 'navigader/types';
 import { filterClause } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 
 
 /** ============================ Types ===================================== */
-type MeterGroupsQueryParams = DynamicRestParams & DataTypeParams;
+type MeterGroupsQueryParams = Without<api.MeterGroupsQueryParams, PaginationQueryParams>;
+type UncleanMeterGroupQueryParams = MeterGroupsQueryParams & Partial<PaginationQueryParams>;
+type IdSet = Set<IdType>;
+
+/** ============================ Map Utils ================================= */
+/**
+ * Wrapper around the `Map` class. This provides customized equality checking for the object keys
+ */
+class MeterGroupQueryMap extends Map<MeterGroupsQueryParams, IdSet> {
+  /**
+   * Removes pagination fields from the query params (if present). These fields are not relevant
+   * for polling, and will be provided by the `Poller` class.
+   *
+   * @param {MeterGroupsQueryParams} queryParams: the parameters that were used to fetch the meters
+   *   from the server initially, possibly including pagination fields.
+   */
+  clean (queryParams: UncleanMeterGroupQueryParams): MeterGroupsQueryParams {
+    return _.omit(queryParams, 'page', 'page_size');
+  }
+
+  /**
+   * Returns the `IdSet` associated with a group of query parameters, or `undefined` if not found
+   *
+   * @param {MeterGroupsQueryParams} queryParams: the group of parameters to index the Map with
+   */
+  get (queryParams: UncleanMeterGroupQueryParams): IdSet | undefined {
+    for (let [params, idSet] of this.entries()) {
+      if (deepEqual(this.clean(queryParams), params)) {
+        return idSet;
+      }
+    }
+  }
+
+  /**
+   * Returns `true` if there is an existing entry in the map with the exact same query parameters
+   *
+   * @param {MeterGroupsQueryParams} queryParams: object of meter group query parameters
+   */
+  has (queryParams: UncleanMeterGroupQueryParams): boolean {
+    for (let params of this.keys()) {
+      if (deepEqual(this.clean(queryParams), params)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Adds a set of IDs to the map. If there is already an entry in the map for the given query
+   * params, the IDs will be added to that set; otherwise, a new set will be made
+   * @param queryParams
+   * @param ids
+   */
+  add (queryParams: UncleanMeterGroupQueryParams, ids: IdType[]) {
+    const existingSet = this.get(queryParams);
+    if (existingSet) {
+      ids.forEach(id => existingSet.add(id));
+    } else {
+      this.set(this.clean(queryParams), new Set([...ids]));
+    }
+  }
+
+  /**
+   * Removes an ID from any query parameter sets that include it. If the set is subsequently empty,
+   * it too is deleted
+   *
+   * @param {IdType} id: the ID of the meter group that we wish to stop querying for
+   */
+  remove (id: IdType) {
+    for (let [params, idSet] of this.entries()) {
+      if (!idSet.has(id)) continue;
+
+      // Remove the ID from the set. If there are no IDs left in the set, remove it
+      idSet.delete(id);
+      if (idSet.size === 0) {
+        this.delete(params);
+      }
+    }
+  }
+}
 
 /** ============================ Polling =================================== */
 class Poller {
   private pollInterval: number;
   private pollingIds = {
-    meterGroups: new Map<MeterGroupsQueryParams, Set<IdType>>(),
+    meterGroups: new MeterGroupQueryMap(),
     scenarios: new Set<IdType>()
   };
 
@@ -20,15 +102,14 @@ class Poller {
     this.pollInterval = window.setInterval(this.poll.bind(this), interval);
   }
 
-  public addMeterGroups (models: MeterGroup[], options?: MeterGroupsQueryParams) {
+  public addMeterGroups (models: MeterGroup[], options?: api.MeterGroupsQueryParams) {
+    // Filter for unfinished meter groups
     const unfinished = _.filter(models, s => !s.progress.is_complete);
+    if (unfinished.length === 0) return;
+
     const modelIds = _.map(unfinished, 'id');
     const optionsKey = options || {};
-    if (this.pollingIds.meterGroups.has(optionsKey)) {
-      modelIds.forEach(id => this.pollingIds.meterGroups.get(optionsKey)!.add(id));
-    } else {
-      this.pollingIds.meterGroups.set(optionsKey, new Set([...modelIds]));
-    }
+    this.pollingIds.meterGroups.add(optionsKey, modelIds);
   }
 
   public addScenarios (models: Scenario[]) {
@@ -42,7 +123,7 @@ class Poller {
    */
   public reset () {
     this.pollingIds = {
-      meterGroups: new Map(),
+      meterGroups: new MeterGroupQueryMap(),
       scenarios: new Set()
     };
   }
@@ -74,7 +155,7 @@ class Poller {
       // Remove finished meterGroups
       meterGroups.forEach((meterGroup) => {
         if (meterGroup.progress.is_complete) {
-          meterGroupIdSet.delete(meterGroup.id);
+          this.pollingIds.meterGroups.remove(meterGroup.id);
         }
       });
 

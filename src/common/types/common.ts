@@ -44,3 +44,6 @@ export type DateTuple = Tuple<Date>;
 // Months
 export type MonthIndex = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 export type MonthsOption = MonthIndex[] | 'all';
+
+// Creates a type that excludes the keys of `T2` from those of `T1`
+export type Without<T1, T2> = Omit<T1, keyof T2>;
