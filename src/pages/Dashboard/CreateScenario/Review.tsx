@@ -3,15 +3,15 @@ import * as React from 'react';
 import { Card, Grid, Link, MeterGroupChip, TextField, Typography } from 'navigader/components';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
-import { BatteryConfiguration, BatteryStrategy, MeterGroup } from 'navigader/types';
+import { DERConfiguration, DERStrategy, MeterGroup } from 'navigader/types';
 import _ from 'navigader/util/lodash';
 import { DerCardReadOnly, DERSelection, validateDerSelections } from './common';
 
 
 /** ============================ Types ===================================== */
 type ReviewProps = {
-  derConfigurations?: BatteryConfiguration[];
-  derStrategies?: BatteryStrategy[];
+  derConfigurations?: DERConfiguration[];
+  derStrategies?: DERStrategy[];
   meterGroups: MeterGroup[] | null;
   selectedDers: Partial<DERSelection>[];
   selectedMeterGroupIds: string[];

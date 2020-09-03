@@ -1,14 +1,14 @@
 import * as React from 'react';
 
 import { Button, Grid } from 'navigader/components';
-import { BatteryConfiguration, BatteryStrategy } from 'navigader/types';
+import { DERConfiguration, DERStrategy } from 'navigader/types';
 import { DerSelectionCard, DERSelection } from './common';
 
 
 /** ============================ Types ===================================== */
 type SelectDERsProps = {
-  derConfigurations?: BatteryConfiguration[];
-  derStrategies?: BatteryStrategy[];
+  derConfigurations?: DERConfiguration[];
+  derStrategies?: DERStrategy[];
   selectedDers: Partial<DERSelection>[];
   updateDerSelections: (ders: Partial<DERSelection>[]) => void;
 };

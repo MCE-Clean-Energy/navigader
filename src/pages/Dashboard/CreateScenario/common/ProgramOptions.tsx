@@ -3,16 +3,16 @@ import * as React from 'react';
 import { Flex, Select } from 'navigader/components';
 import { getStrategyDescription } from 'navigader/models/der';
 import { makeStylesHook } from 'navigader/styles';
-import { BatteryConfiguration, BatteryStrategy, DerStrategyType } from 'navigader/types';
+import { DERConfiguration, DERStrategy, DERStrategyType } from 'navigader/types';
 import _ from 'navigader/util/lodash';
 import { DERSelection } from './util';
 
 
 /** ============================ Types ===================================== */
 type ProgramOptionsProps = {
-  configurations: BatteryConfiguration[];
+  configurations: DERConfiguration[];
   der: Partial<DERSelection>;
-  strategies: BatteryStrategy[];
+  strategies: DERStrategy[];
   update: (der: Partial<DERSelection>) => void;
 };
 
@@ -34,18 +34,29 @@ const useStyles = makeStylesHook(() => ({
 }), 'ProgramOptions');
 
 /** ============================ Components ================================ */
-const BatteryOptions: React.FC<ProgramOptionsProps> = (props) => {
+export const ProgramOptions: React.FC<ProgramOptionsWhileLoadingProps> = (props) => {
   const { configurations, der, strategies, update } = props;
   const classes = useStyles();
-  const configuration = _.find(configurations, { id: der.configurationId });
-  const strategy = _.find(strategies, { id: der.strategyId });
+
+  // If we don't yet have a DER type, don't render
+  if (!der.type) return null;
+
+  // If we don't yet have the configurations/strategies, don't render
+  if (!configurations || !strategies) return null;
+
+  // Get only the configurations/strategies for the current DER-type
+  const derTypeConfigurations = _.filter(configurations, { der_type: der.type });
+  const derTypeStrategies = _.filter(strategies, { der_type: der.type });
+
+  const configuration = _.find(derTypeConfigurations, { id: der.configurationId });
+  const strategy = _.find(derTypeStrategies, { id: der.strategyId });
 
   // Split the strategies by objective
   const strategyGroups = _.sortBy(
     _.toPairs(
-      _.groupBy(strategies, 'objective')
+      _.groupBy(derTypeStrategies, 'objective')
     ).map(([strategyType, strategies]) => ({
-      title: formatStrategyType(strategyType as DerStrategyType),
+      title: formatStrategyType(strategyType as DERStrategyType),
       options: strategies
     })),
     'title'
@@ -58,7 +69,7 @@ const BatteryOptions: React.FC<ProgramOptionsProps> = (props) => {
           className={classes.configurationSelect}
           label="Configuration"
           onChange={updateConfiguration}
-          options={configurations}
+          options={derTypeConfigurations}
           renderOption="name"
           sorted
           value={configuration}
@@ -81,16 +92,16 @@ const BatteryOptions: React.FC<ProgramOptionsProps> = (props) => {
   );
 
   /** ========================== Callbacks ================================= */
-  function updateConfiguration (configuration: BatteryConfiguration) {
+  function updateConfiguration (configuration: DERConfiguration) {
     update({ configurationId: configuration.id });
   }
 
-  function updateStrategy (strategy: BatteryStrategy) {
+  function updateStrategy (strategy: DERStrategy) {
     update({ strategyId: strategy.id });
   }
 
   /** ========================== Helpers =================================== */
-  function formatStrategyType (type: DerStrategyType) {
+  function formatStrategyType (type: DERStrategyType) {
     switch (type) {
       case 'load_flattening':
         return 'Load Flattening';
@@ -103,26 +114,5 @@ const BatteryOptions: React.FC<ProgramOptionsProps> = (props) => {
       default:
         return 'Uncategorized';
     }
-  }
-};
-
-export const ProgramOptions: React.FC<ProgramOptionsWhileLoadingProps> = (props) => {
-  const { configurations, der, strategies } = props;
-
-  // If we don't yet have the configurations/strategies, don't render
-  if (!configurations || !strategies) return null;
-
-  // This is functionally the same as just `{ ...props }`, but specifying the `configurations` and
-  // `strategies` props explicitly is necessary for the type-guard above to work
-  const optionProps = {
-    ...props,
-    configurations,
-    strategies,
-  };
-
-  if (der.type === 'Battery') {
-    return <BatteryOptions {...optionProps} />;
-  } else {
-    return null;
   }
 };

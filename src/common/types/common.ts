@@ -47,3 +47,13 @@ export type MonthsOption = MonthIndex[] | 'all';
 
 // Creates a type that excludes the keys of `T2` from those of `T1`
 export type Without<T1, T2> = Omit<T1, keyof T2>;
+
+// This helps to filter types down to their keys whose types match a given type. For example:
+//
+//   type User = { id: number; name: string; joined: Date }
+//   type UserStringFields = KeysMatching<User, string> --> 'name'
+//   type UserOtherFields = KeysMatching<User, number | Date> --> 'id' | 'joined'
+export type KeysMatching<T, V> = {
+  [K in keyof T]-?: T[K] extends V ? K : never
+}[keyof T];
+

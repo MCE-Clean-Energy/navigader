@@ -1,3 +1,4 @@
+import { KeysMatching } from './common';
 import { Frame288DataType } from './data';
 
 
@@ -29,22 +30,24 @@ export type RowsPerPageOption = 1 | 10 | 20 | 50 | 100;
 export type DeferrableFields<CommonFields, DeferredFields> = CommonFields & Partial<DeferredFields>;
 export type QueryStringPrimitive = string | number;
 
+export type FilterableFields<T> = KeysMatching<T, QueryStringPrimitive>;
+export type FilterClause = FilterInClause | FilterEqualClause;
 export type FilterInClause = {
   operation: 'in';
   value: Array<QueryStringPrimitive>;
-}
+};
 
 export type FilterEqualClause = {
   operation: 'equals';
   value: QueryStringPrimitive;
-}
+};
 
 export type IncludeExcludeFields = string | string[];
 export type DynamicRestParams = Partial<{
   exclude: IncludeExcludeFields;
   include: IncludeExcludeFields;
   filter: {
-    [key: string]: FilterEqualClause | FilterInClause;
+    [key: string]: FilterClause;
   };
 }>;
 

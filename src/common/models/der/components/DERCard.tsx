@@ -2,20 +2,20 @@ import * as React from 'react';
 
 import { Card, Flex, Statistic, Tooltip } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
-import { BatteryConfiguration, BatteryStrategy } from 'navigader/types';
+import { DERConfiguration, DERStrategy } from 'navigader/types';
 import { getStrategyDescription } from '../util';
 import { DERIcon } from './DERIcon';
 
 
 /** ============================ Types ===================================== */
-type DerCardProps = {
+type DERCardProps = {
   className?: string;
-  configuration?: BatteryConfiguration;
-  strategy?: BatteryStrategy;
+  configuration?: DERConfiguration;
+  strategy?: DERStrategy;
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook<DerCardProps>(theme => ({
+const useStyles = makeStylesHook<DERCardProps>(theme => ({
   flexContainer: {
     '& > *': {
       marginRight: theme.spacing(2)
@@ -24,11 +24,11 @@ const useStyles = makeStylesHook<DerCardProps>(theme => ({
 }), 'DERCard');
 
 /** ============================ Components ================================ */
-export const DERCard: React.FC<DerCardProps> = (props) => {
+export const DERCard: React.FC<DERCardProps> = (props) => {
   const { className, configuration, strategy } = props;
   const classes = useStyles(props);
   const derType = configuration?.der_type || strategy?.der_type;
-  
+
   return (
     <Card className={className} raised>
       <Flex.Container className={classes.flexContainer}>
@@ -48,11 +48,11 @@ export const DERCard: React.FC<DerCardProps> = (props) => {
             variant="subtitle2"
           />
         </Flex.Item>
-        
+
         <Flex.Item>
           <Statistic title="Configuration" value={configuration?.name || 'None'} variant="subtitle2" />
         </Flex.Item>
-        
+
         <Flex.Item>
           <Statistic
             title="Strategy"

@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Button, Card, Flex, Select } from 'navigader/components';
 import { Components } from 'navigader/models/der';
 import { makeStylesHook } from 'navigader/styles';
-import { BatteryConfiguration, BatteryStrategy } from 'navigader/types';
+import { DERConfiguration, DERStrategy, DERType } from 'navigader/types';
 import _ from 'navigader/util/lodash';
 import { ProgramOptions } from './ProgramOptions';
 import { DERSelection } from './util';
@@ -11,11 +11,10 @@ import { DERSelection } from './util';
 
 /** ============================ Types ===================================== */
 type DerSelectionCardReadOnlyProps = {
-  configurations?: BatteryConfiguration[];
+  configurations?: DERConfiguration[];
   der: Partial<DERSelection>;
   numDers: number;
-  strategies?: BatteryStrategy[];
-
+  strategies?: DERStrategy[];
 };
 
 type DerSelectionCardProps = DerSelectionCardReadOnlyProps & {
@@ -65,7 +64,8 @@ export const DerSelectionCard: React.FC<DerSelectionCardProps> = (props) => {
             className={classes.typeSelect}
             label="DER Type"
             onChange={updateType}
-            options={['Battery']}
+            options={['Battery', 'EVSE', 'SolarPV']}
+            renderOption={renderDEROption}
             value={props.der.type}
           />
         </Flex.Item>
@@ -80,13 +80,24 @@ export const DerSelectionCard: React.FC<DerSelectionCardProps> = (props) => {
   );
 
   /** ========================== Callbacks ================================= */
+  function renderDEROption (option: DERType) {
+    switch (option) {
+      case 'EVSE':
+        return 'EV Supply Equipment';
+      case 'SolarPV':
+        return 'Solar';
+      default:
+        return option;
+    }
+  }
+
   /**
    * Updates the DER's type. Additionally resets the configuration and strategy when the type
    * changes
    *
-   * @param {DerType} type: the DER's new type
+   * @param {DERType} type: the DER's new type
    */
-  function updateType (type: DERSelection['type']) {
+  function updateType (type: DERType) {
     props.update({
       configurationId: undefined,
       strategyId: undefined,

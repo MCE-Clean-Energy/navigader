@@ -14,6 +14,7 @@ import { makeStylesHook, white } from 'navigader/styles';
 import { IdType, ObjectWithId, PaginationSet } from 'navigader/types';
 import { makeCancelableAsync } from 'navigader/util';
 import { useTableSelector } from 'navigader/util/hooks';
+import _ from 'navigader/util/lodash';
 import { Checkbox } from '../Checkbox';
 import * as Flex from '../Flex';
 import { Progress } from '../Progress';
@@ -142,7 +143,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     setLoading(false);
     setDataState({
       count: paginationSet.count,
-      dataIds: paginationSet.data.map(datum => datum.id)
+      dataIds: _.map(paginationSet.data, 'id')
     });
   }), [dataFn, paginationState, sortState]);
 

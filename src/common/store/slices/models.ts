@@ -1,9 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import {
-  BatteryConfiguration, BatteryStrategy, CAISORate, GHGRate, Meter, MeterGroup, RawCAISORate,
-  RawGHGRate,
-  RawMeter, RawMeterGroup, RawScenario, Scenario
+  DERConfiguration, CAISORate, GHGRate, Meter, MeterGroup, RawCAISORate, RawGHGRate, RawMeter,
+  RawMeterGroup, RawScenario, Scenario, DERStrategy
 } from 'navigader/types';
 import { serializers } from 'navigader/util';
 import _ from 'navigader/util/lodash';
@@ -16,8 +15,8 @@ import { RootState, ModelsSlice } from '../types';
 // to the action creators).
 type ModelClassInterior =
   | RawCAISORate
-  | BatteryConfiguration
-  | BatteryStrategy
+  | DERConfiguration
+  | DERStrategy
   | RawGHGRate
   | RawMeter
   | RawMeterGroup
@@ -25,8 +24,8 @@ type ModelClassInterior =
 
 type ModelClassExterior =
   | CAISORate
-  | BatteryConfiguration
-  | BatteryStrategy
+  | DERConfiguration
+  | DERStrategy
   | GHGRate
   | Meter
   | MeterGroup
@@ -135,8 +134,12 @@ function getSliceForModel (
 ): Array<ModelClassInterior> {
   switch (model.object_type) {
     case 'BatteryConfiguration':
+    case 'EVSEConfiguration':
+    case 'SolarPVConfiguration':
       return state.derConfigurations;
     case 'BatteryStrategy':
+    case 'EVSEStrategy':
+    case 'SolarPVStrategy':
       return state.derStrategies;
     case 'CAISORate':
       return state.caisoRates;
@@ -162,6 +165,10 @@ function prepareModel (model: ModelClassExterior): ModelClassInterior {
   switch (model.object_type) {
     case 'BatteryStrategy':
     case 'BatteryConfiguration':
+    case 'EVSEConfiguration':
+    case 'EVSEStrategy':
+    case 'SolarPVConfiguration':
+    case 'SolarPVStrategy':
       return model;
     case 'CAISORate':
       return serializers.serializeCAISORate(model);

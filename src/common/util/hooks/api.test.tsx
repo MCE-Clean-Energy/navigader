@@ -6,7 +6,7 @@ import { makeStore, slices } from 'navigader/store';
 import { CAISORate, RawCAISORate } from 'navigader/types';
 import { serializers } from 'navigader/util';
 import { fixtures, makePaginationResponse, mockFetch } from '../testing';
-import { useCAISORates } from './hooks';
+import { useCAISORates } from './api';
 
 
 describe('Custom React hooks', () => {

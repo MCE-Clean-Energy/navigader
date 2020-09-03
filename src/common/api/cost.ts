@@ -16,7 +16,7 @@ type DerSelection = {
 };
 
 // GET /study/
-type GetScenariosQueryOptions = PaginationQueryParams & DynamicRestParams;
+export type GetScenariosQueryOptions = PaginationQueryParams & DynamicRestParams;
 
 type GetScenariosResponse = {
   meter_groups?: RawMeterGroup[];

@@ -30,6 +30,7 @@ const StepActions: React.FC<StepActionProps> = (props) => {
   const { activeStep, meterGroups, selectedDers, selectedMeterGroupIds, scenarioName } = props;
   const history = useHistory();
   const dispatch = useDispatch();
+  const [createInProcess, setCreateInProcess] = React.useState(false);
   const prevButton = activeStep === 0
     ? null
     : <Button onClick={goBack}>Back</Button>;
@@ -78,6 +79,7 @@ const StepActions: React.FC<StepActionProps> = (props) => {
     }
 
     try {
+      setCreateInProcess(true);
       const response = await api.postStudy(scenarioName, selectedMeterGroupIds, selectedDers);
       if (response.ok) {
         handleStudyCreationSuccess();
@@ -102,6 +104,7 @@ const StepActions: React.FC<StepActionProps> = (props) => {
    * Triggered when the POST request fails. Shows an error message.
    */
   function handleStudyCreationFailure () {
+    setCreateInProcess(false);
     dispatch(
       setMessage({ msg: 'An error occurred. Please try submitting again.', type: 'error' })
     );
@@ -126,7 +129,11 @@ const StepActions: React.FC<StepActionProps> = (props) => {
       case stepNumbers.selectCustomers:
         return !hasValidCustomerSelections;
       case stepNumbers.review:
-        return !(hasValidDerSelections && hasValidCustomerSelections && hasScenarioName);
+        return !(
+          hasValidDerSelections &&
+          hasValidCustomerSelections &&
+          hasScenarioName
+        ) || createInProcess;
     }
   }
 };

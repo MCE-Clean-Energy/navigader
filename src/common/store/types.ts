@@ -1,5 +1,5 @@
 import {
-  AlertType, BatteryConfiguration, BatteryStrategy, Nullable, RawCAISORate, RawGHGRate, RawMeter,
+  AlertType, DERStrategy, DERConfiguration, Nullable, RawCAISORate, RawGHGRate, RawMeter,
   RawMeterGroup, RawScenario
 } from 'navigader/types';
 
@@ -7,8 +7,8 @@ import {
 /** ============================ Slices ==================================== */
 export type ModelsSlice = {
   caisoRates: RawCAISORate[];
-  derConfigurations: BatteryConfiguration[];
-  derStrategies: BatteryStrategy[];
+  derConfigurations: DERConfiguration[];
+  derStrategies: DERStrategy[];
   ghgRates: RawGHGRate[]
   hasMeterGroups: Nullable<boolean>;
   meterGroups: RawMeterGroup[];

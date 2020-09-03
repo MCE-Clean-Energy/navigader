@@ -8,6 +8,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import CreateIcon from '@material-ui/icons/Create';
 import DoneIcon from '@material-ui/icons/Done';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EvStation from '@material-ui/icons/EvStation';
 import FeedbackIcon from '@material-ui/icons/Feedback';
 import MenuIcon from '@material-ui/icons/Menu';
 import MoreVert from '@material-ui/icons/MoreVert';
@@ -35,6 +36,7 @@ export type ValidIcon =
   | 'chevronLeft'
   | 'clock'
   | 'download'
+  | 'ev_station'
   | 'feedback'
   | 'menu'
   | 'pencil'
@@ -73,6 +75,7 @@ const iconMap: Record<ValidIcon, typeof SvgIcon> = {
   chevronLeft: ChevronLeftIcon,
   clock: Schedule,
   download: SystemUpdateAltIcon,
+  ev_station: EvStation,
   feedback: FeedbackIcon,
   menu: MenuIcon,
   pencil: CreateIcon,

@@ -1,14 +1,14 @@
 import { DeferrableFields } from './api';
 import { NavigaderObject, Nullable, ProgressFields, RawPandasFrame } from './common';
 import { DataTypeMap, RawDataTypeMap } from './data';
-import { BatteryConfiguration, BatteryStrategy } from './der';
+import { DERConfiguration, DERStrategy } from './der';
 import { MeterGroup } from './meter';
 
 
 /** ============================ Scenarios ================================= */
 export type DerInfo = {
-  der_configuration: BatteryConfiguration;
-  der_strategy: BatteryStrategy;
+  der_configuration: DERConfiguration;
+  der_strategy: DERStrategy;
 };
 
 type ScenarioCommon = {
@@ -30,7 +30,7 @@ type ScenarioMetadata = {
 
 export type RawScenario = DeferrableFields<
   NavigaderObject<'SingleScenarioStudy'> & ScenarioCommon,
-  
+
   // Fields that can be requested but which are not included by default
   {
     data: RawDataTypeMap<'kw'>;
@@ -54,7 +54,7 @@ export interface Scenario extends DeferrableFields<
       has_run: boolean;
     }
   },
-  
+
   // Fields that can be requested but which are not included by default
   {
     der_simulations: string[];

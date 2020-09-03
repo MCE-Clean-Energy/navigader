@@ -1,18 +1,14 @@
 import * as React from 'react';
 import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 
-import { getMeterGroups } from 'navigader/api';
 import { Button, Flex, PageHeader, Stepper } from 'navigader/components';
 import * as routes from 'navigader/routes';
-import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
-import { MeterGroup } from 'navigader/types';
-import { makeCancelableAsync } from 'navigader/util';
+import { useDERConfigurations, useDERStrategies, useMeterGroups } from 'navigader/util/hooks';
+import { DERSelection, stepPaths } from './common';
 import Review from './Review';
 import { SelectCustomers } from './SelectCustomers';
 import SelectDERs from './SelectDERs';
-import { DERSelection, stepPaths } from './common';
 import StepActions from './StepActions';
 
 
@@ -32,20 +28,16 @@ const CreateScenarioPage: React.FC = () => {
   const history = useHistory();
   const location = useLocation();
   const classes = useStyles();
-  const derConfigurations = useSelector(slices.models.selectDERConfigurations);
-  const derStrategies = useSelector(slices.models.selectDERStrategies);
+
+  // Load data
+  const { derConfigurations } = useDERConfigurations({ include: 'data', page: 1, page_size: 100 });
+  const { derStrategies } = useDERStrategies({ include: 'data', page: 1, page_size: 100 });
+  const { meterGroups } = useMeterGroups({ page: 1, page_size: 100 });
 
   // All state for the page is handled here
-  const [meterGroups, setMeterGroups] = React.useState<MeterGroup[] | null>(null);
   const [selectedMeterGroupIds, setSelectedMeterGroupIds] = React.useState<string[]>([]);
   const [selectedDers, setSelectedDers] = React.useState<Partial<DERSelection>[]>([{}]);
   const [scenarioName, setScenarioName] = React.useState<string | null>(null);
-
-  // Load meter groups
-  React.useEffect(makeCancelableAsync(
-    () => getMeterGroups({ page: 1, page_size: 100 }),
-    res => setMeterGroups(res.data)
-  ), []);
 
   const stepLabels = ['Select DERs', 'Select Customers', 'Review'];
   const activeStep = stepPaths.includes(location.pathname)

@@ -1,5 +1,5 @@
 import * as routes from 'navigader/routes';
-import { DerType, MeterGroup } from 'navigader/types';
+import { DERType, MeterGroup } from 'navigader/types';
 import _ from 'navigader/util/lodash';
 
 
@@ -20,7 +20,7 @@ export const stepNumbers = {
 export type DERSelection = {
   configurationId: string;
   strategyId: string;
-  type: DerType;
+  type: DERType;
 };
 
 /**
@@ -32,7 +32,7 @@ export type DERSelection = {
  */
 export function validateDerSelections (ders: Partial<DERSelection>[]): ders is DERSelection[] {
   if (ders.length === 0) return false;
-  
+
   return ders.every((der) => {
     const hasType = !!der.type;
     const hasConfiguration = !!der.configurationId;

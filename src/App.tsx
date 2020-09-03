@@ -2,7 +2,6 @@ import * as React from 'react';
 import { BrowserRouter as Router, Switch, Redirect, Route, RouteProps } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { getDerConfigurations, getDerStrategies } from 'navigader/api';
 import { AlertSnackbar, AppContainer, ThemeProvider } from 'navigader/components';
 import * as routes from 'navigader/routes';
 import { slices } from 'navigader/store';
@@ -82,39 +81,10 @@ const RequireAuth: React.FC<{ children: React.ReactElement }> = ({ children }) =
 /**
  * The application's root component. This component is not rendered by tests
  */
-const App: React.FC = () => {
-  const dispatch = useDispatch();
-
-  // Load DER configurations
-  React.useEffect(() => {
-    if (!userIsAuthenticated()) return;
-    // TODO: this is only loading the first page of configurations. We should load all of them
-    getDerConfigurations({ include: 'data', page: 1, page_size: 100 })
-      .then((derConfigurations) => {
-        dispatch(
-          slices.models.updateModels(derConfigurations.data)
-        );
-      });
-  });
-
-  // Load DER strategies
-  React.useEffect(() => {
-    if (!userIsAuthenticated()) return;
-    // TODO: this is only loading the first page of strategies. We should load all of them
-    getDerStrategies({ include: 'data', page: 1, page_size: 100 })
-      .then((derStrategies) => {
-        dispatch(
-          slices.models.updateModels(derStrategies.data)
-        );
-      });
-  });
-
-  return (
-    <Router>
-      <AppRoutes />
-    </Router>
-  );
-};
+const App: React.FC = () =>
+  <Router>
+    <AppRoutes />
+  </Router>;
 
 /** ============================ Exports =================================== */
 export default App;

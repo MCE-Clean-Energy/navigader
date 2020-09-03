@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import * as api from 'navigader/api';
-import { Alert, Button, TextField, Typography } from 'navigader/components';
+import { Alert, Button, TextField } from 'navigader/components';
 import * as routes from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';

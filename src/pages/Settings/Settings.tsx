@@ -134,7 +134,7 @@ export const SettingsPage: React.FC = () => {
     </>
   );
 
-  /** ============================ Callbacks =============================== */
+  /** ========================== Callbacks ================================= */
   async function updatePassword () {
     // Validate the inputs
     const error = validateInputs();
