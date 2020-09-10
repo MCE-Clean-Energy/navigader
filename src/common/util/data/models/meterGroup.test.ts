@@ -1,23 +1,23 @@
 import _ from 'navigader/util/lodash';
 import { fixtures } from 'navigader/util/testing';
-import * as utils from './util';
+import * as meterGroup from './meterGroup';
 
 
 /** ============================ Tests ===================================== */
 describe('Meter utility methods', () => {
   describe('`isSufficientlyIngested` method' ,() => {
     it('returns `false` if no scenario is provided', () => {
-      expect(utils.isSufficientlyIngested(undefined)).toBeFalsy();
+      expect(meterGroup.isSufficientlyIngested(undefined)).toBeFalsy();
     });
-    
+
     it('returns `true` if a customer cluster is provided', () => {
       const customerCluster = fixtures.makeCustomerCluster();
-      expect(utils.isSufficientlyIngested(customerCluster)).toBeTruthy();
+      expect(meterGroup.isSufficientlyIngested(customerCluster)).toBeTruthy();
     });
-    
+
     it('returns `true` if a customer cluster is at least 95% finished', () => {
       _.range(101).forEach((meter_count) => {
-        const isSufficientlyIngested = utils.isSufficientlyIngested(
+        const isSufficientlyIngested = meterGroup.isSufficientlyIngested(
           fixtures.makeOriginFile({
             meter_count,
             metadata: {
@@ -30,7 +30,7 @@ describe('Meter utility methods', () => {
             }
           })
         );
-        
+
         if (meter_count >= 95) {
           expect(isSufficientlyIngested).toBeTruthy();
         } else {

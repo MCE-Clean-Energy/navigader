@@ -103,7 +103,7 @@ export async function fetchFile (url: string, onProgress?: ProgressCallback) {
   }
 
   const reader = response.body.getReader();
-  const contentLength = Number(response.headers.get('Content-Length'));
+  const contentLength = Number(response.headers.get('content-length'));
 
   let receivedLength = 0;
   const chunks = [];

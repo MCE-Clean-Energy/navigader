@@ -51,10 +51,6 @@ export function parseMeterGroup (meterGroup: RawMeterGroup): MeterGroup {
   return {
     ...meterGroup,
     data,
-    metadata: {
-      ...meterGroup.metadata,
-      filename: meterGroup.metadata.filename.replace(/origin_files\//, '')
-    },
     progress: {
       is_complete: percentComplete === 100,
       percent_complete: parseFloat(percentComplete.toFixed(1))
@@ -74,10 +70,10 @@ export function serializeMeterGroup(meterGroup: MeterGroup): RawMeterGroup {
  * Basic parsing function for converting a RawScenario into a Scenario
  *
  * @param {RawScenario} scenario: The raw scenario object to parse
- * @param {RawMeterGroup[]} rawMeterGroups: set of raw meter groups from which to draw the one
+ * @param {RawMeterGroup[]} [rawMeterGroups]: set of raw meter groups from which to draw the one
  *   associated with the scenario
  */
-export function parseScenario (scenario: RawScenario, rawMeterGroups: RawMeterGroup[]): Scenario {
+export function parseScenario (scenario: RawScenario, rawMeterGroups?: RawMeterGroup[]): Scenario {
   const { der_simulation_count, expected_der_simulation_count } = scenario;
   const percentComplete = expected_der_simulation_count === 0
     ? 0
@@ -355,11 +351,7 @@ function parseDataField <Column extends string, Unit extends string>(
   return {
     ...obj,
     default: obj.default
-      ? makeIntervalData(
-        {...obj.default, name },
-        column,
-        unit
-      )
+      ? makeIntervalData({ ...obj.default, name }, column, unit)
       : undefined
   };
 }

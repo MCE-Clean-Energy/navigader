@@ -7,11 +7,11 @@ import { isMeterGroup, MeterGroup } from 'navigader/types';
  * @param {MeterGroup} meterGroup: the meter group object to display. The overload that accepts
  *   undefined is there to enable usage in situations where the meter group is optional
  */
-export function getMeterGroupDisplayName (meterGroup: any) {
+export function getDisplayName (meterGroup: any) {
   if (!isMeterGroup(meterGroup)) return '';
   switch (meterGroup.object_type) {
     case 'OriginFile':
-      return meterGroup.name || meterGroup.metadata.filename;
+      return meterGroup.name || meterGroup.metadata.filename.replace(/origin_files\//, '');
     case 'CustomerCluster':
       // TODO: How do we represent a customer cluster without a name?
       return meterGroup.name || '';

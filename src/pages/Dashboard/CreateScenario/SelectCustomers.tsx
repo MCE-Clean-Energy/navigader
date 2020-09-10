@@ -1,9 +1,9 @@
 import * as React from 'react';
 
 import { Flex, MeterGroupChip } from 'navigader/components';
-import { isSufficientlyIngested } from 'navigader/models/meter';
 import { makeStylesHook } from 'navigader/styles';
 import { MeterGroup, OriginFileMeterGroup } from 'navigader/types';
+import { models } from 'navigader/util';
 import { percentage } from 'navigader/util/formatters';
 import _ from 'navigader/util/lodash';
 
@@ -46,7 +46,7 @@ const CustomerChip: React.FC<CustomerChipProps> = ({ meterGroup, onClick, select
   const { meter_count } = meterGroup;
   const { expected_meter_count } = (meterGroup as OriginFileMeterGroup).metadata;
 
-  if (isSufficientlyIngested(meterGroup)) {
+  if (models.meterGroup.isSufficientlyIngested(meterGroup)) {
     return (
       <MeterGroupChip
         className={classes.meterGroupChip}

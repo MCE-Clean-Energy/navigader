@@ -4,9 +4,8 @@ import { Route, Switch, useHistory } from 'react-router-dom';
 
 import * as api from 'navigader/api';
 import {
-  Button, Divider, Link, List, Menu, PageHeader, Tooltip, Typography
+  Button, Divider, Link, List, Menu, PageHeader, Tooltip, ScenariosTable, Typography
 } from 'navigader/components';
-import { Components } from 'navigader/models/scenario';
 import * as routes from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
@@ -100,7 +99,7 @@ const PageHeaderActions: React.FC<PageHeaderActionsProps> = ({ selections }) => 
   }
 };
 
-const ScenariosTable: React.FC = () => {
+const DashboardTable: React.FC = () => {
   const [deleteScenario, setDeleteScenario] = React.useState<Scenario>();
   const [renameScenario, setRenameScenario] = React.useState<Scenario>();
   const [selections, setSelections] = React.useState<Scenario[]>([]);
@@ -130,7 +129,7 @@ const ScenariosTable: React.FC = () => {
         title="Dashboard"
       />
 
-      <Components.ScenariosTable
+      <ScenariosTable
         actionsMenu={
           (scenario) =>
             <Menu
@@ -194,5 +193,5 @@ const ScenariosTable: React.FC = () => {
 export const DashboardPage = () =>
   <Switch>
     <Route path={routes.dashboard.createScenario.base} component={CreateScenario} />
-    <Route exact path={routes.dashboard.base} component={ScenariosTable} />
+    <Route exact path={routes.dashboard.base} component={DashboardTable} />
   </Switch>;

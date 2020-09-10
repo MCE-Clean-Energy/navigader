@@ -22,7 +22,7 @@ type ModelClassInterior =
   | RawMeterGroup
   | RawScenario;
 
-type ModelClassExterior =
+export type ModelClassExterior =
   | CAISORate
   | DERConfiguration
   | DERStrategy

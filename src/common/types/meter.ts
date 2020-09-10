@@ -1,5 +1,5 @@
 import { NavigaderObject, Nullable, ProgressFields } from './common';
-import { DataTypeMap, RawDataTypeMap } from './data';
+import { DataObject, RawDataObject } from './data';
 
 
 /** ============================ Meter Types =============================== */
@@ -14,13 +14,12 @@ type MeterCommon = {
   object_type: 'CustomerMeter' | 'ReferenceMeter';
 };
 
-export type RawMeter = MeterCommon & { data: RawDataTypeMap<'kw'>; };
-export type Meter = MeterCommon & { data: DataTypeMap; };
+export type RawMeter = MeterCommon & RawDataObject<'kw'>;
+export type Meter = MeterCommon & DataObject;
 
 /** ============================ Meter Group Types ========================= */
-type MeterGroupCommon = { data: DataTypeMap; } & ProgressFields;
-type RawMeterGroupCommon = {
-  data: RawDataTypeMap<'kw'>;
+type MeterGroupCommon = DataObject & ProgressFields;
+type RawMeterGroupCommon = RawDataObject<'kw'> & {
   meter_count: number;
   meters: string[];
   name: string;

@@ -2,10 +2,11 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as api from 'navigader/api';
-import { poller } from 'navigader/models/common';
 import { slices } from 'navigader/store';
-import { CAISORate, DataTypeParams, GHGRate, PaginationSet, Scenario } from 'navigader/types';
-import { makeCancelableAsync, omitFalsey } from 'navigader/util';
+import {
+  CAISORate, DataObject, DataTypeParams, GHGRate, Maybe, MeterGroup, PaginationSet, Scenario
+} from 'navigader/types';
+import { makeCancelableAsync, models, omitFalsey } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 
 
@@ -62,19 +63,7 @@ export function useCAISORates (filters: Partial<CAISORateFilters> = {}) {
   const storedCAISORates = useSelector(slices.models.selectCAISORates);
   const caisoRates = storedCAISORates.filter((caisoRate) => {
     if (filters.year && caisoRate.year !== filters.year) return false;
-    if (filters.data_types) {
-      const typesNeeded = _.isArray(filters.data_types) ? filters.data_types : [filters.data_types];
-      const typesPresent = Object.keys(caisoRate.data);
-      if (!_.every(typesNeeded.map(type => typesPresent.includes(type)))) {
-        return false;
-      }
-    }
-    if (filters.period) {
-      const intervalData = caisoRate.data.default;
-      if (!intervalData) return false;
-      if (intervalData.period !== filters.period) return false;
-    }
-    return true;
+    return applyDataFilters(caisoRate, filters);
   });
 
   useAsync(
@@ -118,6 +107,48 @@ export function useScenario (scenarioId: string, options?: api.GetScenarioQueryO
   return { scenario, loading };
 }
 
+/**
+ * Retrieves a meter group from the store that matches the given ID and data filters, and fetches
+ * it from the backend if it's not found in the store.
+ *
+ * @param {string} meterGroupId: the ID of the meter group to get
+ * @param {DataTypeFilters} filters: any data type filters to apply to the meter group
+ */
+export function useMeterGroup (meterGroupId: string, filters: Partial<DataTypeFilters> = {}) {
+  const dispatch = useDispatch();
+
+  // Check the store for meter group that matches the provided filters
+  const storedMeterGroups = useSelector(slices.models.selectMeterGroups);
+  const meterGroup = (() => {
+    const meterGroup = _.find(storedMeterGroups, { id: meterGroupId });
+    return applyDataFilters(meterGroup, filters) ? meterGroup : undefined;
+  })();
+
+  const loading = useAsync(
+    () => api.getMeterGroup(meterGroupId, {
+      ...omitFalsey({
+        data_types: filters.data_types,
+        period: filters.period
+      })
+    }),
+    handleMeterGroupsResponse,
+    [],
+    // If we've already loaded the rates, we don't need to do so again
+    () => !meterGroup
+  );
+
+  return { loading, meterGroup };
+
+  /**
+   * Handles the API response. The models will be added to the store.
+   *
+   * @param {MeterGroup} meterGroup: the API response
+   */
+  function handleMeterGroupsResponse (meterGroup: MeterGroup) {
+    dispatch(slices.models.updateModels([meterGroup]));
+  }
+}
+
 export function useMeterGroups (options: api.MeterGroupsQueryParams) {
   const dispatch = useDispatch();
 
@@ -126,7 +157,7 @@ export function useMeterGroups (options: api.MeterGroupsQueryParams) {
     () => api.getMeterGroups(options),
     ({ data }) => {
       // Continue polling for meter groups that haven't finished ingesting
-      poller.addMeterGroups(data, options);
+      models.polling.addMeterGroups(data, options);
 
       // Add all of them to the store
       dispatch(slices.models.updateModels(data))
@@ -208,4 +239,32 @@ function useAsync <T>(
   );
 
   return loading;
+}
+
+/**
+ * Applies common data filters to the given model. If the model is not undefined and passes the
+ * filters, returns `true`. Otherwise, returns `false`.
+ *
+ * @param {DataObject|undefined} model: the model to apply the filters to, if any
+ * @param {DataTypeFilters|undefined} filters: the data filters, if any
+ */
+export function applyDataFilters (model: Maybe<DataObject>, filters: Maybe<DataTypeFilters>) {
+  if (!model) return false;
+  if (!filters) return true;
+
+  if (filters.data_types) {
+    const typesNeeded = _.isArray(filters.data_types) ? filters.data_types : [filters.data_types];
+    const typesPresent = Object.keys(omitFalsey(model.data));
+    if (!_.every(typesNeeded.map(type => typesPresent.includes(type)))) {
+      return false;
+    }
+  }
+
+  if (filters.period) {
+    const intervalData = model.data.default;
+    if (!intervalData) return false;
+    if (intervalData.period !== filters.period) return false;
+  }
+
+  return true;
 }

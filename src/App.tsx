@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { AlertSnackbar, AppContainer, ThemeProvider } from 'navigader/components';
 import * as routes from 'navigader/routes';
 import { slices } from 'navigader/store';
-import { userIsAuthenticated } from 'navigader/models/user';
+import { models } from 'navigader/util';
 import * as pages from './pages';
 
 
@@ -67,14 +67,14 @@ const UnauthenticatedRoute: React.FC<UnauthenticatedRouteProps> = ({ component, 
   <Route
     {...rest}
     render={props =>
-      userIsAuthenticated()
+      models.user.isAuthenticated()
         ? <Redirect to={{ pathname: routes.dashboard.base, state: { from: props.location } }} />
         : React.createElement(component, props)
     }
   />;
 
 const RequireAuth: React.FC<{ children: React.ReactElement }> = ({ children }) =>
-  userIsAuthenticated()
+  models.user.isAuthenticated()
     ? children
     : <Redirect to={routes.login} />;
 

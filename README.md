@@ -21,6 +21,7 @@ Building the application requires a `.env` file to specify certain environment v
 Full example:
 
 ```
+REACT_APP_ENV=local
 REACT_APP_BEO_URI=http://localhost:8000
 ```
 

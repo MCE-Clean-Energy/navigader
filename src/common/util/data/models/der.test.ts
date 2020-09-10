@@ -1,6 +1,6 @@
 import _ from 'navigader/util/lodash';
 import { fixtures } from 'navigader/util/testing'
-import * as utils from './util';
+import * as der from './der';
 
 
 /** ============================ Tests ===================================== */
@@ -8,22 +8,22 @@ describe('DER utility methods', () => {
   describe('`getStrategyDescription` method' ,() => {
     it('returns the description unchanged if "January" is not found', () => {
       const nonDefaultDescription = fixtures.makeDerStrategy({ description: 'Custom description' });
-      expect(utils.getStrategyDescription(nonDefaultDescription)).toEqual('Custom description');
+      expect(der.getStrategyDescription(nonDefaultDescription)).toEqual('Custom description');
     });
-    
+
     it('returns `undefined` if the description is missing', () => {
       const emptyDescription = fixtures.makeDerStrategy({ description: '' });
       const undefinedDescription = fixtures.makeDerStrategy({ description: undefined });
       const missingDescription = _.omit(fixtures.makeDerStrategy(), 'description');
-      
-      expect(utils.getStrategyDescription(emptyDescription)).toBeUndefined();
-      expect(utils.getStrategyDescription(undefinedDescription)).toBeUndefined();
-      expect(utils.getStrategyDescription(missingDescription)).toBeUndefined();
+
+      expect(der.getStrategyDescription(emptyDescription)).toBeUndefined();
+      expect(der.getStrategyDescription(undefinedDescription)).toBeUndefined();
+      expect(der.getStrategyDescription(missingDescription)).toBeUndefined();
     });
-    
+
     it('returns the description truncated if it has the automated description', () => {
       const strategy = fixtures.makeDerStrategy({ description: automatedDescription });
-      expect(utils.getStrategyDescription(strategy)).toEqual(
+      expect(der.getStrategyDescription(strategy)).toEqual(
         'Battery is only allowed to charge from NEM exports.\nBattery can discharge to the grid.'
       );
     });

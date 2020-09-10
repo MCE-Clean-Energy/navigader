@@ -2,8 +2,8 @@ import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 
 import * as api from 'navigader/api';
-import { poller } from 'navigader/models/common';
 import * as routes from 'navigader/routes';
+import { models } from 'navigader/util';
 import { cookieManager } from 'navigader/util/cookies';
 import { List } from '../List';
 import { Menu } from '../Menu';
@@ -33,7 +33,7 @@ export const AccountMenu: React.FC = () => {
 
   function logout () {
     cookieManager.remove.authToken();
-    poller.reset();
+    models.polling.reset();
     api.logout().catch();
     history.push(routes.login);
   }

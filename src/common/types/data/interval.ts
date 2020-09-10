@@ -41,7 +41,7 @@ export declare class IntervalData {
 
   // Iteration methods
   filter (filters?: IntervalDataFilters): IntervalData;
-  map (fn: (datum: IntervalDatum) => number, name: string): IntervalData;
+  map (fn: (datum: IntervalDatum) => number, name?: string): IntervalData;
 
   // Transformations
   divide (n: number): IntervalData;

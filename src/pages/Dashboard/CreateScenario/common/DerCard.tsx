@@ -1,7 +1,6 @@
 import * as React from 'react';
 
-import { Button, Card, Flex, Select } from 'navigader/components';
-import { Components } from 'navigader/models/der';
+import { Button, Card, DERCard, Flex, Select } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
 import { DERConfiguration, DERStrategy, DERType } from 'navigader/types';
 import _ from 'navigader/util/lodash';
@@ -124,11 +123,5 @@ export const DerCardReadOnly: React.FC<DerSelectionCardReadOnlyProps> = (props) 
   const strategy = _.find(strategies, { id: der.strategyId });
 
   if (!configuration || !strategy) return null;
-  return (
-    <Components.DERCard
-      className={classes.derCard}
-      configuration={configuration}
-      strategy={strategy}
-    />
-  );
+  return <DERCard className={classes.derCard} configuration={configuration} strategy={strategy} />;
 };

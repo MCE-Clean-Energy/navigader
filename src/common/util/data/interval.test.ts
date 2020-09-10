@@ -1,6 +1,6 @@
 import { Frame288Numeric } from 'navigader/util';
 import { fixtures } from 'navigader/util/testing';
-import { IntervalData, makeIntervalData } from './interval';
+import { makeIntervalData } from './interval';
 
 
 describe('`IntervalData` class', () => {
@@ -15,26 +15,26 @@ describe('`IntervalData` class', () => {
     name: 'KW interval'
   }, 'times', 'kw');
 
-  const sparseInterval = new IntervalData([
-    { timestamp: new Date('2020-01-01T18:00:00'), value: 1 },
-    { timestamp: new Date('2020-02-01T18:00:00'), value: 1 },
-    { timestamp: new Date('2020-03-01T18:00:00'), value: 1 },
-    { timestamp: new Date('2020-04-01T18:00:00'), value: 1 },
-    { timestamp: new Date('2020-05-01T18:00:00'), value: 1 },
-    { timestamp: new Date('2020-06-01T18:00:00'), value: 1 },
-    { timestamp: new Date('2020-07-01T18:00:00'), value: 1 },
-    { timestamp: new Date('2020-08-01T18:00:00'), value: 1 },
-    { timestamp: new Date('2020-09-01T18:00:00'), value: 1 },
-    { timestamp: new Date('2020-10-01T18:00:00'), value: 1 },
-    { timestamp: new Date('2020-11-01T18:00:00'), value: 1 },
-    { timestamp: new Date('2020-12-01T18:00:00'), value: 1 },
+  const sparseInterval = fixtures.makeIntervalData([
+    ['2020-01-01T18:00:00', 1],
+    ['2020-02-01T18:00:00', 1],
+    ['2020-03-01T18:00:00', 1],
+    ['2020-04-01T18:00:00', 1],
+    ['2020-05-01T18:00:00', 1],
+    ['2020-06-01T18:00:00', 1],
+    ['2020-07-01T18:00:00', 1],
+    ['2020-08-01T18:00:00', 1],
+    ['2020-09-01T18:00:00', 1],
+    ['2020-10-01T18:00:00', 1],
+    ['2020-11-01T18:00:00', 1],
+    ['2020-12-01T18:00:00', 1],
   ], 'Sparse interval');
 
-  const juneInterval = new IntervalData([
-    { timestamp: new Date('2020-06-02T18:00:00'), value: 1 },
-    { timestamp: new Date('2020-06-02T18:15:00'), value: 2 },
-    { timestamp: new Date('2020-06-02T18:30:00'), value: 3 },
-    { timestamp: new Date('2020-06-02T18:45:00'), value: 4 }
+  const juneInterval = fixtures.makeIntervalData([
+    ['2020-06-02T18:00:00', 1],
+    ['2020-06-02T18:15:00', 2],
+    ['2020-06-02T18:30:00', 3],
+    ['2020-06-02T18:45:00', 4]
   ], 'June interval');
 
   // Frame288 where each month has the same hour values, which are equal to their hour index
@@ -59,14 +59,14 @@ describe('`IntervalData` class', () => {
 
   describe('`period` getter', () => {
     it('calculates the period correctly', () => {
-      const hourInterval = new IntervalData([
-        { timestamp: new Date('2020-06-02T18:00:00'), value: 1 },
-        { timestamp: new Date('2020-06-02T19:00:00'), value: 2 }
+      const hourInterval = fixtures.makeIntervalData([
+        ['2020-06-02T18:00:00', 1],
+        ['2020-06-02T19:00:00', 2]
       ], 'Hour interval');
 
-      const fifteenMinuteInterval = new IntervalData([
-        { timestamp: new Date('2020-06-02T18:00:00'), value: 1 },
-        { timestamp: new Date('2020-06-02T18:15:00'), value: 2 }
+      const fifteenMinuteInterval = fixtures.makeIntervalData([
+        ['2020-06-02T18:00:00', 1],
+        ['2020-06-02T18:15:00', 2]
       ], '15 minute interval');
 
       expect(hourInterval.period).toEqual(60);
@@ -123,11 +123,11 @@ describe('`IntervalData` class', () => {
       expect(juneInterval.filter({ month: 6 }).values).toEqual([1, 2, 3, 4]);
       expect(juneInterval.filter({ month: 7 }).values).toEqual([]);
 
-      const monthInterval = new IntervalData([
-        { timestamp: new Date('2020-06-02T18:00:00'), value: 1 },
-        { timestamp: new Date('2020-07-02T18:15:00'), value: 2 },
-        { timestamp: new Date('2020-08-02T18:30:00'), value: 3 },
-        { timestamp: new Date('2020-09-02T18:45:00'), value: 4 }
+      const monthInterval = fixtures.makeIntervalData([
+        ['2020-06-02T18:00:00', 1],
+        ['2020-07-02T18:15:00', 2],
+        ['2020-08-02T18:30:00', 3],
+        ['2020-09-02T18:45:00', 4]
       ], 'summer');
 
       expect(monthInterval.filter({ month: 6 }).values).toEqual([1]);
@@ -144,35 +144,35 @@ describe('`IntervalData` class', () => {
     });
 
     it('drops intervals that do not align', () => {
-      const interval1 = new IntervalData([
-        { timestamp: new Date('2020-06-02T17:45:00'), value: 1 },
-        { timestamp: new Date('2020-06-02T18:00:00'), value: 2 },
-        { timestamp: new Date('2020-06-02T18:15:00'), value: 3 },
-        { timestamp: new Date('2020-06-02T18:30:00'), value: 4 }
+      const interval1 = fixtures.makeIntervalData([
+        ['2020-06-02T17:45:00', 1],
+        ['2020-06-02T18:00:00', 2],
+        ['2020-06-02T18:15:00', 3],
+        ['2020-06-02T18:30:00', 4]
       ], 'earlier');
 
-      const interval2 = new IntervalData([
-        { timestamp: new Date('2020-06-02T18:00:00'), value: 4 },
-        { timestamp: new Date('2020-06-02T18:15:00'), value: 3 },
-        { timestamp: new Date('2020-06-02T18:30:00'), value: 2 },
-        { timestamp: new Date('2020-06-02T18:45:00'), value: 1 }
+      const interval2 = fixtures.makeIntervalData([
+        ['2020-06-02T18:00:00', 4],
+        ['2020-06-02T18:15:00', 3],
+        ['2020-06-02T18:30:00', 2],
+        ['2020-06-02T18:45:00', 1]
       ], 'later');
 
       expect(interval1.subtract(interval2).values).toEqual([-2, 0, 2]);
 
       // Dates don't align
-      const june1Interval = new IntervalData([
-        { timestamp: new Date('2020-06-01T18:00:00'), value: 1 },
-        { timestamp: new Date('2020-06-01T18:15:00'), value: 2 },
-        { timestamp: new Date('2020-06-01T18:30:00'), value: 3 },
-        { timestamp: new Date('2020-06-01T18:45:00'), value: 4 }
+      const june1Interval = fixtures.makeIntervalData([
+        ['2020-06-01T18:00:00', 1],
+        ['2020-06-01T18:15:00', 2],
+        ['2020-06-01T18:30:00', 3],
+        ['2020-06-01T18:45:00', 4]
       ], 'June 1');
 
-      const june2Interval = new IntervalData([
-        { timestamp: new Date('2020-06-02T18:00:00'), value: 4 },
-        { timestamp: new Date('2020-06-02T18:15:00'), value: 3 },
-        { timestamp: new Date('2020-06-02T18:30:00'), value: 2 },
-        { timestamp: new Date('2020-06-02T18:45:00'), value: 1 }
+      const june2Interval = fixtures.makeIntervalData([
+        ['2020-06-02T18:00:00', 4],
+        ['2020-06-02T18:15:00', 3],
+        ['2020-06-02T18:30:00', 2],
+        ['2020-06-02T18:45:00', 1]
       ], 'June 2');
 
       expect(june1Interval.subtract(june2Interval).values).toEqual([]);
@@ -181,11 +181,11 @@ describe('`IntervalData` class', () => {
 
   describe('`divide` method', () => {
     it('divides the intervals value respectively', () => {
-      const largeInterval = new IntervalData([
-        { timestamp: new Date('2020-06-02T18:00:00'), value: 100 },
-        { timestamp: new Date('2020-06-02T18:15:00'), value: 200 },
-        { timestamp: new Date('2020-06-02T18:30:00'), value: 450 },
-        { timestamp: new Date('2020-06-02T18:45:00'), value: 827 }
+      const largeInterval = fixtures.makeIntervalData([
+        ['2020-06-02T18:00:00', 100],
+        ['2020-06-02T18:15:00', 200],
+        ['2020-06-02T18:30:00', 450],
+        ['2020-06-02T18:45:00', 827]
       ], 'large');
 
       expect(largeInterval.divide(100).values).toEqual([1, 2, 4.5, 8.27]);
@@ -194,11 +194,11 @@ describe('`IntervalData` class', () => {
 
   describe('`multiply` method', () => {
     it('multiplies the intervals values respectively', () => {
-      const largeInterval = new IntervalData([
-        { timestamp: new Date('2020-06-02T18:00:00'), value: 1 },
-        { timestamp: new Date('2020-06-02T18:15:00'), value: 2 },
-        { timestamp: new Date('2020-06-02T18:30:00'), value: 3 },
-        { timestamp: new Date('2020-06-02T18:45:00'), value: 4 }
+      const largeInterval = fixtures.makeIntervalData([
+        ['2020-06-02T18:00:00', 1],
+        ['2020-06-02T18:15:00', 2],
+        ['2020-06-02T18:30:00', 3],
+        ['2020-06-02T18:45:00', 4]
       ], 'multiplier');
 
       expect(largeInterval.multiply(5).values).toEqual([5, 10, 15, 20]);
@@ -290,9 +290,9 @@ describe('`IntervalData` class', () => {
 
   describe('`rename` method', () => {
     it('renames the interval', () => {
-      const hourInterval = new IntervalData([
-        { timestamp: new Date('June 2, 2020 18:00:00'), value: 1 },
-        { timestamp: new Date('June 2, 2020 19:00:00'), value: 2 }
+      const hourInterval = fixtures.makeIntervalData([
+        ['June 2, 2020 18:00:00', 1],
+        ['June 2, 2020 19:00:00', 2]
       ], 'Hour interval');
       expect(hourInterval.name).toEqual('Hour interval');
 

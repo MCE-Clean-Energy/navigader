@@ -20,6 +20,7 @@ const useStyles = makeStylesHook(theme => ({
     flexFlow: 'column nowrap',
     height: '100vh',
     marginLeft: -DRAWER_WIDTH,
+    minWidth: 800,
     overflow: 'auto',
     padding: `0 ${theme.spacing(3)}px`,
     transition: theme.transitions.create('margin', {
@@ -41,6 +42,9 @@ const useStyles = makeStylesHook(theme => ({
     '& > *': {
       flexShrink: 0
     }
+  },
+  root: {
+    overflow: 'auto'
   }
 }), 'AppContainer');
 
@@ -49,7 +53,7 @@ export const AppContainer: React.FC = ({ children }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   return (
-    <Flex.Container>
+    <Flex.Container className={classes.root}>
       <AppBar drawerOpen={open} openDrawer={() => setOpen(true)} />
       <SideDrawer open={open} closeDrawer={() => setOpen(false)} />
       <Flex.Item className={classNames(classes.container, { [classes.containerShift]: open })} grow>

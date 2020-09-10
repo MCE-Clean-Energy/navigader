@@ -23,6 +23,3 @@ export function omitFalsey (arrayOrObject: any) {
     ? arrayOrObject.filter(isTruthy)
     : _.pickBy(arrayOrObject, isTruthy);
 }
-
-/** ============================ Helpers ===================================== */
-

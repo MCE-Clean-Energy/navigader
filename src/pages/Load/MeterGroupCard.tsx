@@ -4,11 +4,10 @@ import { useHistory } from 'react-router-dom';
 import {
   Card, Grid, Frame288Graph, Statistic, MeterGroupChip, Progress, Typography, Tooltip
 } from 'navigader/components';
-import { isSufficientlyIngested } from 'navigader/models/meter';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
 import { MeterGroup } from 'navigader/types';
-import { PowerFrame288 } from 'navigader/util/data';
+import { models, PowerFrame288 } from 'navigader/util';
 import { date } from 'navigader/util/formatters';
 
 
@@ -21,7 +20,7 @@ type MeterGroupCardProps = {
 const cardPadding = '1rem';
 const useStyles = makeStylesHook<MeterGroupCardProps>(theme => ({
   card: (props) => ({
-    cursor: isSufficientlyIngested(props.meterGroup) ? 'pointer' : 'default',
+    cursor: models.meterGroup.isSufficientlyIngested(props.meterGroup) ? 'pointer' : 'default',
     marginBottom: theme.spacing(2),
     overflow: 'visible',
     position: 'relative'
@@ -48,7 +47,7 @@ const useCardContentStyles = makeStylesHook(theme => ({
  */
 export const CardContent: React.FC<MeterGroupCardProps> = ({ meterGroup }) => {
   const classes = useCardContentStyles();
-  if (!isSufficientlyIngested(meterGroup)) {
+  if (!models.meterGroup.isSufficientlyIngested(meterGroup)) {
     return (
       <Progress
         className={classes.progressBar}
@@ -74,7 +73,7 @@ export const MeterGroupCard: React.FC<MeterGroupCardProps> = (props) => {
   const history = useHistory();
 
   // Card behavior depends on if the meter group has finished ingesting
-  const isIngested = isSufficientlyIngested(meterGroup);
+  const isIngested = models.meterGroup.isSufficientlyIngested(meterGroup);
   const { percent_complete } = meterGroup.progress;
   const onClick = isIngested ? viewMeterGroup : undefined;
   const statisticProps = isIngested

@@ -1,11 +1,14 @@
 import * as React from 'react';
 
 import * as api from 'navigader/api';
-import { Avatar, FileDownload, PrefetchedTable, Table, Tooltip } from 'navigader/components';
 import { ColorMap } from 'navigader/styles';
 import { Scenario, ScenarioReportFields } from 'navigader/types';
 import { commas, dollars, maxDecimals } from 'navigader/util/formatters';
 import _ from 'navigader/util/lodash';
+import { Avatar } from '../Avatar';
+import { FileDownload } from '../FileDownload';
+import { PrefetchedTable, Table } from '../Table';
+import { Tooltip } from '../Tooltip';
 
 
 /** ============================ Types ===================================== */
@@ -14,12 +17,12 @@ type CustomersTableProps = {
   colorMap?: ColorMap;
   scenarios: Scenario[];
   simulations: ScenarioReportFields[];
-  updateHover: (id?: string) => void;
+  updateHover?: (id?: string) => void;
 };
 
 /** ============================ Components ================================ */
 export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
-  const { className, colorMap, scenarios, simulations, updateHover } = props;
+  const { className, colorMap, scenarios, simulations, updateHover = () => {} } = props;
   const scenarioMap = _.groupBy(scenarios, 'id');
   return (
     <PrefetchedTable
@@ -46,14 +49,14 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
               <Table.Cell sortBy="SA_ID">SA ID</Table.Cell>
               <Table.Cell>Rate Plan</Table.Cell>
               <Table.Cell align="right" sortBy="UsageDelta" sortDir="desc">Usage Impact (kWh)</Table.Cell>
-              <Table.Cell align="right" sortBy="BillDelta">Revenue Impact ($)</Table.Cell>
               <Table.Cell align="right" sortBy="CleanNetShort2022Delta">
                 <Tooltip title="Calculated using CNS 2022 tables">
                   <div>GHG Impact (tCO<sub>2</sub>)</div>
                 </Tooltip>
               </Table.Cell>
-              <Table.Cell align="right" sortBy="RADelta">RA Impact (kW)</Table.Cell>
+              <Table.Cell align="right" sortBy="BillDelta">Revenue Impact ($)</Table.Cell>
               <Table.Cell align="right" sortBy="PRC_LMPDelta">Procurement Cost ($)</Table.Cell>
+              <Table.Cell align="right" sortBy="RADelta">RA Impact (kW)</Table.Cell>
             </Table.Row>
           </Table.Head>
           <Table.Body>
@@ -80,10 +83,10 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                 <Table.Cell>{simulation.SA_ID}</Table.Cell>
                 <Table.Cell>{simulation.MeterRatePlan}</Table.Cell>
                 <Table.Cell align="right">{commas(maxDecimals(simulation.UsageDelta, 2))}</Table.Cell>
-                <Table.Cell align="right">{dollars(simulation.BillDelta)}</Table.Cell>
                 <Table.Cell align="right">{commas(maxDecimals(simulation.CleanNetShort2022Delta, 2))}</Table.Cell>
-                <Table.Cell align="right">{commas(maxDecimals(simulation.RADelta, 2))}</Table.Cell>
+                <Table.Cell align="right">{dollars(simulation.BillDelta)}</Table.Cell>
                 <Table.Cell align="right">{dollars(simulation.PRC_LMPDelta)}</Table.Cell>
+                <Table.Cell align="right">{commas(maxDecimals(simulation.RADelta, 2))}</Table.Cell>
               </Table.Row>
             )}
           </Table.Body>

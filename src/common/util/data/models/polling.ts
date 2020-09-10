@@ -3,8 +3,8 @@ import deepEqual from 'fast-deep-equal';
 import * as api from 'navigader/api';
 import store, { slices } from 'navigader/store';
 import { IdType, MeterGroup, PaginationQueryParams, Scenario, Without } from 'navigader/types';
-import { filterClause } from 'navigader/util';
 import _ from 'navigader/util/lodash';
+import { filterClause } from '../../api';
 
 
 /** ============================ Types ===================================== */
@@ -187,4 +187,4 @@ class Poller {
   }
 }
 
-export const poller = new Poller(10000);
+export const polling = new Poller(10000);

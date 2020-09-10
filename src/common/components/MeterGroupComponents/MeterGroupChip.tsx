@@ -1,8 +1,7 @@
 import * as React from 'react';
 
-import { getMeterGroupDisplayName } from 'navigader/models/meter';
 import { MeterGroup } from 'navigader/types';
-import { printWarning } from 'navigader/util';
+import { models, printWarning } from 'navigader/util';
 import { pluralize } from 'navigader/util/formatters';
 
 import { Chip, ChipProps } from '../Chip';
@@ -46,7 +45,7 @@ export const MeterGroupChip: React.FC<MeterGroupChipProps> = (props) => {
       data-testid="meter-group-chip"
       disabled={disabled}
       icon={icon}
-      label={getMeterGroupDisplayName(meterGroup)}
+      label={models.meterGroup.getDisplayName(meterGroup)}
       onClick={onClick}
       {...rest}
     />

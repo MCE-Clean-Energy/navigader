@@ -1,5 +1,5 @@
 import { IdType } from './common';
-import { DataTypeMap, RawDataTypeMap } from './data';
+import { DataObject, RawDataObject } from './data';
 
 
 type CAISORateFilters = Partial<{
@@ -11,9 +11,9 @@ type CAISORateCommon = {
   id: IdType;
   name: string;
   year: number;
-  
+
   object_type: 'CAISORate';
 };
 
-export type RawCAISORate = CAISORateCommon & { data: RawDataTypeMap<'$/kwh', 'start'>; };
-export type CAISORate = CAISORateCommon & { data: DataTypeMap; };
+export type RawCAISORate = CAISORateCommon & RawDataObject<'$/kwh', 'start'>;
+export type CAISORate = CAISORateCommon & DataObject;

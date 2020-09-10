@@ -2,19 +2,23 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
-import {
-  Avatar, Flex, Icon, Link, PaginationState, PrefetchedTable, Progress, Switch, Table, Tooltip,
-  Typography
-} from 'navigader/components';
-import { poller } from 'navigader/models/common';
-import { Components, getStrategyDescription } from 'navigader/models/der';
 import * as routes from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { ColorMap } from 'navigader/styles';
 import { Scenario, ScenarioReportSummary } from 'navigader/types';
-import { omitFalsey, printWarning } from 'navigader/util';
+import { models, omitFalsey, printWarning } from 'navigader/util';
 import { commas, date, dollars, maxDecimals } from 'navigader/util/formatters';
 import _ from 'navigader/util/lodash';
+import { Avatar } from '../Avatar';
+import { DERIcon } from '../ders';
+import * as Flex from '../Flex';
+import { Icon } from '../Icon';
+import { Link } from '../Link';
+import { Progress } from '../Progress';
+import { Switch } from '../Switch';
+import { PaginationState, PrefetchedTable, Table } from '../Table';
+import { Tooltip } from '../Tooltip';
+import { Typography } from '../Typography';
 
 
 /** ============================ Types ===================================== */
@@ -111,8 +115,8 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
       // Unfinished scenarios should be polled for
       const scenarios = response.data;
       const meterGroups = omitFalsey(_.map(scenarios, 'meter_group'));
-      poller.addScenarios(scenarios);
-      poller.addMeterGroups(meterGroups);
+      models.polling.addScenarios(scenarios);
+      models.polling.addMeterGroups(meterGroups);
 
       // Add the models to the store and yield the pagination results
       dispatch(slices.models.updateModels([...meterGroups, ...scenarios]));
@@ -220,7 +224,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                   {scenario.der &&
                     <Flex.Container alignItems="center">
                       <Flex.Item>
-                        <Components.DERIcon type={scenario.der.der_configuration.der_type} />
+                        <DERIcon type={scenario.der.der_configuration.der_type} />
                       </Flex.Item>
                       <Flex.Item>
                         {scenario.der.der_configuration.name}
@@ -230,7 +234,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 </Table.Cell>
                 <Table.Cell>
                   {scenario.der &&
-                    <Tooltip title={getStrategyDescription(scenario.der.der_strategy)}>
+                    <Tooltip title={models.der.getStrategyDescription(scenario.der.der_strategy)}>
                       <div>{scenario.der.der_strategy.name}</div>
                     </Tooltip>
                   }

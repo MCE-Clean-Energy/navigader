@@ -1,9 +1,9 @@
 import * as React from 'react';
 
 import { Flex, Select } from 'navigader/components';
-import { getStrategyDescription } from 'navigader/models/der';
 import { makeStylesHook } from 'navigader/styles';
 import { DERConfiguration, DERStrategy, DERStrategyType } from 'navigader/types';
+import { models } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 import { DERSelection } from './util';
 
@@ -82,7 +82,7 @@ export const ProgramOptions: React.FC<ProgramOptionsWhileLoadingProps> = (props)
           label="Strategy"
           onChange={updateStrategy}
           optionSections={strategyGroups}
-          optionTooltip={getStrategyDescription}
+          optionTooltip={models.der.getStrategyDescription}
           renderOption="name"
           sorted
           value={strategy}

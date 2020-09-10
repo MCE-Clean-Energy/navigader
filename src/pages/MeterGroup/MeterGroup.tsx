@@ -3,10 +3,10 @@ import { useHistory, useParams } from 'react-router-dom';
 
 import * as api from 'navigader/api';
 import { Button, Fade, Grid, PageHeader, Progress, Typography } from 'navigader/components';
-import { getMeterGroupDisplayName, isSufficientlyIngested } from 'navigader/models/meter';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
 import { Frame288DataType, MeterGroup } from 'navigader/types';
+import { models } from 'navigader/util';
 import { LoadGraph } from './LoadGraph';
 import MetersTable from './MetersTable';
 
@@ -36,18 +36,18 @@ export const MeterGroupPage: React.FC = () => {
     <>
       <PageHeader
         actions={
-          isSufficientlyIngested(meterGroup)
+          models.meterGroup.isSufficientlyIngested(meterGroup)
             ? <Button color="secondary" onClick={goToScenarioCreation}>New Scenario</Button>
             : null
         }
         breadcrumbs={[
           ['Customer Groups', routes.load],
           [
-            getMeterGroupDisplayName(meterGroup) || 'Customer Group',
+            models.meterGroup.getDisplayName(meterGroup) || 'Customer Group',
             routes.dashboard.createScenario.review
           ]
         ]}
-        title={getMeterGroupDisplayName(meterGroup)}
+        title={models.meterGroup.getDisplayName(meterGroup)}
       />
 
       {meterGroup ? (

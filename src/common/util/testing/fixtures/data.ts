@@ -1,7 +1,9 @@
 import { Frame288NumericType, MonthIndex } from 'navigader/types';
+import { IntervalData } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 
 
+/** ============================ Frame 288 ================================= */
 export const frame288: Frame288NumericType = {
   1: [
     1049.7197,
@@ -330,3 +332,11 @@ export const makeFrame288 = (
   months.forEach(m => frame288[m] = _.range(24).map(h => fn(m, h)));
   return frame288;
 };
+
+/** ============================ Interval data ============================= */
+export function makeIntervalData (intervals: Array<[string, number]>, name?: string) {
+  return new IntervalData(
+    intervals.map(([date, value]) => ({ timestamp: new Date(date), value })),
+    name || 'test interval'
+  );
+}

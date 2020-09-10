@@ -1,8 +1,9 @@
 import * as React from 'react';
 
 import * as api from 'navigader/api';
-import { PageHeader, Progress, Typography } from 'navigader/components';
-import { Components } from 'navigader/models/scenario';
+import {
+  CustomersTable, PageHeader, Progress, ScenariosTable, Typography
+} from 'navigader/components';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
 import { Scenario } from 'navigader/types';
@@ -10,7 +11,6 @@ import { filterClause, makeCancelableAsync } from 'navigader/util';
 import { useColorMap, useQueryParams } from 'navigader/util/hooks';
 import _ from 'navigader/util/lodash';
 import { ScenarioComparisonChart } from './Chart';
-import { CustomersTable } from './CustomersTable';
 
 
 /** ============================ Styles ==================================== */
@@ -77,7 +77,7 @@ export const CompareScenariosPage: React.FC = () => {
               {
                 aggregated
                   ? (
-                    <Components.ScenariosTable
+                    <ScenariosTable
                       averaged={averaged}
                       className={classes.tableContainer}
                       colorMap={colorMap}

@@ -1,6 +1,6 @@
 import { DeferrableFields } from './api';
 import { NavigaderObject, Nullable, ProgressFields, RawPandasFrame } from './common';
-import { DataTypeMap, RawDataTypeMap } from './data';
+import { DataObject, RawDataTypeMap } from './data';
 import { DERConfiguration, DERStrategy } from './der';
 import { MeterGroup } from './meter';
 
@@ -47,8 +47,8 @@ export interface Scenario extends DeferrableFields<
   NavigaderObject<'SingleScenarioStudy'> &
   ScenarioCommon &
   ProgressFields &
+  DataObject &
   {
-    data: DataTypeMap;
     progress: {
       is_complete?: boolean;
       has_run: boolean;
@@ -82,13 +82,6 @@ export type AggregatedProcurementKeys =
 
 export type ProcurementReport = { [key in ProcurementKeys]?: number; };
 type AggregatedProcurementReport = { [Key in AggregatedProcurementKeys]: number; };
-
-type DetailedReport = {
-  DERConfiguration: string;
-  DERStrategy: string;
-  SimulationRatePlan: string;
-  SingleScenarioStudy: string;
-};
 
 type UsageReport = {
   UsagePreDER: number;
@@ -130,7 +123,7 @@ type ResourceAdequacyReport = {
   RADelta: Nullable<number>;
 };
 
-type ScenarioReportFieldsCommon = { ID: string; } & DetailedReport & Partial<
+type ScenarioReportFieldsCommon = { ID: string; SingleScenarioStudy: string; } & Partial<
   & UsageReport
   & BillReport
   & GHGReport
@@ -151,11 +144,14 @@ export type ScenarioReport = {
   [id: string]: ScenarioReportFields;
 };
 
-export type ScenarioReportSummaryFields = Omit<
+type RawScenarioReportSummaryFields = Omit<
   ScenarioReportFieldsCommon,
   'ID' | 'SingleScenarioStudy' | 'SimulationRatePlan' | 'MeterRatePlan'
-> & AggregatedProcurementReport;
+>;
+export type ScenarioReportSummaryFields =
+  & RawScenarioReportSummaryFields
+  & AggregatedProcurementReport;
 
 type EmptyReportSummary = {};
-export type RawScenarioReportSummary = { 0: ScenarioReportSummaryFields };
+export type RawScenarioReportSummary = { 0: RawScenarioReportSummaryFields };
 export type ScenarioReportSummary = ScenarioReportSummaryFields;

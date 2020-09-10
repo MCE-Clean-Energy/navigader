@@ -1,9 +1,12 @@
 import * as React from 'react';
 
-import { Card, Flex, Statistic, Tooltip } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
 import { DERConfiguration, DERStrategy } from 'navigader/types';
-import { getStrategyDescription } from '../util';
+import { models } from 'navigader/util';
+import { Card } from '../Card';
+import * as Flex from '../Flex';
+import { Statistic } from '../Statistic';
+import { Tooltip } from '../Tooltip';
 import { DERIcon } from './DERIcon';
 
 
@@ -59,7 +62,7 @@ export const DERCard: React.FC<DERCardProps> = (props) => {
             value={
               strategy
                 ? (
-                  <Tooltip title={getStrategyDescription(strategy)}>
+                  <Tooltip title={models.der.getStrategyDescription(strategy)}>
                     <div>{strategy.name}</div>
                   </Tooltip>
                 )
