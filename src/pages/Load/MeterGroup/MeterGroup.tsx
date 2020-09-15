@@ -23,10 +23,10 @@ const useStyles = makeStylesHook(theme => ({
 /** ============================ Components ================================ */
 const SummaryCard: React.FC<{ meterGroup: MeterGroup }> = ({ meterGroup }) => {
   const classes = useStyles();
-  const { max_monthly_demand, time_period, total_kwh } = meterGroup;
-  const dateRange = time_period === null
+  const { max_monthly_demand, date_range, total_kwh } = meterGroup;
+  const dateRange = date_range === null
     ? null
-    : formatters.date.range(time_period, formatters.date.standard);
+    : formatters.date.range(date_range, formatters.date.standard);
 
   return (
     <Card raised>
@@ -48,7 +48,7 @@ const SummaryCard: React.FC<{ meterGroup: MeterGroup }> = ({ meterGroup }) => {
                   <Table.Cell>{meterGroup.meter_count}</Table.Cell>
                 </Table.Row>
                 <Table.Row>
-                  <Table.Cell>Time period</Table.Cell>
+                  <Table.Cell>Date range</Table.Cell>
                   <Table.Cell>{dateRange ?? '-'}</Table.Cell>
                 </Table.Row>
                 <Table.Row>

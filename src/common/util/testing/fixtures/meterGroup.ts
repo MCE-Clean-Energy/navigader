@@ -355,7 +355,7 @@ const defaultOriginFile: OriginFileMeterGroup = {
     "is_complete": true,
     "percent_complete": 100
   },
-  "time_period": [moment("2019-01-01T00:00:00").toDate(), moment("2020-01-01T00:00:00").toDate()],
+  "date_range": [moment("2019-01-01T00:00:00").toDate(), moment("2020-01-01T00:00:00").toDate()],
   "name": "NEM E6",
   "meter_count": 797,
   "meters": [],
@@ -372,7 +372,7 @@ const defaultCustomerCluster: CustomerClusterMeterGroup = {
     "is_complete": true,
     "percent_complete": 100
   },
-  "time_period": [moment("2019-01-01T00:00:00").toDate(), moment("2020-01-01T00:00:00").toDate()],
+  "date_range": [moment("2019-01-01T00:00:00").toDate(), moment("2020-01-01T00:00:00").toDate()],
   "name": "NEM E6",
   "meter_count": 797,
   "meters": [],
@@ -389,7 +389,7 @@ const defaultRawOriginFile: RawOriginFileMeterGroup = {
     "expected_meter_count": 797,
     "filename": "origin_files/nem_e6_60min.csv"
   },
-  "time_period": ["2019-01-01T00:00:00", "2020-01-01T00:00:00"],
+  "date_range": ["2019-01-01T00:00:00", "2020-01-01T00:00:00"],
   "name": "NEM E6",
   "meter_count": 797,
   "meters": [],
@@ -402,7 +402,7 @@ const defaultRawCustomerCluster: RawCustomerClusterMeterGroup = {
   "id": "35b9919c-b7f9-4d28-8cf0-ac61bb9036d2",
   "created_at": "2020-02-12T20:05:05.695388",
   "object_type": "CustomerCluster",
-  "time_period": ["2019-01-01T00:00:00", "2020-01-01T00:00:00"],
+  "date_range": ["2019-01-01T00:00:00", "2020-01-01T00:00:00"],
   "name": "NEM E6",
   "meter_count": 797,
   "meters": [],

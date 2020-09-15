@@ -24,14 +24,14 @@ export type Meter = MeterCommon & DataObject;
 
 /** ============================ Meter Group Types ========================= */
 type MeterGroupCommon = DataObject & ProgressFields & {
-  time_period: Nullable<Tuple<Date>>;
+  date_range: Nullable<Tuple<Date>>;
 };
 
 type RawMeterGroupCommon = MeterAggregateMetrics & RawDataObject<'kw'> & {
   meter_count: number;
   meters: string[];
   name: string;
-  time_period: Tuple<string>;
+  date_range: Tuple<string>;
 };
 
 export type RawOriginFileMeterGroup =
@@ -49,11 +49,11 @@ export type RawCustomerClusterMeterGroup =
   & RawMeterGroupCommon;
 
 export type OriginFileMeterGroup =
-  & Omit<RawOriginFileMeterGroup, 'data' | 'time_period'>
+  & Omit<RawOriginFileMeterGroup, 'data' | 'date_range'>
   & MeterGroupCommon;
 
 export type CustomerClusterMeterGroup =
-  & Omit<RawCustomerClusterMeterGroup, 'data' | 'time_period'>
+  & Omit<RawCustomerClusterMeterGroup, 'data' | 'date_range'>
   & MeterGroupCommon;
 
 export type RawMeterGroup = RawOriginFileMeterGroup | RawCustomerClusterMeterGroup;

@@ -43,7 +43,7 @@ export function parseMeterGroup (meterGroup: RawMeterGroup): MeterGroup {
       ...meterGroup,
       data,
       progress: { is_complete: true, percent_complete: 100 },
-      time_period: parseTimePeriod(meterGroup.time_period)
+      date_range: parseDateRange(meterGroup.date_range)
     };
   }
 
@@ -61,27 +61,27 @@ export function parseMeterGroup (meterGroup: RawMeterGroup): MeterGroup {
       is_complete: percentComplete === 100,
       percent_complete: parseFloat(percentComplete.toFixed(1))
     },
-    time_period: parseTimePeriod(meterGroup.time_period)
+    date_range: parseDateRange(meterGroup.date_range)
   };
 }
 
 /**
- * Helper function for parsing the meter group's `time_period` field
+ * Helper function for parsing the meter group's `date_range` field
  *
- * @param {Tuple<String>} period: the period of the meter group as provided by the back end
+ * @param {Tuple<String>} range: the range of the meter group as provided by the back end
  */
-function parseTimePeriod (period: RawMeterGroup['time_period']): MeterGroup['time_period'] {
-  return period.includes(NOT_A_TIME) ? null : [parseDate(period[0]), parseDate(period[1])];
+function parseDateRange (range: RawMeterGroup['date_range']): MeterGroup['date_range'] {
+  return range.includes(NOT_A_TIME) ? null : [parseDate(range[0]), parseDate(range[1])];
 }
 
 export function serializeMeterGroup(meterGroup: MeterGroup): RawMeterGroup {
-  const { time_period } = meterGroup;
+  const { date_range } = meterGroup;
   return {
     ...meterGroup,
     data: serializeDataField(meterGroup.data, 'kw', 'index'),
-    time_period: time_period === null
+    date_range: date_range === null
       ? [NOT_A_TIME, NOT_A_TIME]
-      : [serializeDate(time_period[0]), serializeDate(time_period[1])]
+      : [serializeDate(date_range[0]), serializeDate(date_range[1])]
   };
 }
 

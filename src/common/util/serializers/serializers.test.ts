@@ -54,38 +54,38 @@ describe('API parsing methods', () => {
       expect(parsedOriginFile.progress.percent_complete).toEqual(100);
     });
 
-    it('parses the `time_period` key properly', () => {
-      // Valid time periods
-      const validTimePeriod: Tuple<string> = [
+    it('parses the `date_range` key properly', () => {
+      // Valid date ranges
+      const validDateRange: Tuple<string> = [
         '2019-01-01T00:00:00',
         '2020-01-01T00:00:00'
       ];
 
       expect(parseMeterGroup(
-        fixtures.makeRawCustomerCluster({ time_period: validTimePeriod })
-      ).time_period).toEqual([
-        moment(validTimePeriod[0]).toDate(), moment(validTimePeriod[1]).toDate()
+        fixtures.makeRawCustomerCluster({ date_range: validDateRange })
+      ).date_range).toEqual([
+        moment(validDateRange[0]).toDate(), moment(validDateRange[1]).toDate()
       ]);
 
       expect(parseMeterGroup(
-        fixtures.makeRawOriginFile({ time_period: validTimePeriod })
-      ).time_period).toEqual([
-        moment(validTimePeriod[0]).toDate(), moment(validTimePeriod[1]).toDate()
+        fixtures.makeRawOriginFile({ date_range: validDateRange })
+      ).date_range).toEqual([
+        moment(validDateRange[0]).toDate(), moment(validDateRange[1]).toDate()
       ]);
 
-      // Invalid time periods
-      const invalidPeriod1: Tuple<string> = ['NaT', validTimePeriod[1]];
-      const invalidPeriod2: Tuple<string> = [validTimePeriod[0], 'NaT'];
-      const invalidPeriod3: Tuple<string> = ['NaT', 'NaT'];
+      // Invalid date ranges
+      const invalidRange1: Tuple<string> = ['NaT', validDateRange[1]];
+      const invalidRange2: Tuple<string> = [validDateRange[0], 'NaT'];
+      const invalidRange3: Tuple<string> = ['NaT', 'NaT'];
 
-      [invalidPeriod1, invalidPeriod2, invalidPeriod3].forEach((invalidPeriod) => {
+      [invalidRange1, invalidRange2, invalidRange3].forEach((invalidRange) => {
         expect(parseMeterGroup(
-          fixtures.makeRawCustomerCluster({ time_period: invalidPeriod })
-        ).time_period).toBeNull();
+          fixtures.makeRawCustomerCluster({ date_range: invalidRange })
+        ).date_range).toBeNull();
 
         expect(parseMeterGroup(
-          fixtures.makeRawOriginFile({ time_period: invalidPeriod })
-        ).time_period).toBeNull();
+          fixtures.makeRawOriginFile({ date_range: invalidRange })
+        ).date_range).toBeNull();
       })
     });
   });
