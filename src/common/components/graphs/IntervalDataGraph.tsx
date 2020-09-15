@@ -9,8 +9,7 @@ import { VictoryZoomContainerProps } from 'victory-zoom-container';
 
 import { ColorMap } from 'navigader/styles';
 import { DateTuple, IntervalData, MonthIndex, Tuple } from 'navigader/types';
-import { omitFalsey } from 'navigader/util';
-import { date } from 'navigader/util/formatters';
+import { formatters, omitFalsey } from 'navigader/util';
 import { useColorMap } from 'navigader/util/hooks';
 import _ from 'navigader/util/lodash';
 import { NavigaderChart } from './components';
@@ -96,7 +95,7 @@ export const IntervalDataGraph: React.FC<IntervalDataGraphProps> = (props) => {
       padding={{ ...chartMargins, top: 10 }}
       scale={{ x: 'time' }}
     >
-      {!hideXAxis && <VictoryAxis tickFormat={date.monthDayHourMinute} />}
+      {!hideXAxis && <VictoryAxis tickFormat={formatters.date.monthDayHourMinute} />}
       <VictoryAxis
         crossAxis={false}
         dependentAxis
@@ -170,7 +169,7 @@ function getLabelFactory (units?: string, precision: number = 2) {
   return function ({ datum }: VictoryCallbackArg<GraphDatum>) {
     return omitFalsey([
       datum.name,
-      date.monthDayHourMinute(datum.timestamp) + ':',
+      formatters.date.monthDayHourMinute(datum.timestamp) + ':',
       datum.value.toFixed(precision),
       units
     ]).join(' ');

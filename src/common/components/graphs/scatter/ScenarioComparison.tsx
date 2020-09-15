@@ -2,8 +2,7 @@ import * as React from 'react';
 
 import { ColorMap } from 'navigader/styles';
 import { Scenario, ScenarioReportSummary } from 'navigader/types';
-import { omitFalsey } from 'navigader/util';
-import { dollars, maxDecimals, pluralize, truncateAtLength } from 'navigader/util/formatters';
+import { formatters, omitFalsey } from 'navigader/util';
 import { ScatterPlot } from './ScatterPlot';
 import { ScatterPlotDatumWrapper } from './types';
 
@@ -52,12 +51,12 @@ class ScenarioWrapper implements ScatterPlotDatumWrapper {
   }
 
   getTooltipText () {
-    const { der, expected_der_simulation_count, meter_group, name } = this.scenario;
+    const { der, expected_der_simulation_count: expected_count, meter_group, name } = this.scenario;
 
-    // `getTooltipText` is only called when the scenario is rendered, which only happens if the bill and
-    // GHG impacts are numeric
+    // `getTooltipText` is only called when the scenario is rendered, which only happens if the bill
+    // and GHG impacts are numeric
     const billImpact = this.getBillImpact() as number;
-    const ghgImpact = maxDecimals(this.getGhgImpact() as number, 2);
+    const ghgImpact = formatters.maxDecimals(this.getGhgImpact() as number, 2);
 
     const averagedSuffix = this.averaged ? '/SAID' : '';
     return omitFalsey([
@@ -65,10 +64,10 @@ class ScenarioWrapper implements ScatterPlotDatumWrapper {
       der?.der_configuration.name,
       der?.der_strategy.name,
       meter_group?.name,
-      `${expected_der_simulation_count} ${pluralize('customer', expected_der_simulation_count)}`,
-      `${dollars(billImpact)}/year${averagedSuffix}`,
-      `${ghgImpact} ${pluralize('ton', ghgImpact)} CO2/year${averagedSuffix}`
-    ]).map(s => truncateAtLength(s, 50)).join('\n');
+      `${expected_count} ${formatters.pluralize('customer', expected_count)}`,
+      `${formatters.dollars(billImpact)}/year${averagedSuffix}`,
+      `${ghgImpact} ${formatters.pluralize('ton', ghgImpact)} CO2/year${averagedSuffix}`
+    ]).map(s => formatters.truncateAtLength(s, 50)).join('\n');
   }
 
   getSize () {

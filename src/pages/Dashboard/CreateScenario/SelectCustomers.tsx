@@ -3,8 +3,7 @@ import * as React from 'react';
 import { Flex, MeterGroupChip } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
 import { MeterGroup, OriginFileMeterGroup } from 'navigader/types';
-import { models } from 'navigader/util';
-import { percentage } from 'navigader/util/formatters';
+import { formatters, models } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 
 
@@ -63,7 +62,7 @@ const CustomerChip: React.FC<CustomerChipProps> = ({ meterGroup, onClick, select
   // explaining why
   const percentComplete = expected_meter_count === null
     ? '0%'
-    : percentage(meter_count, expected_meter_count);
+    : formatters.percentage(meter_count, expected_meter_count);
 
   return (
     <MeterGroupChip

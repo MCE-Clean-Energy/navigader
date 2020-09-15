@@ -1,9 +1,14 @@
-import { NavigaderObject, Nullable, ProgressFields } from './common';
+import { NavigaderObject, Nullable, ProgressFields, Tuple } from './common';
 import { DataObject, RawDataObject } from './data';
 
 
 /** ============================ Meter Types =============================== */
-type MeterCommon = {
+type MeterAggregateMetrics = {
+  max_monthly_demand?: number;
+  total_kwh?: number;
+};
+
+type MeterCommon = MeterAggregateMetrics & {
   id: string;
   metadata: {
     sa_id: number;
@@ -18,11 +23,15 @@ export type RawMeter = MeterCommon & RawDataObject<'kw'>;
 export type Meter = MeterCommon & DataObject;
 
 /** ============================ Meter Group Types ========================= */
-type MeterGroupCommon = DataObject & ProgressFields;
-type RawMeterGroupCommon = RawDataObject<'kw'> & {
+type MeterGroupCommon = DataObject & ProgressFields & {
+  time_period: Nullable<Tuple<Date>>;
+};
+
+type RawMeterGroupCommon = MeterAggregateMetrics & RawDataObject<'kw'> & {
   meter_count: number;
   meters: string[];
   name: string;
+  time_period: Tuple<string>;
 };
 
 export type RawOriginFileMeterGroup =
@@ -40,11 +49,11 @@ export type RawCustomerClusterMeterGroup =
   & RawMeterGroupCommon;
 
 export type OriginFileMeterGroup =
-  & Omit<RawOriginFileMeterGroup, 'data'>
+  & Omit<RawOriginFileMeterGroup, 'data' | 'time_period'>
   & MeterGroupCommon;
 
 export type CustomerClusterMeterGroup =
-  & Omit<RawCustomerClusterMeterGroup, 'data'>
+  & Omit<RawCustomerClusterMeterGroup, 'data' | 'time_period'>
   & MeterGroupCommon;
 
 export type RawMeterGroup = RawOriginFileMeterGroup | RawCustomerClusterMeterGroup;

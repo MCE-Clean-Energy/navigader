@@ -31,6 +31,12 @@ type SignupResponse = Partial<{
   password1: ErrorArray;
   password2: ErrorArray;
   email: ErrorArray;
+  non_field_errors: ErrorArray;
+}>;
+
+type ResendVerificationEmailResponse = Partial<{
+  email: ErrorArray;
+  non_field_errors: ErrorArray;
 }>;
 
 /** ============================ API Methods =============================== */
@@ -102,16 +108,16 @@ export async function signUp (
   const json: SignupResponse = await response.json();
   return {
     response,
-    error: (json.username || json.password1 || json.password2 || json.email || [])[0]
+    error: (json.username || json.password1 || json.password2 || json.email || json.non_field_errors || [])[0]
   };
 }
 
 export async function resendVerificationEmail (email: string) {
   const response = await postRequest(routes.registration.resendVerification, { email });
-  const json: SignupResponse = await response.json();
+  const json: ResendVerificationEmailResponse = await response.json();
   return {
     response,
-    error: (json.username || json.password1 || json.password2 || json.email || [])[0]
+    error: (json.email || json.non_field_errors || [])[0]
   };
 }
 

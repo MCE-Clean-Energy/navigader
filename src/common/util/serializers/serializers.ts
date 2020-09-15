@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 import {
   AggregatedProcurementKeys, CAISORate, DataTypeMap, GHGRate, isRawScenarioReport,
   isRawScenarioReportSummary, Meter, MeterGroup, PandasFrame, ProcurementReport, RawCAISORate,
@@ -24,6 +26,9 @@ export function serializeMeter (meter: Meter): RawMeter {
 }
 
 /** ============================ Meter Groups ============================== */
+// Python string representation of an invalid date
+const NOT_A_TIME = 'NaT';
+
 /**
  * Basic parsing function for meter groups
  *
@@ -37,7 +42,8 @@ export function parseMeterGroup (meterGroup: RawMeterGroup): MeterGroup {
     return {
       ...meterGroup,
       data,
-      progress: { is_complete: true, percent_complete: 100 }
+      progress: { is_complete: true, percent_complete: 100 },
+      time_period: parseTimePeriod(meterGroup.time_period)
     };
   }
 
@@ -54,14 +60,28 @@ export function parseMeterGroup (meterGroup: RawMeterGroup): MeterGroup {
     progress: {
       is_complete: percentComplete === 100,
       percent_complete: parseFloat(percentComplete.toFixed(1))
-    }
+    },
+    time_period: parseTimePeriod(meterGroup.time_period)
   };
 }
 
+/**
+ * Helper function for parsing the meter group's `time_period` field
+ *
+ * @param {Tuple<String>} period: the period of the meter group as provided by the back end
+ */
+function parseTimePeriod (period: RawMeterGroup['time_period']): MeterGroup['time_period'] {
+  return period.includes(NOT_A_TIME) ? null : [parseDate(period[0]), parseDate(period[1])];
+}
+
 export function serializeMeterGroup(meterGroup: MeterGroup): RawMeterGroup {
+  const { time_period } = meterGroup;
   return {
     ...meterGroup,
-    data: serializeDataField(meterGroup.data, 'kw', 'index')
+    data: serializeDataField(meterGroup.data, 'kw', 'index'),
+    time_period: time_period === null
+      ? [NOT_A_TIME, NOT_A_TIME]
+      : [serializeDate(time_period[0]), serializeDate(time_period[1])]
   };
 }
 
@@ -253,10 +273,7 @@ export function parseGHGRate (rate: RawGHGRate): GHGRate {
     id: rate.id.toString(),
 
     // This is declared as part of the `RawGHGRate` type but it isn't provided by the backend
-    object_type: 'GHGRate',
-
-    // This data isn't available for `GHGRate` objects
-    created_at: new Date().toString()
+    object_type: 'GHGRate'
   };
 }
 
@@ -373,4 +390,28 @@ function serializeDataField <Column extends string, Unit extends string>(
       ? obj.default.serialize(unit, column)
       : undefined
   };
+}
+
+/** ============================ Data fields =============================== */
+/**
+ * Parses a date string into a `Date` object, using moment. Note that using the `Date` constructor
+ * is unreliable across browsers: ambiguous date strings that omit timezone info will be
+ * interpreted differently by different browsers.
+ *
+ * @param {string} dateString: the string to parse.
+ */
+export function parseDate (dateString: string) {
+  return moment(dateString).toDate();
+}
+
+/**
+ * Serializes a date object into a string. This simply wraps the `Date` prototype's `toISOString`
+ * method. This method exists for the sake of consistency across the application. Note that we use
+ * `toISOString` rather than `toString`, as the former is accepted by moment while the latter is
+ * not
+ *
+ * @param {Date} date: the date object to serialize
+ */
+export function serializeDate (date: Date) {
+  return date.toISOString();
 }

@@ -111,10 +111,14 @@ export function useScenario (scenarioId: string, options?: api.GetScenarioQueryO
  * Retrieves a meter group from the store that matches the given ID and data filters, and fetches
  * it from the backend if it's not found in the store.
  *
- * @param {string} meterGroupId: the ID of the meter group to get
- * @param {DataTypeFilters} filters: any data type filters to apply to the meter group
+ * @param {string|undefined} meterGroupId: the ID of the meter group to get. This is allowed to be
+ * `undefined` to simplify cases in which the ID may not be ready at component mount time
+ * @param {DataTypeFilters} [filters]: any data type filters to apply to the meter group
  */
-export function useMeterGroup (meterGroupId: string, filters: Partial<DataTypeFilters> = {}) {
+export function useMeterGroup (
+  meterGroupId: Maybe<string>,
+  filters: Partial<DataTypeFilters> = {}
+) {
   const dispatch = useDispatch();
 
   // Check the store for meter group that matches the provided filters
@@ -125,14 +129,15 @@ export function useMeterGroup (meterGroupId: string, filters: Partial<DataTypeFi
   })();
 
   const loading = useAsync(
-    () => api.getMeterGroup(meterGroupId, {
-      ...omitFalsey({
+    async () => {
+      if (!meterGroupId) return;
+      return api.getMeterGroup(meterGroupId, omitFalsey({
         data_types: filters.data_types,
         period: filters.period
-      })
-    }),
+      }));
+    },
     handleMeterGroupsResponse,
-    [],
+    [meterGroupId],
     // If we've already loaded the rates, we don't need to do so again
     () => !meterGroup
   );
@@ -144,8 +149,10 @@ export function useMeterGroup (meterGroupId: string, filters: Partial<DataTypeFi
    *
    * @param {MeterGroup} meterGroup: the API response
    */
-  function handleMeterGroupsResponse (meterGroup: MeterGroup) {
-    dispatch(slices.models.updateModels([meterGroup]));
+  function handleMeterGroupsResponse (meterGroup?: MeterGroup) {
+    if (meterGroup) {
+      dispatch(slices.models.updateModels([meterGroup]));
+    }
   }
 }
 

@@ -3,6 +3,7 @@ import ContainerDimensions, { Dimensions } from 'react-container-dimensions';
 import { VictoryChart, VictoryTheme } from 'victory';
 import { VictoryChartProps } from 'victory-chart';
 import { VictoryThemeDefinition } from 'victory-core';
+import classNames from 'classnames';
 
 import { makeStylesHook, materialColors } from 'navigader/styles';
 import { randomString } from 'navigader/util';
@@ -10,7 +11,9 @@ import _ from 'navigader/util/lodash';
 
 
 /** ============================ Types ===================================== */
-type NavigaderChartProps = Omit<VictoryChartProps, 'theme'>;
+type NavigaderChartProps = Omit<VictoryChartProps, 'theme'> & {
+  className?: string;
+};
 
 /** ============================ Styles ===================================== */
 const useStyles = makeStylesHook(() => ({
@@ -48,11 +51,11 @@ const TooltipShadows: React.FC<{ id: string }> = ({ id }) =>
     <feDropShadow stdDeviation="2" />
   </filter>;
 
-export const NavigaderChart: React.FC<NavigaderChartProps> = ({ children, ...rest }) => {
+export const NavigaderChart: React.FC<NavigaderChartProps> = ({ children, className, ...rest }) => {
   const chartId = React.useMemo(() => randomString(), []);
 
   return (
-    <div className={useStyles().container}>
+    <div className={classNames(useStyles().container, className)}>
       <ContainerDimensions>
         {({ width }: Dimensions) =>
           <VictoryChart theme={getChartTheme(chartId)} width={rest.width || width} {...rest}>

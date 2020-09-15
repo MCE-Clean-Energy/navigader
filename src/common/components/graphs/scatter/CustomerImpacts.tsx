@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { ColorMap } from 'navigader/styles';
 import { Scenario, ScenarioReportFields } from 'navigader/types';
-import { dollars, maxDecimals, pluralize, truncateAtLength } from 'navigader/util/formatters';
+import { formatters } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 import { ScatterPlot } from './ScatterPlot';
 import { ScatterPlotDatumWrapper } from './types';
@@ -45,13 +45,13 @@ class CustomerWrapper implements ScatterPlotDatumWrapper {
     // `getTooltipText` is only called when the scenario is rendered, which only happens if the bill and
     // GHG impacts are numeric
     const billImpact = this.getBillImpact() as number;
-    const ghgImpact = maxDecimals(this.getGhgImpact() as number, 2);
+    const ghgImpact = formatters.maxDecimals(this.getGhgImpact() as number, 2);
 
     return [
       `SA ID: ${this.customer.SA_ID}`,
-      `${dollars(billImpact)}/year`,
-      `${ghgImpact} ${pluralize('ton', ghgImpact)} CO2/year`
-    ].map(s => truncateAtLength(s, 50)).join('\n');
+      `${formatters.dollars(billImpact)}/year`,
+      `${ghgImpact} ${formatters.pluralize('ton', ghgImpact)} CO2/year`
+    ].map(s => formatters.truncateAtLength(s, 50)).join('\n');
   }
 
   getScenarioId () {

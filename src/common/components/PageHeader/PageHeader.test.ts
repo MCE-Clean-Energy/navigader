@@ -18,7 +18,7 @@ describe('Back button', () => {
   });
 
   it('Clicking the back button returns you to the previous page', async () => {
-    const { findByText, getByRole } = renderAppRoute([routes.load, routes.meterGroup(meterGroup.id)], 1);
+    const { findByText, getByRole } = renderAppRoute([routes.load.base, routes.load.meterGroup(meterGroup.id)], 1);
 
     // Click on the back button
     expect(getByRole('back-button')).toBeInTheDocument();

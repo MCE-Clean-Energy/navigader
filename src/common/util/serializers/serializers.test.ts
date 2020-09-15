@@ -1,20 +1,21 @@
-import { RawScenario } from 'navigader/types';
+import { RawScenario, Tuple } from 'navigader/types';
 import { fixtures } from 'navigader/util/testing';
 import {
   parseMeterGroup, parsePandasFrame, parseReport, parseScenario, serializeMeterGroup,
   serializePandasFrame, serializeReport
 } from './serializers';
+import moment from 'moment';
 
 
 describe('API parsing methods', () => {
   describe('`parseMeterGroup` method', () => {
-    const customerCluster = serializeMeterGroup(fixtures.makeCustomerCluster());
-    const originFile = serializeMeterGroup(fixtures.makeOriginFile({
+    const customerCluster = fixtures.makeRawCustomerCluster();
+    const originFile = fixtures.makeRawOriginFile({
       metadata: {
         expected_meter_count: 0,
         filename: 'origin_files/myFile.csv'
       }
-    }));
+    });
 
     function parseOriginFile (meterCount: number, expectedCount: number | null) {
       return parseMeterGroup({
@@ -51,6 +52,41 @@ describe('API parsing methods', () => {
       parsedOriginFile = parseOriginFile(100, 100);
       expect(parsedOriginFile.progress.is_complete).toEqual(true);
       expect(parsedOriginFile.progress.percent_complete).toEqual(100);
+    });
+
+    it('parses the `time_period` key properly', () => {
+      // Valid time periods
+      const validTimePeriod: Tuple<string> = [
+        '2019-01-01T00:00:00',
+        '2020-01-01T00:00:00'
+      ];
+
+      expect(parseMeterGroup(
+        fixtures.makeRawCustomerCluster({ time_period: validTimePeriod })
+      ).time_period).toEqual([
+        moment(validTimePeriod[0]).toDate(), moment(validTimePeriod[1]).toDate()
+      ]);
+
+      expect(parseMeterGroup(
+        fixtures.makeRawOriginFile({ time_period: validTimePeriod })
+      ).time_period).toEqual([
+        moment(validTimePeriod[0]).toDate(), moment(validTimePeriod[1]).toDate()
+      ]);
+
+      // Invalid time periods
+      const invalidPeriod1: Tuple<string> = ['NaT', validTimePeriod[1]];
+      const invalidPeriod2: Tuple<string> = [validTimePeriod[0], 'NaT'];
+      const invalidPeriod3: Tuple<string> = ['NaT', 'NaT'];
+
+      [invalidPeriod1, invalidPeriod2, invalidPeriod3].forEach((invalidPeriod) => {
+        expect(parseMeterGroup(
+          fixtures.makeRawCustomerCluster({ time_period: invalidPeriod })
+        ).time_period).toBeNull();
+
+        expect(parseMeterGroup(
+          fixtures.makeRawOriginFile({ time_period: invalidPeriod })
+        ).time_period).toBeNull();
+      })
     });
   });
 

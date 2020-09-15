@@ -48,7 +48,7 @@ const ScenarioContext: React.FC<{ scenario: Scenario }> = ({ scenario }) => {
   /** ========================== Callbacks ================================= */
   function goToMeterGroup () {
     if (!scenario || !scenario.meter_group) return;
-    history.push(routes.meterGroup(scenario.meter_group.id));
+    history.push(routes.load.meterGroup(scenario.meter_group.id));
   }
 };
 

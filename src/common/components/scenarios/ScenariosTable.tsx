@@ -6,8 +6,7 @@ import * as routes from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { ColorMap } from 'navigader/styles';
 import { Scenario, ScenarioReportSummary } from 'navigader/types';
-import { models, omitFalsey, printWarning } from 'navigader/util';
-import { commas, date, dollars, maxDecimals } from 'navigader/util/formatters';
+import { formatters, models, omitFalsey, printWarning } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 import { Avatar } from '../Avatar';
 import { DERIcon } from '../ders';
@@ -209,12 +208,14 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                   }
                 </Table.Cell>
                 <Table.Cell>
-                  <Typography noWrap variant="body2">{date.standard(scenario.created_at)}</Typography>
+                  <Typography noWrap variant="body2">
+                    {formatters.date.standard(scenario.created_at)}
+                  </Typography>
                 </Table.Cell>
                 <Table.Cell>
                   {scenario.meter_group &&
                     <Tooltip title={`${scenario.meter_group.meter_count} meters`}>
-                      <Link to={routes.meterGroup(scenario.meter_group.id)}>
+                      <Link to={routes.load.meterGroup(scenario.meter_group.id)}>
                         {scenario.meter_group.name}
                       </Link>
                     </Tooltip>
@@ -242,21 +243,25 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? commas(maxDecimals(getField(scenario, 'UsageDelta', innerAveraged), 2))
-                      : '-'
+                      ? formatters.commas(
+                          formatters.maxDecimals(getField(scenario, 'UsageDelta', innerAveraged), 2)
+                      ) : '-'
                   }
                 </Table.Cell>
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? commas(maxDecimals(getField(scenario, 'CleanNetShort2022Delta', innerAveraged), 2))
-                      : '-'
+                      ? formatters.commas(
+                          formatters.maxDecimals(
+                            getField(scenario, 'CleanNetShort2022Delta', innerAveraged), 2
+                          )
+                      ) : '-'
                   }
                 </Table.Cell>
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? dollars(getField(scenario, 'BillDelta', innerAveraged))
+                      ? formatters.dollars(getField(scenario, 'BillDelta', innerAveraged))
                       : '-'
                   }
                 </Table.Cell>
@@ -267,7 +272,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                       if (!scenario.progress.is_complete) return '-';
                       const procurementValue = getField(scenario, 'PRC_LMPDelta', innerAveraged);
                       return typeof procurementValue === 'number'
-                        ? dollars(procurementValue)
+                        ? formatters.dollars(procurementValue)
                         : '-';
                     })()
                   }
@@ -275,8 +280,9 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? commas(maxDecimals(getField(scenario, 'RADelta', innerAveraged), 2))
-                      : '-'
+                      ? formatters.commas(
+                          formatters.maxDecimals(getField(scenario, 'RADelta', innerAveraged), 2)
+                      ) : '-'
                   }
                 </Table.Cell>
                 {actionsMenu && <Table.Cell>{actionsMenu(scenario)}</Table.Cell>}

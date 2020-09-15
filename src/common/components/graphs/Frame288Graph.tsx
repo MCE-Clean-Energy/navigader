@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { VictoryAxis, VictoryLabel, VictoryLine, VictoryVoronoiContainer } from 'victory';
 
-import { ColorMap } from 'navigader/styles';
+import { ColorMap, makeStylesHook } from 'navigader/styles';
 import { Frame288NumericType, MonthIndex, MonthsOption } from 'navigader/types';
+import { formatters } from 'navigader/util';
 import { Frame288Numeric } from 'navigader/util/data';
-import { getMonthName } from 'navigader/util/formatters';
 import { useColorMap } from 'navigader/util/hooks';
 import _ from 'navigader/util/lodash';
 import { NavigaderChart } from './components';
@@ -26,13 +26,22 @@ type LineDatum = {
 };
 
 /** ============================ Styles ===================================== */
+const useStyles = makeStylesHook(() => ({
+  chart: {
+    height: CHART_HEIGHT
+  }
+}), 'Frame288Graph');
+
 const lineStyle = (colorMap: ColorMap) => ({
   stroke: colorMap.getColor('line')
 });
 
+const CHART_HEIGHT = 300;
+
 /** ============================ Components ================================ */
 export const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
   const { axisLabel, data, months } = props;
+  const classes = useStyles();
   const monthIndices = months === 'all'
     ? _.range(1, 13) as MonthIndex[]
     : months;
@@ -56,8 +65,9 @@ export const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
 
   return (
     <NavigaderChart
+      className={classes.chart}
       containerComponent={<VictoryVoronoiContainer labels={lineLabel} responsive />}
-      height={300}
+      height={CHART_HEIGHT}
       domain={{ x: [0, 23], y: [min, max] }}
       domainPadding={{ y: 10 }}
       padding={{ left: 50, bottom: 30, top: 10, right: 0 }}
@@ -104,7 +114,7 @@ export const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
    * @param {VictoryCallbackArg<LineDatum>} datum: the data point for which the label is made
    */
   function lineLabel ({ datum }: VictoryCallbackArg<LineDatum>) {
-    const month = getMonthName(datum.monthIndex);
+    const month = formatters.getMonthName(datum.monthIndex);
     const hour = formatHour(datum.x);
     const value = datum.y.toFixed(2);
     const suffix = units ? ` ${units}` : '';

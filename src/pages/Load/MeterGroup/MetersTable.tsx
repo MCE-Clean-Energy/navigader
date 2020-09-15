@@ -6,6 +6,7 @@ import { Table, PaginationState } from 'navigader/components';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { MeterGroup } from 'navigader/types';
+import { formatters } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -24,7 +25,7 @@ const useStyles = makeStylesHook(() => ({
 const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  
+
   const getMeters = React.useCallback(
     async (state: PaginationState) => {
       const response = await api.getMeters({
@@ -32,14 +33,14 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
         page: state.currentPage + 1,
         page_size: state.rowsPerPage
       });
-      
+
       // Add the models to the store and yield the pagination results
       dispatch(slices.models.updateModels(response.data));
       return response;
     },
     [meterGroupId, dispatch]
   );
-  
+
   // TODO: virtualize the table
   return (
     <Table
@@ -57,6 +58,8 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
             <Table.Row>
               <Table.Cell>SA ID</Table.Cell>
               <Table.Cell>Rate Plan</Table.Cell>
+              <Table.Cell align="right">Maximum Monthly Demand (kW)</Table.Cell>
+              <Table.Cell align="right">Total kWh</Table.Cell>
             </Table.Row>
           </Table.Head>
           <Table.Body>
@@ -64,6 +67,12 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
               <Table.Row key={meter.id}>
                 <Table.Cell>{meter.metadata.sa_id}</Table.Cell>
                 <Table.Cell>{meter.metadata.rate_plan_name}</Table.Cell>
+                <Table.Cell align="right">
+                  {formatters.commas(formatters.maxDecimals(meter.max_monthly_demand, 2))}
+                </Table.Cell>
+                <Table.Cell align="right">
+                  {formatters.commas(formatters.maxDecimals(meter.total_kwh, 2))}
+                </Table.Cell>
               </Table.Row>
             )}
           </Table.Body>

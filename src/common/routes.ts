@@ -23,11 +23,14 @@ scenario.compare = (ids?: string[]) => {
   return `/scenario/compare/${qs}`;
 };
 
+export const load = {
+  base: '/load',
+  meterGroup: (id: string) => `/load/group/${id}`
+};
+
 /** ============================ Other Routes ============================== */
 export const settings = '/settings';
 export const login = '/login';
-export const load = '/load';
-export const meterGroup = (id: string) => `/load/group/${id}`;
 export const resetPassword = '/reset_password';
 export const roadmap = '/roadmap';
 export const upload = '/upload';

@@ -4,9 +4,15 @@ import { fixtures, makePaginationResponse, mockFetch, renderAppRoute } from 'nav
 describe('Meter Group Page', () => {
   const groupName = 'Test group';
   const meterGroup = fixtures.makeOriginFile({
-    name: groupName
+    id: '2',
+    name: groupName,
+    data: {
+      average: fixtures.meterData,
+      maximum: fixtures.meterData,
+      minimum: fixtures.meterData
+    }
   });
-  
+
   beforeEach(() => {
     mockFetch([
       [/load\/meter_group\/.+\//, { meter_group: meterGroup }],
@@ -14,7 +20,7 @@ describe('Meter Group Page', () => {
       ['/load/meter/', makePaginationResponse({ meters: [fixtures.meter] })]
     ]);
   });
-  
+
   describe('Header',  () => {
     it('Meter group name is rendered', async () => {
       const { findByTestId } = renderAppRoute('/load/group/2');

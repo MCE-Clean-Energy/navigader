@@ -7,8 +7,7 @@ import {
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
 import { MeterGroup } from 'navigader/types';
-import { models, PowerFrame288 } from 'navigader/util';
-import { date } from 'navigader/util/formatters';
+import { formatters, models, PowerFrame288 } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -78,7 +77,7 @@ export const MeterGroupCard: React.FC<MeterGroupCardProps> = (props) => {
   const onClick = isIngested ? viewMeterGroup : undefined;
   const statisticProps = isIngested
     ? { title: '# of Meters', value: meterGroup.meter_count }
-    : { suffix: '%', title: 'Progress', value: percent_complete };
+    : { title: 'Progress', value: percent_complete + '%' };
 
   const card = (
     <Card raised className={classes.card} onClick={onClick} padding={cardPadding}>
@@ -94,7 +93,7 @@ export const MeterGroupCard: React.FC<MeterGroupCardProps> = (props) => {
         </Grid.Item>
         <Grid.Item span={1} />
         <Grid.Item>
-          <Statistic title="Uploaded" value={date.standard(meterGroup.created_at)} />
+          <Statistic title="Uploaded" value={formatters.date.standard(meterGroup.created_at)} />
         </Grid.Item>
       </Grid>
     </Card>
@@ -111,6 +110,6 @@ export const MeterGroupCard: React.FC<MeterGroupCardProps> = (props) => {
     // If the user clicks on the meter group chip, the event will propagate up to the card and this
     // method will be called again. Stopping the propagation prevents that second call
     event.stopPropagation();
-    history.push(routes.meterGroup(meterGroup.id));
+    history.push(routes.load.meterGroup(meterGroup.id));
   }
 };

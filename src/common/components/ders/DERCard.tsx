@@ -48,12 +48,11 @@ export const DERCard: React.FC<DERCardProps> = (props) => {
                 )
                 : 'None'
             }
-            variant="subtitle2"
           />
         </Flex.Item>
 
         <Flex.Item>
-          <Statistic title="Configuration" value={configuration?.name || 'None'} variant="subtitle2" />
+          <Statistic title="Configuration" value={configuration?.name || 'None'} />
         </Flex.Item>
 
         <Flex.Item>
@@ -68,7 +67,6 @@ export const DERCard: React.FC<DERCardProps> = (props) => {
                 )
                 : 'None'
             }
-            variant="subtitle2"
           />
         </Flex.Item>
       </Flex.Container>

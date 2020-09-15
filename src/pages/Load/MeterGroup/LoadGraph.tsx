@@ -1,10 +1,11 @@
 import * as React from 'react';
 
-import { Card, Flex, Frame288Graph, MonthSelector, Toggle, Tooltip } from 'navigader/components';
+import {
+  Card, Flex, Frame288Graph, MonthSelector, Toggle, Tooltip, Typography
+} from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
 import { Frame288DataType, MeterGroup, MonthsOption } from 'navigader/types';
-import { PowerFrame288 } from 'navigader/util';
-import { capitalize } from 'navigader/util/formatters';
+import { formatters, PowerFrame288 } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
@@ -31,6 +32,9 @@ const useStyles = makeStylesHook(theme => ({
   card: {
     // Makes the graph tooltips visible
     overflow: 'visible'
+  },
+  graphTitle: {
+    marginBottom: theme.spacing(1)
   },
   loadTypeMenu: {
     marginTop: theme.spacing(1)
@@ -62,9 +66,12 @@ export const LoadGraph: React.FC<LoadGraphCardProps> = ({ changeType, dataType, 
   const classes = useStyles();
   return (
     <Card className={classes.card} raised>
+      <Typography className={classes.graphTitle} useDiv variant="h6">
+        Aggregate Load Curve by Month
+      </Typography>
       <Flex.Container alignItems="center" justifyContent="center">
         <Flex.Item>
-          <MonthSelector selected={selectedMonth} onChange={setMonth}/>
+          <MonthSelector selected={selectedMonth} onChange={setMonth} />
         </Flex.Item>
         <Flex.Item style={{ marginLeft: '1rem' }}>
           <LoadTypeSelector changeType={changeType} selectedType={dataType} />
@@ -84,7 +91,7 @@ export const LoadTypeSelector: React.FC<LoadTypeSelectorProps> = (props) => {
     <Toggle.Group exclusive onChange={selectType} size="small" value={selectedType}>
       {loadTypeOptions.map(loadType =>
         <Toggle.Button aria-label={tooltips[loadType]} key={loadType} value={loadType}>
-          {capitalize(loadType)}
+          {formatters.capitalize(loadType)}
 
           {/** The tooltip can't wrap the Button because MUI passes props from the Group */}
           <Tooltip title={tooltips[loadType]}>

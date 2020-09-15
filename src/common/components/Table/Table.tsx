@@ -40,6 +40,7 @@ export type TableProps<T extends ObjectWithId> = {
   initialSorting?: SortState;
   onSelect?: (selections: T[]) => void;
   raised?: boolean;
+  size?: 'small' | 'medium';
   stickyHeader?: boolean;
   title?: string;
 };
@@ -169,21 +170,23 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
 
   return (
     <MuiPaper elevation={raised ? 8 : 0}>
-      <MuiToolbar className={classes.toolbar}>
-        <Typography variant="h6">{title}</Typography>
-        {data &&
-          <Flex.Container alignItems="center">
-            {headerActions}
-            {(count !== null && count > 10) &&
-              <TablePagination
-                count={count}
-                paginationState={paginationState}
-                updatePaginationState={updatePaginationState}
-              />
-            }
-          </Flex.Container>
-        }
-      </MuiToolbar>
+      {title &&
+        <MuiToolbar className={classes.toolbar}>
+          <Typography variant="h6">{title}</Typography>
+          {data &&
+            <Flex.Container alignItems="center">
+              {headerActions}
+              {(count !== null && count > 10) &&
+                <TablePagination
+                  count={count}
+                  paginationState={paginationState}
+                  updatePaginationState={updatePaginationState}
+                />
+              }
+            </Flex.Container>
+          }
+        </MuiToolbar>
+      }
       <MuiTableContainer className={containerClassName}>
         <MuiTable className={classes.table} {...rest}>
           <TableContext.Provider value={tableContext}>

@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as api from 'navigader/api';
 import { ColorMap } from 'navigader/styles';
 import { Scenario, ScenarioReportFields } from 'navigader/types';
-import { commas, dollars, maxDecimals } from 'navigader/util/formatters';
+import { formatters } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 import { Avatar } from '../Avatar';
 import { FileDownload } from '../FileDownload';
@@ -82,11 +82,11 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                 }
                 <Table.Cell>{simulation.SA_ID}</Table.Cell>
                 <Table.Cell>{simulation.MeterRatePlan}</Table.Cell>
-                <Table.Cell align="right">{commas(maxDecimals(simulation.UsageDelta, 2))}</Table.Cell>
-                <Table.Cell align="right">{commas(maxDecimals(simulation.CleanNetShort2022Delta, 2))}</Table.Cell>
-                <Table.Cell align="right">{dollars(simulation.BillDelta)}</Table.Cell>
-                <Table.Cell align="right">{dollars(simulation.PRC_LMPDelta)}</Table.Cell>
-                <Table.Cell align="right">{commas(maxDecimals(simulation.RADelta, 2))}</Table.Cell>
+                <Table.Cell align="right">{formatters.commas(formatters.maxDecimals(simulation.UsageDelta, 2))}</Table.Cell>
+                <Table.Cell align="right">{formatters.commas(formatters.maxDecimals(simulation.CleanNetShort2022Delta, 2))}</Table.Cell>
+                <Table.Cell align="right">{formatters.dollars(simulation.BillDelta)}</Table.Cell>
+                <Table.Cell align="right">{formatters.dollars(simulation.PRC_LMPDelta)}</Table.Cell>
+                <Table.Cell align="right">{formatters.commas(formatters.maxDecimals(simulation.RADelta, 2))}</Table.Cell>
               </Table.Row>
             )}
           </Table.Body>

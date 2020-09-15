@@ -1,8 +1,7 @@
 import * as React from 'react';
 
 import { MeterGroup } from 'navigader/types';
-import { models, printWarning } from 'navigader/util';
-import { pluralize } from 'navigader/util/formatters';
+import { formatters, models, printWarning } from 'navigader/util';
 
 import { Chip, ChipProps } from '../Chip';
 import { Tooltip } from '../Tooltip';
@@ -54,7 +53,8 @@ export const MeterGroupChip: React.FC<MeterGroupChipProps> = (props) => {
   // Render a tooltip if either `showCount` or `tooltipText` was provided
   if (!showCount && !tooltipText) return chip;
 
-  const numMeterText = `${meterGroup.meter_count} ${pluralize('meter', meterGroup.meter_count)}`;
+  const { meter_count } = meterGroup;
+  const numMeterText = `${meter_count} ${formatters.pluralize('meter', meter_count)}`;
   const text = tooltipText || numMeterText;
   return <Tooltip title={text}>{chip}</Tooltip>;
 };

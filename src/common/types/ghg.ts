@@ -12,6 +12,7 @@ export type RawGHGRate = {
   source: string;
 };
 
-export type GHGRate = NavigaderObject<'GHGRate'> & Omit<RawGHGRate, 'id' | 'data'> & {
-  data?: Frame288Numeric
-};
+export type GHGRate =
+  & Omit<NavigaderObject<'GHGRate'>, 'created_at'>
+  & Omit<RawGHGRate, 'id' | 'data'>
+  & { data?: Frame288Numeric };

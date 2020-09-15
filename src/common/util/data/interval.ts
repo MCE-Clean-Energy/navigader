@@ -1,6 +1,5 @@
 import moment from 'moment';
 
-import _ from 'navigader/util/lodash';
 import {
   DateTuple,
   Frame288Numeric,
@@ -13,6 +12,8 @@ import {
   NumberTuple,
   RawIntervalData
 } from 'navigader/types';
+import { serializers } from 'navigader/util'
+import _ from 'navigader/util/lodash';
 
 
 /** ============================ Types ===================================== */
@@ -42,7 +43,7 @@ export class IntervalData implements IntervalDataInterface {
    */
   serialize <Unit extends string, Column extends string>(unit: Unit, column: Column) {
     return {
-      [column]: this.data.map(datum => datum.timestamp.toISOString()),
+      [column]: this.data.map(datum => serializers.serializeDate(datum.timestamp)),
       [unit]: _.map(this.data, 'value')
     } as RawIntervalData<Unit, Column>;
   }
@@ -353,7 +354,7 @@ export function makeIntervalData <K extends string, V extends string> (
   const values = object[valueKey];
   return new IntervalData(
     _.range(timestamps.length).map(index => ({
-      timestamp: moment(timestamps[index]).toDate(),
+      timestamp: serializers.parseDate(timestamps[index]),
       value: values[index]
     })),
     object.name

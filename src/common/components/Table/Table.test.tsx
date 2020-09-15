@@ -17,6 +17,7 @@ describe('`Table` component', () => {
             data: data.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage)
           })}
           dataSelector={() => data}
+          title="Test table"
         >
           {data =>
             <Table.Body>
@@ -29,27 +30,27 @@ describe('`Table` component', () => {
           }
         </Table>
       );
-      
+
       // Wait for the data to render
       await waitFor(() => {
         expect(getAllByRole('row')[0].textContent).toEqual('0');
       });
-      
+
       // Pagination should be present
       expect(getByTestId('table-pagination')).toBeInTheDocument();
-      
+
       // Change to the next page
       fireEvent.click(getByTitle('Next page'));
-      
+
       // Wait for the data to re-render
       await waitFor(() => {
         expect(getAllByRole('row')[0].textContent).toEqual('0');
       });
-      
+
       // Pagination should still be there, even though there are less than 10 records on the page
       expect(getByTestId('table-pagination')).toBeInTheDocument();
     });
-    
+
     it('should not show pagination if there are 10 or fewer records', () => {
       asyncForEach(range(0, 10), async (n) => {
         const data = range(n).map(m => ({ id: m }));
@@ -72,12 +73,12 @@ describe('`Table` component', () => {
             }
           </Table>
         );
-        
+
         // Wait for the data to render
         await waitFor(() => {
           expect(getAllByRole('row')[0].textContent).toEqual('0');
         });
-        
+
         // Pagination should not be present
         expect(getByTestId('table-pagination')).not.toBeInTheDocument();
         await cleanup();

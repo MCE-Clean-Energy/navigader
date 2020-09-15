@@ -1,6 +1,6 @@
 import moment, { MomentInput } from 'moment';
 
-import { Nullable } from 'navigader/types';
+import { Nullable, Tuple } from 'navigader/types';
 import { clamp, percentOf } from '../data';
 
 
@@ -62,7 +62,8 @@ export function getMonthName (monthIndex: number) {
  */
 export const date = {
   monthDayHourMinute: (date: MomentInput) => moment(date).format('MMM D, h:mm a'),
-  standard: (date: MomentInput) => moment(date).format('MMM D, YYYY')
+  standard: (date: MomentInput) => moment(date).format('MMM D, YYYY'),
+  range: (dates: Tuple<MomentInput>, fn: (d: MomentInput) => string) => `${fn(dates[0])} - ${fn(dates[1])}`
 };
 
 /**
