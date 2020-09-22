@@ -1,13 +1,22 @@
 import { Frame288Numeric } from './frame288';
-import { DateTuple, MonthIndex, NumberTuple } from '../common';
+import { DateTuple, Maybe, MonthIndex, NumberTuple } from '../common';
 
 
 /** ============================ Types ===================================== */
-export type IntervalDatum = { timestamp: Date; value: number };
+export type BasicIntervalDatum = { timestring: string; value: number; };
+export type BasicIntervalData = BasicIntervalDatum[];
+export type ChartDatum = { name: string; timestamp: Date; value: number; };
+export type ChartData = ChartDatum[];
+
 export type IntervalDataArray = IntervalDatum[];
+export interface IntervalDatum extends BasicIntervalDatum {
+  clone (value?: number): IntervalDatum;
+  timestamp: Date;
+}
+
 export type RawIntervalData<Unit extends string, Column extends string = 'index'> =
-  & { [column in Column]: string[]; }
-  & { [unit in Unit]: number[]; };
+  & { [column in Column]: string[] }
+  & { [unit in Unit]: number[] };
 
 export type IntervalDataFilters = Partial<{
   month: MonthIndex,
@@ -22,10 +31,11 @@ export declare class IntervalData {
   name: string;
 
   // Setup and teardown
-  constructor (data: IntervalDataArray, name: string);
+  constructor (data: BasicIntervalData, name: string);
   serialize <U extends string, C extends string>(unit: U, column: C): RawIntervalData<U, C>;
 
   // Getters
+  get chartData (): ChartData;
   get domain (): { timestamp: DateTuple; value: NumberTuple; };
   get period (): number;
   get timeDomain (): DateTuple;
@@ -34,7 +44,7 @@ export declare class IntervalData {
   get years (): number[];
 
   // Accessors
-  startOfMonth (month: MonthIndex): Date | undefined;
+  startOfMonth (month: MonthIndex): Maybe<Date>;
 
   // Mutators
   rename (name: string): IntervalData;

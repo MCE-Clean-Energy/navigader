@@ -6,7 +6,8 @@ import { MeterGroup } from './meter';
 
 
 /** ============================ Scenarios ================================= */
-export type DerInfo = {
+export type ScenarioImpactColumn = 'Usage' | 'GHG' | 'Revenue' | 'Procurement' | 'RA';
+type DERInfo = {
   der_configuration: DERConfiguration;
   der_strategy: DERStrategy;
 };
@@ -35,7 +36,7 @@ export type RawScenario = DeferrableFields<
   {
     data: RawDataTypeMap<'kw'>;
     der_simulations: string[];
-    ders: [DerInfo];
+    ders: [DERInfo];
     meters: string[];
     meter_groups: [string];
     report: RawScenarioReport | EmptyReport;
@@ -58,7 +59,7 @@ export interface Scenario extends DeferrableFields<
   // Fields that can be requested but which are not included by default
   {
     der_simulations: string[];
-    der: DerInfo;
+    der: DERInfo;
     meters: string[];
     meter_group: MeterGroup;
     report: ScenarioReport;

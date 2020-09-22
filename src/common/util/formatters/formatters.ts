@@ -1,6 +1,6 @@
 import moment, { MomentInput } from 'moment';
 
-import { Nullable, Tuple } from 'navigader/types';
+import { Maybe, Nullable, Tuple } from 'navigader/types';
 import { clamp, percentOf } from '../data';
 
 
@@ -157,7 +157,7 @@ export function dollars (amt: number | undefined | null, options?: DollarFormatO
  * @param {string} str: the string to (potentially) truncate
  * @param {number} numChars: the number of characters to truncate at
  */
-export function truncateAtLength (str: string | undefined, numChars: number) {
+export function truncateAtLength (str: Maybe<string>, numChars: number) {
   if (!str) return;
   return str.length > numChars
     ? str.slice(0, numChars) + '...'

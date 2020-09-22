@@ -1,6 +1,9 @@
 import * as React from 'react';
 
-import { Card, CustomerImpacts, CustomersTable, Typography } from 'navigader/components';
+import {
+  Card, CustomersTable, ScenarioComparisonChartAxes, ScenarioComparison,
+  ScenarioComparisonChartTitle
+} from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
 import { Scenario } from 'navigader/types';
 import { useColorMap } from 'navigader/util/hooks';
@@ -25,12 +28,18 @@ const useStyles = makeStylesHook(theme => ({
 export const CustomerImpactsTab: React.FC<CustomerImpactsTabProps> = ({ scenario }) => {
   const colorMap = useColorMap([scenario]);
   const classes = useStyles();
+  const [chartAxes, setChartAxes] = React.useState<ScenarioComparisonChartAxes>(['Revenue', 'GHG']);
 
   return (
     <>
-      <Typography useDiv variant="h6">Customer Bill Impact vs. GHG Impact</Typography>
+      <ScenarioComparisonChartTitle axes={chartAxes} updateAxes={setChartAxes} />
       <Card raised>
-        <CustomerImpacts colorMap={colorMap} scenarios={[scenario]} />
+        <ScenarioComparison
+          aggregated={false}
+          axes={chartAxes}
+          colorMap={colorMap}
+          scenarios={[scenario]}
+        />
       </Card>
 
       <div className={classes.tableContainer}>

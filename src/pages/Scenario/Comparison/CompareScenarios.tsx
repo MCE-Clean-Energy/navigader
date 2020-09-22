@@ -2,7 +2,8 @@ import * as React from 'react';
 
 import * as api from 'navigader/api';
 import {
-  CustomersTable, PageHeader, Progress, ScenariosTable, Typography
+  CustomersTable, PageHeader, Progress, ScenarioComparisonChartAxes, ScenarioComparisonChartTitle,
+  ScenariosTable
 } from 'navigader/components';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
@@ -33,6 +34,7 @@ export const CompareScenariosPage: React.FC = () => {
   const [averaged, setAveraged] = React.useState(false);
   const [hoveredId, setHoveredId] = React.useState<string>();
   const [scenarios, setScenarios] = React.useState<Scenario[]>();
+  const [chartAxes, setChartAxes] = React.useState<ScenarioComparisonChartAxes>(['Revenue', 'GHG']);
 
   // Loads the scenario
   React.useEffect(
@@ -63,10 +65,17 @@ export const CompareScenariosPage: React.FC = () => {
         ? <Progress circular />
         : (
           <>
-            <Typography variant="h6">{getChartTitle()}</Typography>
+            <ScenarioComparisonChartTitle
+              aggregated={aggregated}
+              averaged={averaged}
+              axes={chartAxes}
+              updateAxes={setChartAxes}
+            />
+
             <ScenarioComparisonChart
               aggregated={aggregated}
               averaged={averaged}
+              axes={chartAxes}
               colorMap={colorMap}
               highlightedId={hoveredId}
               scenarios={scenarios}
@@ -85,11 +94,11 @@ export const CompareScenariosPage: React.FC = () => {
                       updateAveraged={setAveraged}
                     />
                   ) : (
-                    // TODO: need to find way to type scenarios as possessing report
                     <CustomersTable
                       className={classes.tableContainer}
                       colorMap={colorMap}
                       scenarios={scenarios}
+                      // TODO: need to find way to type scenarios as possessing report
                       simulations={_.flatten(scenarios.map(s => Object.values(s.report!)))}
                       updateHover={setHoveredId}
                     />
@@ -111,16 +120,5 @@ export const CompareScenariosPage: React.FC = () => {
   function updateAggregation (aggregated: boolean) {
     setHoveredId(undefined);
     setAggregated(aggregated);
-  }
-
-  /** ========================== Helpers ===================================== */
-  function getChartTitle () {
-    if (aggregated) {
-      return averaged
-        ? 'Scenario Bill Impact vs. GHG Impact per Customer'
-        : 'Scenario Bill Impact vs. GHG Impact';
-    } else {
-      return 'Customer Bill Impact vs. GHG Impact';
-    }
   }
 };

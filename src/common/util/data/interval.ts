@@ -1,6 +1,8 @@
 import moment from 'moment';
 
 import {
+  BasicIntervalData,
+  BasicIntervalDatum,
   DateTuple,
   Frame288Numeric,
   IntervalDataArray,
@@ -8,12 +10,13 @@ import {
   IntervalData as IntervalDataInterface,
   IntervalDatum,
   isTruthy,
+  Maybe,
   MonthIndex,
   NumberTuple,
   RawIntervalData
 } from 'navigader/types';
-import { serializers } from 'navigader/util'
-import _ from 'navigader/util/lodash';
+import _ from '../lodash';
+import { parseDate } from '../serializers';
 
 
 /** ============================ Types ===================================== */
@@ -22,6 +25,63 @@ type IntervalDataObject<K extends string, V extends string>
   = Record<K, string[]> & Record<V, number[]> & { name: string; };
 
 /** ============================ Interval ================================== */
+/**
+ * This class wraps an interval datum, dynamically calculating the `timestamp` when requested. This
+ * date parsing is a relatively expensive operation, so we do so sparingly/conservatively/lazily.
+ */
+class IntervalDatumWrapper implements IntervalDatum {
+  readonly timestring: string;
+  readonly value: number;
+
+  private _timestamp: Maybe<Date>;
+
+  constructor (datum: BasicIntervalDatum) {
+    this.timestring = datum.timestring;
+    this.value = datum.value;
+  }
+
+  /**
+   * Wraps a `BasicIntervalDatum` if provided, or returns an `IntervalDatumWrapper` unchanged, so as
+   * not to double-wrap.
+   *
+   * @param {BasicIntervalDatum|IntervalDatumWrapper} d: the datum to wrap/return
+   */
+  static wrap (d: BasicIntervalDatum | IntervalDatumWrapper) {
+    return d instanceof IntervalDatumWrapper ? d : new IntervalDatumWrapper(d);
+  }
+
+  /**
+   * Actually parses the interval timestring.
+   */
+  get timestamp () {
+    if (!this._timestamp) {
+      this._timestamp = parseDate(this.timestring);
+    }
+
+    return this._timestamp;
+  }
+
+  /**
+   * Returns a new `IntervalDatumWrapper` with the same timestamp as this one, optionally with a new
+   * value
+   *
+   * @param {number} [value]: the new value to assign to the cloned wrapper
+   */
+  clone (value?: number): IntervalDatum {
+    const newWrapper = new IntervalDatumWrapper({
+      timestring: this.timestring,
+      value: value ?? this.value
+    });
+
+    // If the timestamp has already been computed, pass it along to the clone
+    if (this._timestamp) {
+      newWrapper._timestamp = this._timestamp;
+    }
+
+    return newWrapper;
+  }
+}
+
 export class IntervalData implements IntervalDataInterface {
   readonly data: IntervalDataArray;
   name: string;
@@ -30,8 +90,8 @@ export class IntervalData implements IntervalDataInterface {
   private _period: number | undefined;
 
   /** ========================== Setup and teardown ======================== */
-  constructor (data: IntervalDataArray, name: string) {
-    this.data = data;
+  constructor (data: BasicIntervalData, name: string) {
+    this.data = data.map(d => IntervalDatumWrapper.wrap(d));
     this.name = name;
   }
 
@@ -43,7 +103,7 @@ export class IntervalData implements IntervalDataInterface {
    */
   serialize <Unit extends string, Column extends string>(unit: Unit, column: Column) {
     return {
-      [column]: this.data.map(datum => serializers.serializeDate(datum.timestamp)),
+      [column]: _.map(this.data, 'timestring'),
       [unit]: _.map(this.data, 'value')
     } as RawIntervalData<Unit, Column>;
   }
@@ -103,6 +163,14 @@ export class IntervalData implements IntervalDataInterface {
     return _.range(start.getFullYear(), end.getFullYear() + 1);
   }
 
+  get chartData () {
+    return this.data.map((datum) => ({
+      name: this.name,
+      timestamp: datum.timestamp,
+      value: datum.value
+    }));
+  }
+
   /** ========================== Accessors ================================= */
   /**
    * Returns the first timestamp that occurs in the given month
@@ -119,8 +187,8 @@ export class IntervalData implements IntervalDataInterface {
   }
 
   /** ========================== Mutators ================================== */
-  rename (name: string) {
-    this.name = name;
+  rename (name?: string) {
+    if (name) this.name = name;
     return this;
   }
 
@@ -173,17 +241,9 @@ export class IntervalData implements IntervalDataInterface {
    * timestamps will not be changed.
    *
    * @param {function} fn: the function to call for every datum
-   * @param {string} [name]: the name of the resulting `IntervalData`. Defaults to the
-   *   current name of the interval
    */
-  map (fn: (datum: IntervalDatum) => number, name: string = this.name) {
-    return new IntervalData(
-      this.data.map(datum => ({
-        timestamp: datum.timestamp,
-        value: fn(datum)
-      })),
-      name
-    );
+  map (fn: (datum: IntervalDatum) => number) {
+    return this.transform(this.data.map(datum => datum.clone(fn(datum))));
   }
 
   /** ========================== Transformations =========================== */
@@ -219,7 +279,7 @@ export class IntervalData implements IntervalDataInterface {
       while (_.some(clones.map(arr => arr.length !== 0))) {
         let earliest = {
           time: Infinity,
-          data: [] as [IntervalDatum, number][]
+          data: [] as Array<[IntervalDatum, number]>
         };
 
         // Find the earliest data
@@ -254,19 +314,18 @@ export class IntervalData implements IntervalDataInterface {
    * Scales the interval data by multiplying values by a constant
    *
    * @param {number} multiplier: the number to multiply the interval values by
-   * @param {string} [name]: the name of the resulting `IntervalData`
    */
-  multiply (multiplier: number | IntervalData, name: string = this.name) {
+  multiply (multiplier: number | IntervalData, ) {
     if (typeof multiplier === 'number') {
-      return this.map(datum => datum.value * multiplier, name);
+      return this.map(datum => datum.value * multiplier);
     }
 
-    return new IntervalData(
-      this.align(multiplier).map(alignment => ({
-        timestamp: alignment[0].datum.timestamp,
-        value: alignment.reduce((n, { datum }) => n * datum.value, 1)
-      })),
-      name
+    return this.transform(
+      this.align(multiplier).map(alignment =>
+        alignment[0].datum.clone(
+          alignment.reduce((n, { datum }) => n * datum.value, 1)
+        )
+      )
     );
   }
 
@@ -276,19 +335,25 @@ export class IntervalData implements IntervalDataInterface {
    * @param {IntervalData} other: the other interval dataset which will be subtracted
    */
   subtract (other: IntervalData) {
-    return new IntervalData(
-        this.align(other).map((alignment) => {
-          if (alignment.length < 2) return null;
+    return this.transform(
+      this.align(other).map((alignment) => {
+        if (alignment.length < 2) return null;
 
-          // Subtract the aligned value from this value
-          const [thisDatum, otherDatum] = _.map(alignment, 'datum');
-          return {
-            timestamp: thisDatum.timestamp,
-            value: thisDatum.value - otherDatum.value
-          };
-        }).filter(isTruthy),
-      this.name
+        // Subtract the aligned value from this value
+        const [thisDatum, otherDatum] = _.map(alignment, 'datum');
+        return thisDatum.clone(thisDatum.value - otherDatum.value);
+      }).filter(isTruthy)
     );
+  }
+
+  /**
+   * Returns a new `IntervalData` object with the provided data, conferring the name of the current
+   * `IntervalData` object to the new one.
+   *
+   * @param {IntervalData} data: the data array to provide to the new `IntervalData` object
+   */
+  transform (data: IntervalDataArray) {
+    return new IntervalData(data, this.name);
   }
 
   /** ========================== 288 methods ============================ */
@@ -299,7 +364,7 @@ export class IntervalData implements IntervalDataInterface {
    * @param {Frame288Numeric} frame: the frame to take values from
    */
   align288 (frame: Frame288Numeric) {
-    return this.map288(frame, (datum, value288) => value288, frame.name);
+    return this.map288(frame, (datum, value288) => value288).rename(frame.name);
   }
 
   /**
@@ -310,10 +375,9 @@ export class IntervalData implements IntervalDataInterface {
    * @param {Frame288Numeric} frame: the frame 288 to map with
    * @param {function} fn: the function to call for each datum/288 cell. The value returned from
    *   this will become the new `IntervalData`'s value at the corresponding timestamp.
-   * @param {string} [name]: the name of the resulting `IntervalData`
    */
-  map288 (frame: Frame288Numeric, fn: (datum: IntervalDatum, n: number) => number, name?: string) {
-    return this.map(datum => fn(datum, frame.getValueByDate(datum.timestamp)), name);
+  map288 (frame: Frame288Numeric, fn: (datum: IntervalDatum, n: number) => number) {
+    return this.map(datum => fn(datum, frame.getValueByDate(datum.timestamp)));
   }
 
   /**
@@ -322,10 +386,9 @@ export class IntervalData implements IntervalDataInterface {
    * then those values will be used to index the 288
    *
    * @param {Frame288Numeric} frame: the frame to multiply the interval data by
-   * @param {string} [name]: the name of the resulting `IntervalData`
    */
-  multiply288 (frame: Frame288Numeric, name?: string) {
-    return this.map288(frame, (datum, value288) => datum.value * value288, name);
+  multiply288 (frame: Frame288Numeric) {
+    return this.map288(frame, (datum, value288) => datum.value * value288);
   }
 }
 
@@ -345,16 +408,16 @@ export class IntervalData implements IntervalDataInterface {
  * @param {string} timeKey: the key under which the timestamps are provided
  * @param {string} valueKey: the key under which the interval data are provided
  */
-export function makeIntervalData <K extends string, V extends string> (
-  object: IntervalDataObject<K, V>,
-  timeKey: K,
-  valueKey: V
+export function makeIntervalData <TimeKey extends string, ValueKey extends string> (
+  object: IntervalDataObject<TimeKey, ValueKey>,
+  timeKey: TimeKey,
+  valueKey: ValueKey
 ) {
   const timestamps = object[timeKey];
   const values = object[valueKey];
   return new IntervalData(
     _.range(timestamps.length).map(index => ({
-      timestamp: serializers.parseDate(timestamps[index]),
+      timestring: timestamps[index],
       value: values[index]
     })),
     object.name

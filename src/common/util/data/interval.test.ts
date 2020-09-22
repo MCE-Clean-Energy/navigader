@@ -45,14 +45,14 @@ describe('`IntervalData` class', () => {
 
   /** ========================== Tests ===================================== */
   describe('`serialize` method', () => {
-    it('renders dates in ISO format', () => {
-      const serialized = kwInterval.serialize('kw', 'times');
-
-      // Can't assert on the precise value of the string, as the ISO format will vary depending on
-      // the server's timezone.
-      const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
-      serialized.times.forEach(time => {
-        expect(isoRegex.test(time)).toBeTruthy();
+    it('returns the object with the expected keys and values', () => {
+      expect(kwInterval.serialize('kw', 'times')).toEqual({
+        times: [
+          '2020-06-02T18:00:00',
+          '2020-06-02T18:15:00',
+          '2020-06-02T18:30:00'
+        ],
+        kw: [1, 2, 3]
       });
     });
   });
@@ -207,11 +207,12 @@ describe('`IntervalData` class', () => {
 
   describe('`create` method', () => {
     it('creates an `IntervalData` from the provided object', () => {
-      expect(kwInterval.name).toEqual('KW interval');
-      expect(kwInterval.data).toEqual([
-        { timestamp: new Date('2020-06-02T18:00:00'), value: 1 },
-        { timestamp: new Date('2020-06-02T18:15:00'), value: 2 },
-        { timestamp: new Date('2020-06-02T18:30:00'), value: 3 },
+      const name = 'KW interval';
+      expect(kwInterval.name).toEqual(name);
+      expect(kwInterval.chartData).toEqual([
+        { name, timestamp: new Date('2020-06-02T18:00:00'), value: 1 },
+        { name, timestamp: new Date('2020-06-02T18:15:00'), value: 2 },
+        { name, timestamp: new Date('2020-06-02T18:30:00'), value: 3 },
       ])
     });
   });
@@ -220,15 +221,6 @@ describe('`IntervalData` class', () => {
     it('applies the mapping function to each datum', () => {
       const squared = kwInterval.map(n => n.value ** 2);
       expect(squared.values).toEqual([1, 4, 9]);
-    });
-
-    it('renames the interval if a name is provided', () => {
-      // Name is replaced when provided
-      const newName = 'New interval';
-      expect(kwInterval.map(n => n.value + 1, newName).name).toEqual(newName);
-
-      // Name is retained when new one is not provided
-      expect(kwInterval.map(n => n.value + 1).name).toEqual(kwInterval.name);
     });
   });
 
@@ -241,17 +233,6 @@ describe('`IntervalData` class', () => {
     it('properly multiplies the 288 by month of the year', () => {
       const multiplied = sparseInterval.multiply288(monthFrame288);
       expect(multiplied.values).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
-    });
-
-    it('renames the interval if a name is provided', () => {
-      // Name is replaced when provided
-      const newName = 'New interval';
-      expect(kwInterval.multiply288(hourFrame288, newName).name).toEqual(newName);
-      expect(kwInterval.multiply288(monthFrame288, newName).name).toEqual(newName);
-
-      // Name is retained when new one is not provided
-      expect(kwInterval.multiply288(hourFrame288).name).toEqual(kwInterval.name);
-      expect(kwInterval.multiply288(monthFrame288).name).toEqual(kwInterval.name);
     });
   });
 

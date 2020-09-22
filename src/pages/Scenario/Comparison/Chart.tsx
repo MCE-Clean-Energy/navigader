@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import {
-  Card, Flex, CustomerImpacts, Grid, List, ScenarioComparison, Typography, Switch
+  Card, Flex, Grid, List, ScenarioComparison, ScenarioComparisonChartAxes, Switch, Typography
 } from 'navigader/components';
 import { ColorMap, makeStylesHook } from 'navigader/styles';
 import { Scenario } from 'navigader/types';
@@ -11,6 +11,7 @@ import { Scenario } from 'navigader/types';
 type ScenarioComparisonChartProps = {
   aggregated: boolean;
   averaged: boolean;
+  axes: ScenarioComparisonChartAxes;
   colorMap: ColorMap;
   highlightedId?: string;
   scenarios: Scenario[];
@@ -90,19 +91,30 @@ const LegendCard: React.FC<LegendCardProps> = ({ colorMap, scenarios }) => {
 };
 
 export const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (props) => {
-  const { aggregated, averaged, colorMap, highlightedId, scenarios, updateAggregated } = props;
+  const {
+    aggregated,
+    averaged,
+    axes,
+    colorMap,
+    highlightedId,
+    scenarios,
+    updateAggregated
+  } = props;
+
   const classes = useStyles();
 
-  const chartProps = { colorMap, scenarios, highlight: highlightedId };
   return (
     <Grid>
       <Grid.Item span={8}>
         <Card padding={0} raised>
-          {
-            aggregated
-              ? <ScenarioComparison {...chartProps} averaged={averaged} />
-              : <CustomerImpacts {...chartProps} />
-          }
+          <ScenarioComparison
+            aggregated={aggregated}
+            averaged={averaged}
+            axes={axes}
+            colorMap={colorMap}
+            highlight={highlightedId}
+            scenarios={scenarios}
+          />
         </Card>
       </Grid.Item>
 

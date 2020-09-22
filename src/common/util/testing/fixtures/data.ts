@@ -336,7 +336,7 @@ export const makeFrame288 = (
 /** ============================ Interval data ============================= */
 export function makeIntervalData (intervals: Array<[string, number]>, name?: string) {
   return new IntervalData(
-    intervals.map(([date, value]) => ({ timestamp: new Date(date), value })),
+    intervals.map(([date, value]) => ({ timestamp: new Date(date), timestring: date, value })),
     name || 'test interval'
   );
 }

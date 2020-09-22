@@ -8,7 +8,7 @@ import { VictoryVoronoiContainerProps } from 'victory-voronoi-container';
 import { VictoryZoomContainerProps } from 'victory-zoom-container';
 
 import { ColorMap } from 'navigader/styles';
-import { DateTuple, IntervalData, MonthIndex, Tuple } from 'navigader/types';
+import { ChartDatum, DateTuple, IntervalData, MonthIndex, Tuple } from 'navigader/types';
 import { formatters, omitFalsey } from 'navigader/util';
 import { useColorMap } from 'navigader/util/hooks';
 import _ from 'navigader/util/lodash';
@@ -17,9 +17,6 @@ import { getAxisLabel, VictoryCallbackArg } from './util';
 
 
 /** ============================ Types ===================================== */
-type Timestamp = Date;
-type GraphDatum = { name: string; timestamp: Timestamp; value: number };
-
 type IntervalDataGraphProps = {
   animate?: boolean;
   axisLabel?: string;
@@ -29,7 +26,7 @@ type IntervalDataGraphProps = {
   month: MonthIndex;
   onTimeDomainChange?: (domain: DateTuple) => void;
   precision?: number;
-  renderInterval?: Tuple<Timestamp>;
+  renderInterval?: Tuple<Date>;
   timeDomain?: DateTuple;
   units?: string;
 };
@@ -105,12 +102,12 @@ export const IntervalDataGraph: React.FC<IntervalDataGraphProps> = (props) => {
 
       {areaData &&
         <VictoryArea
-          data={areaData.data.map(d => ({ ...d, name: 'Delta' }))}
+          data={areaData.chartData}
           interpolation="monotoneX"
           labelComponent={
             // @ts-ignore
             <VictoryTooltip orientation={
-              ({ datum }: VictoryCallbackArg<GraphDatum>) =>
+              ({ datum }: VictoryCallbackArg<ChartDatum>) =>
                 datum.value < 0
                   ? 'bottom'
                   : 'top'
@@ -124,7 +121,7 @@ export const IntervalDataGraph: React.FC<IntervalDataGraphProps> = (props) => {
 
       {visibleData.map(intervalData =>
         <VictoryLine
-          data={intervalData.data.map(d => ({ ...d, name: intervalData.name }))}
+          data={intervalData.chartData}
           interpolation="monotoneX"
           key={intervalData.name}
           style={{ data: lineStyle(intervalData.name, colorMap) }}
@@ -166,7 +163,7 @@ export const IntervalDataGraph: React.FC<IntervalDataGraphProps> = (props) => {
  * @param {number} [precision]: the number of decimal places to include in the value
  */
 function getLabelFactory (units?: string, precision: number = 2) {
-  return function ({ datum }: VictoryCallbackArg<GraphDatum>) {
+  return function ({ datum }: VictoryCallbackArg<ChartDatum>) {
     return omitFalsey([
       datum.name,
       formatters.date.monthDayHourMinute(datum.timestamp) + ':',
@@ -202,7 +199,7 @@ function useData (data: IntervalData[], month: MonthIndex, timeDomain?: DateTupl
         const [start, end] = timeDomain;
 
         // Find the greatest period amongst the intervals. This is the period we will use to round
-        const greatestPeriod = Math.max(...monthData.map(datum => datum.period));
+        const greatestPeriod = Math.max(...monthData.map(interval => interval.period));
         const periodDuration = moment.duration(greatestPeriod, 'minutes');
         return [
           moment(start).subtract(periodDuration).toDate(),
@@ -217,7 +214,9 @@ function useData (data: IntervalData[], month: MonthIndex, timeDomain?: DateTupl
 
   // Compute the area between the two intervals (if 2 are provided)
   const areaData = React.useMemo(
-    () => visibleData.length === 2 ? visibleData[1].subtract(visibleData[0]) : undefined,
+    () => visibleData.length === 2
+      ? visibleData[1].subtract(visibleData[0]).rename('Delta')
+      : undefined,
     [visibleData]
   );
 
