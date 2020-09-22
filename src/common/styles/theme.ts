@@ -1,7 +1,6 @@
-import * as React from 'react';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import useTheme from '@material-ui/core/styles/useTheme';
-import { CreateCSSProperties } from '@material-ui/core/styles/withStyles';
+import { BaseCSSProperties, CreateCSSProperties } from '@material-ui/core/styles/withStyles';
 
 import { primaryColor, secondaryColor } from './colors';
 
@@ -32,7 +31,7 @@ declare module '@material-ui/core/styles/createMixins' {
     flex: (args: FlexArgs) => CreateCSSProperties;
 
     transition:
-      (property: string, activated: boolean, bounds: TransitionBounds) => React.CSSProperties;
+      (property: string, activated: boolean, bounds: TransitionBounds) => BaseCSSProperties;
   }
 }
 

@@ -43,7 +43,7 @@ const defaultDelay = 1000;
 export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
   ({ children, delay, title, ...rest }, ref) => {
     if (!title) return children;
-    
+
     // Compute the tooltip's delay
     const enterDelay = React.useMemo(() => {
       switch (typeof delay) {

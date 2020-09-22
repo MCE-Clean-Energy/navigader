@@ -108,12 +108,12 @@ export async function fetchFile (url: string, onProgress?: ProgressCallback) {
   let receivedLength = 0;
   const chunks = [];
   while (true) {
-    const { done, value } = await reader.read();
+    const stream = await reader.read();
 
-    if (done) break;
+    if (stream.done) break;
 
-    chunks.push(value);
-    receivedLength += value.length;
+    chunks.push(stream.value);
+    receivedLength += stream.value.length;
 
     if (typeof onProgress !== 'undefined') {
       onProgress(receivedLength, contentLength);

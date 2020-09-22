@@ -8,6 +8,7 @@ import { Alert } from './Alert';
 /** ============================ Types ===================================== */
 type SnackbarProps = {
   autoHideDuration?: number;
+  children?: React.ReactElement<any, any>;
   onClose?: () => void;
   open: boolean;
 };
@@ -25,7 +26,7 @@ export const AlertSnackbar: React.FC<AlertSnackbarProps> = (props) => {
   const { msg, onClose, type, ...rest } = props;
   return (
     <Snackbar onClose={onClose} {...rest}>
-      {msg && type && <Alert onClose={onClose} type={type}>{msg}</Alert>}
+      {msg && type ? <Alert onClose={onClose} type={type}>{msg}</Alert> : undefined}
     </Snackbar>
   );
 };
