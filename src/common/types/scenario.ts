@@ -90,10 +90,16 @@ type UsageReport = {
   UsageDelta: number;
 };
 
-type BillReport = {
-  BillPreDER: Nullable<number>;
-  BillPostDER: Nullable<number>;
-  BillDelta: Nullable<number>;
+type FinancialReport = {
+  BillRevenuePreDER: Nullable<number>;
+  BillRevenuePostDER: Nullable<number>;
+  BillRevenueDelta: Nullable<number>;
+  ExpensePreDER?: number;
+  ExpensePostDER?: number;
+  ExpenseDelta?: number;
+  ProfitPreDER?: number;
+  ProfitPostDER?: number;
+  ProfitDelta?: number;
 };
 
 type GHGReport = {
@@ -126,7 +132,7 @@ type ResourceAdequacyReport = {
 
 type ScenarioReportFieldsCommon = { ID: string; SingleScenarioStudy: string; } & Partial<
   & UsageReport
-  & BillReport
+  & FinancialReport
   & GHGReport
   & ResourceAdequacyReport
   & ProcurementReport

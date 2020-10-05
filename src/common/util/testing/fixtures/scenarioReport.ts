@@ -27,21 +27,21 @@ export const scenarioReport = {
     217.875,
     41.325
   ],
-  "BillPreDER": [
+  "BillRevenuePreDER": [
     -160.99170265,
     -1167.30606381,
     147.30296275,
     425.4312082,
     201.20363034
   ],
-  "BillPostDER": [
+  "BillRevenuePostDER": [
     -73.0968970945,
     -1162.9407860322,
     206.94303775,
     499.6924832,
     229.72683034
   ],
-  "BillDelta": [
+  "BillRevenueDelta": [
     87.8948055555,
     4.3652777778,
     59.640075,
@@ -244,9 +244,9 @@ export const scenarioReportSummary = {
     UsagePreDER: 782287.0815333332,
     UsagePostDER: 901204.6454222234,
     UsageDelta: 118917.5638888898,
-    BillPreDER: 9918.46670553,
-    BillPostDER: 13941.00633053,
-    BillDelta: 4022.539625,
+    BillRevenuePreDER: 9918.46670553,
+    BillRevenuePostDER: 13941.00633053,
+    BillRevenueDelta: 4022.539625,
     CleanNetShort2018PreDER: 310.4897999284,
     CleanNetShort2018PostDER: 355.1367758584,
     CleanNetShort2018Delta: 44.6469759299,

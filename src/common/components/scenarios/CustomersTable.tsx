@@ -54,7 +54,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                   <div>GHG Impact (tCO<sub>2</sub>)</div>
                 </Tooltip>
               </Table.Cell>
-              <Table.Cell align="right" sortBy="BillDelta">Revenue Impact ($)</Table.Cell>
+              <Table.Cell align="right" sortBy="BillRevenueDelta">Revenue Impact ($)</Table.Cell>
               <Table.Cell align="right" sortBy="PRC_LMPDelta">Procurement Cost ($)</Table.Cell>
               <Table.Cell align="right" sortBy="RADelta">RA Impact (kW)</Table.Cell>
             </Table.Row>
@@ -84,7 +84,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                 <Table.Cell>{simulation.MeterRatePlan}</Table.Cell>
                 <Table.Cell align="right">{formatters.commas(formatters.maxDecimals(simulation.UsageDelta, 2))}</Table.Cell>
                 <Table.Cell align="right">{formatters.commas(formatters.maxDecimals(simulation.CleanNetShort2022Delta, 2))}</Table.Cell>
-                <Table.Cell align="right">{formatters.dollars(simulation.BillDelta)}</Table.Cell>
+                <Table.Cell align="right">{formatters.dollars(simulation.BillRevenueDelta)}</Table.Cell>
                 <Table.Cell align="right">{formatters.dollars(simulation.PRC_LMPDelta)}</Table.Cell>
                 <Table.Cell align="right">{formatters.commas(formatters.maxDecimals(simulation.RADelta, 2))}</Table.Cell>
               </Table.Row>

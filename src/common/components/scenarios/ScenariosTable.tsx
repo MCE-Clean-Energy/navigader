@@ -226,13 +226,13 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
               <Table.Cell align="right">
                 <ImpactColumnHeader
                   averaged={innerAveraged}
-                  column="Revenue Impact"
+                  column="RA Impact"
                   info={{
-                    measuresImpact: 'to CCA\'s electricity sales',
-                    negativeMeans: 'revenues from electricity sales have gone down',
-                    positiveMeans: 'revenues from electricity sales have gone up'
+                    measuresImpact: 'to resource adequacy requirements',
+                    negativeMeans: 'resource adequacy requirements have gone down',
+                    positiveMeans: 'resource adequacy requirements have gone up'
                   }}
-                  units="$"
+                  units="kW"
                 />
               </Table.Cell>
               <Table.Cell align="right">
@@ -250,13 +250,40 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
               <Table.Cell align="right">
                 <ImpactColumnHeader
                   averaged={innerAveraged}
-                  column="RA Impact"
+                  column="Revenue Impact"
                   info={{
-                    measuresImpact: 'to resource adequacy requirements',
-                    negativeMeans: 'resource adequacy requirements have gone down',
-                    positiveMeans: 'resource adequacy requirements have gone up'
+                    measuresImpact: 'to CCA\'s electricity sales',
+                    negativeMeans: 'revenues from electricity sales have gone down',
+                    positiveMeans: 'revenues from electricity sales have gone up'
                   }}
-                  units="kW"
+                  units="$"
+                />
+              </Table.Cell>
+              <Table.Cell align="right">
+                <ImpactColumnHeader
+                  averaged={innerAveraged}
+                  column="Expenses Impact"
+                  info={{
+                    measuresImpact:
+                      'to overall expenses. Calculated as procurement expenses plus $6/kW for RA ' +
+                      'impacts',
+                    negativeMeans: 'overall expenses have gone down',
+                    positiveMeans: 'overall expenses have gone up'
+                  }}
+                  units="$"
+                />
+              </Table.Cell>
+              <Table.Cell align="right">
+                <ImpactColumnHeader
+                  averaged={innerAveraged}
+                  column="Profits Impact"
+                  info={{
+                    measuresImpact:
+                      'to overall profits. Calculated as revenues minus expenses',
+                    negativeMeans: 'overall profits have gone down',
+                    positiveMeans: 'overall profits have gone up'
+                  }}
+                  units="$"
                 />
               </Table.Cell>
               {actionsMenu && <Table.Cell>Menu</Table.Cell>}
@@ -339,8 +366,9 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? formatters.dollars(getField(scenario, 'BillDelta', innerAveraged))
-                      : '-'
+                      ? formatters.commas(
+                          formatters.maxDecimals(getField(scenario, 'RADelta', innerAveraged), 2)
+                      ) : '-'
                   }
                 </Table.Cell>
                 <Table.Cell align="right">
@@ -358,9 +386,22 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 <Table.Cell align="right">
                   {
                     scenario.progress.is_complete
-                      ? formatters.commas(
-                          formatters.maxDecimals(getField(scenario, 'RADelta', innerAveraged), 2)
-                      ) : '-'
+                      ? formatters.dollars(getField(scenario, 'BillRevenueDelta', innerAveraged))
+                      : '-'
+                  }
+                </Table.Cell>
+                <Table.Cell align="right">
+                  {
+                    scenario.progress.is_complete
+                      ? formatters.dollars(getField(scenario, 'ExpenseDelta', innerAveraged))
+                      : '-'
+                  }
+                </Table.Cell>
+                <Table.Cell align="right">
+                  {
+                    scenario.progress.is_complete
+                      ? formatters.dollars(getField(scenario, 'ProfitDelta', innerAveraged))
+                      : '-'
                   }
                 </Table.Cell>
                 {actionsMenu && <Table.Cell>{actionsMenu(scenario)}</Table.Cell>}
