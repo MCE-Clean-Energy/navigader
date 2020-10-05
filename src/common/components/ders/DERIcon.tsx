@@ -14,8 +14,8 @@ export const DERIcon: React.FC<DERIconProps> = ({ type }) => {
   switch (type) {
     case 'Battery':
       return <Icon name="battery" />;
-    case 'EVSE':
-      return <Icon name="ev_station" />;
+    // case 'EVSE':
+    //   return <Icon name="ev_station" />;
     case 'SolarPV':
       return <Icon name="sun" />;
     default:

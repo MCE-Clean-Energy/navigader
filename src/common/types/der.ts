@@ -3,8 +3,8 @@ import { NavigaderObject } from './common';
 import { Frame288NumericType, Frame288Type } from './data';
 
 
-export type DERConfiguration = BatteryConfiguration | EVSEConfiguration | SolarConfiguration;
-export type DERStrategy = BatteryStrategy | EVSEStrategy | SolarStrategy;
+export type DERConfiguration = BatteryConfiguration | /* EVSEConfiguration | */ SolarConfiguration;
+export type DERStrategy = BatteryStrategy | /* EVSEStrategy | */ SolarStrategy;
 export type DERType = DERConfiguration['der_type'];
 export type DERStrategyType =
   | 'load_flattening'
