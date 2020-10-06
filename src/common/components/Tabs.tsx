@@ -17,12 +17,12 @@ type TabProps = React.PropsWithChildren<{
   title: string;
 }>;
 
-type TabsContext = {
+type TabsContextType = {
   activeTab: string;
 };
 
 /** ============================ Context =================================== */
-const TabsContext = React.createContext<TabsContext>({
+const TabsContext = React.createContext<TabsContextType>({
   activeTab: ''
 });
 

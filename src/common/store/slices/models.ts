@@ -149,7 +149,7 @@ function getSliceForModel (
     case 'CustomerMeter':
     case 'ReferenceMeter':
       return state.meters;
-    case 'SingleScenarioStudy':
+    case 'Scenario':
       return state.scenarios;
     case 'GHGRate':
       return state.ghgRates;
@@ -180,7 +180,7 @@ function prepareModel (model: ModelClassExterior): ModelClassInterior {
       return serializers.serializeMeter(model);
     case 'GHGRate':
       return serializers.serializeGHGRate(model);
-    case 'SingleScenarioStudy':
+    case 'Scenario':
       return serializers.serializeScenario(model);
   }
 }

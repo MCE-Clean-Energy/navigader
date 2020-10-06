@@ -1,3 +1,4 @@
+import { DeferrableFields } from './api';
 import { NavigaderObject, Nullable, ProgressFields, Tuple } from './common';
 import { DataObject, RawDataObject } from './data';
 
@@ -23,16 +24,21 @@ export type RawMeter = MeterCommon & RawDataObject<'kw'>;
 export type Meter = MeterCommon & DataObject;
 
 /** ============================ Meter Group Types ========================= */
-type MeterGroupCommon = DataObject & ProgressFields & {
-  date_range: Nullable<Tuple<Date>>;
-};
+type MeterGroupCommon = DataObject & ProgressFields & { date_range: Nullable<Tuple<Date>> };
+type RawMeterGroupCommon = DeferrableFields<
+  & MeterAggregateMetrics
+  & RawDataObject<'kw'>
+  & {
+    meter_count: number;
+    name: string;
+    date_range: Tuple<string>;
+  },
 
-type RawMeterGroupCommon = MeterAggregateMetrics & RawDataObject<'kw'> & {
-  meter_count: number;
-  meters: string[];
-  name: string;
-  date_range: Tuple<string>;
-};
+  // Fields that can be requested but which are not included by default
+  {
+    meters: string[];
+  }
+>;
 
 export type RawOriginFileMeterGroup =
   & NavigaderObject<'OriginFile'>

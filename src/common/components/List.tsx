@@ -17,33 +17,20 @@ type ListProps = React.HTMLAttributes<HTMLUListElement> & {
   dense?: boolean;
 };
 
-type ListItemProps = {
+type ListItemProps = React.PropsWithChildren<{
   button?: boolean;
   className?: string;
   disabled?: boolean;
   onClick?: (event: React.MouseEvent) => void;
   selected?: boolean;
-};
+}>;
 
-type ListItemIconProps = {
+type ListItemIconProps = React.PropsWithChildren<{
   children?: React.ReactElement;
   icon?: ValidIcon;
-};
+}>;
 
-type ListItemAvatar = React.ComponentType<AvatarProps>;
-type ListItemIcon = React.ComponentType<ListItemIconProps>;
-type ListItemText = React.FC;
-type ListItem = React.ComponentType<ListItemProps>;
-
-type ListItemExport =  ListItem & {
-  Avatar: ListItemAvatar;
-  Icon: ListItemIcon;
-  Text: ListItemText;
-};
-
-type ListExport = React.ComponentType<ListProps> & {
-  Item: ListItemExport;
-};
+type ListItemAvatarProps = React.PropsWithChildren<AvatarProps>;
 
 /** ============================ Styles ==================================== */
 const useStyles = makeStylesHook(() => ({
@@ -55,7 +42,7 @@ const useStyles = makeStylesHook(() => ({
 }), 'NavigaderListItem');
 
 /** ============================ Components ================================ */
-const ListItemIcon: ListItemIcon = React.forwardRef(
+const ListItemIcon = React.forwardRef<HTMLDivElement, ListItemIconProps>(
   (props, ref) => {
     const { children, icon } = props;
 
@@ -80,7 +67,7 @@ const ListItemIcon: ListItemIcon = React.forwardRef(
   }
 );
 
-const ListItemAvatar: ListItemAvatar = React.forwardRef(
+const ListItemAvatar = React.forwardRef<HTMLDivElement, ListItemAvatarProps>(
   (props, ref) => {
     return (
       <MuiListItemAvatar ref={ref}>
@@ -90,45 +77,42 @@ const ListItemAvatar: ListItemAvatar = React.forwardRef(
   }
 );
 
-const ListItemText: ListItemText = ({ children }) =>
-  <MuiListItemText primary={children} />;
+const ListItemText: React.FC = ({ children }) => <MuiListItemText primary={children} />;
 
-const ListItemComponent: ListItem = React.forwardRef(
-  ({ button = true, disabled, ...rest }, ref) => {
-    const classes = useStyles();
-    const className = classNames({
-      [classes.disabled]: disabled
-    });
+const ListItem = Object.assign(
+  React.forwardRef<HTMLElement, ListItemProps>(
+    ({ button = true, disabled, ...rest }, ref) => {
+      const classes = useStyles();
+      const className = classNames({
+        [classes.disabled]: disabled
+      });
 
-    const listItemProps = {
-      className,
-      disabled,
-      ...rest
-    };
+      const listItemProps = {
+        className,
+        disabled,
+        ...rest
+      };
 
-    if (button) {
-      return <MuiListItem button {...listItemProps} ref={ref as React.RefObject<HTMLDivElement>} />;
-    } else {
-      return (
-        <MuiListItem
-          component="li"
-          ref={ref as React.RefObject<HTMLLIElement>}
-          {...listItemProps}
-        />
+      if (button) {
+        return <MuiListItem button {...listItemProps} ref={ref as React.RefObject<HTMLDivElement>} />;
+      } else {
+        return (
+          <MuiListItem
+            component="li"
+            ref={ref as React.RefObject<HTMLLIElement>}
+            {...listItemProps}
+          />
         );
+      }
     }
-  }
-);
-
-const ListItem: ListItemExport = Object.assign(
-  ListItemComponent, {
+  ), {
     Avatar: ListItemAvatar,
     Icon: ListItemIcon,
     Text: ListItemText
   }
 );
 
-export const List: ListExport = Object.assign(
+export const List = Object.assign(
   React.forwardRef<HTMLUListElement, ListProps>(
     (props, ref) => <MuiList ref={ref} {...props} />
   ), {

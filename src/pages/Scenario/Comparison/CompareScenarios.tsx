@@ -42,7 +42,7 @@ export const CompareScenariosPage: React.FC = () => {
       if (!idsParam) return null;
       const ids = idsParam.split(',');
       return api.getScenarios({
-        include: ['ders', 'meter_groups', 'report', 'report_summary'],
+        include: ['ders', 'meter_group.*', 'report', 'report_summary'],
         filter: { id: filterClause.in(ids) },
         page: 1,
         page_size: 100

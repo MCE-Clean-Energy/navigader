@@ -2,13 +2,14 @@ import * as React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
 import {
-  Button, Card, Fade, Grid, PageHeader, PrefetchedTable, Progress, Table, Typography
+  Button, Card, Flex, Grid, Link, PageHeader, PrefetchedTable, Progress, ScenarioChip, Table,
+  Typography
 } from 'navigader/components';
 import * as routes from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
 import { Frame288DataType, MeterGroup } from 'navigader/types';
-import { formatters, models } from 'navigader/util';
-import { useMeterGroup } from 'navigader/util/hooks';
+import { filterClause, formatters, models } from 'navigader/util';
+import { useMeterGroup, useScenarios } from 'navigader/util/hooks';
 import { LoadGraph } from './LoadGraph';
 import MetersTable from './MetersTable';
 
@@ -20,7 +21,75 @@ const useStyles = makeStylesHook(theme => ({
   }
 }), 'SummaryCard');
 
+const useLinkedScenarioStyles = makeStylesHook(theme => ({
+  chip: {
+    marginBottom: theme.spacing(1)
+  },
+  chipContainer: {
+    '& > *': {
+      margin: theme.spacing(0.5)
+    }
+  },
+  scenariosWrapper: {
+    marginTop: theme.spacing(0.5)
+  }
+}), 'LinkedScenariosCard');
+
 /** ============================ Components ================================ */
+const LinkedScenariosCard: React.FC<{ meterGroup: MeterGroup }> = ({ meterGroup }) => {
+  const history = useHistory();
+  const classes = useLinkedScenarioStyles();
+  const { scenarios, loading } = useScenarios({
+    filter: {
+      "meter_group.id": filterClause.equals(meterGroup.id)
+    },
+    // Including `meter_group` returns the scenario with the meter group ID, so it gets parsed with
+    // the meter group attached
+    include: ['ders', 'meter_group', 'report_summary'],
+    page: 1,
+    page_size: 100
+  });
+
+  return (
+    <Card raised>
+      <Typography useDiv variant="h6">
+        Scenarios
+      </Typography>
+
+      <div className={classes.scenariosWrapper}>
+        {loading && <Progress circular />}
+        {!loading && scenarios.length === 0
+          ? (
+            <>
+              <span>No scenarios have been run using this customer segment.</span>
+              &nbsp;
+              <Link to={routes.dashboard.createScenario.selectDers}>Create one.</Link>
+            </>
+          )
+          : (
+            <Flex.Container className={classes.chipContainer} wrap>
+              {scenarios.map(s =>
+                <ScenarioChip
+                  className={classes.chip}
+                  disabled={!s.progress.is_complete}
+                  key={s.id}
+                  onClick={goToScenario(s.id)}
+                  scenario={s}
+                />
+              )}
+            </Flex.Container>
+          )
+        }
+      </div>
+    </Card>
+  );
+
+  /** ========================== Callbacks ================================= */
+  function goToScenario (id: string) {
+    return () => history.push(routes.scenario(id));
+  }
+};
+
 const SummaryCard: React.FC<{ meterGroup: MeterGroup }> = ({ meterGroup }) => {
   const classes = useStyles();
   const { max_monthly_demand, date_range, total_kwh } = meterGroup;
@@ -71,7 +140,7 @@ const SummaryCard: React.FC<{ meterGroup: MeterGroup }> = ({ meterGroup }) => {
 export const MeterGroupPage: React.FC = () => {
   const [graphDataType, setGraphDataType] = React.useState<Frame288DataType>('average');
   const history = useHistory();
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
 
   const { meterGroup } = useMeterGroup(id, {
     data_types: ['average', 'maximum', 'minimum']
@@ -95,29 +164,35 @@ export const MeterGroupPage: React.FC = () => {
         title={models.meterGroup.getDisplayName(meterGroup)}
       />
 
-      {meterGroup ? (
-        <Grid>
-          <Grid.Item span={8}>
-            <LoadGraph
-              changeType={changeGraphType}
-              dataType={graphDataType}
-              meterGroup={meterGroup}
-            />
-          </Grid.Item>
+      {meterGroup
+        ? (
+          <Grid>
+            <Grid.Item span={8}>
+              <LoadGraph
+                changeType={changeGraphType}
+                dataType={graphDataType}
+                meterGroup={meterGroup}
+              />
+            </Grid.Item>
 
-          <Grid.Item span={4}>
-            <SummaryCard meterGroup={meterGroup} />
-          </Grid.Item>
+            <Grid.Item span={4}>
+              <Grid>
+                <Grid.Item span={12}>
+                  <SummaryCard meterGroup={meterGroup} />
+                </Grid.Item>
+                <Grid.Item span={12}>
+                  <LinkedScenariosCard meterGroup={meterGroup} />
+                </Grid.Item>
+              </Grid>
+            </Grid.Item>
 
-          <Grid.Item span={12}>
-            <MetersTable meterGroupId={meterGroup.id} />
-          </Grid.Item>
-        </Grid>
-      ) : (
-        <Fade in unmountOnExit>
-          <Progress circular />
-        </Fade>
-      )}
+            <Grid.Item span={12}>
+              <MetersTable meterGroupId={meterGroup.id} />
+            </Grid.Item>
+          </Grid>
+        )
+        : <Progress circular />
+      }
     </>
   );
 

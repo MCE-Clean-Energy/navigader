@@ -15,36 +15,22 @@ type DerSelection = {
   strategyId: string;
 };
 
-// GET /study/
-export type GetScenariosQueryOptions = PaginationQueryParams & DynamicRestParams;
-
-type GetScenariosResponse = {
-  meter_groups?: RawMeterGroup[];
-  studies: RawScenario[];
-};
-
-// GET /study/:id
-type GetScenarioResponse = {
-  meter_groups?: [RawMeterGroup];
-  study: RawScenario;
-};
-
-export type GetScenarioQueryOptions = DynamicRestParams & DataTypeParams;
-
-// GET /ghg_rate/
-type GetGHGRatesResponse = {
-  ghg_rates: RawGHGRate[];
-};
+/** Query params */
+export type GetScenarioQueryParams = DynamicRestParams<ScenarioIncludeFields> & DataTypeParams;
+export type GetScenariosQueryParams = GetScenarioQueryParams & PaginationQueryParams;
+type ScenarioIncludeFields =
+  | 'ders'
+  | 'der_simulations'
+  | 'meters'
+  | 'meter_group'
+  | 'meter_group.*'
+  | 'report'
+  | 'report_summary';
 
 type GetGHGRatesQueryOptions = PaginationQueryParams & DynamicRestParams & (
   { data_format: '288'; } |
   { data_format: 'interval'; period: '1H' | '15M'; start: string; end_limit: string; }
 );
-
-// GET /caiso_rate/
-type GetCAISORatesResponse = {
-  caiso_rates: RawCAISORate[];
-};
 
 export type GetCAISORatesQueryOptions =
   & PaginationQueryParams
@@ -52,14 +38,20 @@ export type GetCAISORatesQueryOptions =
   & DataTypeParams
   & { year?: number };
 
+/** Responses */
+type GetScenariosResponse = { meter_groups?: RawMeterGroup[]; scenarios: RawScenario[] };
+type GetScenarioResponse = { meter_groups?: RawMeterGroup[]; scenario: RawScenario };
+type GetGHGRatesResponse = { ghg_rates: RawGHGRate[] };
+type GetCAISORatesResponse = { caiso_rates: RawCAISORate[] };
+
 /** ============================ Scenarios =============================== */
 export async function postStudy (
   scenarioName: string,
   meterGroupIds: string[],
   ders: DerSelection[]
-): Promise<Response> {
+) {
   return await postRequest(
-    routes.postStudy,
+    routes.scenarios(),
     {
       name: scenarioName,
       meter_group_ids: meterGroupIds,
@@ -72,24 +64,18 @@ export async function postStudy (
 }
 
 /**
- * Loads scenario objects, either `SingleScenarioScenario` or `MultipleScenarioScenario`.
+ * Loads scenario objects
  *
- * @param {GetScenariosQueryOptions} queryParams: parameters for filtering the result set
+ * @param {GetScenariosQueryParams} queryParams: parameters for filtering the result set
  */
-export async function getScenarios (queryParams: GetScenariosQueryOptions) {
+export async function getScenarios (queryParams: GetScenariosQueryParams) {
   const response: RawPaginationSet<GetScenariosResponse> =
-    await getRequest(
-      routes.scenarios(),
-      {
-        ...queryParams,
-        object_type: 'SingleScenarioStudy'
-      }
-    ).then(res => res.json());
+    await getRequest(routes.scenarios(), queryParams).then(res => res.json());
 
   // Parse the meter results
   return parsePaginationSet(
     response,
-    ({ meter_groups = [], studies: scenarios }) =>
+    ({ meter_groups = [], scenarios }) =>
       scenarios.map(scenario => serializers.parseScenario(scenario, meter_groups))
   );
 }
@@ -101,14 +87,11 @@ export async function patchScenario (scenarioId: string, updates: Partial<Scenar
   );
 }
 
-export async function getScenario (id: string, options?: GetScenarioQueryOptions) {
-  const response: GetScenarioResponse =
-    await getRequest(
-      routes.scenarios(id),
-      options
-    ).then(res => res.json());
+export async function getScenario (id: string, queryParams?: GetScenarioQueryParams) {
+  const { meter_groups = [], scenario }: GetScenarioResponse =
+    await getRequest(routes.scenarios(id), queryParams).then(res => res.json());
 
-  return serializers.parseScenario(response.study, response.meter_groups || []);
+  return serializers.parseScenario(scenario, meter_groups);
 }
 
 /**
@@ -171,10 +154,9 @@ const baseRoute = (rest: string) => beoRoute.v1(`cost/${rest}`);
 const routes = {
   caiso_rate: baseRoute('caiso_rate/'),
   ghg_rate: baseRoute('ghg_rate/'),
-  postStudy: baseRoute('multiple_scenario_study/'),
   scenarios: Object.assign(
-    appendId(baseRoute('study')), {
-      download: baseRoute('study/download/')
+    appendId(baseRoute('scenario')), {
+      download: baseRoute('scenario/download/')
     }
   )
 };

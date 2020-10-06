@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
 
 import { makeStylesHook } from 'navigader/styles';
+import { Tuple } from 'navigader/types';
 import _ from 'navigader/util/lodash';
 import { Button } from '../Button';
 import * as Flex from '../Flex';
@@ -11,9 +12,9 @@ import { Typography } from '../Typography';
 
 
 /** ============================ Types ===================================== */
-type Breadcrumbs = Array<[string, string] | string>;
+type Breadcrumb = string | Tuple<string>;
 type BreadcrumbsProps = {
-  breadcrumbs?: Breadcrumbs;
+  breadcrumbs?: Breadcrumb[];
 };
 
 type PageHeaderProps = BreadcrumbsProps & {

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import moment from 'moment';
+import { DateTime, Duration } from 'luxon';
 import {
   createContainer, VictoryArea, VictoryAxis, VictoryLabel, VictoryLegend, VictoryLine,
   VictoryTooltip
@@ -200,10 +200,10 @@ function useData (data: IntervalData[], month: MonthIndex, timeDomain?: DateTupl
 
         // Find the greatest period amongst the intervals. This is the period we will use to round
         const greatestPeriod = Math.max(...monthData.map(interval => interval.period));
-        const periodDuration = moment.duration(greatestPeriod, 'minutes');
+        const periodDuration = Duration.fromObject({ minutes: greatestPeriod });
         return [
-          moment(start).subtract(periodDuration).toDate(),
-          moment(end).add(periodDuration).toDate()
+          DateTime.fromJSDate(start).minus(periodDuration).toJSDate(),
+          DateTime.fromJSDate(end).plus(periodDuration).toJSDate()
         ] as DateTuple;
       })();
 

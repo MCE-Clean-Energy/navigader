@@ -17,7 +17,7 @@ export type SortState = {
 
 export type DisabledSelectComponent<T> = React.FC<{ datum: T }>;
 
-type TableContext<T> = {
+type TableContextType<T> = {
   allSelected: boolean;
   data: T[],
   disableSelect: (datum: T) => boolean;
@@ -32,7 +32,7 @@ type TableContext<T> = {
 };
 
 /** ============================ Context =================================== */
-export const TableContext = React.createContext<TableContext<any>>({
+export const TableContext = React.createContext<TableContextType<any>>({
   allSelected: false,
   data: [],
   disableSelect: () => false,

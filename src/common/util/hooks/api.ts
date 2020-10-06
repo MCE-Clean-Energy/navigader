@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as api from 'navigader/api';
 import { slices } from 'navigader/store';
 import {
-  CAISORate, DataObject, DataTypeParams, GHGRate, Maybe, MeterGroup, PaginationSet, Scenario
+  CAISORate, DataObject, DataTypeParams, DynamicRestParams, GHGRate, Maybe, MeterGroup,
+  PaginationSet, Scenario
 } from 'navigader/types';
 import { makeCancelableAsync, models, omitFalsey } from 'navigader/util';
 import _ from 'navigader/util/lodash';
@@ -12,9 +13,9 @@ import _ from 'navigader/util/lodash';
 
 /** ============================ Types ===================================== */
 type DataTypeFilters = Pick<DataTypeParams, 'data_types' | 'period'>;
-type CAISORateFilters = DataTypeFilters & { year: number; };
+type CAISORateFilters = DataTypeFilters & { year?: number; };
 
-/** ============================ Hooks ===================================== */
+/** ============================ GHG Rates ================================= */
 /**
  * Loads the GHG rates if they haven't been loaded already. Once loaded they will be added to
  * the store
@@ -52,11 +53,12 @@ export function useGhgRates () {
   }
 }
 
+/** ============================ CAISO Rates =============================== */
 /**
  * Loads the CAISO rates if they haven't been loaded already. Once loaded they will be added to
  * the store
  */
-export function useCAISORates (filters: Partial<CAISORateFilters> = {}) {
+export function useCAISORates (filters: CAISORateFilters = {}) {
   const dispatch = useDispatch();
 
   // Check the store for CAISO rates that match the provided filters
@@ -95,18 +97,51 @@ export function useCAISORates (filters: Partial<CAISORateFilters> = {}) {
   }
 }
 
+/** ============================ Scenarios ================================= */
 /**
- * Loads a scenario given its ID and options for querying
+ * Loads a scenario given its ID and params for querying
  *
  * @param {string} scenarioId: the ID of the scenario to get
- * @param {GetScenarioQueryOptions} [options]: additional options for querying
+ * @param {GetScenarioQueryParams} [params]: additional params for querying
  */
-export function useScenario (scenarioId: string, options?: api.GetScenarioQueryOptions) {
+export function useScenario (scenarioId: string, params?: api.GetScenarioQueryParams) {
   const [scenario, setScenario] = React.useState<Scenario>();
-  const loading = useAsync(() => api.getScenario(scenarioId, options), setScenario, [scenarioId]);
+  const loading = useAsync(() => api.getScenario(scenarioId, params), setScenario, [scenarioId]);
   return { scenario, loading };
 }
 
+/**
+ * Loads scenarios, using the provided query params
+ *
+ * @param {GetScenariosQueryParams} [params]: additional params for querying
+ */
+export function useScenarios (params: api.GetScenariosQueryParams) {
+  const dispatch = useDispatch();
+
+  // Fetch the scenarios
+  const loading = useAsync(
+    () => api.getScenarios(params),
+    ({ data }) => {
+      // Continue polling for scenarios that haven't finished ingesting
+      models.polling.addScenarios(data);
+
+      // Add all of them to the store
+      dispatch(slices.models.updateModels(data))
+    },
+    []
+  );
+
+  // Retrieve scenarios that match the provided filters from the store
+  const scenarios = useSelector(slices.models.selectScenarios).filter((scenario) => {
+    const matchesDataTypes = applyDataFilters(scenario, params);
+    const matchesFilters = applyDynamicRestFilters(scenario, params);
+    return matchesDataTypes && matchesFilters;
+  });
+
+  return { loading, scenarios };
+}
+
+/** ============================ Meters ==================================== */
 /**
  * Retrieves a meter group from the store that matches the given ID and data filters, and fetches
  * it from the backend if it's not found in the store.
@@ -117,7 +152,7 @@ export function useScenario (scenarioId: string, options?: api.GetScenarioQueryO
  */
 export function useMeterGroup (
   meterGroupId: Maybe<string>,
-  filters: Partial<DataTypeFilters> = {}
+  filters: DataTypeFilters = {}
 ) {
   const dispatch = useDispatch();
 
@@ -156,15 +191,20 @@ export function useMeterGroup (
   }
 }
 
-export function useMeterGroups (options: api.MeterGroupsQueryParams) {
+/**
+ * Fetches meter groups from the backend given the provided parameters.
+ *
+ * @param {MeterGroupsQueryParams} params: additional params for querying
+ */
+export function useMeterGroups (params: api.MeterGroupsQueryParams) {
   const dispatch = useDispatch();
 
   // Fetch the meter groups
   const loading = useAsync(
-    () => api.getMeterGroups(options),
+    () => api.getMeterGroups(params),
     ({ data }) => {
       // Continue polling for meter groups that haven't finished ingesting
-      models.polling.addMeterGroups(data, options);
+      models.polling.addMeterGroups(data, params);
 
       // Add all of them to the store
       dispatch(slices.models.updateModels(data))
@@ -176,15 +216,16 @@ export function useMeterGroups (options: api.MeterGroupsQueryParams) {
   return { loading, meterGroups: useSelector(slices.models.selectMeterGroups) };
 }
 
+/** ============================ DER Objects =============================== */
 /**
  * Loads DER strategies
  */
-export function useDERStrategies (options: api.DERQueryParams) {
+export function useDERStrategies (params: api.DERQueryParams) {
   const dispatch = useDispatch();
 
   // Fetch the meter groups
   const loading = useAsync(
-    () => api.getDerStrategies(options),
+    () => api.getDerStrategies(params),
     ({ data }) => dispatch(slices.models.updateModels(data)),
     []
   );
@@ -196,12 +237,12 @@ export function useDERStrategies (options: api.DERQueryParams) {
 /**
  * Loads DER configurations
  */
-export function useDERConfigurations (options: api.DERQueryParams) {
+export function useDERConfigurations (params: api.DERQueryParams) {
   const dispatch = useDispatch();
 
   // Fetch the meter groups
   const loading = useAsync(
-    () => api.getDerConfigurations(options),
+    () => api.getDerConfigurations(params),
     ({ data }) => dispatch(slices.models.updateModels(data)),
     []
   );
@@ -210,6 +251,7 @@ export function useDERConfigurations (options: api.DERQueryParams) {
   return { loading, derConfigurations: useSelector(slices.models.selectDERConfigurations) };
 }
 
+/** ============================ Helpers =================================== */
 /**
  * Hook for calling an asynchronous method
  *
@@ -274,4 +316,24 @@ export function applyDataFilters (model: Maybe<DataObject>, filters: Maybe<DataT
   }
 
   return true;
+}
+
+/**
+ * Applies a set of dynamic rest filters to a model, returning `true` if the model meets all of the
+ * filters and `false` if any do not pass. Note that `_.every` will return `true` if an empty filter
+ * object is passed in.
+ *
+ * @param {object} model: the model to apply the filters to
+ * @param {DynamicRestParams} params: the dynamic rest filters to apply
+ */
+export function applyDynamicRestFilters (model: object, params: DynamicRestParams) {
+  return _.every(params.filter, (clause, field) => {
+    const value = _.get(model, field);
+    switch (clause.operation) {
+      case 'in':
+        return _.includes(clause.value, value);
+      case 'equals':
+        return value === clause.value;
+    }
+  });
 }

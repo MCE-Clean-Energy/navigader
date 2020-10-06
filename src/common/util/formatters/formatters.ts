@@ -1,11 +1,14 @@
-import moment, { MomentInput } from 'moment';
+import { DateTime, DateTimeFormatOptions, LocaleOptions } from 'luxon';
 
 import { Maybe, Nullable, Tuple } from 'navigader/types';
 import { clamp, percentOf } from '../data';
+import _ from '../lodash';
+import { parseDate } from '../serializers';
 
 
 /** ============================ Types ===================================== */
 type DollarFormatOptions = Partial<{ cents: boolean; }>;
+type DateFormatterInput = Date | string;
 
 /** ============================ Formatters ================================ */
 /**
@@ -56,14 +59,23 @@ export function getMonthName (monthIndex: number) {
 
 /**
  * Utility methods for formatting dates consistently in the application. This will largely just be a
- * wrapper around moment.js
- *
- * @param {MomentInput} date: the date to format
+ * wrapper around Luxon
  */
+const wrapDate = (d: DateFormatterInput) => _.isDate(d) ? d : parseDate(d);
+const formatDate = (d: DateFormatterInput, format: LocaleOptions & DateTimeFormatOptions) =>
+  DateTime.fromJSDate(wrapDate(d)).toLocaleString(format);
 export const date = {
-  monthDayHourMinute: (date: MomentInput) => moment(date).format('MMM D, h:mm a'),
-  standard: (date: MomentInput) => moment(date).format('MMM D, YYYY'),
-  range: (dates: Tuple<MomentInput>, fn: (d: MomentInput) => string) => `${fn(dates[0])} - ${fn(dates[1])}`
+  monthDayHourMinute: (date: DateFormatterInput) => formatDate(date, {
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    month: 'short'
+  }),
+  standard: (date: DateFormatterInput) => formatDate(date, DateTime.DATE_MED),
+  range: (
+    dates: Tuple<DateFormatterInput>,
+    fn: (d: DateFormatterInput) => string
+  ) =>`${fn(dates[0])} - ${fn(dates[1])}`
 };
 
 /**

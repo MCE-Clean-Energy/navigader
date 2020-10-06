@@ -1,10 +1,11 @@
+import { DateTime } from 'luxon';
+
 import { RawScenario, Tuple } from 'navigader/types';
 import { fixtures } from 'navigader/util/testing';
 import {
-  parseMeterGroup, parsePandasFrame, parseReport, parseScenario, serializeMeterGroup,
-  serializePandasFrame, serializeReport
+  parseMeterGroup, parsePandasFrame, parseReport, parseScenario, serializePandasFrame,
+  serializeReport
 } from './serializers';
-import moment from 'moment';
 
 
 describe('API parsing methods', () => {
@@ -64,13 +65,15 @@ describe('API parsing methods', () => {
       expect(parseMeterGroup(
         fixtures.makeRawCustomerCluster({ date_range: validDateRange })
       ).date_range).toEqual([
-        moment(validDateRange[0]).toDate(), moment(validDateRange[1]).toDate()
+        DateTime.fromISO(validDateRange[0]).toJSDate(),
+        DateTime.fromISO(validDateRange[1]).toJSDate()
       ]);
 
       expect(parseMeterGroup(
         fixtures.makeRawOriginFile({ date_range: validDateRange })
       ).date_range).toEqual([
-        moment(validDateRange[0]).toDate(), moment(validDateRange[1]).toDate()
+        DateTime.fromISO(validDateRange[0]).toJSDate(),
+        DateTime.fromISO(validDateRange[1]).toJSDate()
       ]);
 
       // Invalid date ranges

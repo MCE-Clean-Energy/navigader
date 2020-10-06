@@ -28,17 +28,14 @@ export function parsePaginationSet <RawSchema, Datum>(
   parseFn: (schema: RawSchema) => Datum[]
 ): PaginationSet<Datum>;
 
-export function parsePaginationSet <RawSchema, ResultsKey extends string, Datum>(
-  paginationSet: any,
-  parseFnOrResultsKey?: any
-): any {
+export function parsePaginationSet (paginationSet: any, parseFnOrResultsKey?: any ): any {
   const isArray = Array.isArray(paginationSet.results);
-  
+
   // If the results are not array-like, a parse function or results key must be provided
   if (!(isArray || parseFnOrResultsKey)) {
     throw Error('`parsePaginationSet` called incorrectly');
   }
-  
+
   let data;
   if (isArray) {
     data = typeof parseFnOrResultsKey === 'function'
@@ -49,7 +46,7 @@ export function parsePaginationSet <RawSchema, ResultsKey extends string, Datum>
   } else {
     data = paginationSet.results[parseFnOrResultsKey];
   }
-  
+
   return {
     count: paginationSet.count,
     data

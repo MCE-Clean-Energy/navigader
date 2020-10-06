@@ -45,7 +45,6 @@ function makeIncludeExcludeQueryParam (
     : [[paramKey, fields]];
 }
 
-
 /**
  * Produces the querystring for a request, given an object representing the key-value pairs to
  * include in the querystring.

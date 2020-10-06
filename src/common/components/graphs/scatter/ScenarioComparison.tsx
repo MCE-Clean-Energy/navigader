@@ -117,7 +117,7 @@ class ScenarioWrapper extends DatumWrapper implements ScatterPlotDatumWrapper {
 class CustomerWrapper extends DatumWrapper<ScenarioReportFields> implements ScatterPlotDatumWrapper {
   get colorId () { return this.scenarioId; }
   get extraTooltipFields () { return [`SA ID: ${this.datum.SA_ID}`]; }
-  get scenarioId () { return this.datum.SingleScenarioStudy; }
+  get scenarioId () { return this.datum.ScenarioID; }
   get size () { return 3; }
 
   // The customer is unique in the context of the scenario

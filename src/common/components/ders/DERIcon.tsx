@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { DERType } from 'navigader/types';
-import { Icon } from '../Icon';
+import { Icon, ValidIcon } from '../Icon';
 
 
 /** ============================ Types ===================================== */
@@ -10,15 +10,14 @@ type DERIconProps = {
 };
 
 /** ============================ Components ================================ */
-export const DERIcon: React.FC<DERIconProps> = ({ type }) => {
+export const DERIcon: React.FC<DERIconProps> = ({ type }) => <Icon name={getDERIconName(type)} />;
+export function getDERIconName (type: DERType): ValidIcon {
   switch (type) {
     case 'Battery':
-      return <Icon name="battery" />;
+      return 'battery';
     // case 'EVSE':
-    //   return <Icon name="ev_station" />;
+    //   return 'ev_station';
     case 'SolarPV':
-      return <Icon name="sun" />;
-    default:
-      return null;
+      return 'sun';
   }
-};
+}

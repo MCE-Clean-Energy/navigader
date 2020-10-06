@@ -13,26 +13,18 @@ type DialogProps = React.HTMLAttributes<HTMLDivElement> & {
   open: boolean;
 }
 
-type DialogActions = React.FC<React.HTMLAttributes<HTMLDivElement>>;
-type DialogContent = React.FC<React.HTMLAttributes<HTMLDivElement> & { dividers?: boolean; }>;
-type DialogContentText = React.FC;
-type DialogTitle = React.FC<React.HTMLAttributes<HTMLDivElement>>;
-type Dialog = React.FC<DialogProps>;
-type DialogExport = Dialog & {
-  Actions: DialogActions;
-  Content: DialogContent;
-  ContentText: DialogContentText;
-  Title: DialogTitle;
-};
+type DialogActionsProps = React.HTMLAttributes<HTMLDivElement>;
+type DialogContentProps = React.HTMLAttributes<HTMLDivElement> & { dividers?: boolean; };
+type DialogTitleProps = React.HTMLAttributes<HTMLDivElement>;
 
 /** ============================ Components ================================ */
-const DialogComponent: Dialog = props => <MuiDialog {...props} />;
-const DialogActions: DialogActions = props => <MuiDialogActions {...props} />;
-const DialogContent: DialogContent = props => <MuiDialogContent {...props} />;
-const DialogContentText: DialogContentText = props => <MuiDialogContentText {...props} />;
-const DialogTitle: DialogTitle = props => <MuiDialogTitle {...props} />;
+const DialogComponent: React.FC<DialogProps> = props => <MuiDialog {...props} />;
+const DialogActions: React.FC<DialogActionsProps> = props => <MuiDialogActions {...props} />;
+const DialogContent: React.FC<DialogContentProps> = props => <MuiDialogContent {...props} />;
+const DialogContentText: React.FC = props => <MuiDialogContentText {...props} />;
+const DialogTitle: React.FC<DialogTitleProps> = props => <MuiDialogTitle {...props} />;
 
-export const Dialog: DialogExport = Object.assign(
+export const Dialog = Object.assign(
   DialogComponent, {
     Actions: DialogActions,
     Content: DialogContent,

@@ -14,8 +14,11 @@ import findIndex from 'lodash/findIndex';
 import findLast from 'lodash/findLast';
 import flatten from 'lodash/flatten';
 import fromPairs from 'lodash/fromPairs';
+import get from 'lodash/get';
 import groupBy from 'lodash/groupBy';
+import includes from 'lodash/includes';
 import isArray from 'lodash/isArray';
+import isDate from 'lodash/isDate';
 import isEmpty from 'lodash/isEmpty';
 import isUndefined from 'lodash/isUndefined';
 import map from 'lodash/map';
@@ -33,7 +36,7 @@ import without from 'lodash/without';
 import zip from 'lodash/zip';
 
 
-export default {
+const _ = {
   defaults,
   every,
   filter,
@@ -42,8 +45,11 @@ export default {
   findLast,
   flatten,
   fromPairs,
+  get,
   groupBy,
+  includes,
   isArray,
+  isDate,
   isEmpty,
   isUndefined,
   map,
@@ -60,3 +66,5 @@ export default {
   without,
   zip
 };
+
+export default _;

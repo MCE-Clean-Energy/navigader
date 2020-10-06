@@ -143,7 +143,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
   const getScenarios = React.useCallback(
     async (state: PaginationState) => {
       const response = await api.getScenarios({
-        include: ['ders', 'meter_groups', 'report_summary'],
+        include: ['ders', 'meter_group.*', 'report_summary'],
         page: state.currentPage + 1,
         page_size: state.rowsPerPage
       });

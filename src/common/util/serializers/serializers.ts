@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { DateTime } from 'luxon';
 
 import {
   AggregatedProcurementKeys, CAISORate, DataTypeMap, GHGRate, isRawScenarioReport,
@@ -32,7 +32,7 @@ const NOT_A_TIME = 'NaT';
 /**
  * Basic parsing function for meter groups
  *
- * @param {MeterGroup} meterGroup - The raw meter group object obtained from the back-end
+ * @param {RawMeterGroup} meterGroup: the raw meter group object obtained from the back-end
  */
 export function parseMeterGroup (meterGroup: RawMeterGroup): MeterGroup {
   const data = parseDataField(meterGroup.data, meterGroup.name, 'kw', 'index');
@@ -42,8 +42,8 @@ export function parseMeterGroup (meterGroup: RawMeterGroup): MeterGroup {
     return {
       ...meterGroup,
       data,
-      progress: { is_complete: true, percent_complete: 100 },
-      date_range: parseDateRange(meterGroup.date_range)
+      date_range: parseDateRange(meterGroup.date_range),
+      progress: { is_complete: true, percent_complete: 100 }
     };
   }
 
@@ -57,11 +57,11 @@ export function parseMeterGroup (meterGroup: RawMeterGroup): MeterGroup {
   return {
     ...meterGroup,
     data,
+    date_range: parseDateRange(meterGroup.date_range),
     progress: {
       is_complete: percentComplete === 100,
       percent_complete: parseFloat(percentComplete.toFixed(1))
-    },
-    date_range: parseDateRange(meterGroup.date_range)
+    }
   };
 }
 
@@ -126,8 +126,8 @@ export function parseScenario (scenario: RawScenario, rawMeterGroups?: RawMeterG
 
   // Mix in the meter group
   let meterGroup;
-  if (scenario.meter_groups && scenario.meter_groups.length > 0) {
-    const scenarioMeterGroup = _.find(rawMeterGroups, { id: scenario.meter_groups[0] });
+  if (scenario.meter_group) {
+    const scenarioMeterGroup = _.find(rawMeterGroups, { id: scenario.meter_group });
     if (scenarioMeterGroup) {
       meterGroup = parseMeterGroup(scenarioMeterGroup);
     }
@@ -138,6 +138,7 @@ export function parseScenario (scenario: RawScenario, rawMeterGroups?: RawMeterG
     data: parseDataField(scenario.data || {}, scenario.name, 'kw', 'index'),
     der: scenario.ders ? scenario.ders[0] : undefined,
     meter_group: meterGroup,
+    meter_group_id: scenario.meter_group,
     progress: {
       is_complete: hasAggregated,
       has_run: hasRun,
@@ -256,7 +257,7 @@ export function serializeScenario (scenario: Scenario): RawScenario {
     ...unchangedFields,
     data: serializeDataField(scenario.data, 'kw', 'index'),
     ders: scenario.der && [scenario.der],
-    meter_groups: scenario.meter_group ? [scenario.meter_group.id] : undefined,
+    meter_group: scenario.meter_group_id,
     report: serializeReport(scenario.report),
     report_summary: serializeReportSummary(scenario.report_summary)
   };
@@ -394,21 +395,21 @@ function serializeDataField <Column extends string, Unit extends string>(
 
 /** ============================ Data fields =============================== */
 /**
- * Parses a date string into a `Date` object, using moment. Note that using the `Date` constructor
- * is unreliable across browsers: ambiguous date strings that omit timezone info will be
- * interpreted differently by different browsers.
+ * Parses a date string into a `Date` object, using Luxon. Note that using the `Date` constructor is
+ * unreliable across browsers: ambiguous date strings that omit timezone info will be interpreted
+ * differently by different browsers.
  *
  * @param {string} dateString: the string to parse.
  */
 export function parseDate (dateString: string) {
-  return moment(dateString).toDate();
+  return DateTime.fromISO(dateString).toJSDate();
 }
 
 /**
  * Serializes a date object into a string. This simply wraps the `Date` prototype's `toISOString`
  * method. This method exists for the sake of consistency across the application. Note that we use
- * `toISOString` rather than `toString`, as the former is accepted by moment while the latter is
- * not
+ * `toISOString` rather than `toString`, as the former is standardized and the latter varies across
+ * browsers
  *
  * @param {Date} date: the date object to serialize
  */

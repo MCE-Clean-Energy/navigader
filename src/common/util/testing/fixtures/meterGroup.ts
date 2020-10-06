@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { DateTime } from 'luxon';
 
 import {
   CustomerClusterMeterGroup, OriginFileMeterGroup, RawCustomerClusterMeterGroup,
@@ -355,7 +355,10 @@ const defaultOriginFile: OriginFileMeterGroup = {
     "is_complete": true,
     "percent_complete": 100
   },
-  "date_range": [moment("2019-01-01T00:00:00").toDate(), moment("2020-01-01T00:00:00").toDate()],
+  "date_range": [
+    DateTime.fromISO("2019-01-01T00:00:00").toJSDate(),
+    DateTime.fromISO("2020-01-01T00:00:00").toJSDate()
+  ],
   "name": "NEM E6",
   "meter_count": 797,
   "meters": [],
@@ -372,7 +375,10 @@ const defaultCustomerCluster: CustomerClusterMeterGroup = {
     "is_complete": true,
     "percent_complete": 100
   },
-  "date_range": [moment("2019-01-01T00:00:00").toDate(), moment("2020-01-01T00:00:00").toDate()],
+  "date_range": [
+    DateTime.fromISO("2019-01-01T00:00:00").toJSDate(),
+    DateTime.fromISO("2020-01-01T00:00:00").toJSDate()
+  ],
   "name": "NEM E6",
   "meter_count": 797,
   "meters": [],

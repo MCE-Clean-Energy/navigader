@@ -1,6 +1,6 @@
 import { DeferrableFields } from './api';
 import { NavigaderObject, Nullable, ProgressFields, RawPandasFrame } from './common';
-import { DataObject, RawDataTypeMap } from './data';
+import { DataObject, RawDataObject } from './data';
 import { DERConfiguration, DERStrategy } from './der';
 import { MeterGroup } from './meter';
 
@@ -30,28 +30,27 @@ type ScenarioMetadata = {
 };
 
 export type RawScenario = DeferrableFields<
-  NavigaderObject<'SingleScenarioStudy'> & ScenarioCommon,
+  NavigaderObject<'Scenario'> & ScenarioCommon & RawDataObject<'kw'>,
 
   // Fields that can be requested but which are not included by default
   {
-    data: RawDataTypeMap<'kw'>;
     der_simulations: string[];
     ders: [DERInfo];
     meters: string[];
-    meter_groups: [string];
+    meter_group: string;
     report: RawScenarioReport | EmptyReport;
     report_summary: RawScenarioReportSummary | EmptyReportSummary;
   }
 >;
 
 export interface Scenario extends DeferrableFields<
-  NavigaderObject<'SingleScenarioStudy'> &
+  NavigaderObject<'Scenario'> &
   ScenarioCommon &
   ProgressFields &
   DataObject &
   {
+    meter_group_id?: string;
     progress: {
-      is_complete?: boolean;
       has_run: boolean;
     }
   },
@@ -130,7 +129,7 @@ type ResourceAdequacyReport = {
   RADelta: Nullable<number>;
 };
 
-type ScenarioReportFieldsCommon = { ID: string; SingleScenarioStudy: string; } & Partial<
+type ScenarioReportFieldsCommon = { ID: string; ScenarioID: string; } & Partial<
   & UsageReport
   & FinancialReport
   & GHGReport
@@ -153,7 +152,7 @@ export type ScenarioReport = {
 
 type RawScenarioReportSummaryFields = Omit<
   ScenarioReportFieldsCommon,
-  'ID' | 'SingleScenarioStudy' | 'SimulationRatePlan' | 'MeterRatePlan'
+  'ID' | 'ScenarioID' | 'SimulationRatePlan' | 'MeterRatePlan'
 >;
 export type ScenarioReportSummaryFields =
   & RawScenarioReportSummaryFields

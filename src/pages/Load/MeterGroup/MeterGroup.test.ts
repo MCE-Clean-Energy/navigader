@@ -17,7 +17,8 @@ describe('Meter Group Page', () => {
     mockFetch([
       [/load\/meter_group\/.+\//, { meter_group: meterGroup }],
       ['/load/meter_group/', makePaginationResponse({ meter_groups: [meterGroup] })],
-      ['/load/meter/', makePaginationResponse({ meters: [fixtures.meter] })]
+      ['/load/meter/', makePaginationResponse({ meters: [fixtures.meter] })],
+      ['/cost/scenario/', makePaginationResponse({ scenarios: [fixtures.makeRawScenario()] })]
     ]);
   });
 

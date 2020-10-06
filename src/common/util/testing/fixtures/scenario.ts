@@ -15,7 +15,7 @@ const defaultRawScenario: RawScenario = {
   id: '9071c48a-d5d3-48d0-83da-c06863e8682a',
   name: 'Default Scenario',
   created_at: '2020-03-26T00:13:25.451606',
-  object_type: 'SingleScenarioStudy',
+  object_type: 'Scenario',
   data: {},
   ders: [
     {
@@ -45,9 +45,7 @@ const defaultRawScenario: RawScenario = {
   der_simulation_count: 0,
   expected_der_simulation_count: 16,
   meter_count: 16,
-  meter_groups: [
-    '6c3e9adc-9b42-4d36-90fa-4a95d7eddad7'
-  ],
+  meter_group: '6c3e9adc-9b42-4d36-90fa-4a95d7eddad7',
   metadata: {
     id: '9071c48a-d5d3-48d0-83da-c06863e8682a',
     start: '1677-09-21T00:12:43.145225',
@@ -62,7 +60,7 @@ const defaultScenario: Scenario = {
   id: '9071c48a-d5d3-48d0-83da-c06863e8682a',
   name: 'Default Scenario',
   created_at: '2020-03-26T00:13:25.451606',
-  object_type: 'SingleScenarioStudy',
+  object_type: 'Scenario',
   data: {},
   der: {
     der_configuration: {

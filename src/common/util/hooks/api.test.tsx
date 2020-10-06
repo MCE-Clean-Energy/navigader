@@ -1,15 +1,23 @@
 import * as React from 'react';
 import { Provider } from 'react-redux';
+import { EnhancedStore } from '@reduxjs/toolkit';
 import { renderHook, HookResult } from '@testing-library/react-hooks'
 
+import * as api from 'navigader/api';
 import { makeStore, slices } from 'navigader/store';
-import { CAISORate, Frame288DataType } from 'navigader/types';
-import { serializers } from 'navigader/util';
+import { CAISORate, Frame288DataType, Scenario } from 'navigader/types';
+import { filterClause, models, serializers } from 'navigader/util';
 import { fixtures, makePaginationResponse, mockFetch } from '../testing';
-import { applyDataFilters, useCAISORates, useMeterGroup } from './api';
+import {
+  applyDataFilters, applyDynamicRestFilters, useCAISORates, useMeterGroup, useScenarios
+} from './api';
 
 
 describe('API hooks', () => {
+  // Make a fresh store before each test
+  let store: EnhancedStore;
+  beforeEach(() => store = makeStore());
+
   /**
    * Bootstraps the hook test function
    *
@@ -22,8 +30,7 @@ describe('API hooks', () => {
     models?: slices.models.ModelClassExterior[],
     ...args: Parameters<F>
   ): Promise<HookResult<ReturnType<F>>> {
-    // Make the store and add any models to it
-    const store = makeStore();
+    // Add models to the store
     store.dispatch(slices.models.updateModels(models || []));
 
     // Run the hook
@@ -164,6 +171,74 @@ describe('API hooks', () => {
     });
   });
 
+  describe('`applyDynamicRestFilters` helper', () => {
+    it('returns `true` if no filters are provided', () => {
+      expect(applyDataFilters({ data: {} }, {})).toBeTruthy();
+    });
+
+    it('applies `in` filters appropriately', () => {
+      const model = { field: 2 };
+      expect(applyDynamicRestFilters(model, {
+        filter: {
+          field: filterClause.in([1, 2, 3])
+        }
+      })).toBeTruthy();
+
+      expect(applyDynamicRestFilters(model, {
+        filter: {
+          field: filterClause.in([4, 5, 6])
+        }
+      })).toBeFalsy();
+    });
+
+    it('applies `equals` filters appropriately', () => {
+      const model = { field: 2 };
+      expect(applyDynamicRestFilters(model, {
+        filter: {
+          field: filterClause.equals(2)
+        }
+      })).toBeTruthy();
+
+      expect(applyDynamicRestFilters(model, {
+        filter: {
+          field: filterClause.equals(7)
+        }
+      })).toBeFalsy();
+    });
+
+    it('returns `false` if the model is missing the field being filtered on', () => {
+      expect(applyDynamicRestFilters({}, {
+        filter: {
+          badField1: filterClause.in([1, 2, 3])
+        }
+      })).toBeFalsy();
+
+      expect(applyDynamicRestFilters({}, {
+        filter: {
+          badField2: filterClause.equals(4)
+        }
+      })).toBeFalsy();
+    });
+
+    it('applies multiple filters appropriately', () => {
+      const complexModel = {
+        fieldA: 2,
+        fieldB: 'foo',
+        fieldC: {
+          subFieldA: 420
+        }
+      };
+
+      expect(applyDynamicRestFilters(complexModel, {
+        filter: {
+          fieldA: filterClause.equals(2),
+          fieldB: filterClause.in(['foo', 'bar', 'baz']),
+          'fieldC.subFieldA': filterClause.equals(420)
+        }
+      })).toBeTruthy();
+    });
+  });
+
   describe('`useCAISORates` hook', () => {
     function assertCAISORateAPICalled (result: HookResult<CAISORate[] | undefined>) {
       assertAPICalled(
@@ -253,7 +328,7 @@ describe('API hooks', () => {
       ]);
     });
 
-    it('uses the API if there are no rates in the store', async () => {
+    it('uses the API if there are no meter groups in the store', async () => {
       assertMeterGroupAPICalled(await testHook(useMeterGroup, [], testMeterGroup.id));
     });
 
@@ -305,6 +380,54 @@ describe('API hooks', () => {
       // Hook should return the rate
       expect(result.current.loading).toBeFalsy();
       expect(result.current.meterGroup).toMatchObject(testMeterGroup);
+    });
+  });
+
+  describe('`useScenarios` hook', () => {
+    const unfinishedScenario = fixtures.makeRawScenario({
+      expected_der_simulation_count: 5,
+      der_simulation_count: 10
+    });
+
+    function testUseScenarios (
+      initialScenarios: Scenario[],
+      params: Partial<api.GetScenariosQueryParams> = {}
+    ) {
+      return testHook(useScenarios, initialScenarios, { ...params, page: 1, page_size: 10 });
+    }
+
+    beforeEach(() => {
+      mockFetch([
+        ['/cost/scenario/', makePaginationResponse({ scenarios: [unfinishedScenario] })]
+      ]);
+    });
+
+    it('adds retrieved scenarios to the store and to the polling', async () => {
+      expect(store.getState().models.scenarios).toHaveLength(0);
+      const result = await testUseScenarios([]);
+      expect(result.current.scenarios).toHaveLength(1);
+      expect(store.getState().models.scenarios).toHaveLength(1);
+      expect(models.polling['pollingIds'].scenarios.size).toEqual(1)
+    });
+
+    it('does not return stored scenarios that do not match the filters', async () => {
+      const scenarioDifferentMeterId = fixtures.makeScenario({
+        meter_group: undefined,
+        meter_group_id: 'meter_group_1'
+      });
+
+      const scenarioNoMeterGroup = fixtures.makeScenario({
+        meter_group: undefined,
+        meter_group_id: undefined
+      });
+
+      // Hook should return 0 even though there are scenarios in the store, because none match
+      // the provided filters
+      const result = await testUseScenarios(
+        [scenarioDifferentMeterId, scenarioNoMeterGroup],
+        { filter: { 'meter_group.id': filterClause.equals('meter_group_2') }}
+      );
+      expect(result.current.scenarios).toHaveLength(0);
     });
   });
 });

@@ -53,11 +53,11 @@ const ScenarioContext: React.FC<{ scenario: Scenario }> = ({ scenario }) => {
 };
 
 export const ScenarioResultsPage: React.FC = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
 
   const { loading, scenario } = useScenario(id as string, {
     data_types: 'default',
-    include: ['ders', 'meter_groups', 'report', 'report_summary'],
+    include: ['ders', 'meter_group.*', 'report', 'report_summary'],
     period: 60
   });
 

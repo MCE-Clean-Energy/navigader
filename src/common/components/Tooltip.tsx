@@ -42,7 +42,7 @@ const defaultDelay = 1000;
 /** ============================ Components ================================ */
 export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
   ({ children, delay, title, ...rest }, ref) => {
-    if (!title) return children;
+    const classes = useStyles(rest);
 
     // Compute the tooltip's delay
     const enterDelay = React.useMemo(() => {
@@ -53,10 +53,11 @@ export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
       }
     }, [delay]);
 
+    if (!title) return children;
     return (
       <MuiTooltip
         arrow
-        classes={useStyles(rest)}
+        classes={classes}
         enterDelay={enterDelay}
         interactive
         ref={ref}

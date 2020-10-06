@@ -29,7 +29,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
       aria-label="customers table"
       containerClassName={className}
       // Give the simulation an ID that is a combination of the meter ID and the scenario ID
-      data={simulations.map(s => ({ ...s, id: s.ID + s.SingleScenarioStudy }))}
+      data={simulations.map(s => ({ ...s, id: s.ID + s.ScenarioID }))}
       headerActions={
         <FileDownload downloadFn={cb => api.downloadCustomerData(_.map(scenarios, 'id'), cb)} />
       }
@@ -64,7 +64,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
               <Table.Row
                 key={simulation.id}
                 onMouseEnter={
-                  () => updateHover([simulation.SingleScenarioStudy, simulation.ID].join('__'))
+                  () => updateHover([simulation.ScenarioID, simulation.ID].join('__'))
                 }
                 onMouseLeave={() => updateHover()}
               >
@@ -72,7 +72,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                   <Table.Cell>
                     <Tooltip title={getSimulationName(simulation)}>
                       <Avatar
-                        color={colorMap.getColor(simulation.SingleScenarioStudy)}
+                        color={colorMap.getColor(simulation.ScenarioID)}
                         size="small"
                       >
                         &nbsp;
@@ -97,7 +97,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
 
   /** ========================== Helpers =================================== */
   function getSimulationName (simulation: ScenarioReportFields) {
-    const scenarioId = simulation.SingleScenarioStudy;
+    const scenarioId = simulation.ScenarioID;
     return scenarioMap.hasOwnProperty(scenarioId)
       ? scenarioMap[scenarioId][0].name
       : '';

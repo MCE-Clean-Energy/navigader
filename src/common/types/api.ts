@@ -42,13 +42,12 @@ export type FilterEqualClause = {
   value: QueryStringPrimitive;
 };
 
-export type IncludeExcludeFields = string | string[];
-export type DynamicRestParams = Partial<{
-  exclude: IncludeExcludeFields;
-  include: IncludeExcludeFields;
-  filter: {
-    [key: string]: FilterClause;
-  };
+export type IncludeExcludeFields<Field extends string = string> = Field | Field[];
+export type DynamicRestFilters = { [key: string]: FilterClause; };
+export type DynamicRestParams<Field extends string = string> = Partial<{
+  exclude: IncludeExcludeFields<Field>;
+  include: IncludeExcludeFields<Field>;
+  filter: DynamicRestFilters;
 }>;
 
 export type DataType = 'default' | Frame288DataType;

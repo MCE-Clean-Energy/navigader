@@ -1,5 +1,5 @@
 import * as React from 'react';
-import moment from 'moment';
+import { DateTime, Duration } from 'luxon';
 
 import {
   Card, IntervalDataGraph, IntervalDataTuple, ScenariosTable, Typography
@@ -138,24 +138,21 @@ const IntervalChart: React.FC<ScenarioProp> = ({ scenario }) => {
     const monthStart = meterGroupData?.startOfMonth(month);
     if (!monthStart) return;
 
-    const domainEnd = moment(monthStart);
-    switch (timeDomainOption) {
-      case '1d':
-        domainEnd.add(1, 'day');
-        break;
-      case '2d':
-        domainEnd.add(2, 'days');
-        break;
-      case '1w':
-        domainEnd.add(1, 'week');
-        break;
-      case '1m':
-        domainEnd.endOf('month');
-        break;
-    }
+    const duration = (() => {
+      switch (timeDomainOption) {
+        case '1d':
+          return Duration.fromObject({ days: 1 });
+        case '2d':
+          return Duration.fromObject({ days: 2 });
+        case '1w':
+          return Duration.fromObject({ week: 1 });
+        case '1m':
+          return Duration.fromObject({ month: 1 });
+      }
+    })();
 
     // Update the state variable
-    setTimeDomain([monthStart, domainEnd.toDate()]);
+    setTimeDomain([monthStart, DateTime.fromJSDate(monthStart).plus(duration).toJSDate()]);
   }
 };
 

@@ -18,10 +18,6 @@ type ButtonProps = React.HTMLAttributes<HTMLButtonElement> & {
 
 type TextButtonProps = Omit<ButtonProps, 'type'>;
 type FabProps = TextButtonProps & IconProps;
-type Button = React.ComponentType<ButtonProps> & {
-  Fab: React.FC<FabProps>;
-  Text: React.FC<TextButtonProps>;
-};
 
 /** ============================ Components ================================ */
 const Text: React.FC<TextButtonProps> = props => <MuiButton {...props} />;
@@ -34,11 +30,11 @@ const Fab: React.FC<FabProps> = ({ name, ...rest }) => {
   );
 };
 
-export const Button: Button = Object.assign(
+export const Button = Object.assign(
   React.forwardRef<HTMLButtonElement, ButtonProps>(
     ({ icon, ...rest }, ref) => {
       const noChildren = React.Children.count(rest.children) === 0;
-      
+
       // Render an icon-button if there's an icon but no children
       if (icon && noChildren) {
         return (
@@ -47,7 +43,7 @@ export const Button: Button = Object.assign(
           </MuiIconButton>
         );
       }
-      
+
       return (
         <MuiButton
           ref={ref}

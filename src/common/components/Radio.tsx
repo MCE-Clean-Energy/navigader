@@ -16,16 +16,8 @@ type RadioGroupProps = {
   onChange: (value: string, event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-type RadioGroup = React.FC<RadioGroupProps>;
-type RadioExport = React.FC<RadioProps> & {
-  Group: RadioGroup;
-};
-
 /** ============================ Components ================================ */
-export const Radio: RadioExport =
-    props => <FormControlLabel control={<MuiRadio />} {...props} />;
-
-const RadioGroup: RadioGroup = (props) => {
+const RadioGroup: React.FC<RadioGroupProps> = (props) => {
   return <MuiRadioGroup {...props} onChange={handleChange} />;
 
   /** ========================== Callbacks ================================= */
@@ -41,4 +33,7 @@ const RadioGroup: RadioGroup = (props) => {
   }
 };
 
-Radio.Group = RadioGroup;
+const RadioComponent: React.FC<RadioProps> = props =>
+  <FormControlLabel control={<MuiRadio />} {...props} />;
+
+export const Radio = Object.assign(RadioComponent, { Group: RadioGroup });

@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { Interval } from 'luxon';
 
 import {
   BasicIntervalData,
@@ -125,9 +125,10 @@ export class IntervalData implements IntervalDataInterface {
   get period () {
     if (this._period !== undefined) return this._period;
 
-    const time1 = moment(this.data[0].timestamp);
-    const time2 = moment(this.data[1].timestamp);
-    return moment.duration(time2.diff(time1)).asMinutes();
+    return Interval.fromDateTimes(
+      this.data[0].timestamp,
+      this.data[1].timestamp
+    ).length('minutes');
   }
 
   /**
@@ -221,13 +222,15 @@ export class IntervalData implements IntervalDataInterface {
     }
 
     if (start) {
-      const intervalStart = moment(start);
-      filterFns.push(datum => intervalStart.isSameOrBefore(datum.timestamp));
+      // We need a lexically-scoped reference to `start` in order for the narrowed type to persist
+      // within the closure
+      const lexicallyScopedStart = start;
+      filterFns.push(datum => lexicallyScopedStart <= datum.timestamp);
     }
 
     if (end) {
-      const intervalEnd = moment(end);
-      filterFns.push(datum => intervalEnd.isSameOrAfter(datum.timestamp));
+      const lexicallyScopedEnd = end;
+      filterFns.push(datum => lexicallyScopedEnd >= datum.timestamp);
     }
 
     return new IntervalData(
