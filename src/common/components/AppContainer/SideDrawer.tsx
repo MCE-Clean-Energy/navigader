@@ -107,6 +107,7 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ open, closeDrawer }) => 
           <DrawerButton linkTo={routes.dashboard.base}>Dashboard</DrawerButton>
           <DrawerButton linkTo={routes.load.base}>Load</DrawerButton>
           <DrawerButton linkTo={routes.upload}>Upload</DrawerButton>
+          <DrawerButton linkTo={routes.rates.base}>Rate Plans</DrawerButton>
         </Flex.Item>
       </Flex.Container>
     </Drawer>

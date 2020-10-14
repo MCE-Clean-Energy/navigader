@@ -1,5 +1,5 @@
 import {
-  AlertType, DERStrategy, DERConfiguration, Nullable, RawCAISORate, RawGHGRate, RawMeter,
+  AlertType, DERStrategy, DERConfiguration, Nullable, RatePlan, RawCAISORate, RawGHGRate, RawMeter,
   RawMeterGroup, RawScenario
 } from 'navigader/types';
 
@@ -13,6 +13,7 @@ export type ModelsSlice = {
   hasMeterGroups: Nullable<boolean>;
   meterGroups: RawMeterGroup[];
   meters: RawMeter[];
+  ratePlans: RatePlan[];
   scenarios: RawScenario[];
 };
 

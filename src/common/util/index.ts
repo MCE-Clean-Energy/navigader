@@ -1,4 +1,5 @@
 import * as formatters from './formatters';
+import * as hooks from './hooks';
 import * as serializers from './serializers';
 
 
@@ -10,4 +11,4 @@ export * from './omitFalsey';
 export * from './printWarning';
 export * from './randomString';
 export * from './support';
-export { formatters, serializers };
+export { formatters, hooks, serializers };

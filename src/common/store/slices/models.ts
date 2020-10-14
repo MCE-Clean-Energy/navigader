@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import {
-  DERConfiguration, CAISORate, GHGRate, Meter, MeterGroup, RawCAISORate, RawGHGRate, RawMeter,
-  RawMeterGroup, RawScenario, Scenario, DERStrategy
+  CAISORate, DERConfiguration, DERStrategy, GHGRate, Meter, MeterGroup, RatePlan, RawCAISORate,
+  RawGHGRate, RawMeter, RawMeterGroup, RawScenario, Scenario
 } from 'navigader/types';
 import { serializers } from 'navigader/util';
 import _ from 'navigader/util/lodash';
@@ -17,6 +17,7 @@ type ModelClassInterior =
   | RawCAISORate
   | DERConfiguration
   | DERStrategy
+  | RatePlan
   | RawGHGRate
   | RawMeter
   | RawMeterGroup
@@ -29,6 +30,7 @@ export type ModelClassExterior =
   | GHGRate
   | Meter
   | MeterGroup
+  | RatePlan
   | Scenario;
 
 /** ============================ Actions =================================== */
@@ -49,6 +51,7 @@ const initialState: ModelsSlice = {
   hasMeterGroups: null,
   meterGroups: [],
   meters: [],
+  ratePlans: [],
   scenarios: []
 };
 
@@ -99,6 +102,7 @@ export const selectGHGRates = (state: RootState) => state.models.ghgRates.map(se
 export const selectMeterGroups = (state: RootState) => state.models.meterGroups.map(serializers.parseMeterGroup);
 export const selectMeters = (state: RootState) => state.models.meters.map(serializers.parseMeter);
 export const selectHasMeterGroups = (state: RootState) => state.models.hasMeterGroups;
+export const selectRatePlans = (state: RootState) => state.models.ratePlans;
 export const selectScenarios = (state: RootState) =>
   state.models.scenarios.map(
     scenario => serializers.parseScenario(scenario, state.models.meterGroups)
@@ -153,6 +157,8 @@ function getSliceForModel (
       return state.scenarios;
     case 'GHGRate':
       return state.ghgRates;
+    case 'RatePlan':
+      return state.ratePlans;
   }
 }
 
@@ -167,6 +173,7 @@ function prepareModel (model: ModelClassExterior): ModelClassInterior {
     // case 'EVSEStrategy':
     case 'BatteryStrategy':
     case 'BatteryConfiguration':
+    case 'RatePlan':
     case 'SolarPVConfiguration':
     case 'SolarPVStrategy':
       return model;
