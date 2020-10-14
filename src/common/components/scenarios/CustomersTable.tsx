@@ -9,6 +9,7 @@ import { Avatar } from '../Avatar';
 import { FileDownload } from '../FileDownload';
 import { PrefetchedTable, Table } from '../Table';
 import { Tooltip } from '../Tooltip';
+import { ImpactColumnHeader } from './ImpactColumnHeader';
 
 
 /** ============================ Types ===================================== */
@@ -48,15 +49,80 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
               {colorMap && <Table.Cell />}
               <Table.Cell sortBy="SA_ID">SA ID</Table.Cell>
               <Table.Cell>Rate Plan</Table.Cell>
-              <Table.Cell align="right" sortBy="UsageDelta" sortDir="desc">Usage Impact (kWh)</Table.Cell>
-              <Table.Cell align="right" sortBy="CleanNetShort2022Delta">
-                <Tooltip title="Calculated using CNS 2022 tables">
-                  <div>GHG Impact (tCO<sub>2</sub>)</div>
-                </Tooltip>
-              </Table.Cell>
-              <Table.Cell align="right" sortBy="BillRevenueDelta">Revenue Impact ($)</Table.Cell>
-              <Table.Cell align="right" sortBy="PRC_LMPDelta">Procurement Cost ($)</Table.Cell>
-              <Table.Cell align="right" sortBy="RADelta">RA Impact (kW)</Table.Cell>
+              <ImpactColumnHeader
+                column="Usage Impact"
+                info={{
+                  measuresImpact: 'in customer electricity usage',
+                  negativeMeans: 'electricity consumption from the grid has gone down',
+                  positiveMeans: 'electricity consumption from the grid has gone up'
+                }}
+                sortBy="UsageDelta"
+                sortDir="desc"
+                units="kWh"
+              />
+              <ImpactColumnHeader
+                column="GHG Impact"
+                info={{
+                  measuresImpact: 'in GHG emissions, calculated using CNS 2022 tables',
+                  negativeMeans: 'GHG emissions have gone down',
+                  positiveMeans: 'GHG emissions have gone up'
+                }}
+                sortBy="CleanNetShort2022Delta"
+                units={<>tCO<sub>2</sub></>}
+              />
+              <ImpactColumnHeader
+                column="RA Impact"
+                info={{
+                  measuresImpact: 'to resource adequacy requirements',
+                  negativeMeans: 'resource adequacy requirements have gone down',
+                  positiveMeans: 'resource adequacy requirements have gone up'
+                }}
+                sortBy="RADelta"
+                units="kW"
+              />
+              <ImpactColumnHeader
+                column="Procurement Cost"
+                info={{
+                  measuresImpact: 'to expenses incurred procuring electricity',
+                  negativeMeans: 'CCA procurement expenses have gone down',
+                  positiveMeans: 'CCA procurement expenses have gone up'
+                }}
+                sortBy="PRC_LMPDelta"
+                units="$"
+              />
+              <ImpactColumnHeader
+                column="Revenue Impact"
+                info={{
+                  measuresImpact: 'to CCA\'s electricity sales',
+                  negativeMeans: 'revenues from electricity sales have gone down',
+                  positiveMeans: 'revenues from electricity sales have gone up'
+                }}
+                sortBy="BillRevenueDelta"
+                units="$"
+              />
+              <ImpactColumnHeader
+                column="Expenses Impact"
+                info={{
+                  measuresImpact:
+                    'to overall expenses. Calculated as procurement expenses plus $6/kW for RA ' +
+                    'impacts',
+                  negativeMeans: 'overall expenses have gone down',
+                  positiveMeans: 'overall expenses have gone up'
+                }}
+                sortBy="ExpenseDelta"
+                units="$"
+              />
+              <ImpactColumnHeader
+                column="Profits Impact"
+                info={{
+                  measuresImpact:
+                    'to overall profits. Calculated as revenues minus expenses',
+                  negativeMeans: 'overall profits have gone down',
+                  positiveMeans: 'overall profits have gone up'
+                }}
+                sortBy="ProfitDelta"
+                units="$"
+              />
             </Table.Row>
           </Table.Head>
           <Table.Body>
@@ -82,11 +148,13 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                 }
                 <Table.Cell>{simulation.SA_ID}</Table.Cell>
                 <Table.Cell>{simulation.MeterRatePlan}</Table.Cell>
-                <Table.Cell align="right">{formatters.commas(formatters.maxDecimals(simulation.UsageDelta, 2))}</Table.Cell>
-                <Table.Cell align="right">{formatters.commas(formatters.maxDecimals(simulation.CleanNetShort2022Delta, 2))}</Table.Cell>
-                <Table.Cell align="right">{formatters.dollars(simulation.BillRevenueDelta)}</Table.Cell>
-                <Table.Cell align="right">{formatters.dollars(simulation.PRC_LMPDelta)}</Table.Cell>
-                <Table.Cell align="right">{formatters.commas(formatters.maxDecimals(simulation.RADelta, 2))}</Table.Cell>
+                <Table.Cell align="right">{formatters.commas(formatters.maxDecimals(simulation.UsageDelta, 2)) ?? '-'}</Table.Cell>
+                <Table.Cell align="right">{formatters.commas(formatters.maxDecimals(simulation.CleanNetShort2022Delta, 2)) ?? '-'}</Table.Cell>
+                <Table.Cell align="right">{formatters.commas(formatters.maxDecimals(simulation.RADelta, 2)) ?? '-'}</Table.Cell>
+                <Table.Cell align="right">{formatters.dollars(simulation.PRC_LMPDelta) ?? '-'}</Table.Cell>
+                <Table.Cell align="right">{formatters.dollars(simulation.BillRevenueDelta) ?? '-'}</Table.Cell>
+                <Table.Cell align="right">{formatters.dollars(simulation.ExpenseDelta) ?? '-'}</Table.Cell>
+                <Table.Cell align="right">{formatters.dollars(simulation.ProfitDelta) ?? '-'}</Table.Cell>
               </Table.Row>
             )}
           </Table.Body>

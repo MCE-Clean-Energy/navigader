@@ -30,7 +30,8 @@ const TitleText: React.FC = props => <Typography {...props} emphasis="bold" vari
 export const ScenarioComparisonChartTitle: React.FC<ChartTitleProps> = (props) => {
   const { aggregated, averaged, axes, updateAxes } = props;
   const classes = useStyles();
-  const axisOptions: ScenarioImpactColumn[] = ['Usage', 'GHG', 'Revenue', 'Procurement', 'RA'];
+  const axisOptions: ScenarioImpactColumn[]
+    = ['Usage', 'GHG', 'Procurement', 'RA', 'Revenue', 'Expense', 'Profit'];
 
   const AxisSelect: React.FC<{ index: 0 | 1 }> = ({ index }) =>
     <Select
@@ -70,9 +71,13 @@ export function getAxisLabel (axis: ScenarioImpactColumn) {
       return 'Procurement Impacts ($/year)';
     case 'RA':
       return 'RA Impacts ($/year)';
-    case 'Revenue':
-      return 'Revenue Impacts ($/year)';
     case 'Usage':
       return 'Usage Impacts (kW/year)';
+    case 'Revenue':
+      return 'Revenue Impacts ($/year)';
+    case 'Expense':
+      return 'Expense Impacts ($/year)';
+    case 'Profit':
+      return 'Profit Impacts ($/year)';
   }
 }

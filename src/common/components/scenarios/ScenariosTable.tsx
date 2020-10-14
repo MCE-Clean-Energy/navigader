@@ -4,20 +4,21 @@ import { useDispatch } from 'react-redux';
 import * as api from 'navigader/api';
 import * as routes from 'navigader/routes';
 import { slices } from 'navigader/store';
-import { ColorMap, makeStylesHook } from 'navigader/styles';
+import { ColorMap } from 'navigader/styles';
 import { Scenario, ScenarioReportSummary } from 'navigader/types';
 import { formatters, models, omitFalsey, printWarning } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 import { Avatar } from '../Avatar';
 import { DERIcon } from '../ders';
 import * as Flex from '../Flex';
-import { Icon, InfoIcon } from '../Icon';
+import { Icon } from '../Icon';
 import { Link } from '../Link';
 import { Progress } from '../Progress';
 import { Switch } from '../Switch';
 import { PaginationState, PrefetchedTable, Table } from '../Table';
 import { Tooltip } from '../Tooltip';
 import { Typography } from '../Typography';
+import { ImpactColumnHeader } from './ImpactColumnHeader';
 
 
 /** ============================ Types ===================================== */
@@ -36,24 +37,6 @@ type ScenariosTableProps = {
 type ScenarioStatusProps = {
   datum: Scenario;
 };
-
-type ImpactColumnHeaderProps = {
-  averaged: boolean;
-  column: string;
-  info: {
-    measuresImpact: string;
-    negativeMeans: string;
-    positiveMeans: string;
-  };
-  units: React.ReactNode;
-};
-
-/** ============================ Styles ==================================== */
-const useImpactColumnHeaderStyles = makeStylesHook(() => ({
-  header: {
-    whiteSpace: 'nowrap'
-  }
-}), 'ImpactColumnHeader');
 
 /** ============================ Components ================================ */
 const ScenarioStatus: React.FC<ScenarioStatusProps> = ({ datum: scenario }) => {
@@ -87,24 +70,7 @@ const ScenarioStatus: React.FC<ScenarioStatusProps> = ({ datum: scenario }) => {
   );
 };
 
-const ImpactColumnHeader: React.FC<ImpactColumnHeaderProps> = ({ averaged, column, info, units }) => {
-  const classes = useImpactColumnHeaderStyles();
-  const infoString = omitFalsey([
-    `Measures net impact ${info.measuresImpact}`,
-    `A negative value indicates ${info.negativeMeans}`,
-    `A positive value indicates ${info.positiveMeans}.`
-  ]).join('. ');
 
-  return (
-    <>
-      <Flex.Container alignItems="center" wrap={false}>
-        <div className={classes.header}>{column}</div>
-        <InfoIcon text={infoString} />
-      </Flex.Container>
-      <Typography variant="body2" color="textSecondary">({units}/year{averaged && '/SAID'})</Typography>
-    </>
-  );
-};
 
 export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
   const {
@@ -199,93 +165,79 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
               <Table.Cell>Customer Segment</Table.Cell>
               <Table.Cell>DER</Table.Cell>
               <Table.Cell>Program Strategy</Table.Cell>
-              <Table.Cell align="right">
-                <ImpactColumnHeader
-                  averaged={innerAveraged}
-                  column="Usage Impact"
-                  info={{
-                    measuresImpact: 'in customer electricity usage',
-                    negativeMeans: 'electricity consumption from the grid has gone down',
-                    positiveMeans: 'electricity consumption from the grid has gone up'
-                  }}
-                  units="kWh"
-                />
-              </Table.Cell>
-              <Table.Cell align="right">
-                <ImpactColumnHeader
-                  averaged={innerAveraged}
-                  column="GHG Impact"
-                  info={{
-                    measuresImpact: 'in GHG emissions, calculated using CNS 2022 tables',
-                    negativeMeans: 'GHG emissions have gone down',
-                    positiveMeans: 'GHG emissions have gone up'
-                  }}
-                  units={<>tCO<sub>2</sub></>}
-                />
-              </Table.Cell>
-              <Table.Cell align="right">
-                <ImpactColumnHeader
-                  averaged={innerAveraged}
-                  column="RA Impact"
-                  info={{
-                    measuresImpact: 'to resource adequacy requirements',
-                    negativeMeans: 'resource adequacy requirements have gone down',
-                    positiveMeans: 'resource adequacy requirements have gone up'
-                  }}
-                  units="kW"
-                />
-              </Table.Cell>
-              <Table.Cell align="right">
-                <ImpactColumnHeader
-                  averaged={innerAveraged}
-                  column="Procurement Cost"
-                  info={{
-                    measuresImpact: 'to expenses incurred procuring electricity',
-                    negativeMeans: 'CCA procurement expenses have gone down',
-                    positiveMeans: 'CCA procurement expenses have gone up'
-                  }}
-                  units="$"
-                />
-              </Table.Cell>
-              <Table.Cell align="right">
-                <ImpactColumnHeader
-                  averaged={innerAveraged}
-                  column="Revenue Impact"
-                  info={{
-                    measuresImpact: 'to CCA\'s electricity sales',
-                    negativeMeans: 'revenues from electricity sales have gone down',
-                    positiveMeans: 'revenues from electricity sales have gone up'
-                  }}
-                  units="$"
-                />
-              </Table.Cell>
-              <Table.Cell align="right">
-                <ImpactColumnHeader
-                  averaged={innerAveraged}
-                  column="Expenses Impact"
-                  info={{
-                    measuresImpact:
-                      'to overall expenses. Calculated as procurement expenses plus $6/kW for RA ' +
-                      'impacts',
-                    negativeMeans: 'overall expenses have gone down',
-                    positiveMeans: 'overall expenses have gone up'
-                  }}
-                  units="$"
-                />
-              </Table.Cell>
-              <Table.Cell align="right">
-                <ImpactColumnHeader
-                  averaged={innerAveraged}
-                  column="Profits Impact"
-                  info={{
-                    measuresImpact:
-                      'to overall profits. Calculated as revenues minus expenses',
-                    negativeMeans: 'overall profits have gone down',
-                    positiveMeans: 'overall profits have gone up'
-                  }}
-                  units="$"
-                />
-              </Table.Cell>
+              <ImpactColumnHeader
+                averaged={innerAveraged}
+                column="Usage Impact"
+                info={{
+                  measuresImpact: 'in customer electricity usage',
+                  negativeMeans: 'electricity consumption from the grid has gone down',
+                  positiveMeans: 'electricity consumption from the grid has gone up'
+                }}
+                units="kWh"
+              />
+              <ImpactColumnHeader
+                averaged={innerAveraged}
+                column="GHG Impact"
+                info={{
+                  measuresImpact: 'in GHG emissions, calculated using CNS 2022 tables',
+                  negativeMeans: 'GHG emissions have gone down',
+                  positiveMeans: 'GHG emissions have gone up'
+                }}
+                units={<>tCO<sub>2</sub></>}
+              />
+              <ImpactColumnHeader
+                averaged={innerAveraged}
+                column="RA Impact"
+                info={{
+                  measuresImpact: 'to resource adequacy requirements',
+                  negativeMeans: 'resource adequacy requirements have gone down',
+                  positiveMeans: 'resource adequacy requirements have gone up'
+                }}
+                units="kW"
+              />
+              <ImpactColumnHeader
+                averaged={innerAveraged}
+                column="Procurement Cost"
+                info={{
+                  measuresImpact: 'to expenses incurred procuring electricity',
+                  negativeMeans: 'CCA procurement expenses have gone down',
+                  positiveMeans: 'CCA procurement expenses have gone up'
+                }}
+                units="$"
+              />
+              <ImpactColumnHeader
+                averaged={innerAveraged}
+                column="Revenue Impact"
+                info={{
+                  measuresImpact: 'to CCA\'s electricity sales',
+                  negativeMeans: 'revenues from electricity sales have gone down',
+                  positiveMeans: 'revenues from electricity sales have gone up'
+                }}
+                units="$"
+              />
+              <ImpactColumnHeader
+                averaged={innerAveraged}
+                column="Expenses Impact"
+                info={{
+                  measuresImpact:
+                    'to overall expenses. Calculated as procurement expenses plus $6/kW for RA ' +
+                    'impacts',
+                  negativeMeans: 'overall expenses have gone down',
+                  positiveMeans: 'overall expenses have gone up'
+                }}
+                units="$"
+              />
+              <ImpactColumnHeader
+                averaged={innerAveraged}
+                column="Profits Impact"
+                info={{
+                  measuresImpact:
+                    'to overall profits. Calculated as revenues minus expenses',
+                  negativeMeans: 'overall profits have gone down',
+                  positiveMeans: 'overall profits have gone up'
+                }}
+                units="$"
+              />
               {actionsMenu && <Table.Cell>Menu</Table.Cell>}
             </Table.Row>
           </Table.Head>

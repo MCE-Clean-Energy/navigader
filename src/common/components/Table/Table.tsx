@@ -45,7 +45,7 @@ export type TableProps<T extends ObjectWithId> = {
   title?: string;
 };
 
-type TableCellProps = {
+export type TableCellProps = {
   align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
   className?: string;
   colSpan?: number;

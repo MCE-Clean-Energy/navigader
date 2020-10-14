@@ -6,7 +6,15 @@ import { MeterGroup } from './meter';
 
 
 /** ============================ Scenarios ================================= */
-export type ScenarioImpactColumn = 'Usage' | 'GHG' | 'Revenue' | 'Procurement' | 'RA';
+export type ScenarioImpactColumn =
+  | 'Usage'
+  | 'GHG'
+  | 'Procurement'
+  | 'RA'
+  | 'Revenue'
+  | 'Expense'
+  | 'Profit';
+
 type DERInfo = {
   der_configuration: DERConfiguration;
   der_strategy: DERStrategy;
