@@ -49,17 +49,17 @@ export const RateBucketView: React.FC<RateBucketViewProps> = (props) => {
           {component.max ? (
             <Flex.Item grow>Max: {component.max}</Flex.Item>
           ) : (
-            ""
+            "-"
           )}
           {component.adj ? (
             <Flex.Item grow>Adj: {component.adj}</Flex.Item>
           ) : (
-            ""
+            "-"
           )}
           {component.sell ? (
             <Flex.Item grow>Sell: {component.sell}</Flex.Item>
           ) : (
-            ""
+            "-"
           )}
         </Flex.Container>
       ))}
@@ -78,7 +78,6 @@ export const RateCollectionView: React.FC<RateCollectionViewsProps> = ({
       {rateCollection ? (
         <PrefetchedTable data={[]} hover={false} size="small">
           {() => (
-            <>
               <Table.Body>
                 <Table.Row>
                   <Table.Cell>Rate Name</Table.Cell>
@@ -136,7 +135,7 @@ export const RateCollectionView: React.FC<RateCollectionViewsProps> = ({
                     </Table.Cell>
                   </Table.Row>
                 ) : (
-                  ""
+                  <></>
                 )}
                 {rateCollection.rate_data.demandRateStrux ? (
                   <Table.Row>
@@ -166,10 +165,9 @@ export const RateCollectionView: React.FC<RateCollectionViewsProps> = ({
                     </Table.Cell>
                   </Table.Row>
                 ) : (
-                  ""
+                  <></>
                 )}
               </Table.Body>
-            </>
           )}
         </PrefetchedTable>
       ) : (
