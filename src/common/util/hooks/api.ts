@@ -5,15 +5,45 @@ import * as api from 'navigader/api';
 import { slices } from 'navigader/store';
 import {
   CAISORate, DataObject, DataTypeParams, DynamicRestParams, GHGRate, Maybe, MeterGroup,
-  PaginationSet, Scenario
+  PaginationSet, Scenario, RatePlan
 } from 'navigader/types';
-import { makeCancelableAsync, models, omitFalsey } from 'navigader/util';
-import _ from 'navigader/util/lodash';
+import { models } from '../data';
+import _ from '../lodash';
+import { makeCancelableAsync } from '../makeCancelableAsync';
+import { omitFalsey } from '../omitFalsey';
 
 
 /** ============================ Types ===================================== */
 type DataTypeFilters = Pick<DataTypeParams, 'data_types' | 'period'>;
 type CAISORateFilters = DataTypeFilters & { year?: number; };
+
+/** ============================ GHG Rates ================================= */
+/**
+ * Loads the rate plans. Once loaded they will be added to the store
+ */
+export function useRatePlans (params?: api.GetRatePlansQueryOptions) {
+  const dispatch = useDispatch();
+  const storedRatePlans = useSelector(slices.models.selectRatePlans);
+  const [ratePlans, setRatePlans] = React.useState(storedRatePlans);
+
+  useAsync(
+    () => api.getRatePlans(params),
+    handleRatePlansResponse,
+    []
+  );
+
+  return ratePlans;
+
+  /**
+   * Handles the API response. The models will be added to the store.
+   *
+   * @param {PaginationSet<RatePlan>} data: the API response
+   */
+  function handleRatePlansResponse ({ data }: PaginationSet<RatePlan>) {
+    dispatch(slices.models.updateModels(data));
+    setRatePlans(data);
+  }
+}
 
 /** ============================ GHG Rates ================================= */
 /**

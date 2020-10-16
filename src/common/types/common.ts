@@ -57,3 +57,12 @@ export type KeysMatching<T, V> = {
   [K in keyof T]-?: T[K] extends V ? K : never
 }[keyof T];
 
+// All US states and territories plus DC and military mail. Taken from the `localflavor` Python
+// package.
+export type StateChoice =
+  | 'AL' | 'AK' | 'AS' | 'AZ' | 'AR' | 'AA' | 'AE' | 'AP' | 'CA' | 'CO'
+  | 'CT' | 'DE' | 'DC' | 'FL' | 'GA' | 'GU' | 'HI' | 'ID' | 'IL' | 'IN'
+  | 'IA' | 'KS' | 'KY' | 'LA' | 'ME' | 'MD' | 'MA' | 'MI' | 'MN' | 'MS'
+  | 'MO' | 'MT' | 'NE' | 'NV' | 'NH' | 'NJ' | 'NM' | 'NY' | 'NC' | 'ND'
+  | 'MP' | 'OH' | 'OK' | 'OR' | 'PA' | 'PR' | 'RI' | 'SC' | 'SD' | 'TN'
+  | 'TX' | 'UT' | 'VT' | 'VI' | 'VA' | 'WA' | 'WV' | 'WI' | 'WY';

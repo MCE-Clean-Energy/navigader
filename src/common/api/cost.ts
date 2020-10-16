@@ -1,8 +1,9 @@
 import {
   RawCAISORate, DataTypeParams, DynamicRestParams, PaginationQueryParams, RawGHGRate,
-  RawPaginationSet, RawScenario, Scenario, RawMeterGroup
+  RawPaginationSet, RawScenario, Scenario, RawMeterGroup, RateCollection, RatePlan, PaginationSet
 } from 'navigader/types';
-import { appendQueryString, serializers } from 'navigader/util';
+import { appendQueryString, omitFalsey, serializers } from 'navigader/util';
+import _ from 'navigader/util/lodash';
 import {
   appendId, beoRoute, deleteRequest, downloadFile, getRequest, parsePaginationSet, patchRequest,
   postRequest, ProgressCallback
@@ -43,6 +44,16 @@ type GetScenariosResponse = { meter_groups?: RawMeterGroup[]; scenarios: RawScen
 type GetScenarioResponse = { meter_groups?: RawMeterGroup[]; scenario: RawScenario };
 type GetGHGRatesResponse = { ghg_rates: RawGHGRate[] };
 type GetCAISORatesResponse = { caiso_rates: RawCAISORate[] };
+
+type RatePlanIncludeFields = 'rate_collections.*';
+export type GetRatePlansQueryOptions =
+  & DynamicRestParams<RatePlanIncludeFields>
+  & PaginationQueryParams;
+
+type GetRatePlansResponse = {
+  rate_collections?: RateCollection[];
+  rate_plans: Array<Omit<RatePlan, 'rate_collections'> & { rate_collections?: number[] }>;
+};
 
 /** ============================ Scenarios =============================== */
 export async function postStudy (
@@ -149,11 +160,32 @@ export async function getCAISORates (options?: GetCAISORatesQueryOptions) {
   return parsePaginationSet(response, ({ caiso_rates }) => caiso_rates.map(serializers.parseCAISORate));
 }
 
+/** ============================ Rate plans ================================ */
+export async function getRatePlans (params?: GetRatePlansQueryOptions): Promise<PaginationSet<RatePlan>> {
+  const response: RawPaginationSet<GetRatePlansResponse>
+    = await getRequest(routes.rate_plans, params).then(res => res.json());
+
+  // Parse the rate plan results into full-fledged `NavigaderObjects`, nesting the rate collections
+  // under the plan
+  return parsePaginationSet(response, ({rate_collections, rate_plans }) =>
+    rate_plans.map(plan => ({
+      ...plan,
+      rate_collections: omitFalsey((plan.rate_collections || []).map(
+        collectionId => _.find(rate_collections, { id: collectionId })
+      )),
+
+      // This field is included in the `RatePlan` type but not provided by the backend
+      object_type: 'RatePlan'
+    }))
+  );
+}
+
 /** ============================ Helpers =================================== */
 const baseRoute = (rest: string) => beoRoute.v1(`cost/${rest}`);
 const routes = {
   caiso_rate: baseRoute('caiso_rate/'),
   ghg_rate: baseRoute('ghg_rate/'),
+  rate_plans: baseRoute('rate_plan/'),
   scenarios: Object.assign(
     appendId(baseRoute('scenario')), {
       download: baseRoute('scenario/download/')
