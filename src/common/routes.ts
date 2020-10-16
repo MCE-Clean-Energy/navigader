@@ -37,7 +37,7 @@ export const upload = '/upload';
 export const rates = {
   base: '/rates',
   ratePlan: (id: string) => `/rates/${id}`
-}
+};
 
 export const registration = {
   signup: '/registration/signup',

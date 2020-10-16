@@ -1,31 +1,16 @@
 import * as React from "react";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 
 import * as api from "navigader/api";
-import { Grid, PageHeader, List, Menu } from "navigader/components";
+import { Grid, List, Menu, PageHeader, PaginationState, Table } from "navigader/components";
 import * as routes from "navigader/routes";
-import { makeStylesHook } from "navigader/styles";
-import { formatters } from "navigader/util";
-import { Table, PaginationState } from "navigader/components";
-import { useDispatch } from "react-redux";
 import { slices } from "navigader/store";
+import { formatters } from "navigader/util";
 
-/** ============================ Types ===================================== */
-type RatePlanListProps = {};
-
-/** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(
-  () => ({
-    tableContainer: {
-      maxHeight: 500,
-    },
-  }),
-  "RatePlanTable"
-);
 
 /** ============================ Components ================================ */
-export const RatePlanList: React.FC<RatePlanListProps> = () => {
-  const classes = useStyles();
+export const RatePlanList: React.FC = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -56,7 +41,6 @@ export const RatePlanList: React.FC<RatePlanListProps> = () => {
             aria-label="meter table"
             dataFn={getRatePlans}
             dataSelector={slices.models.selectRatePlans}
-            containerClassName={classes.tableContainer}
             raised
             stickyHeader
           >
@@ -70,7 +54,7 @@ export const RatePlanList: React.FC<RatePlanListProps> = () => {
                   </Table.Row>
                 </Table.Head>
                 <Table.Body>
-                  {ratePlans.map((ratePlan) => (
+                  {ratePlans.map(ratePlan =>
                     <Table.Row key={ratePlan.id}>
                       <Table.Cell>{ratePlan.name}</Table.Cell>
                       <Table.Cell>
@@ -101,7 +85,7 @@ export const RatePlanList: React.FC<RatePlanListProps> = () => {
                         </Menu>
                       </Table.Cell>
                     </Table.Row>
-                  ))}
+                  )}
                 </Table.Body>
               </>
             )}
@@ -110,6 +94,4 @@ export const RatePlanList: React.FC<RatePlanListProps> = () => {
       </Grid>
     </>
   );
-
-  /** ========================== Callbacks ================================= */
 };

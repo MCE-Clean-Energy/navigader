@@ -70,7 +70,7 @@ export type RateCollection = {
   rate_data: RateData;
 };
 
-export type RatePlan = DeferrableFields<{
+export interface RatePlan extends DeferrableFields<{
   demand_max: Nullable<number>;
   demand_min: Nullable<number>;
   description: Nullable<string>;
@@ -82,7 +82,7 @@ export type RatePlan = DeferrableFields<{
   sector: string;
   rate_collections: RateCollection[];
   start_date: string;
-}>;
+}> {};
 
 /** ============================ GHG Rates ================================ */
 export type RawGHGRate = {

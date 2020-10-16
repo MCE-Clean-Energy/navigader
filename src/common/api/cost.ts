@@ -52,7 +52,7 @@ export type GetRatePlansQueryOptions =
 
 type GetRatePlansResponse = {
   rate_collections?: RateCollection[];
-  rate_plans: Array<Omit<RatePlan, 'rate_collections'> & { rate_collections?: number[]} >;
+  rate_plans: Array<Omit<RatePlan, 'rate_collections'> & { rate_collections?: number[] }>;
 };
 
 /** ============================ Scenarios =============================== */
@@ -185,7 +185,6 @@ const baseRoute = (rest: string) => beoRoute.v1(`cost/${rest}`);
 const routes = {
   caiso_rate: baseRoute('caiso_rate/'),
   ghg_rate: baseRoute('ghg_rate/'),
-  postStudy: baseRoute('multiple_scenario_study/'),
   rate_plans: baseRoute('rate_plan/'),
   scenarios: Object.assign(
     appendId(baseRoute('scenario')), {

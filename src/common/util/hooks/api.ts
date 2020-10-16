@@ -24,9 +24,7 @@ type CAISORateFilters = DataTypeFilters & { year?: number; };
 export function useRatePlans (params?: api.GetRatePlansQueryOptions) {
   const dispatch = useDispatch();
   const storedRatePlans = useSelector(slices.models.selectRatePlans);
-  const [ratePlans, setRatePlans] = React.useState(
-    storedRatePlans.length ? storedRatePlans : undefined
-  );
+  const [ratePlans, setRatePlans] = React.useState(storedRatePlans);
 
   useAsync(
     () => api.getRatePlans(params),

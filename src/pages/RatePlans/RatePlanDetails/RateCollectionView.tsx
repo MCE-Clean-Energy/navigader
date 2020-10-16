@@ -3,6 +3,7 @@ import {
   Card,
   Icon,
   Fade,
+  Link,
   Progress,
   Table,
   PrefetchedTable,
@@ -12,11 +13,7 @@ import {
   Flex,
 } from "navigader/components";
 import { formatters } from "navigader/util";
-import {
-  RateCollection,
-  RateBucket,
-  RateComponent,
-} from "navigader/types/cost";
+import { RateCollection, RateBucket, } from "navigader/types/cost";
 
 /** ============================ Types ===================================== */
 type RateCollectionViewsProps = {
@@ -27,15 +24,13 @@ type RateBucketViewProps = {
   bucket: RateBucket;
   demand: boolean;
   idx: number;
-} & Partial<{
-  unit: string;
-}>;
+  unit?: string;
+};
 
 /** ============================ Components ================================ */
-
 export const RateBucketView: React.FC<RateBucketViewProps> = (props) => {
   const { bucket, demand, unit, idx } = props;
-  const components: RateComponent[] | undefined = demand
+  const components = demand
     ? bucket.demandRateTiers
     : bucket.energyRateTiers;
 
@@ -46,21 +41,9 @@ export const RateBucketView: React.FC<RateBucketViewProps> = (props) => {
           <Flex.Item grow>
             ${component.rate} / {component.unit || unit}
           </Flex.Item>
-          {component.max ? (
-            <Flex.Item grow>Max: {component.max}</Flex.Item>
-          ) : (
-            "-"
-          )}
-          {component.adj ? (
-            <Flex.Item grow>Adj: {component.adj}</Flex.Item>
-          ) : (
-            "-"
-          )}
-          {component.sell ? (
-            <Flex.Item grow>Sell: {component.sell}</Flex.Item>
-          ) : (
-            "-"
-          )}
+          {typeof component.max !== 'undefined' && <Flex.Item grow>Max: {component.max}</Flex.Item>}
+          {typeof component.adj !== 'undefined' && <Flex.Item grow>Adj: {component.adj}</Flex.Item>}
+          {typeof component.sell !== 'undefined' && <Flex.Item grow>Sell: {component.sell}</Flex.Item>}
         </Flex.Container>
       ))}
     </>
@@ -90,25 +73,23 @@ export const RateCollectionView: React.FC<RateCollectionViewsProps> = ({
                 <Table.Row>
                   <Table.Cell>Approved</Table.Cell>
                   <Table.Cell>
-                    {rateCollection.rate_data.approved ? (
-                      <Icon name={"checkMark"} />
-                    ) : (
-                      ""
-                    )}
+                    {
+                      rateCollection.rate_data.approved
+                        ? <Icon name={"checkMark"} />
+                        : null
+                    }
                   </Table.Cell>
                 </Table.Row>
                 <Table.Row>
                   <Table.Cell>Source Reference</Table.Cell>
                   <Table.Cell>
-                    <a href={rateCollection.utility_url}>
-                      {formatters.truncateAtLength(
-                        rateCollection.utility_url,
-                        50
-                      )}
-                    </a>
+                    <Link.NewTab to={rateCollection.utility_url} useAnchor>
+                      {formatters.truncateAtLength(rateCollection.utility_url, 50)}
+                    </Link.NewTab>
                   </Table.Cell>
                 </Table.Row>
-                {rateCollection.rate_data.energyRateStrux ? (
+
+                {rateCollection.rate_data.energyRateStrux && (
                   <Table.Row>
                     <Table.Cell>Energy Rate Structure</Table.Cell>
                     <Table.Cell>
@@ -116,10 +97,11 @@ export const RateCollectionView: React.FC<RateCollectionViewsProps> = ({
                         (bucket, idx, arr) => (
                           <Grid key={idx}>
                             <Grid.Item span={5}>
-                              {rateCollection.rate_data.energyKeyVals
-                                ? rateCollection.rate_data.energyKeyVals[idx]
-                                    .key
-                                : ""}
+                              {
+                                rateCollection.rate_data.energyKeyVals
+                                  ? rateCollection.rate_data.energyKeyVals[idx].key
+                                  : null
+                              }
                             </Grid.Item>
                             <Grid.Item span={7}>
                               <RateBucketView
@@ -134,10 +116,9 @@ export const RateCollectionView: React.FC<RateCollectionViewsProps> = ({
                       )}
                     </Table.Cell>
                   </Table.Row>
-                ) : (
-                  <></>
                 )}
-                {rateCollection.rate_data.demandRateStrux ? (
+
+                {rateCollection.rate_data.demandRateStrux && (
                   <Table.Row>
                     <Table.Cell>Demand Rate Structure</Table.Cell>
                     <Table.Cell>
@@ -145,10 +126,11 @@ export const RateCollectionView: React.FC<RateCollectionViewsProps> = ({
                         (bucket, idx, arr) => (
                           <Grid key={idx}>
                             <Grid.Item span={5}>
-                              {rateCollection.rate_data.energyKeyVals
-                                ? rateCollection.rate_data.energyKeyVals[idx]
-                                    .key
-                                : ""}
+                              {
+                                rateCollection.rate_data.energyKeyVals
+                                  ? rateCollection.rate_data.energyKeyVals[idx].key
+                                  : null
+                              }
                             </Grid.Item>
                             <Grid.Item span={7}>
                               <RateBucketView
@@ -164,8 +146,6 @@ export const RateCollectionView: React.FC<RateCollectionViewsProps> = ({
                       )}
                     </Table.Cell>
                   </Table.Row>
-                ) : (
-                  <></>
                 )}
               </Table.Body>
           )}
