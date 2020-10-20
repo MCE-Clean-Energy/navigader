@@ -1,20 +1,22 @@
 import _ from 'navigader/util/lodash';
 import { Falsey, NavigaderObject } from './common';
-import { MeterGroup } from './meter';
-import { RawScenario, RawScenarioReport, RawScenarioReportSummary } from './scenario';
+import { OriginFile, RawOriginFile } from './meter';
+import { RawScenario, RawScenarioReport, RawScenarioReportSummary, Scenario } from './scenario';
 import {
   BatteryConfiguration, BatteryStrategy, DERConfiguration, DERStrategy, DERType
 } from './der';
 
 
 /** ============================ Navigader Objects ========================= */
-function isNavigaderObject <T extends string>(obj: any, type: T): obj is NavigaderObject<T> {
-  return obj ? obj.object_type === type : false;
+function navigaderObjectGuardFactory <T extends NavigaderObject<any>>(objectType: string) {
+  return function (obj?: NavigaderObject<any>): obj is T {
+    return obj?.object_type === objectType;
+  }
 }
 
-export function isMeterGroup (obj: any): obj is MeterGroup {
-  return _.some(['CustomerCluster', 'OriginFile'].map(type => isNavigaderObject(obj, type)));
-}
+/** ============================ Meter Groups ============================== */
+export const isScenario = navigaderObjectGuardFactory<Scenario & RawScenario>('Scenario');
+export const isOriginFile = navigaderObjectGuardFactory<OriginFile & RawOriginFile>('OriginFile');
 
 /** ============================ Scenarios ================================= */
 export function isRawScenarioReportSummary (

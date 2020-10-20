@@ -54,8 +54,6 @@ export function useTableSelector <Datum extends ObjectWithId>(
  * @param {any[]} [initialElements]: initial elements to populate the map with
  */
 export function useColorMap (dependencies: any[], initialElements?: any[]) {
-  const [colorMap, setColorMap] = React.useState(new ColorMap(initialElements));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useEffect(() => setColorMap(new ColorMap(initialElements)), dependencies);
-  return colorMap;
+  return React.useMemo(() => new ColorMap(initialElements), dependencies);
 }

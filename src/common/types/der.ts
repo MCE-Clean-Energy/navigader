@@ -3,6 +3,7 @@ import { NavigaderObject } from './common';
 import { Frame288NumericType, Frame288Type } from './data';
 
 
+export type DERInfo = { der_configuration: DERConfiguration; der_strategy: DERStrategy };
 export type DERConfiguration = BatteryConfiguration | /* EVSEConfiguration | */ SolarConfiguration;
 export type DERStrategy = BatteryStrategy | /* EVSEStrategy | */ SolarStrategy;
 export type DERType = DERConfiguration['der_type'];

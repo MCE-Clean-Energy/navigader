@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import * as api from 'navigader/api';
 import { Alert, Button, TextField } from 'navigader/components';
-import * as routes from 'navigader/routes';
+import { useRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { UnauthenticatedPage } from './UnauthenticatedPage';
@@ -40,7 +39,7 @@ const useEnterEmailStyles = makeStylesHook(theme => ({
 export const SignupPage: React.FC = () => {
   const classes = useEnterEmailStyles();
   const dispatch = useDispatch();
-  const history = useHistory();
+  const routeTo = useRouter();
 
   // Component state
   const [error, setError] = React.useState<string>();
@@ -118,7 +117,7 @@ export const SignupPage: React.FC = () => {
             'and log in.',
           type: 'success'
         }));
-        history.push(routes.login);
+        routeTo.login();
       }
     } catch (e) {
       dispatch(slices.ui.setMessage({ msg: 'Something went wrong', type: 'error' }));

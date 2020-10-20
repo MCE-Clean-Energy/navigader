@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import * as api from 'navigader/api';
 import { Alert, Button, TextField, Typography } from 'navigader/components';
-import * as routes from 'navigader/routes';
+import { useRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { useQueryParams } from 'navigader/util/hooks';
@@ -47,7 +46,7 @@ const useConfirmResetStyles = makeStylesHook(theme => ({
 const ConfirmReset: React.FC<ConfirmResetProps> = ({ token, uid }) => {
   const classes = useConfirmResetStyles();
   const dispatch = useDispatch();
-  const history = useHistory();
+  const routeTo = useRouter();
 
   // Component state
   const [password1, setPassword1] = React.useState('');
@@ -82,7 +81,7 @@ const ConfirmReset: React.FC<ConfirmResetProps> = ({ token, uid }) => {
         dispatch(slices.ui.setMessage({
           msg: 'Your password has been reset!', type: 'success'
         }));
-        history.push(routes.login);
+        routeTo.login();
       }
     } catch (e) {
       dispatch(slices.ui.setMessage({ msg: 'Something went wrong', type: 'error' }));

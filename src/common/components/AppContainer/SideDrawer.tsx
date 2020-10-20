@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import Drawer from '@material-ui/core/Drawer';
 
-import * as routes from 'navigader/routes';
+import { routes, useRouter } from 'navigader/routes';
 import { makeStylesHook, white } from 'navigader/styles';
 import { Button } from '../Button';
 import { Centered } from '../Centered';
@@ -77,16 +76,12 @@ const useDrawerButtonStyles = makeStylesHook(theme => ({
 /** ============================ Components ================================ */
 const DrawerButton: React.FC<DrawerButtonProps> = ({ children, linkTo }) => {
   const classes = useDrawerButtonStyles();
-  const history = useHistory();
+  const routeTo = useRouter();
   return (
-    <ButtonBase classes={{ root: classes.root }} onClick={goToPage}>
+    <ButtonBase classes={{ root: classes.root }} onClick={routeTo.page(linkTo)}>
       <Centered children={children} />
     </ButtonBase>
   );
-
-  function goToPage () {
-    history.push(linkTo);
-  }
 };
 
 export const SideDrawer: React.FC<SideDrawerProps> = ({ open, closeDrawer }) => {

@@ -1,30 +1,15 @@
 import { DateTime } from 'luxon';
 
-import {
-  CustomerClusterMeterGroup, OriginFileMeterGroup, RawCustomerClusterMeterGroup,
-  RawOriginFileMeterGroup
-} from 'navigader/types';
+import { OriginFile, RawOriginFile } from 'navigader/types';
 
 
 /** ============================ Fixture creators ========================== */
-export function makeCustomerCluster (customerClusterProps?: Partial<CustomerClusterMeterGroup>): CustomerClusterMeterGroup {
-  return Object.assign({}, defaultCustomerCluster, customerClusterProps);
+export function makeOriginFile (meterGroupProps?: Partial<OriginFile>): OriginFile {
+  return Object.assign({}, defaultMeterGroup, meterGroupProps);
 }
 
-export function makeRawCustomerCluster (
-  customerClusterProps?: Partial<RawCustomerClusterMeterGroup>
-): RawCustomerClusterMeterGroup {
-  return Object.assign({}, defaultRawCustomerCluster, customerClusterProps);
-}
-
-export function makeOriginFile (meterGroupProps?: Partial<OriginFileMeterGroup>): OriginFileMeterGroup {
-  return Object.assign({}, defaultOriginFile, meterGroupProps);
-}
-
-export function makeRawOriginFile (
-  originFileProps?: Partial<RawOriginFileMeterGroup>
-): RawOriginFileMeterGroup {
-  return Object.assign({}, defaultRawOriginFile, originFileProps);
+export function makeRawOriginFile (rawMeterGroupProps?: Partial<RawOriginFile>): RawOriginFile {
+  return Object.assign({}, defaultRawMeterGroup, rawMeterGroupProps);
 }
 
 /** ============================ Fixture data ============================== */
@@ -343,7 +328,7 @@ export const meterData = {
   ]
 };
 
-const defaultOriginFile: OriginFileMeterGroup = {
+const defaultMeterGroup: OriginFile = {
   "id": "35b9919c-b7f9-4d28-8cf0-ac61bb9036d2",
   "created_at": "2020-02-12T20:05:05.695388",
   "object_type": "OriginFile",
@@ -367,27 +352,7 @@ const defaultOriginFile: OriginFileMeterGroup = {
   }
 };
 
-const defaultCustomerCluster: CustomerClusterMeterGroup = {
-  "id": "35b9919c-b7f9-4d28-8cf0-ac61bb9036d2",
-  "created_at": "2020-02-12T20:05:05.695388",
-  "object_type": "CustomerCluster",
-  "progress": {
-    "is_complete": true,
-    "percent_complete": 100
-  },
-  "date_range": [
-    DateTime.fromISO("2019-01-01T00:00:00").toJSDate(),
-    DateTime.fromISO("2020-01-01T00:00:00").toJSDate()
-  ],
-  "name": "NEM E6",
-  "meter_count": 797,
-  "meters": [],
-  "data": {
-    "average": meterData
-  }
-};
-
-const defaultRawOriginFile: RawOriginFileMeterGroup = {
+const defaultRawMeterGroup: RawOriginFile = {
   "id": "35b9919c-b7f9-4d28-8cf0-ac61bb9036d2",
   "created_at": "2020-02-12T20:05:05.695388",
   "object_type": "OriginFile",
@@ -395,19 +360,6 @@ const defaultRawOriginFile: RawOriginFileMeterGroup = {
     "expected_meter_count": 797,
     "filename": "origin_files/nem_e6_60min.csv"
   },
-  "date_range": ["2019-01-01T00:00:00", "2020-01-01T00:00:00"],
-  "name": "NEM E6",
-  "meter_count": 797,
-  "meters": [],
-  "data": {
-    "average": meterData
-  }
-};
-
-const defaultRawCustomerCluster: RawCustomerClusterMeterGroup = {
-  "id": "35b9919c-b7f9-4d28-8cf0-ac61bb9036d2",
-  "created_at": "2020-02-12T20:05:05.695388",
-  "object_type": "CustomerCluster",
   "date_range": ["2019-01-01T00:00:00", "2020-01-01T00:00:00"],
   "name": "NEM E6",
   "meter_count": 797,

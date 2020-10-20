@@ -10,11 +10,12 @@ import { makeStylesHook } from 'navigader/styles';
 
 
 /** ============================ Types ===================================== */
-type CardProps = React.HTMLAttributes<HTMLDivElement> & {
+export type CardProps = React.HTMLAttributes<HTMLDivElement> & {
   raised?: boolean;
 
   // style props
   padding?: number | string;
+  outlined?: boolean;
 }
 
 /** ============================ Styles ==================================== */
@@ -27,9 +28,10 @@ const useStyles = makeStylesHook<CardProps>(() => ({
 /** ============================ Components ================================ */
 export const Card = Object.assign(
   React.forwardRef<HTMLDivElement, CardProps>(
-    ({ className, ...rest }, ref) => {
+    ({ className, outlined, ...rest }, ref) => {
       const classes = classNames(className, useStyles(rest).card);
-      return <MuiCard className={classes} {...rest} ref={ref} />;
+      const variant = outlined ? 'outlined' : 'elevation';
+      return <MuiCard variant={variant} className={classes} {...rest} ref={ref} />;
     }
   ), {
     ActionArea: MuiCardActionArea,

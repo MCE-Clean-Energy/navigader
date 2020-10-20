@@ -1,16 +1,14 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import * as api from 'navigader/api';
 import {
   Alert, Button, ContactSupport, Flex, Progress, TextField, Typography
 } from 'navigader/components';
-import * as routes from 'navigader/routes';
+import { useRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
-import { makeCancelableAsync } from 'navigader/util';
-import { useQueryParams } from 'navigader/util/hooks';
+import { useAsync, useQueryParams } from 'navigader/util/hooks';
 import { UnauthenticatedPage } from './UnauthenticatedPage';
 
 
@@ -43,16 +41,13 @@ const useVerifyEmailStyles = makeStylesHook(theme => ({
  * querystring.
  */
 const VerifyEmail: React.FC<VerifyEmailProps> = ({ token }) => {
-  const history = useHistory();
+  const routeTo = useRouter();
   const classes = useVerifyEmailStyles();
   const [status, setStatus] = React.useState<'success' | 'error' | 'loading'>('loading');
 
-  React.useEffect(
-    makeCancelableAsync(
-      () => api.verifyEmail(token),
-      response => setStatus(response.ok ? 'success' : 'error')
-    ),
-    []
+  useAsync(
+    () => api.verifyEmail(token),
+    response => setStatus(response.ok ? 'success' : 'error')
   );
 
   switch (status) {
@@ -67,7 +62,7 @@ const VerifyEmail: React.FC<VerifyEmailProps> = ({ token }) => {
       return (
         <Flex.Container direction="column" alignItems="center">
           <Typography className={classes.paragraph}>Your account has been verified!</Typography>
-          <Button color="primary" onClick={goToLogin}>Log In</Button>
+          <Button color="primary" onClick={routeTo.login}>Log In</Button>
         </Flex.Container>
       );
     case 'error':
@@ -76,10 +71,6 @@ const VerifyEmail: React.FC<VerifyEmailProps> = ({ token }) => {
           Something went wrong verifying your account. Please <ContactSupport />
         </Alert>
       );
-  }
-
-  function goToLogin () {
-    history.push(routes.login);
   }
 };
 

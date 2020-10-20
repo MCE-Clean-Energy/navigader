@@ -11,9 +11,8 @@ import MuiToolbar from '@material-ui/core/Toolbar';
 
 import { RootState } from 'navigader/store';
 import { makeStylesHook, white } from 'navigader/styles';
-import { IdType, ObjectWithId, PaginationSet } from 'navigader/types';
-import { makeCancelableAsync } from 'navigader/util';
-import { useTableSelector } from 'navigader/util/hooks';
+import { IdType, Maybe, ObjectWithId, PaginationSet } from 'navigader/types';
+import { useAsync, useTableSelector } from 'navigader/util/hooks';
 import _ from 'navigader/util/lodash';
 import { Checkbox } from '../Checkbox';
 import * as Flex from '../Flex';
@@ -72,9 +71,12 @@ type TableRowProps<T extends ObjectWithId> = React.PropsWithChildren<{
   _selected?: boolean;
 }>;
 
-type DataState = {
-  dataIds: IdType[] | null;
+type TableState = PaginationState & {
   count: number | null;
+  dataIds: IdType[] | null;
+  loading: boolean;
+  selections: Set<number>;
+  sorting: Maybe<SortState>;
 };
 
 /** ============================ Styles ==================================== */
@@ -124,32 +126,31 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
   const classes = useStyles();
 
   // State
-  const [loading, setLoading] = React.useState(true);
-  const [selections, setSelections] = React.useState<Set<number>>(new Set());
-  const [dataState, setDataState] = React.useState<DataState>({
-    dataIds: null,
-    count: null
-  });
-  const [paginationState, setPaginationState] = React.useState<PaginationState>({
+  const [state, setState] = React.useState<TableState>({
+    count: null,
     currentPage: 0,
-    rowsPerPage: 20
+    dataIds: null,
+    loading: true,
+    rowsPerPage: 20,
+    selections: new Set(),
+    sorting: initialSorting
   });
-  const [sortState, setSortState] = React.useState(initialSorting);
+
+  const { count, currentPage, dataIds, rowsPerPage, selections, sorting } = state;
 
   // Load data
-  React.useEffect(makeCancelableAsync(() => {
-    setLoading(true);
-    return dataFn({ ...paginationState, ...sortState });
-  }, (paginationSet) => {
-    setLoading(false);
-    setDataState({
-      count: paginationSet.count,
-      dataIds: _.map(paginationSet.data, 'id')
-    });
-  }), [dataFn, paginationState, sortState]);
+  const loading = useAsync(
+    () => dataFn({ currentPage, rowsPerPage, ...sorting }),
+    (paginationSet) => {
+      updateState({
+        count: paginationSet.count,
+        dataIds: _.map(paginationSet.data, 'id')
+      });
+    },
+    [currentPage, rowsPerPage, sorting]
+  );
 
   // Get the data from the store using the IDs
-  const { dataIds, count } = dataState;
   const data = useTableSelector(dataSelector, dataIds);
 
   // Build context for child component tree
@@ -163,7 +164,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     selectable: Boolean(onSelect),
     selections,
     setSortState,
-    sortState,
+    sortState: sorting,
     toggleAllSelections,
     toggleRowSelection
   };
@@ -179,7 +180,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
               {(count !== null && count > 10) &&
                 <TablePagination
                   count={count}
-                  paginationState={paginationState}
+                  paginationState={state}
                   updatePaginationState={updatePaginationState}
                 />
               }
@@ -208,9 +209,44 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     );
   }
 
+  /**
+   * Partial version of `setState`. This will also inform the parent of selection changes if the
+   * selection state has indeed changed.
+   *
+   * @param {Partial<TableState>} updates: state updates
+   */
+  function updateState (updates: Partial<TableState>) {
+    setState((prevState) => {
+      const newState = { ...state, ...updates };
+
+      // Update the selections if they've changed
+      if (prevState.selections !== newState.selections) {
+        updateSelections(newState.selections);
+      }
+
+      return newState;
+    });
+  }
+
+  /**
+   * Updates the pagination state, resetting selections
+   *
+   * @param {PaginationState} newState: the new pagination state
+   */
   function updatePaginationState (newState: PaginationState) {
-    setPaginationState(newState);
-    updateSelections(new Set());
+    updateState({
+      ...newState,
+      selections: new Set()
+    });
+  }
+
+  /**
+   * Updates the sorting state
+   *
+   * @param {SortState} newState: the new sort state
+   */
+  function setSortState (newState: SortState) {
+    updateState({ sorting: newState });
   }
 
   /**
@@ -224,9 +260,10 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     if (!data) return;
     if (selectAll) {
       const selectables = data.filter(d => !disableSelect(d));
-      updateSelections(new Set(selectables.map(d => data.indexOf(d))));
+      const selectedIndices = selectables.map(d => data.indexOf(d));
+      updateState({ selections: new Set(selectedIndices) });
     } else {
-      updateSelections(new Set());
+      updateState({ selections: new Set() });
     }
   }
 
@@ -242,7 +279,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     if (checked) newSelections.add(rowIndex);
     else newSelections.delete(rowIndex);
 
-    updateSelections(newSelections);
+    updateState({ selections: newSelections });
   }
 
   /**
@@ -251,8 +288,6 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
    * @param {Set<number>} indices: the row indices of the now-selected data
    */
   function updateSelections (indices: Set<number>) {
-    setSelections(indices);
-
     if (data && onSelect) {
       // Map the indices to the actual data
       onSelect([...indices].map(index => data[index]));

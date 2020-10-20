@@ -57,3 +57,7 @@ export type DataTypeParams = Partial<{
   period: number;
   start: string;
 }>
+
+/** ============================ Request management ======================== */
+// This is an experimental type. It represents a resource that is in the process of being loaded.
+export type Loader<T> = T & { loading: boolean };

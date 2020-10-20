@@ -1,15 +1,13 @@
 import * as React from 'react';
 
-import * as api from 'navigader/api';
 import {
   CustomersTable, PageHeader, Progress, ScenarioComparisonChartAxes, ScenarioComparisonChartTitle,
   ScenariosTable
 } from 'navigader/components';
-import * as routes from 'navigader/routes';
+import { routes } from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
-import { Scenario } from 'navigader/types';
-import { filterClause, makeCancelableAsync } from 'navigader/util';
-import { useColorMap, useQueryParams } from 'navigader/util/hooks';
+import { filterClause } from 'navigader/util';
+import { useColorMap, useQueryParams, useScenarios } from 'navigader/util/hooks';
 import _ from 'navigader/util/lodash';
 import { ScenarioComparisonChart } from './Chart';
 
@@ -33,23 +31,15 @@ export const CompareScenariosPage: React.FC = () => {
   const [aggregated, setAggregated] = React.useState(true);
   const [averaged, setAveraged] = React.useState(false);
   const [hoveredId, setHoveredId] = React.useState<string>();
-  const [scenarios, setScenarios] = React.useState<Scenario[]>();
   const [chartAxes, setChartAxes] = React.useState<ScenarioComparisonChartAxes>(['Revenue', 'GHG']);
 
   // Loads the scenario
-  React.useEffect(
-    makeCancelableAsync(async () => {
-      if (!idsParam) return null;
-      const ids = idsParam.split(',');
-      return api.getScenarios({
-        include: ['ders', 'meter_group.*', 'report', 'report_summary'],
-        filter: { id: filterClause.in(ids) },
-        page: 1,
-        page_size: 100
-      });
-    }, res => setScenarios(res?.data)),
-    [idsParam]
-  );
+  const scenarios = useScenarios({
+    include: ['ders', 'meter_group.*', 'report', 'report_summary'],
+    filter: { id: filterClause.in(idsParam?.split(',')) },
+    page: 1,
+    page_size: 100
+  });
 
   const colorMap = useColorMap([scenarios]);
   return (
@@ -61,7 +51,7 @@ export const CompareScenariosPage: React.FC = () => {
         ]}
         title="Scenario Comparison"
       />
-      {scenarios === undefined
+      {scenarios.loading
         ? <Progress circular />
         : (
           <>

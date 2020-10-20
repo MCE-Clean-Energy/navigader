@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
 
 import * as api from 'navigader/api';
 import { Button, Link, TextField } from 'navigader/components';
+import { routes, useRouter } from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
-import * as routes from 'navigader/routes';
 import { UnauthenticatedPage } from './UnauthenticatedPage';
 
 
@@ -28,7 +27,7 @@ const useStyles = makeStylesHook(theme => ({
 /** ============================ Components ================================ */
 export const LoginPage: React.FC = () => {
   const classes = useStyles();
-  const history = useHistory();
+  const routeTo = useRouter();
 
   // Component state
   const [email, setEmail] = React.useState('');
@@ -87,10 +86,10 @@ export const LoginPage: React.FC = () => {
 
       if (response.ok) {
         // Redirect to the dashboard if login was successful
-        window.location.assign(routes.dashboard.base);
+        routeTo.dashboard.base();
       } else if (error === 'E-mail is not verified.') {
         // If the message is about email verification, redirect to the verification page
-        history.push(routes.registration.verify);
+        routeTo.registration.verify();
       } else {
         setError(true);
       }

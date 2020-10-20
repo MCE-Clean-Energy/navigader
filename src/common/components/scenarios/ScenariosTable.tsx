@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
-import * as routes from 'navigader/routes';
+import { routes } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { ColorMap } from 'navigader/styles';
 import { Scenario, ScenarioReportSummary } from 'navigader/types';
@@ -13,6 +13,7 @@ import { DERIcon } from '../ders';
 import * as Flex from '../Flex';
 import { Icon } from '../Icon';
 import { Link } from '../Link';
+import { MeterGroupChip } from '../MeterGroupComponents';
 import { Progress } from '../Progress';
 import { Switch } from '../Switch';
 import { PaginationState, PrefetchedTable, Table } from '../Table';
@@ -40,7 +41,7 @@ type ScenarioStatusProps = {
 
 /** ============================ Components ================================ */
 const ScenarioStatus: React.FC<ScenarioStatusProps> = ({ datum: scenario }) => {
-  const { has_run, is_complete, percent_complete } = scenario.progress;
+  const { is_complete, percent_complete } = scenario.progress;
 
   // Show the checkmark if the report has completed and aggregated
   if (is_complete) {
@@ -49,7 +50,7 @@ const ScenarioStatus: React.FC<ScenarioStatusProps> = ({ datum: scenario }) => {
         <Icon color="green" name="checkMark" />
       </Tooltip>
     );
-  } else if (has_run) {
+  } else if (percent_complete === 100) {
     return (
       <Tooltip title="Finalizing...">
         <Progress circular color="secondary" size={24} />
@@ -179,7 +180,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 averaged={innerAveraged}
                 column="GHG Impact"
                 info={{
-                  measuresImpact: 'in GHG emissions, calculated using CNS 2022 tables',
+                  measuresImpact: 'in GHG emissions',
                   negativeMeans: 'GHG emissions have gone down',
                   positiveMeans: 'GHG emissions have gone up'
                 }}
@@ -270,13 +271,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                   </Typography>
                 </Table.Cell>
                 <Table.Cell>
-                  {scenario.meter_group &&
-                    <Tooltip title={`${scenario.meter_group.meter_count} meters`}>
-                      <Link to={routes.load.meterGroup(scenario.meter_group.id)}>
-                        {scenario.meter_group.name}
-                      </Link>
-                    </Tooltip>
-                  }
+                  <MeterGroupChip link meterGroup={scenario.meter_group!} />
                 </Table.Cell>
                 <Table.Cell>
                   {scenario.der &&
@@ -299,62 +294,42 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 </Table.Cell>
                 <Table.Cell align="right">
                   {
-                    scenario.progress.is_complete
-                      ? formatters.commas(
-                          formatters.maxDecimals(getField(scenario, 'UsageDelta', innerAveraged), 2)
-                      ) : '-'
+                    formatters.commas(
+                      formatters.maxDecimals(getField(scenario, 'UsageDelta', innerAveraged), 2)
+                    ) ?? '-'
                   }
                 </Table.Cell>
                 <Table.Cell align="right">
                   {
-                    scenario.progress.is_complete
-                      ? formatters.commas(
-                          formatters.maxDecimals(
-                            getField(scenario, 'CleanNetShort2022Delta', innerAveraged), 2
-                          )
-                      ) : '-'
+                    formatters.commas(
+                      formatters.maxDecimals(
+                        getField(scenario, 'GHGDelta', innerAveraged), 2
+                      )
+                    ) ?? '-'
                   }
                 </Table.Cell>
                 <Table.Cell align="right">
                   {
-                    scenario.progress.is_complete
-                      ? formatters.commas(
-                          formatters.maxDecimals(getField(scenario, 'RADelta', innerAveraged), 2)
-                      ) : '-'
+                    formatters.commas(
+                      formatters.maxDecimals(getField(scenario, 'RADelta', innerAveraged), 2)
+                    ) ?? '-'
                   }
                 </Table.Cell>
                 <Table.Cell align="right">
                   {
-                    // IIFE to render the procurement cost, if present
-                    (() => {
-                      if (!scenario.progress.is_complete) return '-';
-                      const procurementValue = getField(scenario, 'PRC_LMPDelta', innerAveraged);
-                      return typeof procurementValue === 'number'
-                        ? formatters.dollars(procurementValue)
-                        : '-';
-                    })()
+                    formatters.dollars(
+                      getField(scenario, 'ProcurementDelta', innerAveraged)
+                    ) ?? '-'
                   }
                 </Table.Cell>
                 <Table.Cell align="right">
-                  {
-                    scenario.progress.is_complete
-                      ? formatters.dollars(getField(scenario, 'BillRevenueDelta', innerAveraged))
-                      : '-'
-                  }
+                  {formatters.dollars(getField(scenario, 'BillRevenueDelta', innerAveraged)) ?? '-'}
                 </Table.Cell>
                 <Table.Cell align="right">
-                  {
-                    scenario.progress.is_complete
-                      ? formatters.dollars(getField(scenario, 'ExpenseDelta', innerAveraged))
-                      : '-'
-                  }
+                  {formatters.dollars(getField(scenario, 'ExpenseDelta', innerAveraged)) ?? '-'}
                 </Table.Cell>
                 <Table.Cell align="right">
-                  {
-                    scenario.progress.is_complete
-                      ? formatters.dollars(getField(scenario, 'ProfitDelta', innerAveraged))
-                      : '-'
-                  }
+                  {formatters.dollars(getField(scenario, 'ProfitDelta', innerAveraged)) ?? '-'}
                 </Table.Cell>
                 {actionsMenu && <Table.Cell>{actionsMenu(scenario)}</Table.Cell>}
               </Table.Row>

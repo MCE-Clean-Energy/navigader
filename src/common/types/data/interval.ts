@@ -19,10 +19,10 @@ export type RawIntervalData<Unit extends string, Column extends string = 'index'
   & { [unit in Unit]: number[] };
 
 export type IntervalDataFilters = Partial<{
-  month: MonthIndex,
-  start: Date,
-  end: Date,
-  range: [Date, Date]
+  month: MonthIndex;
+  start: Date;
+  end: Date;
+  range: DateTuple;
 }>;
 
 /** ============================ Wrapper =================================== */
@@ -51,15 +51,15 @@ export declare class IntervalData {
 
   // Iteration methods
   filter (filters?: IntervalDataFilters): IntervalData;
-  map (fn: (datum: IntervalDatum) => number, name?: string): IntervalData;
+  map (fn: (datum: IntervalDatum) => number): IntervalData;
 
   // Transformations
   divide (n: number): IntervalData;
-  multiply (multiplier: number | IntervalData, name?: string): IntervalData;
+  multiply (multiplier: number | IntervalData): IntervalData;
   subtract (other: IntervalData): IntervalData;
 
   // 288 methods
   align288 (frame: Frame288Numeric): IntervalData;
-  map288 (frame: Frame288Numeric, fn: (datum: IntervalDatum, n: number) => number, name?: string): IntervalData;
-  multiply288 (frame: Frame288Numeric, name?: string): IntervalData;
+  map288 (frame: Frame288Numeric, fn: (datum: IntervalDatum, n: number) => number): IntervalData;
+  multiply288 (frame: Frame288Numeric): IntervalData;
 }

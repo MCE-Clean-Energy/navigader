@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Switch, Redirect, Route, RouteProps } from 're
 import { useSelector, useDispatch } from 'react-redux';
 
 import { AlertSnackbar, AppContainer, ThemeProvider } from 'navigader/components';
-import * as routes from 'navigader/routes';
+import { routes } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { models } from 'navigader/util';
 import * as pages from './pages';

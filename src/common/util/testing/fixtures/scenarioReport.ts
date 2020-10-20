@@ -48,110 +48,26 @@ export const scenarioReport = {
     74.261275,
     28.5232
   ],
-  "CleanNetShort2018PreDER": [
+  "GHGPreDER": [
     -0.0286431036,
     -1.4514834712,
     2.7937715147,
     6.2055460337,
     1.5786899701
   ],
-  "CleanNetShort2018PostDER": [
+  "GHGPostDER": [
     0.1563799465,
     -1.1045732107,
     2.8383379588,
     6.2411802477,
     1.5934966805
   ],
-  "CleanNetShort2018Delta": [
+  "GHGDelta": [
     0.1850230502,
     0.3469102606,
     0.0445664441,
     0.035634214,
     0.0148067104
-  ],
-  "CleanNetShort2022PreDER": [
-    0.5778135207,
-    1.9096049168,
-    3.1779625724,
-    6.3393288364,
-    1.4864140244
-  ],
-  "CleanNetShort2022PostDER": [
-    0.3223401647,
-    1.1106187802,
-    2.7840546117,
-    6.0049577617,
-    1.4531234446
-  ],
-  "CleanNetShort2022Delta": [
-    -0.255473356,
-    -0.7989861366,
-    -0.3939079607,
-    -0.3343710747,
-    -0.0332905798
-  ],
-  "CleanNetShort2026PreDER": [
-    0.4351975214,
-    1.0929265292,
-    3.0927276732,
-    6.2662046366,
-    1.5508421318
-  ],
-  "CleanNetShort2026PostDER": [
-    0.2746031083,
-    0.5331781651,
-    2.7753179938,
-    5.9833185621,
-    1.5274268342
-  ],
-  "CleanNetShort2026Delta": [
-    -0.1605944131,
-    -0.5597483641,
-    -0.3174096794,
-    -0.2828860745,
-    -0.0234152977
-  ],
-  "CleanNetShort2030PreDER": [
-    0.9426035354,
-    4.0754517614,
-    3.1172257107,
-    5.9375146561,
-    1.04946906
-  ],
-  "CleanNetShort2030PostDER": [
-    0.4278733589,
-    2.2175085615,
-    2.5059497298,
-    5.406760156,
-    1.0061594143
-  ],
-  "CleanNetShort2030Delta": [
-    -0.5147301765,
-    -1.8579432,
-    -0.6112759809,
-    -0.5307545002,
-    -0.0433096457
-  ],
-  "CARBUnspecifiedPower2013PreDER": [
-    -0.0736995984,
-    -1.7938112941,
-    3.050191327,
-    6.8252733612,
-    1.79648934
-  ],
-  "CARBUnspecifiedPower2013PostDER": [
-    0.1744143794,
-    -1.3041876163,
-    3.160508327,
-    6.9185238612,
-    1.81417644
-  ],
-  "CARBUnspecifiedPower2013Delta": [
-    0.2481139778,
-    0.4896236778,
-    0.110317,
-    0.0932505,
-    0.0176871
   ],
   "RAPreDER": [
     8833000,
@@ -174,7 +90,7 @@ export const scenarioReport = {
     10,
     4
   ],
-  "SingleScenarioStudy": [
+  "ScenarioID": [
     "9e8b6568-f8a2-433a-b150-8e1a733562f8",
     "9e8b6568-f8a2-433a-b150-8e1a733562f8",
     "9e8b6568-f8a2-433a-b150-8e1a733562f8",
@@ -216,21 +132,21 @@ export const scenarioReport = {
     "HE6N",
     "HE6N"
   ],
-  "PRC_LMP2018Delta": [
+  "ProcurementDelta": [
     10.46969875,
     200.1055671069,
     99.345388,
     86.453635,
     177.2009384
   ],
-  "PRC_LMP2018PostDER": [
+  "ProcurementPostDER": [
     -158.8291731511,
     222.3574294993,
     39.9992421,
     108.223409211,
     87.87878787
   ],
-  "PRC_LMP2018PreDER": [
+  "ProcurementPreDER": [
     -169.2988719011,
     22.2518623924,
     -59.3461459,
@@ -247,21 +163,9 @@ export const scenarioReportSummary = {
     BillRevenuePreDER: 9918.46670553,
     BillRevenuePostDER: 13941.00633053,
     BillRevenueDelta: 4022.539625,
-    CleanNetShort2018PreDER: 310.4897999284,
-    CleanNetShort2018PostDER: 355.1367758584,
-    CleanNetShort2018Delta: 44.6469759299,
-    CleanNetShort2022PreDER: 390.2358922852,
-    CleanNetShort2022PostDER: 397.6004736298,
-    CleanNetShort2022Delta: 7.3645813446,
-    CleanNetShort2026PreDER: 370.8986283876,
-    CleanNetShort2026PostDER: 380.5774822582,
-    CleanNetShort2026Delta: 9.6788538706,
-    CleanNetShort2030PreDER: 416.9143357812,
-    CleanNetShort2030PostDER: 406.4049519567,
-    CleanNetShort2030Delta: -10.5093838246,
-    CARBUnspecifiedPower2013PreDER: 334.8188708963,
-    CARBUnspecifiedPower2013PostDER: 385.7155882407,
-    CARBUnspecifiedPower2013Delta: 50.8967173444,
+    GHGPreDER: 310.4897999284,
+    GHGPostDER: 355.1367758584,
+    GHGDelta: 44.6469759299,
     RAPreDER: 8833000.0,
     RAPostDER: 8832677.906440001,
     RADelta: -322.093559999

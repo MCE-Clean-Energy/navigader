@@ -2,6 +2,7 @@ import * as React from 'react';
 import MuiRadio from '@material-ui/core/Radio';
 import MuiRadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { Maybe } from 'navigader/types';
 
 
 /** ============================ Types ===================================== */
@@ -11,8 +12,9 @@ type RadioProps = Omit<React.LabelHTMLAttributes<HTMLLabelElement>, 'onChange'> 
 };
 
 type RadioGroupProps = {
+  className?: string;
   name?: string;
-  value: string;
+  value: Maybe<string>;
   onChange: (value: string, event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
@@ -34,6 +36,6 @@ const RadioGroup: React.FC<RadioGroupProps> = (props) => {
 };
 
 const RadioComponent: React.FC<RadioProps> = props =>
-  <FormControlLabel control={<MuiRadio />} {...props} />;
+  <FormControlLabel control={<MuiRadio size="small" />} {...props} />;
 
 export const Radio = Object.assign(RadioComponent, { Group: RadioGroup });

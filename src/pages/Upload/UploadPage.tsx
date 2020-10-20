@@ -6,7 +6,7 @@ import {
   Alert, Button, Card, Collapse, ContactSupport, Flex, Grid, Link, PageHeader, Progress, TextField,
   Typography
 } from 'navigader/components';
-import * as routes from 'navigader/routes';
+import { routes } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { Maybe } from 'navigader/types';

@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
 import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
 
+import { useRouter } from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
 import { Tuple } from 'navigader/types';
 import _ from 'navigader/util/lodash';
+
 import { Button } from '../Button';
 import * as Flex from '../Flex';
 import { Link } from '../Link';
@@ -46,7 +47,7 @@ const useBackButtonStyles = makeStylesHook(theme => ({
 /** ============================ Components ================================ */
 const BackButton: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
   const classes = useBackButtonStyles();
-  const history = useHistory();
+  const routeTo = useRouter();
 
   // If there's 1 or fewer links, don't show a button
   if (!breadcrumbs) return null;
@@ -58,13 +59,15 @@ const BackButton: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
   });
 
   return lastLink
-    ? <Button className={classes.backButton} icon="back" onClick={goBack} role="back-button" />
+    ? (
+      <Button
+        className={classes.backButton}
+        icon="back"
+        onClick={routeTo.previousPage}
+        role="back-button"
+      />
+    )
     : null;
-
-  /** ========================== Callbacks ================================= */
-  function goBack () {
-    history.goBack();
-  }
 };
 
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {

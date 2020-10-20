@@ -1,26 +1,23 @@
-import * as routes from 'navigader/routes';
-import { DERType, MeterGroup } from 'navigader/types';
+import { routes } from 'navigader/routes';
+import { OriginFile, Scenario } from 'navigader/types';
 import _ from 'navigader/util/lodash';
+import { DERSelection } from './types';
 
 
 // Order of steps
 export const stepPaths = [
-  routes.dashboard.createScenario.selectDers,
   routes.dashboard.createScenario.selectCustomers,
+  routes.dashboard.createScenario.selectDers,
+  routes.dashboard.createScenario.selectCostFunctions,
   routes.dashboard.createScenario.review
 ];
 
 // Indices of steps
 export const stepNumbers = {
-  selectDers: stepPaths.indexOf(routes.dashboard.createScenario.selectDers),
-  selectCustomers: stepPaths.indexOf(routes.dashboard.createScenario.selectCustomers),
   review: stepPaths.indexOf(routes.dashboard.createScenario.review),
-};
-
-export type DERSelection = {
-  configurationId: string;
-  strategyId: string;
-  type: DERType;
+  selectCostFunctions: stepPaths.indexOf(routes.dashboard.createScenario.selectCostFunctions),
+  selectCustomers: stepPaths.indexOf(routes.dashboard.createScenario.selectCustomers),
+  selectDers: stepPaths.indexOf(routes.dashboard.createScenario.selectDers)
 };
 
 /**
@@ -43,12 +40,14 @@ export function validateDerSelections (ders: Partial<DERSelection>[]): ders is D
 
 /**
  * Validates that the customer selections are valid. In order for the selection to be valid, at
- * least one meter must be included-- which means at least one non-empty meter group must be
- * selected. Returns `true` if the customer selections are valid.
+ * least one meter must be included-- which means at least one non-empty meter group, or at
+ * least 1 scenario must be selected. Returns `true` if the customer selections are valid.
  *
- * @param {MeterGroup[]} meterGroups: the customer selections to validate
+ * @param {OriginFile[]} originFiles: the meter group selections to validate
+ * @param {Scenario[]} scenarios: the scenario selections to validate
  */
-export function validateCustomerSelections (meterGroups: MeterGroup[]) {
-  if (meterGroups.length === 0) return false;
-  return _.sumBy(meterGroups, 'meter_count') > 0;
+export function validateCustomerSelections (originFiles: OriginFile[], scenarios: Scenario[]) {
+  if (scenarios.length) return true;
+  if (originFiles.length === 0) return false;
+  return _.sumBy(originFiles, 'meter_count') > 0;
 }

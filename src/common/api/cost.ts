@@ -1,6 +1,7 @@
 import {
-  RawCAISORate, DataTypeParams, DynamicRestParams, PaginationQueryParams, RawGHGRate,
-  RawPaginationSet, RawScenario, Scenario, RawMeterGroup, RateCollection, RatePlan, PaginationSet
+  RawCAISORate, DataTypeParams, DynamicRestParams, PaginationQueryParams, RawGHGRate, RawScenario,
+  Scenario, RawMeterGroup, RateCollection, RatePlan, SystemProfile, CAISORate, GHGRate,
+  CostFunctions
 } from 'navigader/types';
 import { appendQueryString, omitFalsey, serializers } from 'navigader/util';
 import _ from 'navigader/util/lodash';
@@ -16,17 +17,20 @@ type DerSelection = {
   strategyId: string;
 };
 
+export type CostFunctionSelections = Partial<{
+  [CF in keyof CostFunctions]: CostFunctions[CF]['id'];
+}>;
+
 /** Query params */
-export type GetScenarioQueryParams = DynamicRestParams<ScenarioIncludeFields> & DataTypeParams;
+export type GetScenarioQueryParams = ScenarioDynamicRestParams & DataTypeParams;
 export type GetScenariosQueryParams = GetScenarioQueryParams & PaginationQueryParams;
-type ScenarioIncludeFields =
+export type ScenarioDynamicRestParams = DynamicRestParams<
   | 'ders'
-  | 'der_simulations'
-  | 'meters'
   | 'meter_group'
   | 'meter_group.*'
   | 'report'
-  | 'report_summary';
+  | 'report_summary'
+>;
 
 type GetGHGRatesQueryOptions = PaginationQueryParams & DynamicRestParams & (
   { data_format: '288'; } |
@@ -39,31 +43,43 @@ export type GetCAISORatesQueryOptions =
   & DataTypeParams
   & { year?: number };
 
-/** Responses */
-type GetScenariosResponse = { meter_groups?: RawMeterGroup[]; scenarios: RawScenario[] };
-type GetScenarioResponse = { meter_groups?: RawMeterGroup[]; scenario: RawScenario };
-type GetGHGRatesResponse = { ghg_rates: RawGHGRate[] };
-type GetCAISORatesResponse = { caiso_rates: RawCAISORate[] };
-
 type RatePlanIncludeFields = 'rate_collections.*';
 export type GetRatePlansQueryOptions =
   & DynamicRestParams<RatePlanIncludeFields>
   & PaginationQueryParams;
 
+type SystemProfileIncludeFields = 'load_serving_entity.*';
+export type GetSystemProfilesQueryOptions =
+  & DynamicRestParams<SystemProfileIncludeFields>
+  & PaginationQueryParams;
+
+/** Responses */
+type GetScenariosResponse = { meter_groups?: RawMeterGroup[]; scenarios: RawScenario[] };
+type GetScenarioResponse = { meter_groups?: RawMeterGroup[]; scenario: RawScenario };
+type GetGHGRatesResponse = { ghg_rates: RawGHGRate[] };
+type GetCAISORatesResponse = { caiso_rates: RawCAISORate[] };
 type GetRatePlansResponse = {
   rate_collections?: RateCollection[];
   rate_plans: Array<Omit<RatePlan, 'rate_collections'> & { rate_collections?: number[] }>;
 };
+type GetSystemProfilesResponse = { system_profiles: SystemProfile[] };
 
 /** ============================ Scenarios =============================== */
-export async function postStudy (
+export async function postScenario (
   scenarioName: string,
   meterGroupIds: string[],
-  ders: DerSelection[]
+  ders: DerSelection[],
+  costFunctions: CostFunctionSelections
 ) {
   return await postRequest(
     routes.scenarios(),
     {
+      cost_functions: {
+        ghg_rate: costFunctions.ghgRate,
+        procurement_rate: costFunctions.caisoRate,
+        rate_plan: costFunctions.ratePlan,
+        system_profile: costFunctions.systemProfile
+      },
       name: scenarioName,
       meter_group_ids: meterGroupIds,
       ders: ders.map(({ configurationId, strategyId }) => ({
@@ -80,11 +96,10 @@ export async function postStudy (
  * @param {GetScenariosQueryParams} queryParams: parameters for filtering the result set
  */
 export async function getScenarios (queryParams: GetScenariosQueryParams) {
-  const response: RawPaginationSet<GetScenariosResponse> =
-    await getRequest(routes.scenarios(), queryParams).then(res => res.json());
+  const response = await getRequest(routes.scenarios(), queryParams).then(res => res.json());
 
   // Parse the meter results
-  return parsePaginationSet(
+  return parsePaginationSet<GetScenariosResponse, Scenario>(
     response,
     ({ meter_groups = [], scenarios }) =>
       scenarios.map(scenario => serializers.parseScenario(scenario, meter_groups))
@@ -144,31 +159,35 @@ export async function downloadCustomerData (ids: string[], onProgress?: Progress
 
 /** ============================ GHG ======================================= */
 export async function getGhgRates (options?: GetGHGRatesQueryOptions) {
-  const response: RawPaginationSet<GetGHGRatesResponse>
-    = await getRequest(routes.ghg_rate, options).then(res => res.json());
+  const response = await getRequest(routes.ghg_rate, options).then(res => res.json());
 
   // Parse the GHG rate results into full-fledged `NavigaderObjects`
-  return parsePaginationSet(response, ({ ghg_rates }) => ghg_rates.map(serializers.parseGHGRate));
+  return parsePaginationSet<GetGHGRatesResponse, GHGRate>(
+    response,
+    ({ ghg_rates }) => ghg_rates.map(serializers.parseGHGRate)
+  );
 }
 
 /** ============================ Procurement =============================== */
 export async function getCAISORates (options?: GetCAISORatesQueryOptions) {
-  const response: RawPaginationSet<GetCAISORatesResponse>
-    = await getRequest(routes.caiso_rate, options).then(res => res.json());
+  const response = await getRequest(routes.caiso_rate, options).then(res => res.json());
 
   // Parse the GHG rate results into full-fledged `NavigaderObjects`
-  return parsePaginationSet(response, ({ caiso_rates }) => caiso_rates.map(serializers.parseCAISORate));
+  return parsePaginationSet<GetCAISORatesResponse, CAISORate>(
+    response,
+    ({ caiso_rates }) => caiso_rates.map(serializers.parseCAISORate)
+  );
 }
 
 /** ============================ Rate plans ================================ */
-export async function getRatePlans (params?: GetRatePlansQueryOptions): Promise<PaginationSet<RatePlan>> {
-  const response: RawPaginationSet<GetRatePlansResponse>
-    = await getRequest(routes.rate_plans, params).then(res => res.json());
+export async function getRatePlans (params?: GetRatePlansQueryOptions) {
+  const response = await getRequest(routes.rate_plans, params).then(res => res.json());
 
   // Parse the rate plan results into full-fledged `NavigaderObjects`, nesting the rate collections
   // under the plan
-  return parsePaginationSet(response, ({rate_collections, rate_plans }) =>
-    rate_plans.map(plan => ({
+  return parsePaginationSet<GetRatePlansResponse, RatePlan>(
+    response,
+    ({ rate_collections, rate_plans }) => rate_plans.map(plan => ({
       ...plan,
       rate_collections: omitFalsey((plan.rate_collections || []).map(
         collectionId => _.find(rate_collections, { id: collectionId })
@@ -180,12 +199,28 @@ export async function getRatePlans (params?: GetRatePlansQueryOptions): Promise<
   );
 }
 
+/** ============================ System profiles =========================== */
+export async function getSystemProfiles (params?: GetSystemProfilesQueryOptions) {
+  const response = await getRequest(routes.system_profile, params).then(res => res.json());
+
+  return parsePaginationSet<GetSystemProfilesResponse, SystemProfile>(
+    response,
+    ({ system_profiles }) => system_profiles.map(systemProfile => ({
+      ...systemProfile,
+
+      // This field is included in the `SystemProfile` type but not provided by the backend
+      object_type: 'SystemProfile'
+    }))
+  );
+}
+
 /** ============================ Helpers =================================== */
 const baseRoute = (rest: string) => beoRoute.v1(`cost/${rest}`);
 const routes = {
   caiso_rate: baseRoute('caiso_rate/'),
   ghg_rate: baseRoute('ghg_rate/'),
   rate_plans: baseRoute('rate_plan/'),
+  system_profile: baseRoute('system_profile/'),
   scenarios: Object.assign(
     appendId(baseRoute('scenario')), {
       download: baseRoute('scenario/download/')

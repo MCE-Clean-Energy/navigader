@@ -1,10 +1,9 @@
 import * as React from "react";
 import { useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
 
 import * as api from "navigader/api";
-import { Grid, List, Menu, PageHeader, PaginationState, Table } from "navigader/components";
-import * as routes from "navigader/routes";
+import { Grid, Link, List, Menu, PageHeader, PaginationState, Table } from "navigader/components";
+import { routes, useRouter } from "navigader/routes";
 import { slices } from "navigader/store";
 import { formatters } from "navigader/util";
 
@@ -12,7 +11,7 @@ import { formatters } from "navigader/util";
 /** ============================ Components ================================ */
 export const RatePlanList: React.FC = () => {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const routeTo = useRouter();
 
   const getRatePlans = React.useCallback(
     async (state: PaginationState) => {
@@ -31,10 +30,7 @@ export const RatePlanList: React.FC = () => {
 
   return (
     <>
-      <PageHeader
-        breadcrumbs={[["Rate Plans", routes.rates.base]]}
-        title="Rate Plans"
-      />
+      <PageHeader title="Rate Plans" />
       <Grid>
         <Grid.Item span={12}>
           <Table
@@ -56,7 +52,11 @@ export const RatePlanList: React.FC = () => {
                 <Table.Body>
                   {ratePlans.map(ratePlan =>
                     <Table.Row key={ratePlan.id}>
-                      <Table.Cell>{ratePlan.name}</Table.Cell>
+                      <Table.Cell>
+                        <Link to={routes.rates.ratePlan(ratePlan.id.toString())}>
+                          {ratePlan.name}
+                        </Link>
+                      </Table.Cell>
                       <Table.Cell>
                         {formatters.date.standard(ratePlan.start_date || "")}
                       </Table.Cell>
@@ -72,13 +72,7 @@ export const RatePlanList: React.FC = () => {
                             horizontal: "right",
                           }}
                         >
-                          <List.Item
-                            onClick={() => {
-                              history.push(
-                                routes.rates.ratePlan(ratePlan.id.toString())
-                              );
-                            }}
-                          >
+                          <List.Item onClick={routeTo.rates.ratePlan(ratePlan)}>
                             <List.Item.Icon icon="pencil" />
                             <List.Item.Text>View/Edit</List.Item.Text>
                           </List.Item>

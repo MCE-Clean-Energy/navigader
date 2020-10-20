@@ -1,15 +1,16 @@
 import * as React from 'react';
 
-import { Button, Card, DERCard, Flex, Select } from 'navigader/components';
+import { Button, Card, CardProps, DERCard, Flex, Select } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
 import { DERConfiguration, DERStrategy, DERType } from 'navigader/types';
 import _ from 'navigader/util/lodash';
 import { ProgramOptions } from './ProgramOptions';
-import { DERSelection } from './util';
+import { DERSelection } from './types';
 
 
 /** ============================ Types ===================================== */
 type DerSelectionCardReadOnlyProps = {
+  CardProps?: CardProps;
   configurations?: DERConfiguration[];
   der: Partial<DERSelection>;
   numDers: number;
@@ -115,7 +116,7 @@ export const DerSelectionCard: React.FC<DerSelectionCardProps> = (props) => {
 };
 
 export const DerCardReadOnly: React.FC<DerSelectionCardReadOnlyProps> = (props) => {
-  const { configurations, der, strategies } = props;
+  const { CardProps, configurations, der, strategies } = props;
   const classes = useStyles();
 
   // Get selected configuration and strategy
@@ -123,5 +124,12 @@ export const DerCardReadOnly: React.FC<DerSelectionCardReadOnlyProps> = (props) 
   const strategy = _.find(strategies, { id: der.strategyId });
 
   if (!configuration || !strategy) return null;
-  return <DERCard className={classes.derCard} configuration={configuration} strategy={strategy} />;
+  return (
+    <DERCard
+      CardProps={CardProps}
+      className={classes.derCard}
+      configuration={configuration}
+      strategy={strategy}
+    />
+  );
 };

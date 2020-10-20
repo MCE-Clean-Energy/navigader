@@ -1,25 +1,24 @@
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
 
 import {
   Card, Grid, Frame288Graph, Statistic, MeterGroupChip, Progress, Typography, Tooltip
 } from 'navigader/components';
-import * as routes from 'navigader/routes';
+import { useRouter } from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
-import { MeterGroup } from 'navigader/types';
+import { OriginFile } from 'navigader/types';
 import { formatters, models, PowerFrame288 } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
 type MeterGroupCardProps = {
-  meterGroup: MeterGroup
+  originFile: OriginFile
 };
 
 /** ============================ Styles ==================================== */
 const cardPadding = '1rem';
 const useStyles = makeStylesHook<MeterGroupCardProps>(theme => ({
   card: (props) => ({
-    cursor: models.meterGroup.isSufficientlyIngested(props.meterGroup) ? 'pointer' : 'default',
+    cursor: models.meterGroup.isSufficientlyIngested(props.originFile) ? 'pointer' : 'default',
     marginBottom: theme.spacing(2),
     overflow: 'visible',
     position: 'relative'
@@ -44,20 +43,20 @@ const useCardContentStyles = makeStylesHook(theme => ({
  * otherwise, we render the graph if we've loaded the group's average data; if for whatever reason
  * the meter group data was not loaded, we render a message saying as much
  */
-export const CardContent: React.FC<MeterGroupCardProps> = ({ meterGroup }) => {
+export const CardContent: React.FC<MeterGroupCardProps> = ({ originFile }) => {
   const classes = useCardContentStyles();
-  if (!models.meterGroup.isSufficientlyIngested(meterGroup)) {
+  if (!models.meterGroup.isSufficientlyIngested(originFile)) {
     return (
       <Progress
         className={classes.progressBar}
-        value={Math.max(meterGroup.progress.percent_complete, 3)}
+        value={Math.max(originFile.progress.percent_complete, 3)}
       />
     );
-  } else if (meterGroup.data.average) {
+  } else if (originFile.data.average) {
     return (
       <Frame288Graph
         axisLabel="Customer Load"
-        data={new PowerFrame288(meterGroup.data.average).scale()}
+        data={new PowerFrame288(originFile.data.average).scale()}
         months="all"
       />
     );
@@ -67,33 +66,33 @@ export const CardContent: React.FC<MeterGroupCardProps> = ({ meterGroup }) => {
 };
 
 export const MeterGroupCard: React.FC<MeterGroupCardProps> = (props) => {
-  const { meterGroup } = props;
+  const { originFile } = props;
   const classes = useStyles(props);
-  const history = useHistory();
+  const routeTo = useRouter();
 
   // Card behavior depends on if the meter group has finished ingesting
-  const isIngested = models.meterGroup.isSufficientlyIngested(meterGroup);
-  const { percent_complete } = meterGroup.progress;
-  const onClick = isIngested ? viewMeterGroup : undefined;
+  const isIngested = models.meterGroup.isSufficientlyIngested(originFile);
+  const { percent_complete } = originFile.progress;
   const statisticProps = isIngested
-    ? { title: '# of Meters', value: meterGroup.meter_count }
+    ? { title: '# of Meters', value: originFile.meter_count }
     : { title: 'Progress', value: percent_complete + '%' };
 
   const card = (
-    <Card raised className={classes.card} onClick={onClick} padding={cardPadding}>
-      <MeterGroupChip
-        className={classes.meterGroupChip}
-        meterGroup={meterGroup}
-        onClick={onClick}
-      />
-      <CardContent meterGroup={meterGroup} />
+    <Card
+      raised
+      className={classes.card}
+      onClick={routeTo.originFile(originFile)}
+      padding={cardPadding}
+    >
+      <MeterGroupChip className={classes.meterGroupChip} link meterGroup={originFile} />
+      <CardContent originFile={originFile} />
       <Grid>
         <Grid.Item>
           <Statistic {...statisticProps} />
         </Grid.Item>
         <Grid.Item span={1} />
         <Grid.Item>
-          <Statistic title="Uploaded" value={formatters.date.standard(meterGroup.created_at)} />
+          <Statistic title="Uploaded" value={formatters.date.standard(originFile.created_at)} />
         </Grid.Item>
       </Grid>
     </Card>
@@ -104,12 +103,4 @@ export const MeterGroupCard: React.FC<MeterGroupCardProps> = (props) => {
     : `This file is being processed. It's currently ${percent_complete}% complete`;
 
   return <Tooltip title={tooltipTitle}>{card}</Tooltip>;
-
-  /** ========================== Callbacks ================================= */
-  function viewMeterGroup (event: React.MouseEvent<HTMLDivElement>) {
-    // If the user clicks on the meter group chip, the event will propagate up to the card and this
-    // method will be called again. Stopping the propagation prevents that second call
-    event.stopPropagation();
-    history.push(routes.load.meterGroup(meterGroup.id));
-  }
 };

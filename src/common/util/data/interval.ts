@@ -38,6 +38,38 @@ class IntervalDatumWrapper implements IntervalDatum {
   constructor (datum: BasicIntervalDatum) {
     this.timestring = datum.timestring;
     this.value = datum.value;
+
+    // When a property is defined as non-enumerable, its key-value pair will not turn up in
+    // `for..of` loops or in calls to `Object.keys`. In our case this is convenient for making
+    // test assertions. Say we have two `IntervalData` instances:
+    //
+    //   ```
+    //   const intervalA = new IntervalData(data, name);
+    //   const intervalB = new IntervalData(data, name);
+    //   ```
+    //
+    //  In a jest assertion, they will be equivalent:
+    //
+    //   ```
+    //   expect(intervalA).toMatchObject(intervalB); --> true
+    //   ```
+    //
+    // However, if we access the `period` field of one interval but not that of the other, our
+    // assertion fails:
+    //
+    //   ```
+    //   const period = intervalA.period;
+    //   expect(intervalA).toMatchObject(intervalB); --> false
+    //   ```
+    //
+    // This is because jest iterates across all enumerable fields of the object passed to the
+    // `toMatchObject` matcher function, recursively comparing the values between the expected and
+    // received object. When it compares the `_timestamp` fields of the first and second data of
+    // both intervals, it will find that `_timestamp` in `intervalA` is a Date object, while the
+    // same field in `intervalB` is undefined. This is expected, as `intervalB`'s period has not
+    // been accessed and so its timestamps have not been computed. However, this shouldn't
+    // constitute a basis for failing the test, and hence `_timestamp` is non-enumerable.
+    Object.defineProperty(this, '_timestamp', { enumerable: false });
   }
 
   /**
@@ -318,7 +350,7 @@ export class IntervalData implements IntervalDataInterface {
    *
    * @param {number} multiplier: the number to multiply the interval values by
    */
-  multiply (multiplier: number | IntervalData, ) {
+  multiply (multiplier: number | IntervalData) {
     if (typeof multiplier === 'number') {
       return this.map(datum => datum.value * multiplier);
     }

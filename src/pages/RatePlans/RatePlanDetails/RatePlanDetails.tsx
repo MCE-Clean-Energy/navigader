@@ -2,7 +2,7 @@ import * as React from "react";
 import { useParams } from "react-router-dom";
 
 import { Grid, PageHeader, Fade, Progress, List, Typography } from "navigader/components";
-import * as routes from "navigader/routes";
+import { routes } from "navigader/routes";
 import { formatters, hooks } from "navigader/util";
 import _ from "navigader/util/lodash";
 import { RateCollectionView } from "./RateCollectionView";

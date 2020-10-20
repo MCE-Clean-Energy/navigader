@@ -8,10 +8,8 @@ import { PaginationState, SortState } from './util';
 
 /** ============================ Types ===================================== */
 type PrefetchedTableProps<T extends ObjectWithId> =
-  Omit<TableProps<T>, 'dataFn' | 'dataSelector'> &
-  {
-    data: T[]
-  };
+  & Omit<TableProps<T>, 'dataFn' | 'dataSelector'>
+  & { data: T[] };
 
 
 /** ============================ Components ================================ */
@@ -37,6 +35,6 @@ function getDataPage (data: any[], state: PaginationState & Partial<SortState>) 
     sorted = _.sortBy(data, [key]);
     if (dir === 'desc') sorted.reverse();
   }
-  
+
   return sorted.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
 }

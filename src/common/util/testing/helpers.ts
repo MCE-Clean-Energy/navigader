@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 
+/** ============================ Miscellaneous helpers ===================== */
 /**
  * Given a URL with a querystring and an array of pairs of strings, asserts that the first string
  * of each pair is a query parameter in the querystring and the second string of each pair is its
@@ -85,6 +86,42 @@ export async function asyncForEach <T>(
   }
 }
 
+/**
+ * Creates all combinations of a given array. For example:
+ *
+ *   ```
+ *   > getCombinations([0, 1, 2])
+ *   [
+ *     [],       [ 0 ],
+ *     [ 1 ],    [ 0, 1 ],
+ *     [ 2 ],    [ 0, 2 ],
+ *     [ 1, 2 ], [ 0, 1, 2 ]
+ *   ]
+ *   ```
+ *
+ * @param {T[]} array: an array of any type
+ */
+export function getCombinations <T = any>(array: T[]) {
+  // Start with the empty set
+  const combinations: Array<T[]> = [[]];
+
+  for (let value of array) {
+    // Can't use combinations.length in loop since results length is increased in loop
+    const length = combinations.length;
+
+    for (let i = 0; i < length; i++) {
+      // Make a clone of the value at index i and add current value
+      const temp = [...combinations[i], value];
+
+      // Add clone back to results array
+      combinations.push(temp);
+    }
+  }
+
+  return combinations;
+}
+
+
 /** ============================ API Helpers =============================== */
 /**
  * Returns a string representing a pagination result. The return value is a string intended to mimic
@@ -104,13 +141,13 @@ export function makePaginationResponse (results: object, count: number = 1) {
 
 export function mockFetch (endpoints: Array<[string | RegExp, any]>) {
   fetchMock.resetMocks();
-  
+
   // Set up URLs to mock
   fetchMock.mockResponse(async (req) => {
     const match = _.find(endpoints, ([uri]) =>
       typeof uri === 'string' ? req.url.includes(uri) : uri.test(req.url)
     );
-    
+
     return match ? JSON.stringify(match[1]) : 'default mock response';
   });
 }

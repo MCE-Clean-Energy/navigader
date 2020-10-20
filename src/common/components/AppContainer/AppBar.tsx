@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
 import MuiAppBar from '@material-ui/core/AppBar';
 import MuiToolbar from '@material-ui/core/Toolbar';
 import classNames from 'classnames';
 
 import navigaderImage from 'navigader/images/navigader.png';
-import * as routes from 'navigader/routes';
+import { useRouter } from 'navigader/routes';
 import { makeStylesHook, white } from 'navigader/styles';
 import { Gradient } from '../branding';
 import { Button } from '../Button';
@@ -74,7 +73,7 @@ const useStyles = makeStylesHook(theme => ({
 /** ============================ Components ================================ */
 export const AppBar: React.FC<AppBarProps> = ({ drawerOpen, openDrawer }) => {
   const classes = useStyles();
-  const history = useHistory();
+  const routeTo = useRouter();
 
   return (
     <MuiAppBar
@@ -99,7 +98,7 @@ export const AppBar: React.FC<AppBarProps> = ({ drawerOpen, openDrawer }) => {
 
               <Flex.Item>
                 <Flex.Container alignItems="center" className={classes.rightSide}>
-                  <Button.Text onClick={goToRoadmap}>Roadmap</Button.Text>
+                  <Button.Text onClick={routeTo.roadmap}>Roadmap</Button.Text>
                   <Feedback />
                   <AccountMenu />
                 </Flex.Container>
@@ -110,9 +109,4 @@ export const AppBar: React.FC<AppBarProps> = ({ drawerOpen, openDrawer }) => {
       </MuiToolbar>
     </MuiAppBar>
   );
-
-  /** ========================== Callbacks ================================= */
-  function goToRoadmap () {
-    history.push(routes.roadmap);
-  }
 };

@@ -32,8 +32,8 @@ export const GHGCharts: React.FC<ChartProps> = (props) => {
           <IntervalDataGraph
             axisLabel="GHG Emissions"
             data={[
-              meterGroupData.multiply288(cns2022, 'Initial GHG emissions'),
-              scenarioData.multiply288(cns2022, 'Simulated GHG emissions')
+              meterGroupData.multiply288(cns2022).rename('Initial GHG emissions'),
+              scenarioData.multiply288(cns2022).rename('Simulated GHG emissions')
             ]}
             month={selectedMonth}
             timeDomain={timeDomain}
@@ -59,21 +59,23 @@ export const ProcurementCharts: React.FC<ChartProps> = (props) => {
 
   // TODO: support scenarios with multiple years of data
   const year = scenarioData?.years[0];
-  const caisoRates = useCAISORates({
+  const caisoRate = useCAISORates({
     year,
     data_types: 'default',
     period: 60
-  });
-
-  const caisoRate = caisoRates && caisoRates[0].data.default;
+  })[0];
 
   const initialProcurement = React.useMemo(() =>
-    meterGroupData && caisoRate && meterGroupData.multiply(caisoRate, 'Initial procurement cost'),
+    caisoRate && meterGroupData
+      .multiply(caisoRate.data.default!)
+      .rename('Initial procurement cost'),
     [meterGroupData, caisoRate]
   );
 
   const simulatedProcurement = React.useMemo(() =>
-    scenarioData && caisoRate && scenarioData.multiply(caisoRate, 'Simulated procurement cost'),
+    caisoRate && scenarioData
+      .multiply(caisoRate.data.default!)
+      .rename('Simulated procurement cost'),
     [scenarioData, caisoRate]
   );
 
@@ -97,7 +99,7 @@ export const ProcurementCharts: React.FC<ChartProps> = (props) => {
             onTimeDomainChange={updateTimeDomain}
             precision={5}
             timeDomain={timeDomain}
-            {...scaleInvertedData(caisoRate, '$')}
+            {...scaleInvertedData(caisoRate.data.default!, '$')}
           />
         </>
       }

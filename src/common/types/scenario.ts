@@ -1,9 +1,11 @@
-import { DeferrableFields } from './api';
 import { NavigaderObject, Nullable, ProgressFields, RawPandasFrame } from './common';
-import { DataObject, RawDataObject } from './data';
 import { DERConfiguration, DERStrategy } from './der';
-import { MeterGroup } from './meter';
+import { AbstractMeterGroup, AbstractRawMeterGroup, OriginFile, RawOriginFile } from './meter';
 
+
+/** ============================ Meter Groups ============================== */
+export type RawMeterGroup = RawOriginFile | RawScenario;
+export type MeterGroup = OriginFile | Scenario;
 
 /** ============================ Scenarios ================================= */
 export type ScenarioImpactColumn =
@@ -20,76 +22,52 @@ type DERInfo = {
   der_strategy: DERStrategy;
 };
 
-type ScenarioCommon = {
-  der_simulation_count: number;
-  expected_der_simulation_count: number;
-  metadata: ScenarioMetadata;
-  meter_count: number;
-  name: string;
-};
-
 type ScenarioMetadata = {
   start: string;
   end_limit: string;
   der_strategy: string;
   der_configuration: string;
-  id: string;
-  rate_plan_name: string;
+  is_complete: boolean;
 };
 
-export type RawScenario = DeferrableFields<
-  NavigaderObject<'Scenario'> & ScenarioCommon & RawDataObject<'kw'>,
+export type RawScenario =
+  & AbstractRawMeterGroup
+  & NavigaderObject<'Scenario'>
+  & {
+    der_simulation_count: number;
+    expected_der_simulation_count: number;
+    metadata: ScenarioMetadata;
+  }
 
   // Fields that can be requested but which are not included by default
-  {
+  & Partial<{
     der_simulations: string[];
     ders: [DERInfo];
-    meters: string[];
     meter_group: string;
     report: RawScenarioReport | EmptyReport;
     report_summary: RawScenarioReportSummary | EmptyReportSummary;
-  }
->;
+  }>;
 
-export interface Scenario extends DeferrableFields<
-  NavigaderObject<'Scenario'> &
-  ScenarioCommon &
-  ProgressFields &
-  DataObject &
-  {
-    meter_group_id?: string;
-    progress: {
-      has_run: boolean;
-    }
-  },
+export type Scenario =
+  & AbstractMeterGroup
+  & Omit<RawScenario, 'data' | 'date_range' | 'ders' | 'meter_group' | 'report' | 'report_summary'>
+  & ProgressFields
+  & { meter_group_id?: string }
 
   // Fields that can be requested but which are not included by default
-  {
-    der_simulations: string[];
+  & Partial<{
     der: DERInfo;
-    meters: string[];
     meter_group: MeterGroup;
     report: ScenarioReport;
     report_summary: ScenarioReportSummary;
-  }
-> {}
+  }>;
 
 /** ============================ Report ==================================== */
-type ProcurementKeys =
-  | 'PRC_LMP2018Delta'
-  | 'PRC_LMP2018PostDER'
-  | 'PRC_LMP2018PreDER'
-  | 'PRC_LMP2019Delta'
-  | 'PRC_LMP2019PostDER'
-  | 'PRC_LMP2019PreDER';
-
-export type AggregatedProcurementKeys =
-  | 'PRC_LMPDelta'
-  | 'PRC_LMPPostDER'
-  | 'PRC_LMPPreDER';
-
 export type ProcurementReport = { [key in ProcurementKeys]?: number; };
-type AggregatedProcurementReport = { [Key in AggregatedProcurementKeys]: number; };
+type ProcurementKeys =
+  | 'ProcurementDelta'
+  | 'ProcurementPostDER'
+  | 'ProcurementPreDER';
 
 type UsageReport = {
   UsagePreDER: number;
@@ -110,21 +88,9 @@ type FinancialReport = {
 };
 
 type GHGReport = {
-  CleanNetShort2018PreDER: Nullable<number>;
-  CleanNetShort2018PostDER: Nullable<number>;
-  CleanNetShort2018Delta: Nullable<number>;
-  CleanNetShort2022PreDER: Nullable<number>;
-  CleanNetShort2022PostDER: Nullable<number>;
-  CleanNetShort2022Delta: Nullable<number>;
-  CleanNetShort2026PreDER: Nullable<number>;
-  CleanNetShort2026PostDER: Nullable<number>;
-  CleanNetShort2026Delta: Nullable<number>;
-  CleanNetShort2030PreDER: Nullable<number>;
-  CleanNetShort2030PostDER: Nullable<number>;
-  CleanNetShort2030Delta: Nullable<number>;
-  CARBUnspecifiedPower2013PreDER: Nullable<number>;
-  CARBUnspecifiedPower2013PostDER: Nullable<number>;
-  CARBUnspecifiedPower2013Delta: Nullable<number>;
+  GHGPreDER: Nullable<number>;
+  GHGPostDER: Nullable<number>;
+  GHGDelta: Nullable<number>;
 };
 
 type CustomerMeterReport = {
@@ -149,7 +115,6 @@ type ScenarioReportFieldsCommon = { ID: string; ScenarioID: string; } & Partial<
 export type RawScenarioReportFields = ScenarioReportFieldsCommon & { "SA ID": number; };
 export type ScenarioReportFields =
   & ScenarioReportFieldsCommon
-  & AggregatedProcurementReport
   & { SA_ID: number; };
 
 export type EmptyReport = { index: {}; };
@@ -158,14 +123,11 @@ export type ScenarioReport = {
   [id: string]: ScenarioReportFields;
 };
 
-type RawScenarioReportSummaryFields = Omit<
+export type ScenarioReportSummaryFields = Omit<
   ScenarioReportFieldsCommon,
   'ID' | 'ScenarioID' | 'SimulationRatePlan' | 'MeterRatePlan'
 >;
-export type ScenarioReportSummaryFields =
-  & RawScenarioReportSummaryFields
-  & AggregatedProcurementReport;
 
 type EmptyReportSummary = {};
-export type RawScenarioReportSummary = { 0: RawScenarioReportSummaryFields };
+export type RawScenarioReportSummary = { 0: ScenarioReportSummaryFields };
 export type ScenarioReportSummary = ScenarioReportSummaryFields;

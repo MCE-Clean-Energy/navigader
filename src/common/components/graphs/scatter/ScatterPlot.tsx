@@ -140,8 +140,8 @@ function buildChartConfiguration (
   }));
 
   // To center the origin in the graph, the axes extend equally on both sides
-  const xMaxAbsolute = Math.max(Math.abs(xMin), Math.abs(xMax));
-  const yMaxAbsolute = Math.max(Math.abs(yMin), Math.abs(yMax));
+  const xMaxAbsolute = getMaxAbsolute(xMin, xMax);
+  const yMaxAbsolute = getMaxAbsolute(yMin, yMax);
 
   return {
     data,
@@ -150,4 +150,27 @@ function buildChartConfiguration (
       y: [-yMaxAbsolute, yMaxAbsolute]
     }
   };
+}
+
+/**
+ * Helper for building the chart domain, with graceful management of infinite values
+ *
+ * @param {number} val1: the first value
+ * @param {number} val2: the second value
+ */
+function getMaxAbsolute (val1: number, val2: number) {
+  const isInfinite1 = !isFinite(val1);
+  const isInfinite2 = !isFinite(val2);
+
+  // If neither value is finite, return an arbitrary number. This prevents glitchy rendering
+  if (isInfinite1 && isInfinite2) return 100;
+
+  // Otherwise at least one of the values is finite. If they both are, return the greater of the
+  // two's absolute values. If only one is, return its absolute value.
+  const absoluteValue1 = Math.abs(val1);
+  const absoluteValue2 = Math.abs(val2);
+
+  if (isInfinite1) return absoluteValue2;
+  if (isInfinite2) return absoluteValue1;
+  return Math.max(absoluteValue1, absoluteValue2);
 }

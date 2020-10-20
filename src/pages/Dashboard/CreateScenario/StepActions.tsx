@@ -1,42 +1,41 @@
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
 import { Button, Flex } from 'navigader/components';
-import * as routes from 'navigader/routes';
+import { useRouter } from 'navigader/routes';
 import { setMessage } from 'navigader/store/slices/ui';
-import { MeterGroup } from 'navigader/types';
+import { OriginFile, Scenario } from 'navigader/types';
 import { omitFalsey, printWarning } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 import {
-  DERSelection, stepPaths, stepNumbers, validateCustomerSelections, validateDerSelections
+  CreateScenarioScreenProps, stepPaths, stepNumbers, validateCustomerSelections,
+  validateDerSelections
 } from './common';
 
 
 /** ============================ Types ===================================== */
-type StepActionProps = {
-  activeStep: number;
-
-  // Props needed for validation
-  meterGroups: MeterGroup[] | null;
-  scenarioName: string | null;
-  selectedDers: Partial<DERSelection>[];
-  selectedMeterGroupIds: string[];
-}
+type StepActionProps = CreateScenarioScreenProps & { activeStep: number };
 
 /** ============================ Components ================================ */
-const StepActions: React.FC<StepActionProps> = (props) => {
-  const { activeStep, meterGroups, selectedDers, selectedMeterGroupIds, scenarioName } = props;
-  const history = useHistory();
+export const StepActions: React.FC<StepActionProps> = (props) => {
+  const {
+    activeStep,
+    originFiles,
+    scenarios,
+    state
+  } = props;
+
+  const routeTo = useRouter();
   const dispatch = useDispatch();
   const [createInProcess, setCreateInProcess] = React.useState(false);
   const prevButton = activeStep === 0
     ? null
     : <Button onClick={goBack}>Back</Button>;
 
-  const nextButtonText = activeStep === 2 ? 'Create Scenario' : 'Next';
-  const nextButtonCb = activeStep === 2 ? createScenario : goForward;
+  const onReviewPage = activeStep === stepNumbers.review;
+  const nextButtonText = onReviewPage ? 'Create Scenario' : 'Next';
+  const nextButtonCb = onReviewPage ? createScenario : goForward;
   const nextButton =
     <Button
       color="primary"
@@ -56,23 +55,34 @@ const StepActions: React.FC<StepActionProps> = (props) => {
   /** ========================== Callbacks ================================= */
   function goBack () {
     if (activeStep === 0) return;
-    history.push(stepPaths[activeStep - 1]);
+    routeTo.page(stepPaths[activeStep - 1])();
   }
 
   function goForward () {
     if (activeStep === stepPaths.length - 1) return;
-    history.push(stepPaths[activeStep + 1]);
+    routeTo.page(stepPaths[activeStep + 1])();
   }
 
   /**
    * Validates all inputs and makes a POST request to the back end to create a study/scenarios.
    */
   async function createScenario () {
+    const {
+      costFunctionSelections,
+      derSelections,
+      originFileSelections,
+      name,
+      scenarioSelections
+    } = state;
+
     // Validate all inputs
     if (!(
-      !!scenarioName &&
-      validateDerSelections(selectedDers) &&
-      validateCustomerSelections(getSelectedMeterGroups(meterGroups, selectedMeterGroupIds))
+      !!name &&
+      validateDerSelections(derSelections) &&
+      validateCustomerSelections(
+        getCustomerSelection(originFiles, originFileSelections),
+        getCustomerSelection(scenarios, scenarioSelections)
+      )
     )) {
       printWarning('`createScenario` method ran with invalid inputs!');
       return;
@@ -80,7 +90,14 @@ const StepActions: React.FC<StepActionProps> = (props) => {
 
     try {
       setCreateInProcess(true);
-      const response = await api.postStudy(scenarioName, selectedMeterGroupIds, selectedDers);
+
+      const response = await api.postScenario(
+        name,
+        [...originFileSelections, ...scenarioSelections],
+        derSelections,
+        costFunctionSelections
+      );
+
       if (response.ok) {
         handleStudyCreationSuccess();
       } else {
@@ -97,7 +114,7 @@ const StepActions: React.FC<StepActionProps> = (props) => {
    */
   function handleStudyCreationSuccess () {
     dispatch(setMessage({ msg: 'Scenario created!', type: 'success' }));
-    history.push(routes.dashboard.base);
+    routeTo.dashboard.base();
   }
 
   /**
@@ -117,33 +134,34 @@ const StepActions: React.FC<StepActionProps> = (props) => {
    *   - On the "Review" page, all the above validations must pass and a name must be provided
    */
   function disableNext () {
-    const hasScenarioName = !!scenarioName;
-    const hasValidDerSelections = validateDerSelections(selectedDers);
+    const hasScenarioName = !!state.name;
+    const hasValidDerSelections = validateDerSelections(state.derSelections);
     const hasValidCustomerSelections = validateCustomerSelections(
-      getSelectedMeterGroups(meterGroups, selectedMeterGroupIds)
+      getCustomerSelection(originFiles, state.originFileSelections),
+      getCustomerSelection(scenarios, state.scenarioSelections)
     );
 
     switch (activeStep) {
-      case stepNumbers.selectDers:
-        return !hasValidDerSelections;
-      case stepNumbers.selectCustomers:
-        return !hasValidCustomerSelections;
       case stepNumbers.review:
         return !(
           hasValidDerSelections &&
           hasValidCustomerSelections &&
           hasScenarioName
         ) || createInProcess;
+      case stepNumbers.selectCostFunctions:
+        return false;
+      case stepNumbers.selectCustomers:
+        return !hasValidCustomerSelections;
+      case stepNumbers.selectDers:
+        return !hasValidDerSelections;
     }
   }
 };
 
 /** ============================ Helpers =================================== */
-function getSelectedMeterGroups (meterGroups: MeterGroup[] | null, ids: string[]) {
-  return meterGroups === null
-    ? []
-    : omitFalsey(ids.map(id => _.find(meterGroups, { id })));
+function getCustomerSelection <T extends OriginFile | Scenario>(
+  customers: T[],
+  ids: string[]
+): T[] {
+  return omitFalsey(ids.map(id => _.find(customers, ['id', id])));
 }
-
-/** ============================ Exports =================================== */
-export default StepActions;

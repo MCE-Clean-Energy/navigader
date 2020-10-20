@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { DERCard, Flex, MeterGroupChip, PageHeader, Progress, Tabs } from 'navigader/components';
-import * as routes from 'navigader/routes';
+import { routes } from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
 import { Scenario } from 'navigader/types';
 import { useScenario } from 'navigader/util/hooks';
@@ -22,7 +22,6 @@ const useScenarioContextStyles = makeStylesHook(theme => ({
 
 /** ============================ Components ================================ */
 const ScenarioContext: React.FC<{ scenario: Scenario }> = ({ scenario }) => {
-  const history = useHistory();
   const classes = useScenarioContextStyles();
 
   return (
@@ -36,26 +35,15 @@ const ScenarioContext: React.FC<{ scenario: Scenario }> = ({ scenario }) => {
         }
       </Flex.Item>
       <Flex.Item className={classes.meterGroup}>
-        <MeterGroupChip
-          meterGroup={scenario?.meter_group}
-          onClick={goToMeterGroup}
-          showCount
-        />
+        <MeterGroupChip link meterGroup={scenario?.meter_group} showCount />
       </Flex.Item>
     </Flex.Container>
   );
-
-  /** ========================== Callbacks ================================= */
-  function goToMeterGroup () {
-    if (!scenario || !scenario.meter_group) return;
-    history.push(routes.load.meterGroup(scenario.meter_group.id));
-  }
 };
 
 export const ScenarioResultsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-
-  const { loading, scenario } = useScenario(id as string, {
+  const { loading, scenario } = useScenario(id, {
     data_types: 'default',
     include: ['ders', 'meter_group.*', 'report', 'report_summary'],
     period: 60

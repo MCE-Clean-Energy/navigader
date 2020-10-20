@@ -26,7 +26,7 @@ type IntervalDataGraphProps = {
   month: MonthIndex;
   onTimeDomainChange?: (domain: DateTuple) => void;
   precision?: number;
-  renderInterval?: Tuple<Date>;
+  renderInterval?: DateTuple;
   timeDomain?: DateTuple;
   units?: string;
 };

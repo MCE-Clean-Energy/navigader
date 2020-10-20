@@ -1,31 +1,22 @@
 import * as React from 'react';
 
 import { Button, Grid } from 'navigader/components';
-import { DERConfiguration, DERStrategy } from 'navigader/types';
-import { DerSelectionCard, DERSelection } from './common';
+import { DerSelectionCard, DERSelection, CreateScenarioScreenProps } from './common';
 
-
-/** ============================ Types ===================================== */
-type SelectDERsProps = {
-  derConfigurations?: DERConfiguration[];
-  derStrategies?: DERStrategy[];
-  selectedDers: Partial<DERSelection>[];
-  updateDerSelections: (ders: Partial<DERSelection>[]) => void;
-};
 
 /** ============================ Components ================================ */
-const SelectDERs: React.FC<SelectDERsProps> = (props) => {
-  const { derConfigurations, derStrategies, selectedDers, updateDerSelections } = props;
+export const SelectDERs: React.FC<CreateScenarioScreenProps> = (props) => {
+  const { derConfigurations, derStrategies, state, updateState } = props;
   return (
     <Grid>
       <Grid.Item span={12}>
-        {selectedDers.map((selectedDer, index) =>
+        {state.derSelections.map((selectedDer, index) =>
           <DerSelectionCard
             configurations={derConfigurations}
             delete={removeSelection.bind(null, index)}
             der={selectedDer}
             key={index}
-            numDers={selectedDers.length}
+            numDers={state.derSelections.length}
             strategies={derStrategies}
             update={(der: Partial<DERSelection>) => updateDer(index, der)}
           />
@@ -39,7 +30,7 @@ const SelectDERs: React.FC<SelectDERsProps> = (props) => {
 
   /** ========================== Callbacks ================================= */
   function addDer () {
-    updateDerSelections([...selectedDers, {}]);
+    updateDERSelections([...state.derSelections, {}]);
   }
 
   /**
@@ -48,9 +39,9 @@ const SelectDERs: React.FC<SelectDERsProps> = (props) => {
    * @param {number} index: the array index of the DER to remove
    */
   function removeSelection (index: number) {
-    updateDerSelections([
-      ...selectedDers.slice(0, index),
-      ...selectedDers.slice(index + 1)
+    updateDERSelections([
+      ...state.derSelections.slice(0, index),
+      ...state.derSelections.slice(index + 1)
     ]);
   }
 
@@ -61,13 +52,14 @@ const SelectDERs: React.FC<SelectDERsProps> = (props) => {
    * @param {DERSelection} der: the new attributes of the DER
    */
   function updateDer (index: number, der: Partial<DERSelection>) {
-    updateDerSelections([
-      ...selectedDers.slice(0, index),
-      { ...selectedDers[index], ...der },
-      ...selectedDers.slice(index + 1)
+    updateDERSelections([
+      ...state.derSelections.slice(0, index),
+      { ...state.derSelections[index], ...der },
+      ...state.derSelections.slice(index + 1)
     ]);
   }
-};
 
-/** ============================ Exports =================================== */
-export default SelectDERs;
+  function updateDERSelections (ders: Partial<DERSelection>[]) {
+    updateState({ derSelections: ders });
+  }
+};

@@ -5,7 +5,7 @@ import { makeStylesHook } from 'navigader/styles';
 import { DERConfiguration, DERStrategy, DERStrategyType } from 'navigader/types';
 import { models } from 'navigader/util';
 import _ from 'navigader/util/lodash';
-import { DERSelection } from './util';
+import { DERSelection } from './types';
 
 
 /** ============================ Types ===================================== */

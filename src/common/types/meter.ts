@@ -1,4 +1,3 @@
-import { DeferrableFields } from './api';
 import { NavigaderObject, Nullable, ProgressFields, Tuple } from './common';
 import { DataObject, RawDataObject } from './data';
 
@@ -16,7 +15,7 @@ type MeterCommon = MeterAggregateMetrics & {
     rate_plan_name: string;
     state: string;
   };
-  meter_groups: MeterGroup['id'][];
+  meter_groups: AbstractMeterGroup['id'][];
   object_type: 'CustomerMeter' | 'ReferenceMeter';
 };
 
@@ -24,43 +23,34 @@ export type RawMeter = MeterCommon & RawDataObject<'kw'>;
 export type Meter = MeterCommon & DataObject;
 
 /** ============================ Meter Group Types ========================= */
-type MeterGroupCommon = DataObject & ProgressFields & { date_range: Nullable<Tuple<Date>> };
-type RawMeterGroupCommon = DeferrableFields<
+export type AbstractRawMeterGroup =
   & MeterAggregateMetrics
   & RawDataObject<'kw'>
   & {
+    created_at: string;
+    date_range: Tuple<string>;
+    id: string;
     meter_count: number;
     name: string;
-    date_range: Tuple<string>;
-  },
+  }
 
   // Fields that can be requested but which are not included by default
-  {
-    meters: string[];
-  }
->;
+  & Partial<{ meters: string[] }>;
 
-export type RawOriginFileMeterGroup =
+export type AbstractMeterGroup =
+  & Omit<AbstractRawMeterGroup, 'data' | 'date_range'>
+  & DataObject
+  & { date_range: Nullable<Tuple<Date>> };
+
+/** ============================ Origin File Types ========================= */
+type OriginFileFields =
   & NavigaderObject<'OriginFile'>
-  & RawMeterGroupCommon
   & {
     metadata: {
       expected_meter_count: Nullable<number>;
       filename: string;
-    };
+    }
   };
 
-export type RawCustomerClusterMeterGroup =
-  & NavigaderObject<'CustomerCluster'>
-  & RawMeterGroupCommon;
-
-export type OriginFileMeterGroup =
-  & Omit<RawOriginFileMeterGroup, 'data' | 'date_range'>
-  & MeterGroupCommon;
-
-export type CustomerClusterMeterGroup =
-  & Omit<RawCustomerClusterMeterGroup, 'data' | 'date_range'>
-  & MeterGroupCommon;
-
-export type RawMeterGroup = RawOriginFileMeterGroup | RawCustomerClusterMeterGroup;
-export type MeterGroup = OriginFileMeterGroup | CustomerClusterMeterGroup;
+export type RawOriginFile = AbstractRawMeterGroup & OriginFileFields;
+export type OriginFile = AbstractMeterGroup & OriginFileFields & ProgressFields;

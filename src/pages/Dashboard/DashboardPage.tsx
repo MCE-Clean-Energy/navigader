@@ -1,17 +1,16 @@
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Route, Switch, useHistory } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 
 import * as api from 'navigader/api';
 import {
   Button, Divider, Link, List, Menu, PageHeader, Tooltip, ScenariosTable, Typography
 } from 'navigader/components';
-import * as routes from 'navigader/routes';
+import { routes, useRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { Scenario } from 'navigader/types';
-import { makeCancelableAsync } from 'navigader/util';
-import _ from 'navigader/util/lodash';
+import { hooks } from 'navigader/util';
 import CreateScenario from './CreateScenario'
 import { DeleteDialog } from './DeleteDialog';
 import RenameDialog from './RenameDialog';
@@ -50,7 +49,7 @@ const EmptyTableRow: React.FC = () => {
       <>
         <span>No scenarios have been created.</span>
         &nbsp;
-        <Link to={routes.dashboard.createScenario.selectDers}>Create one.</Link>
+        <Link to={routes.dashboard.createScenario.base}>Create one.</Link>
       </>
   }
 
@@ -58,20 +57,24 @@ const EmptyTableRow: React.FC = () => {
 };
 
 const PageHeaderActions: React.FC<PageHeaderActionsProps> = ({ selections }) => {
-  const history = useHistory();
+  const routeTo = useRouter();
   const classes = useStyles();
   const hasMeterGroups = useSelector(slices.models.selectHasMeterGroups);
 
   if (hasMeterGroups === null) return null;
   if (!hasMeterGroups) {
-    return <Button color="secondary" onClick={goToUpload}>Upload Data</Button>;
+    return <Button color="secondary" onClick={routeTo.upload}>Upload Data</Button>;
   }
 
   return (
     <>
       <Tooltip delay title="Select scenarios from the table to compare">
         <div className={classes.compareButton}>
-          <Button color="secondary" disabled={selections.length < 2} onClick={compareScenarios}>
+          <Button
+            color="secondary"
+            disabled={selections.length < 2}
+            onClick={routeTo.scenario.compare(selections)}
+          >
             Compare Scenarios
           </Button>
         </div>
@@ -80,46 +83,28 @@ const PageHeaderActions: React.FC<PageHeaderActionsProps> = ({ selections }) => 
         delay
         title="A scenario is a simulation of a DER customer program with parameters set by the user"
       >
-        <Button color="secondary" onClick={createScenario}>New Scenario</Button>
+        <Button color="secondary" onClick={routeTo.dashboard.createScenario.base}>New Scenario</Button>
       </Tooltip>
     </>
   );
-
-  /** ========================== Callbacks ================================= */
-  function compareScenarios () {
-    history.push(routes.scenario.compare(_.map(selections, 'id')));
-  }
-
-  function createScenario () {
-    history.push(routes.dashboard.createScenario.selectDers);
-  }
-
-  function goToUpload () {
-    history.push(routes.upload);
-  }
 };
 
 const DashboardTable: React.FC = () => {
   const [deleteScenario, setDeleteScenario] = React.useState<Scenario>();
   const [renameScenario, setRenameScenario] = React.useState<Scenario>();
   const [selections, setSelections] = React.useState<Scenario[]>([]);
-  const history = useHistory();
+  const routeTo = useRouter();
   const dispatch = useDispatch();
   const hasMeterGroups = useSelector(slices.models.selectHasMeterGroups);
 
   // Check if there are any meter groups-- if not, we link to the upload page
-  React.useEffect(
-    makeCancelableAsync(
-      async () => {
-        // Don't fetch the meter groups if we already know how many we have
-        if (hasMeterGroups !== null) return;
-        return api.getMeterGroups({ page: 1, page_size: 1 });
-      },
-      (res) => {
-        if (res === undefined) return;
-        dispatch(slices.models.updateHasMeterGroups(res.count >= 1));
-      }
-    )
+  hooks.useAsync(
+    async () => {
+      // Don't fetch the meter groups if we already know how many we have
+      if (hasMeterGroups !== null) return;
+      return api.getMeterGroups({ page: 1, page_size: 1 });
+    },
+    res => dispatch(slices.models.updateHasMeterGroups(res.count >= 1))
   );
 
   return (
@@ -139,7 +124,7 @@ const DashboardTable: React.FC = () => {
             >
               <List.Item
                 disabled={!scenario.progress.is_complete}
-                onClick={() => viewScenario(scenario.id)}
+                onClick={routeTo.scenario.details(scenario)}
               >
                 <List.Item.Icon icon="plus" />
                 <List.Item.Text>View</List.Item.Text>
@@ -179,10 +164,6 @@ const DashboardTable: React.FC = () => {
   /** ========================== Callbacks ================================= */
   function openRenameScenarioDialog (scenario: Scenario) {
     setRenameScenario(scenario);
-  }
-
-  function viewScenario (scenarioId: string) {
-    history.push(routes.scenario(scenarioId));
   }
 
   async function openDeleteScenarioDialog (scenario: Scenario) {

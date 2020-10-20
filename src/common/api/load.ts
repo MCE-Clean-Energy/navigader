@@ -13,8 +13,11 @@ type MeterQueryParams = PaginationQueryParams & DataTypeParams & {
   meterGroupId: MeterGroup['id'];
 };
 
-type MeterGroupQueryParams = DynamicRestParams<'meters'> & DataTypeParams;
 export type MeterGroupsQueryParams = MeterGroupQueryParams & PaginationQueryParams;
+type MeterGroupQueryParams =
+  & DynamicRestParams<'meters'>
+  & DataTypeParams
+  & { object_type?: MeterGroup['object_type'] };
 
 /** Responses */
 type GetMeterGroupsResponse = { meter_groups: RawMeterGroup[] };

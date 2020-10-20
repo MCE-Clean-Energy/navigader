@@ -1,10 +1,10 @@
 import { DateTime } from 'luxon';
 
 import {
-  AggregatedProcurementKeys, CAISORate, DataTypeMap, GHGRate, isRawScenarioReport,
-  isRawScenarioReportSummary, Meter, MeterGroup, PandasFrame, ProcurementReport, RawCAISORate,
-  RawDataTypeMap, RawGHGRate, RawMeter, RawMeterGroup, RawPandasFrame, RawScenario, Scenario,
-  ScenarioReport, ScenarioReportFields
+  AbstractMeterGroup, AbstractRawMeterGroup, CAISORate, DataTypeMap, GHGRate, isRawScenarioReport,
+  isRawScenarioReportSummary, Meter, MeterGroup, OriginFile, PandasFrame, RawCAISORate,
+  RawDataTypeMap, RawGHGRate, RawMeter, RawMeterGroup, RawOriginFile, RawPandasFrame, RawScenario,
+  Scenario, ScenarioReport, ScenarioReportFields
 } from 'navigader/types';
 import { Frame288Numeric, makeIntervalData, percentOf } from '../data';
 import _ from '../lodash';
@@ -30,39 +30,32 @@ export function serializeMeter (meter: Meter): RawMeter {
 const NOT_A_TIME = 'NaT';
 
 /**
- * Basic parsing function for meter groups
+ * Basic parsing function for meter groups. This is leveraged by `parseOriginFile` and
+ * `parseScenario`
  *
- * @param {RawMeterGroup} meterGroup: the raw meter group object obtained from the back-end
+ * @param {AbstractRawMeterGroup} meterGroup: the raw meter group object to parse
  */
-export function parseMeterGroup (meterGroup: RawMeterGroup): MeterGroup {
-  const data = parseDataField(meterGroup.data, meterGroup.name, 'kw', 'index');
-
-  // customer clusters are always considered to be completed
-  if (meterGroup.object_type === 'CustomerCluster') {
-    return {
-      ...meterGroup,
-      data,
-      date_range: parseDateRange(meterGroup.date_range),
-      progress: { is_complete: true, percent_complete: 100 }
-    };
-  }
-
-  const percentComplete = meterGroup.metadata.expected_meter_count === null
-    ? 0
-    : percentOf(
-      meterGroup.meter_count,
-      meterGroup.metadata.expected_meter_count
-    );
-
+function parseAbstractMeterGroup (meterGroup: AbstractRawMeterGroup): AbstractMeterGroup {
   return {
     ...meterGroup,
-    data,
-    date_range: parseDateRange(meterGroup.date_range),
-    progress: {
-      is_complete: percentComplete === 100,
-      percent_complete: parseFloat(percentComplete.toFixed(1))
-    }
+    data: parseDataField(meterGroup.data, meterGroup.name, 'kw', 'index'),
+    date_range: parseDateRange(meterGroup.date_range)
   };
+}
+
+/**
+ * Parses a raw meter group into a meter group. This discerns what type of meter group the input
+ * object is and calls the appropriate parsing method.
+ *
+ * @param {RawMeterGroup} rawMeterGroup: the `OriginFile` or `Scenario` object to parse
+ */
+export function parseMeterGroup (rawMeterGroup: RawMeterGroup): MeterGroup {
+  switch (rawMeterGroup.object_type) {
+    case 'OriginFile':
+      return parseOriginFile(rawMeterGroup);
+    case 'Scenario':
+      return parseScenario(rawMeterGroup);
+  }
 }
 
 /**
@@ -70,11 +63,11 @@ export function parseMeterGroup (meterGroup: RawMeterGroup): MeterGroup {
  *
  * @param {Tuple<String>} range: the range of the meter group as provided by the back end
  */
-function parseDateRange (range: RawMeterGroup['date_range']): MeterGroup['date_range'] {
+function parseDateRange (range: AbstractRawMeterGroup['date_range']): AbstractMeterGroup['date_range'] {
   return range.includes(NOT_A_TIME) ? null : [parseDate(range[0]), parseDate(range[1])];
 }
 
-export function serializeMeterGroup(meterGroup: MeterGroup): RawMeterGroup {
+export function serializeMeterGroup (meterGroup: AbstractMeterGroup): AbstractRawMeterGroup {
   const { date_range } = meterGroup;
   return {
     ...meterGroup,
@@ -85,66 +78,90 @@ export function serializeMeterGroup(meterGroup: MeterGroup): RawMeterGroup {
   };
 }
 
+/** ============================ Origin Files ============================== */
+export function parseOriginFile (rawOriginFile: RawOriginFile): OriginFile {
+  const percentComplete = rawOriginFile.metadata.expected_meter_count === null
+    ? 0
+    : percentOf(
+      rawOriginFile.meter_count,
+      rawOriginFile.metadata.expected_meter_count
+    );
+
+  const unchangedFields = _.pick(rawOriginFile,
+    'metadata',
+    'object_type'
+  );
+
+  return {
+    ...parseAbstractMeterGroup(rawOriginFile),
+    ...unchangedFields,
+    progress: {
+      is_complete: percentComplete === 100,
+      percent_complete: parseFloat(percentComplete.toFixed(1))
+    }
+  };
+}
+
+export function serializeOriginFile (originFile: OriginFile): RawOriginFile {
+  const unchangedFields = _.pick(originFile,
+    'metadata',
+    'object_type'
+  );
+
+  return {
+    // Serialize the fields inherited from `MeterGroup`
+    ...serializeMeterGroup(originFile),
+    ...unchangedFields,
+  };
+}
+
 /** ============================ Scenarios ================================= */
 /**
  * Basic parsing function for converting a RawScenario into a Scenario
  *
- * @param {RawScenario} scenario: The raw scenario object to parse
+ * @param {RawScenario} rawScenario: The raw scenario object to parse
  * @param {RawMeterGroup[]} [rawMeterGroups]: set of raw meter groups from which to draw the one
  *   associated with the scenario
  */
-export function parseScenario (scenario: RawScenario, rawMeterGroups?: RawMeterGroup[]): Scenario {
-  const { der_simulation_count, expected_der_simulation_count } = scenario;
+export function parseScenario (
+  rawScenario: RawScenario,
+  rawMeterGroups?: RawMeterGroup[]
+): Scenario {
+  const { der_simulation_count, expected_der_simulation_count } = rawScenario;
   const percentComplete = expected_der_simulation_count === 0
     ? 0
     : percentOf(der_simulation_count, expected_der_simulation_count);
 
-  const hasRun = percentComplete === 100;
-  const report = parseReport(scenario.report);
-  const reportSummary = parseReportSummary(scenario.report_summary);
-
-  // If we have the report or the report summary (i.e. it isn't undefined) and it's empty, then the
-  // report hasn't been built yet and so the scenario hasn't undergone aggregation. If we have
-  // neither the report nor the summary, it's likely that the request didn't ask for them and we
-  // can't tell if it's aggregated or not and will assume it hasn't
-  const hasAggregated = scenario.report === undefined && scenario.report_summary === undefined
-    ? false
-    : Boolean(hasRun && (report || reportSummary));
-
-  const unchangedFields = _.pick(scenario,
-    'created_at',
+  const reportSummary = parseReportSummary(rawScenario.report_summary);
+  const unchangedFields = _.pick(rawScenario,
     'der_simulation_count',
     'der_simulations',
     'expected_der_simulation_count',
-    'id',
     'metadata',
-    'meter_count',
-    'meters',
-    'name',
     'object_type'
   );
 
   // Mix in the meter group
   let meterGroup;
-  if (scenario.meter_group) {
-    const scenarioMeterGroup = _.find(rawMeterGroups, { id: scenario.meter_group });
+  if (rawScenario.meter_group) {
+    const scenarioMeterGroup = _.find(rawMeterGroups, { id: rawScenario.meter_group });
     if (scenarioMeterGroup) {
       meterGroup = parseMeterGroup(scenarioMeterGroup);
     }
   }
 
   return {
+    // Parse the fields inherited from `MeterGroup`
+    ...parseAbstractMeterGroup(rawScenario),
     ...unchangedFields,
-    data: parseDataField(scenario.data || {}, scenario.name, 'kw', 'index'),
-    der: scenario.ders ? scenario.ders[0] : undefined,
+    der: rawScenario.ders ? rawScenario.ders[0] : undefined,
     meter_group: meterGroup,
-    meter_group_id: scenario.meter_group,
+    meter_group_id: rawScenario.meter_group,
     progress: {
-      is_complete: hasAggregated,
-      has_run: hasRun,
+      is_complete: rawScenario.metadata.is_complete,
       percent_complete: parseFloat(percentComplete.toFixed(1))
     },
-    report: parseReport(scenario.report),
+    report: parseReport(rawScenario.report),
     report_summary: reportSummary
   };
 }
@@ -166,46 +183,8 @@ export function parseReport (report: RawScenario['report']): ScenarioReport | un
       )
     );
 
-    return [
-      simulationId,
-      {
-        ...simulationFields,
-        ...parseReportProcurementFields(simulationFields)
-      } as ScenarioReportFields
-    ];
+    return [simulationId, simulationFields as ScenarioReportFields];
   }));
-}
-
-function parseReportSummary (summary: RawScenario['report_summary']) {
-  if (!isRawScenarioReportSummary(summary)) return undefined;
-  return {
-    ...summary[0],
-    ...parseReportProcurementFields(summary[0])
-  };
-}
-
-/**
- * Reduces the procurement costs from multiple years down to a single value
- *
- * @param {ProcurementReport} fields: the procurement data fields
- */
-function parseReportProcurementFields (fields: ProcurementReport) {
-  const {
-    PRC_LMP2018Delta,
-    PRC_LMP2018PostDER,
-    PRC_LMP2018PreDER,
-    PRC_LMP2019Delta,
-    PRC_LMP2019PostDER,
-    PRC_LMP2019PreDER,
-    ...rest
-  } = fields;
-
-  return {
-    ...rest,
-    PRC_LMPDelta: _.sumBy([PRC_LMP2018Delta, PRC_LMP2019Delta]),
-    PRC_LMPPostDER: _.sumBy([PRC_LMP2018PostDER, PRC_LMP2019PostDER]),
-    PRC_LMPPreDER: _.sumBy([PRC_LMP2018PreDER, PRC_LMP2019PreDER])
-  };
 }
 
 export function serializeReport (report: Scenario['report']) {
@@ -217,10 +196,6 @@ export function serializeReport (report: Scenario['report']) {
     ...reportRows.map(obj => Object.keys(obj))
   ) as Set<keyof ScenarioReportFields>;
 
-  // Omit the aggregated procurement fields as they are computed
-  const procKeys: AggregatedProcurementKeys[] = ['PRC_LMPDelta', 'PRC_LMPPostDER', 'PRC_LMPPreDER'];
-  procKeys.forEach((field) => reportFields.delete(field));
-
   // For each of the fields, get each row's value
   const reportPairs = Array.from(reportFields).map((field) => {
     // "SA_ID" is handled specially
@@ -231,31 +206,27 @@ export function serializeReport (report: Scenario['report']) {
   return _.fromPairs(reportPairs) as RawScenario['report'];
 }
 
-function serializeReportSummary (summary: Scenario['report_summary']) {
-  if (!summary) return;
+function parseReportSummary (summary: RawScenario['report_summary']) {
+  return isRawScenarioReportSummary(summary) ? summary[0] : undefined;
+}
 
-  // Omit the aggregated procurement fields as they are computed
-  const procKeys: AggregatedProcurementKeys[] = ['PRC_LMPDelta', 'PRC_LMPPostDER', 'PRC_LMPPreDER'];
-  return { 0: _.omit(summary, ...procKeys) };
+function serializeReportSummary (summary: Scenario['report_summary']) {
+  return summary ? { 0: summary } : undefined;
 }
 
 export function serializeScenario (scenario: Scenario): RawScenario {
   const unchangedFields = _.pick(scenario,
-    'created_at',
     'der_simulation_count',
     'der_simulations',
     'expected_der_simulation_count',
-    'id',
     'metadata',
-    'meter_count',
-    'meters',
-    'name',
     'object_type'
   );
 
   return {
+    // Serialize the fields inherited from `MeterGroup`
+    ...serializeMeterGroup(scenario),
     ...unchangedFields,
-    data: serializeDataField(scenario.data, 'kw', 'index'),
     ders: scenario.der && [scenario.der],
     meter_group: scenario.meter_group_id,
     report: serializeReport(scenario.report),
@@ -271,7 +242,7 @@ export function parseGHGRate (rate: RawGHGRate): GHGRate {
       name: rate.name,
       units: 'tCO2/kW'
     }) : undefined,
-    id: rate.id.toString(),
+    id: rate.id,
 
     // This is declared as part of the `RawGHGRate` type but it isn't provided by the backend
     object_type: 'GHGRate'
@@ -282,7 +253,7 @@ export function serializeGHGRate (rate: GHGRate): RawGHGRate {
   return {
     ...rate,
     data: rate.data?.frame,
-    id: +rate.id
+    id: rate.id
   }
 }
 

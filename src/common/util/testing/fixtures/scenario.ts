@@ -7,7 +7,9 @@ export function makeRawScenario (scenarioProps?: Partial<RawScenario>): RawScena
 }
 
 export function makeScenario (scenarioProps?: Partial<Scenario>): Scenario {
-  return Object.assign({}, defaultScenario, scenarioProps);
+  return Object.assign({}, defaultScenario, scenarioProps, {
+    meter_group_id: scenarioProps?.meter_group?.id
+  });
 }
 
 /** ============================ Fixture data ============================== */
@@ -17,6 +19,7 @@ const defaultRawScenario: RawScenario = {
   created_at: '2020-03-26T00:13:25.451606',
   object_type: 'Scenario',
   data: {},
+  date_range: ['2019-01-01T00:00:00', '2020-01-01T00:00:00'],
   ders: [
     {
       der_configuration: {
@@ -47,12 +50,11 @@ const defaultRawScenario: RawScenario = {
   meter_count: 16,
   meter_group: '6c3e9adc-9b42-4d36-90fa-4a95d7eddad7',
   metadata: {
-    id: '9071c48a-d5d3-48d0-83da-c06863e8682a',
     start: '1677-09-21T00:12:43.145225',
     end_limit: '2262-04-11T23:47:16.000001',
     der_strategy: 'b6e80862-1483-4648-9a0a-5b9830db6715',
     der_configuration: '5a263b58-3dda-4b2d-95d4-eae17fd5d6bc',
-    rate_plan_name: 'E-1 - Baseline Region Q'
+    is_complete: false
   }
 };
 
@@ -62,6 +64,7 @@ const defaultScenario: Scenario = {
   created_at: '2020-03-26T00:13:25.451606',
   object_type: 'Scenario',
   data: {},
+  date_range: null,
   der: {
     der_configuration: {
       id: '5a263b58-3dda-4b2d-95d4-eae17fd5d6bc',
@@ -90,15 +93,13 @@ const defaultScenario: Scenario = {
   meter_count: 16,
   meter_group: undefined,
   metadata: {
-    id: '9071c48a-d5d3-48d0-83da-c06863e8682a',
-    start: '1677-09-21T00:12:43.145225',
-    end_limit: '2262-04-11T23:47:16.000001',
-    der_strategy: 'b6e80862-1483-4648-9a0a-5b9830db6715',
     der_configuration: '5a263b58-3dda-4b2d-95d4-eae17fd5d6bc',
-    rate_plan_name: 'E-1 - Baseline Region Q'
+    der_strategy: 'b6e80862-1483-4648-9a0a-5b9830db6715',
+    end_limit: '2262-04-11T23:47:16.000001',
+    start: '1677-09-21T00:12:43.145225',
+    is_complete: false
   },
   progress: {
-    has_run: false,
     is_complete: false,
     percent_complete: 0,
   },

@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import {
-  CAISORate, DERConfiguration, DERStrategy, GHGRate, Meter, MeterGroup, RatePlan, RawCAISORate,
-  RawGHGRate, RawMeter, RawMeterGroup, RawScenario, Scenario
+  CAISORate, DERConfiguration, DERStrategy, GHGRate, isScenario, Meter, OriginFile, RatePlan,
+  RawCAISORate, RawGHGRate, RawMeter, RawOriginFile, RawScenario, Scenario
 } from 'navigader/types';
 import { serializers } from 'navigader/util';
 import _ from 'navigader/util/lodash';
@@ -20,7 +20,7 @@ type ModelClassInterior =
   | RatePlan
   | RawGHGRate
   | RawMeter
-  | RawMeterGroup
+  | RawOriginFile
   | RawScenario;
 
 export type ModelClassExterior =
@@ -29,7 +29,7 @@ export type ModelClassExterior =
   | DERStrategy
   | GHGRate
   | Meter
-  | MeterGroup
+  | OriginFile
   | RatePlan
   | Scenario;
 
@@ -51,8 +51,7 @@ const initialState: ModelsSlice = {
   hasMeterGroups: null,
   meterGroups: [],
   meters: [],
-  ratePlans: [],
-  scenarios: []
+  ratePlans: []
 };
 
 /**
@@ -68,7 +67,7 @@ const slice = createSlice({
       const slice = getSliceForModel(state, model);
 
       // If we find the model in the slice, splice it out
-      const modelIndex = _.findIndex(slice, { id: model.id });
+      const modelIndex = _.findIndex(slice, ['id', model.id]);
       if (modelIndex !== -1) {
         slice.splice(modelIndex, 1);
       }
@@ -103,10 +102,18 @@ export const selectMeterGroups = (state: RootState) => state.models.meterGroups.
 export const selectMeters = (state: RootState) => state.models.meters.map(serializers.parseMeter);
 export const selectHasMeterGroups = (state: RootState) => state.models.hasMeterGroups;
 export const selectRatePlans = (state: RootState) => state.models.ratePlans;
-export const selectScenarios = (state: RootState) =>
-  state.models.scenarios.map(
-    scenario => serializers.parseScenario(scenario, state.models.meterGroups)
-  );
+
+export const selectScenario = (id: Scenario['id']) => (state: RootState) => {
+  const scenarios = _.filter(state.models.meterGroups, isScenario);
+  const scenario = _.find(scenarios, { id });
+  return scenario ? serializers.parseScenario(scenario, state.models.meterGroups) : undefined;
+};
+
+export const selectScenarios = (state: RootState) => {
+  const scenarios = _.filter(state.models.meterGroups, isScenario);
+  return scenarios.map(scenario => serializers.parseScenario(scenario, state.models.meterGroups));
+};
+
 
 /** ============================ Reducer methods =========================== */
 /**
@@ -118,7 +125,7 @@ export const selectScenarios = (state: RootState) =>
  */
 function addOrUpdateModel (state: ModelsSlice, model: ModelClassInterior) {
   const slice = getSliceForModel(state, model);
-  const modelIndex = _.findIndex(slice, { id: model.id });
+  const modelIndex = _.findIndex(slice, ['id', model.id]);
 
   if (modelIndex === -1) {
     // Add it to the store
@@ -138,23 +145,21 @@ function getSliceForModel (
 ): Array<ModelClassInterior> {
   switch (model.object_type) {
     // case 'EVSEConfiguration':
+    // case 'EVSEStrategy':
     case 'BatteryConfiguration':
     case 'SolarPVConfiguration':
       return state.derConfigurations;
-    // case 'EVSEStrategy':
     case 'BatteryStrategy':
     case 'SolarPVStrategy':
       return state.derStrategies;
     case 'CAISORate':
       return state.caisoRates;
-    case 'CustomerCluster':
     case 'OriginFile':
+    case 'Scenario':
       return state.meterGroups;
     case 'CustomerMeter':
     case 'ReferenceMeter':
       return state.meters;
-    case 'Scenario':
-      return state.scenarios;
     case 'GHGRate':
       return state.ghgRates;
     case 'RatePlan':
@@ -179,9 +184,8 @@ function prepareModel (model: ModelClassExterior): ModelClassInterior {
       return model;
     case 'CAISORate':
       return serializers.serializeCAISORate(model);
-    case 'CustomerCluster':
     case 'OriginFile':
-      return serializers.serializeMeterGroup(model);
+      return serializers.serializeOriginFile(model);
     case 'CustomerMeter':
     case 'ReferenceMeter':
       return serializers.serializeMeter(model);

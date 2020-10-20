@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Route, Switch } from 'react-router-dom';
 
-import * as routes from 'navigader/routes';
+import { routes } from 'navigader/routes';
 import { MeterGroupPage } from './MeterGroup';
 import { UploadedFiles } from './UploadedFiles';
 

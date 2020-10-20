@@ -10,11 +10,6 @@ describe('Meter utility methods', () => {
       expect(meterGroup.isSufficientlyIngested(undefined)).toBeFalsy();
     });
 
-    it('returns `true` if a customer cluster is provided', () => {
-      const customerCluster = fixtures.makeCustomerCluster();
-      expect(meterGroup.isSufficientlyIngested(customerCluster)).toBeTruthy();
-    });
-
     it('returns `true` if a customer cluster is at least 95% finished', () => {
       _.range(101).forEach((meter_count) => {
         const isSufficientlyIngested = meterGroup.isSufficientlyIngested(

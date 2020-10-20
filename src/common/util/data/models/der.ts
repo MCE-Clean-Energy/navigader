@@ -1,4 +1,4 @@
-import { DERStrategy } from 'navigader/types';
+import { DERStrategy, GHGRate } from 'navigader/types';
 
 
 /**
@@ -14,4 +14,21 @@ export function getStrategyDescription (strategy: DERStrategy) {
   return contentEnd === -1
     ? strategy.description
     : strategy.description.slice(0, contentEnd).trim();
+}
+
+/**
+ * Renders the a GHG rate name. The Clean Net Short rates all have the same name, so they must be
+ * disambiguated.
+ *
+ * @param {GHGRate} rate: the GHG rate object to render
+ */
+export function renderGHGRate (rate: GHGRate) {
+  if (rate.name !== 'Clean Net Short') return rate.name;
+
+  // CNS rates get special attention because their names don't include the year
+  const yearRegex = /^(?<year>\d{4})-\d{2}-\d{2}/;
+  const regexMatch = rate.effective.match(yearRegex);
+  const year = regexMatch?.groups?.year;
+
+  return year ? `${rate.name} ${year}` : rate.name;
 }

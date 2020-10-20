@@ -3,7 +3,7 @@ import * as React from 'react';
 import { makeStylesHook } from 'navigader/styles';
 import { DERConfiguration, DERStrategy } from 'navigader/types';
 import { models } from 'navigader/util';
-import { Card } from '../Card';
+import { Card, CardProps } from '../Card';
 import * as Flex from '../Flex';
 import { Statistic } from '../Statistic';
 import { Tooltip } from '../Tooltip';
@@ -12,6 +12,7 @@ import { DERIcon } from './DERIcon';
 
 /** ============================ Types ===================================== */
 type DERCardProps = {
+  CardProps?: CardProps;
   className?: string;
   configuration?: DERConfiguration;
   strategy?: DERStrategy;
@@ -28,12 +29,12 @@ const useStyles = makeStylesHook<DERCardProps>(theme => ({
 
 /** ============================ Components ================================ */
 export const DERCard: React.FC<DERCardProps> = (props) => {
-  const { className, configuration, strategy } = props;
+  const { CardProps, className, configuration, strategy } = props;
   const classes = useStyles(props);
   const derType = configuration?.der_type || strategy?.der_type;
 
   return (
-    <Card className={className} raised>
+    <Card {...CardProps} className={className}>
       <Flex.Container className={classes.flexContainer}>
         <Flex.Item>
           <Statistic

@@ -149,9 +149,9 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                 <Table.Cell>{simulation.SA_ID}</Table.Cell>
                 <Table.Cell>{simulation.MeterRatePlan}</Table.Cell>
                 <Table.Cell align="right">{formatters.commas(formatters.maxDecimals(simulation.UsageDelta, 2)) ?? '-'}</Table.Cell>
-                <Table.Cell align="right">{formatters.commas(formatters.maxDecimals(simulation.CleanNetShort2022Delta, 2)) ?? '-'}</Table.Cell>
+                <Table.Cell align="right">{formatters.commas(formatters.maxDecimals(simulation.GHGDelta, 2)) ?? '-'}</Table.Cell>
                 <Table.Cell align="right">{formatters.commas(formatters.maxDecimals(simulation.RADelta, 2)) ?? '-'}</Table.Cell>
-                <Table.Cell align="right">{formatters.dollars(simulation.PRC_LMPDelta) ?? '-'}</Table.Cell>
+                <Table.Cell align="right">{formatters.dollars(simulation.ProcurementDelta) ?? '-'}</Table.Cell>
                 <Table.Cell align="right">{formatters.dollars(simulation.BillRevenueDelta) ?? '-'}</Table.Cell>
                 <Table.Cell align="right">{formatters.dollars(simulation.ExpenseDelta) ?? '-'}</Table.Cell>
                 <Table.Cell align="right">{formatters.dollars(simulation.ProfitDelta) ?? '-'}</Table.Cell>

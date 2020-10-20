@@ -6,6 +6,7 @@
  *
  * Note that we cherry-pick methods for smaller webpack bundles.
  */
+import clone from 'lodash/clone';
 import defaults from 'lodash/defaults';
 import every from 'lodash/every';
 import filter from 'lodash/filter';
@@ -20,6 +21,7 @@ import includes from 'lodash/includes';
 import isArray from 'lodash/isArray';
 import isDate from 'lodash/isDate';
 import isEmpty from 'lodash/isEmpty';
+import isEqual from 'lodash/isEqual';
 import isUndefined from 'lodash/isUndefined';
 import map from 'lodash/map';
 import merge from 'lodash/merge';
@@ -37,6 +39,7 @@ import zip from 'lodash/zip';
 
 
 const _ = {
+  clone,
   defaults,
   every,
   filter,
@@ -51,6 +54,7 @@ const _ = {
   isArray,
   isDate,
   isEmpty,
+  isEqual,
   isUndefined,
   map,
   merge,

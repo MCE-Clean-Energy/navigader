@@ -1,6 +1,6 @@
 import { fireEvent } from '@testing-library/react';
 
-import * as routes from 'navigader/routes';
+import { routes } from 'navigader/routes';
 import { fixtures, makePaginationResponse, mockFetch, renderAppRoute } from 'navigader/util/testing';
 
 

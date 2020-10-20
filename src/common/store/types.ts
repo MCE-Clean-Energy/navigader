@@ -1,6 +1,6 @@
 import {
   AlertType, DERStrategy, DERConfiguration, Nullable, RatePlan, RawCAISORate, RawGHGRate, RawMeter,
-  RawMeterGroup, RawScenario
+  RawMeterGroup
 } from 'navigader/types';
 
 
@@ -14,7 +14,6 @@ export type ModelsSlice = {
   meterGroups: RawMeterGroup[];
   meters: RawMeter[];
   ratePlans: RatePlan[];
-  scenarios: RawScenario[];
 };
 
 export type UiSlice = {
@@ -31,3 +30,9 @@ export type RootState = {
   models: ModelsSlice
   ui: UiSlice;
 };
+
+// Updates the default state type used by `react-redux` so we don't need to manually specify the
+// state type in every `useSelector` call
+declare module 'react-redux' {
+  interface DefaultRootState extends RootState {}
+}

@@ -8,6 +8,7 @@ import { Icon, ValidIcon } from './Icon';
 
 /** ============================ Types ===================================== */
 export type ChipProps = {
+  className?: string;
   color?: 'primary' | 'secondary' | 'default';
   disabled?: boolean;
   icon?: ValidIcon;
@@ -24,7 +25,7 @@ const useStyles = makeStylesHook(theme => ({
    * See https://material-ui.com/customization/components/#pseudo-classes
    */
   disabled: {},
-  
+
   root: {
     boxShadow: theme.shadows[3],
     '&$disabled': {
@@ -40,19 +41,21 @@ export const Chip = React.forwardRef<HTMLDivElement, ChipProps>(
       color = 'default',
       disabled = false,
       icon,
+      onClick,
       ...rest
     } = props;
-    
+
     const classes = useStyles();
     const chipProps = omitFalsey({
       classes,
       color,
       disabled,
       icon: icon ? <Icon name={icon} /> : null,
+      onClick: disabled ? undefined : onClick,
       ref,
       ...rest
     });
-    
+
     return <MuiChip {...chipProps} />;
   }
 );
