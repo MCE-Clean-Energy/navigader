@@ -1,11 +1,17 @@
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 
-import { Button, Grid, PageHeader, Progress } from 'navigader/components';
-import { useRouter } from 'navigader/routes';
+import * as api from 'navigader/api';
+import {
+  Button, Divider, Link, List, Menu, PageHeader, PaginationCallbackArgs, StatusIndicator, Table,
+  Typography
+} from 'navigader/components';
+import { routes, useRouter } from 'navigader/routes';
+import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
-import { useOriginFiles } from 'navigader/util/hooks';
-import _ from 'navigader/util/lodash';
-import { MeterGroupCard } from './MeterGroupCard';
+import { OriginFile, PaginationSet } from 'navigader/types';
+import { formatters, models } from 'navigader/util';
+import { DeleteDialog } from './DeleteDialog';
 
 
 /** ============================ Styles ==================================== */
@@ -22,14 +28,26 @@ const useStyles = makeStylesHook(theme => ({
 export const UploadedFiles = () => {
   const routeTo = useRouter();
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const [deleteOriginFile, setDeleteOriginFile] = React.useState<OriginFile>();
 
-  const originFiles = useOriginFiles({
-    data_types: 'average',
-    page: 1,
-    page_size: 50
-  });
+  const getOriginFiles = React.useCallback(
+    async (state: PaginationCallbackArgs) => {
+      const response = await api.getMeterGroups({
+        object_type: 'OriginFile',
+        page: state.currentPage + 1,
+        page_size: state.rowsPerPage,
+        sortKey: state.key,
+        sortDir: state.dir
+      }) as PaginationSet<OriginFile>;
 
-  const sortedMeterGroups = _.sortBy(originFiles, 'created_at').reverse();
+      // Add the models to the store and yield the pagination results
+      dispatch(slices.models.updateModels(response.data));
+      return response;
+    },
+    [dispatch]
+  );
+
   return (
     <>
       <PageHeader
@@ -46,19 +64,109 @@ export const UploadedFiles = () => {
         title="Uploaded Files"
       />
       <div className={classes.pageContent}>
-        <Grid>
-          {originFiles.loading
-            ? <Progress circular />
-            : (
-              sortedMeterGroups.map(meterGroup =>
-                <Grid.Item key={meterGroup.id} span={6}>
-                  <MeterGroupCard originFile={meterGroup} />
-                </Grid.Item>
-              )
-            )
+        <Table
+          aria-label="meter table"
+          dataFn={getOriginFiles}
+          dataSelector={slices.models.selectOriginFiles}
+          initialSorting={{
+            dir: 'desc',
+            key: 'created_at'
+          }}
+          raised
+          stickyHeader
+          title="Uploads"
+        >
+          {(originFiles, EmptyRow) =>
+            <>
+              <Table.Head>
+                <Table.Row>
+                  <Table.Cell sortBy="name">Name</Table.Cell>
+                  <Table.Cell sortBy="created_at" sortDir="desc">Uploaded</Table.Cell>
+                  <Table.Cell>Status</Table.Cell>
+                  <Table.Cell align="right">Meter Count</Table.Cell>
+                  <Table.Cell align="right" sortBy="max_monthly_demand" sortDir="desc">
+                    Maximum Monthly Demand (kW)
+                  </Table.Cell>
+                  <Table.Cell align="right" sortBy="total_kwh" sortDir="desc">Total kWh</Table.Cell>
+                  <Table.Cell align="right">Menu</Table.Cell>
+                </Table.Row>
+              </Table.Head>
+              <Table.Body>
+                {/** Only renders if there's no data */}
+                <EmptyRow colSpan={10}>
+                  <span>No customer data has been uploaded.</span>
+                  &nbsp;
+                  <Link to={routes.upload}>Visit the upload page?</Link>
+                </EmptyRow>
+
+                {originFiles.map(originFile =>
+                  <Table.Row key={originFile.id}>
+                    <Table.Cell>
+                      {models.meterGroup.isSufficientlyIngested(originFile)
+                        ? (
+                          <Link to={routes.load.meterGroup(originFile.id)}>
+                            {originFile.name}
+                          </Link>
+                        )
+                        : originFile.name
+                      }
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Typography noWrap variant="body2">
+                        {formatters.date.standard(originFile.created_at)}
+                      </Typography>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <StatusIndicator meterGroup={originFile} />
+                    </Table.Cell>
+                    <Table.Cell align="right">{originFile.meter_count}</Table.Cell>
+                    <Table.Cell align="right">
+                      {formatters.commas(formatters.maxDecimals(originFile.max_monthly_demand, 2))}
+                    </Table.Cell>
+                    <Table.Cell align="right">
+                      {formatters.commas(formatters.maxDecimals(originFile.total_kwh, 2))}
+                    </Table.Cell>
+                    <Table.Cell align="right">
+                      <Menu
+                        anchorOrigin={{ vertical: 'center', horizontal: 'center'}}
+                        icon="verticalDots"
+                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                      >
+                        <List.Item
+                          disabled={!models.meterGroup.isSufficientlyIngested(originFile)}
+                          onClick={routeTo.originFile(originFile)}
+                        >
+                          <List.Item.Icon icon="launch" />
+                          <List.Item.Text>View</List.Item.Text>
+                        </List.Item>
+
+                        <Divider />
+
+                        <List.Item onClick={() => openDeleteDialog(originFile)}>
+                          <List.Item.Icon icon="trash" />
+                          <List.Item.Text>Delete</List.Item.Text>
+                        </List.Item>
+                      </Menu>
+                    </Table.Cell>
+                  </Table.Row>
+                )}
+              </Table.Body>
+            </>
           }
-        </Grid>
+        </Table>
       </div>
+
+      {deleteOriginFile &&
+        <DeleteDialog
+          onClose={() => setDeleteOriginFile(undefined)}
+          originFile={deleteOriginFile}
+        />
+      }
     </>
   );
+
+  /** ========================== Callbacks ================================= */
+  function openDeleteDialog (originFile: OriginFile) {
+    setDeleteOriginFile(originFile);
+  }
 };

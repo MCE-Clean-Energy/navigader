@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import {
-  CAISORate, DERConfiguration, DERStrategy, GHGRate, isScenario, Meter, OriginFile, RatePlan,
-  RawCAISORate, RawGHGRate, RawMeter, RawOriginFile, RawScenario, Scenario
+  CAISORate, DERConfiguration, DERStrategy, GHGRate, isOriginFile, isScenario, Meter, OriginFile,
+  RatePlan, RawCAISORate, RawGHGRate, RawMeter, RawOriginFile, RawScenario, Scenario
 } from 'navigader/types';
 import { serializers } from 'navigader/util';
 import _ from 'navigader/util/lodash';
@@ -35,12 +35,11 @@ export type ModelClassExterior =
 
 /** ============================ Actions =================================== */
 /** Payloads */
-type RemoveModelAction = PayloadAction<ModelClassExterior>;
 type UpdateHasMeterGroupsAction = PayloadAction<boolean>;
 
 /** Prepared Payloads */
-type UpdateModelAction = PayloadAction<ModelClassInterior>;
-type UpdateModelsAction = PayloadAction<ModelClassInterior[]>;
+type ModelAction = PayloadAction<ModelClassInterior>;
+type ModelsAction = PayloadAction<ModelClassInterior[]>;
 
 /** ============================ Slice ===================================== */
 const initialState: ModelsSlice = {
@@ -62,14 +61,17 @@ const slice = createSlice({
   name: 'models',
   initialState,
   reducers: {
-    removeModel: (state, action: RemoveModelAction) => {
-      const model = action.payload;
-      const slice = getSliceForModel(state, model);
+    removeModel: {
+      prepare: (model: ModelClassExterior) => ({ payload: prepareModel(model) }),
+      reducer: (state, action: ModelAction) => {
+        const model = action.payload;
+        const slice = getSliceForModel(state, model);
 
-      // If we find the model in the slice, splice it out
-      const modelIndex = _.findIndex(slice, ['id', model.id]);
-      if (modelIndex !== -1) {
-        slice.splice(modelIndex, 1);
+        // If we find the model in the slice, splice it out
+        const modelIndex = _.findIndex(slice, ['id', model.id]);
+        if (modelIndex !== -1) {
+          slice.splice(modelIndex, 1);
+        }
       }
     },
     updateHasMeterGroups: (state, action: UpdateHasMeterGroupsAction) => {
@@ -77,13 +79,13 @@ const slice = createSlice({
     },
     updateModels: {
       prepare: (models: ModelClassExterior[]) => ({ payload: models.map(prepareModel) }),
-      reducer: (state, action: UpdateModelsAction) => {
+      reducer: (state, action: ModelsAction) => {
         action.payload.forEach(model => addOrUpdateModel(state, model));
       }
     },
     updateModel: {
       prepare: (model: ModelClassExterior) => ({ payload: prepareModel(model) }),
-      reducer:(state, action: UpdateModelAction) => {
+      reducer:(state, action: ModelAction) => {
         addOrUpdateModel(state, action.payload);
       }
     }
@@ -102,6 +104,11 @@ export const selectMeterGroups = (state: RootState) => state.models.meterGroups.
 export const selectMeters = (state: RootState) => state.models.meters.map(serializers.parseMeter);
 export const selectHasMeterGroups = (state: RootState) => state.models.hasMeterGroups;
 export const selectRatePlans = (state: RootState) => state.models.ratePlans;
+
+export const selectOriginFiles = (state: RootState) => {
+  const originFiles = _.filter(state.models.meterGroups, isOriginFile);
+  return originFiles.map(serializers.parseOriginFile);
+};
 
 export const selectScenario = (id: Scenario['id']) => (state: RootState) => {
   const scenarios = _.filter(state.models.meterGroups, isScenario);

@@ -40,7 +40,7 @@ const EmptyTableRow: React.FC = () => {
   if (hasMeterGroups === false) {
     rowContent =
       <>
-        <span>No "Item 17" customer data has been uploaded.</span>
+        <span>No customer data has been uploaded.</span>
         &nbsp;
         <Link to={routes.upload}>Visit the upload page?</Link>
       </>
@@ -126,7 +126,7 @@ const DashboardTable: React.FC = () => {
                 disabled={!scenario.progress.is_complete}
                 onClick={routeTo.scenario.details(scenario)}
               >
-                <List.Item.Icon icon="plus" />
+                <List.Item.Icon icon="launch" />
                 <List.Item.Text>View</List.Item.Text>
               </List.Item>
               <List.Item onClick={() => openRenameScenarioDialog(scenario)}>
@@ -135,6 +135,7 @@ const DashboardTable: React.FC = () => {
               </List.Item>
 
               <Divider />
+
               <List.Item onClick={() => openDeleteScenarioDialog(scenario)}>
                 <List.Item.Icon icon="trash" />
                 <List.Item.Text>Delete</List.Item.Text>
@@ -166,7 +167,7 @@ const DashboardTable: React.FC = () => {
     setRenameScenario(scenario);
   }
 
-  async function openDeleteScenarioDialog (scenario: Scenario) {
+  function openDeleteScenarioDialog (scenario: Scenario) {
     setDeleteScenario(scenario);
   }
 };

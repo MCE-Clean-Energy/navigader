@@ -11,7 +11,7 @@ import MuiToolbar from '@material-ui/core/Toolbar';
 
 import { RootState } from 'navigader/store';
 import { makeStylesHook, white } from 'navigader/styles';
-import { IdType, Maybe, ObjectWithId, PaginationSet } from 'navigader/types';
+import { IdType, Maybe, ObjectWithId, PaginationSet, SortDir } from 'navigader/types';
 import { useAsync, useTableSelector } from 'navigader/util/hooks';
 import _ from 'navigader/util/lodash';
 import { Checkbox } from '../Checkbox';
@@ -19,7 +19,9 @@ import * as Flex from '../Flex';
 import { Progress } from '../Progress';
 import { Typography } from '../Typography';
 import { TablePagination } from './Pagination';
-import { DisabledSelectComponent, PaginationState, SortState, TableContext } from './util';
+import {
+  DisabledSelectComponent, PaginationCallbackArgs, PaginationState, SortState, TableContext
+} from './util';
 
 
 /** ============================ Types ===================================== */
@@ -30,7 +32,7 @@ type EmptyRowProps = React.PropsWithChildren<{
 export type TableProps<T extends ObjectWithId> = {
   children: (data: T[], emptyRow: React.FC<EmptyRowProps>) => React.ReactElement;
   containerClassName?: string;
-  dataFn: (state: PaginationState & Partial<SortState>) => Promise<PaginationSet<T>>;
+  dataFn: (state: PaginationCallbackArgs) => Promise<PaginationSet<T>>;
   dataSelector: (state: RootState) => T[];
   disableSelect?: (datum: T) => boolean;
   DisabledSelectComponent?: DisabledSelectComponent<T>;
@@ -455,9 +457,9 @@ const TableCell: React.FC<TableCellProps> = (props) => {
    * Toggles sort direction from ascending to descending or vice versa. If not provided an initial
    * direction, returns the global default sorting direction
    *
-   * @param {'asc' | 'desc'} [dir]: initial sort direction
+   * @param {SortDir} [dir]: initial sort direction
    */
-  function toggleSortDir (dir?: SortState['dir']) {
+  function toggleSortDir (dir?: SortDir) {
     switch (dir) {
       case 'asc': return 'desc';
       case 'desc': return 'asc';

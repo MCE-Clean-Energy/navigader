@@ -4,7 +4,9 @@ import {
 } from 'navigader/types';
 import { filterClause, serializers } from 'navigader/util';
 import _ from 'navigader/util/lodash';
-import { appendId, beoRoute, getRequest, makeFormXhrPost, parsePaginationSet } from './util';
+import {
+  appendId, beoRoute, deleteRequest, getRequest, makeFormXhrPost, parsePaginationSet
+} from './util';
 
 
 /** ============================ Types ===================================== */
@@ -69,6 +71,15 @@ export async function getMeters (queryParams: MeterQueryParams) {
 
   // Parse the meter results
   return parsePaginationSet(response, ({ meters }) => meters.map(serializers.parseMeter));
+}
+
+/**
+ * Deletes a meter group given the ID
+ *
+ * @param {string} id: the ID of the meter group
+ */
+export async function deleteMeterGroup (id: string) {
+  return await deleteRequest(routes.meterGroup(id));
 }
 
 /** ============================ Helpers =================================== */

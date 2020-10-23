@@ -91,7 +91,7 @@ export const useRouter = () => {
 
     originFile: (originFile?: OriginFile) => {
       if (!originFile) return;
-      return (event: React.MouseEvent<HTMLDivElement>) => {
+      return (event: React.MouseEvent) => {
         // Stopping propagation prevents other callbacks up the bubble-chain from being triggered.
         // This is particularly important on the "Uploaded Files" page, where the containing
         // `Card` has a callback too.

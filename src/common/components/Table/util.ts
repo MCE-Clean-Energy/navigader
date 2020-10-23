@@ -1,17 +1,18 @@
 import * as React from 'react';
 
-import { RowsPerPageOption } from 'navigader/types';
+import { RowsPerPageOption, SortDir } from 'navigader/types';
 import { isProduction } from 'navigader/util';
 
 
 /** ============================ Types ===================================== */
+export type PaginationCallbackArgs = PaginationState & Partial<SortState>;
 export type PaginationState = {
   currentPage: number;
   rowsPerPage: RowsPerPageOption;
 };
 
 export type SortState = {
-  dir: 'asc' | 'desc';
+  dir: SortDir;
   key: string;
 };
 

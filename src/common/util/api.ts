@@ -1,6 +1,6 @@
 import {
   DynamicRestParams, FilterEqualClause, FilterInClause, IncludeExcludeFields, QueryParams,
-  QueryStringPrimitive
+  QueryStringPrimitive, SortDir
 } from 'navigader/types';
 import { cookieManager } from './cookies';
 import _ from './lodash';
@@ -32,6 +32,11 @@ function makeFilterQueryParams (filterClauses: DynamicRestParams['filter']): Que
   return queryParamPairs;
 }
 
+function makeSortQueryParam (sortKey?: string, sortDir?: SortDir) {
+  if (!sortKey) return [];
+  return [['sort[]', (sortDir === 'desc' ? '-' : '') + sortKey]];
+}
+
 function makeIncludeExcludeQueryParam (
   key: string,
   fields?: IncludeExcludeFields
@@ -60,11 +65,12 @@ export function appendQueryString (route: string, params?: QueryParams): string 
   const drQueryParamPairs = [
     ...makeIncludeExcludeQueryParam('include', params.include),
     ...makeIncludeExcludeQueryParam('exclude', params.exclude),
-    ...makeFilterQueryParams(params.filter)
+    ...makeFilterQueryParams(params.filter),
+    ...makeSortQueryParam(params.sortKey, params.sortDir)
   ];
 
   // Handle all other params
-  const nonDynamicRestParams = _.omit(params, ['exclude', 'include', 'filter']);
+  const nonDynamicRestParams = _.omit(params, ['exclude', 'include', 'filter', 'sortKey', 'sortDir']);
   const nonDRQueryParamPairs: QueryParamPair[] = omitFalsey(Object.entries(nonDynamicRestParams)
     .map(([key, value]) => {
       // Apply some basic validation on the `unknown` type

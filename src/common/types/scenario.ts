@@ -1,6 +1,6 @@
 import { NavigaderObject, Nullable, ProgressFields, RawPandasFrame } from './common';
-import { DERConfiguration, DERStrategy } from './der';
-import { AbstractMeterGroup, AbstractRawMeterGroup, OriginFile, RawOriginFile } from './meter';
+import { DERInfo } from './der';
+import { AbstractMeterGroup, OriginFile, AbstractRawMeterGroup, RawOriginFile } from './meter';
 
 
 /** ============================ Meter Groups ============================== */
@@ -16,11 +16,6 @@ export type ScenarioImpactColumn =
   | 'Revenue'
   | 'Expense'
   | 'Profit';
-
-type DERInfo = {
-  der_configuration: DERConfiguration;
-  der_strategy: DERStrategy;
-};
 
 type ScenarioMetadata = {
   start: string;

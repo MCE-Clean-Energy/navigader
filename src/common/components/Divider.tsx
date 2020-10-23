@@ -3,4 +3,6 @@ import MuiDivider from '@material-ui/core/Divider';
 
 
 /** ============================ Components ================================ */
-export const Divider: React.FC = props => <MuiDivider {...props} />;
+export const Divider = React.forwardRef<HTMLHRElement>(
+  (props, ref) => <MuiDivider ref={ref} {...props} />
+);

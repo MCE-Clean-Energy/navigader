@@ -11,6 +11,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EvStation from '@material-ui/icons/EvStation';
 import FeedbackIcon from '@material-ui/icons/Feedback';
 import InfoIcon from '@material-ui/icons/Info';
+import LaunchIcon from '@material-ui/icons/Launch';
 import MenuIcon from '@material-ui/icons/Menu';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Schedule from '@material-ui/icons/Schedule';
@@ -40,6 +41,7 @@ export type ValidIcon =
   | 'ev_station'
   | 'feedback'
   | 'info'
+  | 'launch'
   | 'menu'
   | 'pencil'
   | 'plus'
@@ -55,10 +57,10 @@ export type IconProps = {
 
 /** ============================ Components ================================ */
 export const Icon: React.ComponentType<IconProps> = React.forwardRef<SVGSVGElement, IconProps>(
-  ({ color, name, size, ...rest }, ref) => {
+  function Icon ({ color, name, size, ...rest }, ref) {
     const IconComponent = iconMap[name];
     const colorProps = isMaterialColor(color)
-      ? { style: { color: materialColors[color][500] }}
+      ? { htmlColor: materialColors[color][500] }
       : { color };
 
     const sizeProps = {
@@ -85,6 +87,7 @@ const iconMap: Record<ValidIcon, typeof SvgIcon> = {
   ev_station: EvStation,
   feedback: FeedbackIcon,
   info: InfoIcon,
+  launch: LaunchIcon,
   menu: MenuIcon,
   pencil: CreateIcon,
   plus: AddIcon,

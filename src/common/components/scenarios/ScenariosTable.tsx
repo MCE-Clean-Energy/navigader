@@ -11,12 +11,10 @@ import _ from 'navigader/util/lodash';
 import { Avatar } from '../Avatar';
 import { DERIcon } from '../ders';
 import * as Flex from '../Flex';
-import { Icon } from '../Icon';
 import { Link } from '../Link';
-import { MeterGroupChip } from '../MeterGroupComponents';
-import { Progress } from '../Progress';
+import { MeterGroupChip, StatusIndicator } from '../MeterGroupComponents';
 import { Switch } from '../Switch';
-import { PaginationState, PrefetchedTable, Table } from '../Table';
+import { DisabledSelectComponent, PaginationState, PrefetchedTable, Table } from '../Table';
 import { Tooltip } from '../Tooltip';
 import { Typography } from '../Typography';
 import { ImpactColumnHeader } from './ImpactColumnHeader';
@@ -35,43 +33,10 @@ type ScenariosTableProps = {
   updateAveraged?: (averaged: boolean) => void;
 };
 
-type ScenarioStatusProps = {
-  datum: Scenario;
-};
 
 /** ============================ Components ================================ */
-const ScenarioStatus: React.FC<ScenarioStatusProps> = ({ datum: scenario }) => {
-  const { is_complete, percent_complete } = scenario.progress;
-
-  // Show the checkmark if the report has completed and aggregated
-  if (is_complete) {
-    return (
-      <Tooltip title="Done">
-        <Icon color="green" name="checkMark" />
-      </Tooltip>
-    );
-  } else if (percent_complete === 100) {
-    return (
-      <Tooltip title="Finalizing...">
-        <Progress circular color="secondary" size={24} />
-      </Tooltip>
-    );
-  } else if (percent_complete === 0) {
-    return (
-      <Tooltip title="Waiting to run...">
-        <Icon color="blue" name="clock" />
-      </Tooltip>
-    );
-  }
-
-  return (
-    <Tooltip title={`${Math.floor(percent_complete)}%`}>
-      <Progress circular value={Math.max(percent_complete, 3)} showBackground size={24} />
-    </Tooltip>
-  );
-};
-
-
+const ScenarioStatus: DisabledSelectComponent<Scenario> =
+  ({ datum }) => <StatusIndicator meterGroup={datum} />;
 
 export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
   const {
@@ -271,7 +236,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                   </Typography>
                 </Table.Cell>
                 <Table.Cell>
-                  <MeterGroupChip link meterGroup={scenario.meter_group!} />
+                  <MeterGroupChip link meterGroup={scenario.meter_group!} showCount />
                 </Table.Cell>
                 <Table.Cell>
                   {scenario.der &&

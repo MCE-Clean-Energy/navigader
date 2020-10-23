@@ -13,9 +13,12 @@ export type RawPaginationSet<ResponseSchema> = {
   results: ResponseSchema;
 };
 
+export type SortDir = 'asc' | 'desc';
 export type PaginationQueryParams = {
   page: number;
   page_size: RowsPerPageOption;
+  sortKey?: string;
+  sortDir?: SortDir;
 };
 
 export type QueryParams = Partial<PaginationQueryParams & DynamicRestParams> & {
