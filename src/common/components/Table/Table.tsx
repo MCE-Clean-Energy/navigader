@@ -149,7 +149,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
         dataIds: _.map(paginationSet.data, 'id')
       });
     },
-    [currentPage, rowsPerPage, sorting]
+    [currentPage, rowsPerPage, sorting, dataFn]
   );
 
   // Get the data from the store using the IDs

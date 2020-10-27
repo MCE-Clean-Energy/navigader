@@ -10,6 +10,7 @@ import { routes } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { Maybe } from 'navigader/types';
+import { renderFileSize } from 'navigader/util/formatters';
 
 
 /** ============================ Types ===================================== */
@@ -84,7 +85,9 @@ const FileComponent: React.FC<FileCardProps> = ({ file, progress, startUpload, s
           <Typography useDiv variant="subtitle2">{file.name}</Typography>
         </Flex.Item>
         <Flex.Item className={classes.fileSize}>
-          <Typography color="textSecondary" variant="body2">{renderFileSize(file.size)}</Typography>
+          <Typography color="textSecondary" variant="body2">
+            {renderFileSize(file.size)}
+          </Typography>
         </Flex.Item>
       </Flex.Container>
 
@@ -305,29 +308,7 @@ export const UploadPage: React.FC = () => {
 };
 
 /** ============================ Helpers =================================== */
-const units = ['byte', 'KB', 'MB', 'GB'];
-const maxIndex = units.length - 1;
 
-export function renderFileSize (size: number) {
-  if (size <= 0) return '';
-
-  let power = Math.floor(Math.log(size) / Math.log(1000));
-  if (power > maxIndex) {
-    power = maxIndex;
-  }
-
-  const val = size / Math.pow(1000, power);
-
-  let suffix;
-  if (power === 0) {
-    // If the power is 0, we may pluralize the unit ("byte" vs "bytes")
-    suffix = val === 1 ? 'byte' : 'bytes';
-  } else {
-    suffix = units[power];
-  }
-
-  return `${parseFloat(val.toFixed(1))} ${suffix}`;
-}
 
 /**
  * Returns `true` if the uploading status is either "not started" or "failure"

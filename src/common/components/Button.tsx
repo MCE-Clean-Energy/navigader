@@ -5,7 +5,20 @@ import MuiIconButton from '@material-ui/core/IconButton';
 
 import _ from 'navigader/util/lodash';
 import { Icon, IconProps, ValidIcon } from './Icon';
+import { makeStylesHook } from 'navigader/styles';
 
+
+/** ============================ Styles ===================================== */
+const useStyles = makeStylesHook(() => ({
+  fab: {
+    margin: 0,
+    top: 'auto',
+    right: 20,
+    bottom: 20,
+    left: 'auto',
+    position: 'fixed',
+  }
+}), 'FAB');
 
 /** ============================ Types ===================================== */
 type BaseButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
@@ -23,8 +36,9 @@ type FabProps = TextButtonProps & IconProps;
 const Text: React.FC<TextButtonProps> = props => <MuiButton {...props} />;
 const Fab: React.FC<FabProps> = ({ name, ...rest }) => {
   const fabProps = _.omit(rest, 'children');
+  const classes = useStyles();
   return (
-    <MuiFab {...fabProps}>
+    <MuiFab className={classes.fab} {...fabProps}>
       <Icon name={name} />
     </MuiFab>
   );

@@ -4,7 +4,8 @@ import mock from 'xhr-mock';
 
 import { util } from 'navigader/api';
 import { makeFileList, renderContextDependentComponent } from 'navigader/util/testing';
-import { renderFileSize, UploadPage } from './UploadPage';
+import { UploadPage } from './UploadPage';
+import { renderFileSize } from 'navigader/util/formatters';
 
 
 describe('Upload page', () => {
