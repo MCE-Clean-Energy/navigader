@@ -8,12 +8,11 @@ import { cookieManager } from 'navigader/util/cookies';
 import { List } from '../List';
 import { Menu } from '../Menu';
 
-
 export const AccountMenu: React.FC = () => {
   const routeTo = useRouter();
   return (
     <Menu
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'right'}}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       icon="account"
       transformOrigin={{ vertical: 'top', horizontal: 'right' }}
     >
@@ -27,7 +26,7 @@ export const AccountMenu: React.FC = () => {
   );
 
   /** ========================== Callbacks ================================= */
-  function logout () {
+  function logout() {
     cookieManager.remove.authToken();
     models.polling.reset();
     api.logout().catch();

@@ -1,13 +1,12 @@
 import { appendId } from './routing';
 
-
 describe('`appendId` method', () => {
   it('Appends a / when no id is provided', () => {
     const uriFactory = appendId('myRoute');
     const uri = uriFactory();
     expect(uri).toEqual('myRoute/');
   });
-  
+
   it('Appends the ID correctly when provided', () => {
     const uriFactory = appendId('myRoute');
     const uriNumeric = uriFactory(1);

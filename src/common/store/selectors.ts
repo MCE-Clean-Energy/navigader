@@ -4,7 +4,6 @@ import { createSelectorCreator, defaultMemoize, ParametricSelector } from 'resel
 import _ from 'navigader/util/lodash';
 import { RootState } from './types';
 
-
 /**
  * Overrides the default equality function of reselect's `createSelector`. They use reference
  * equality (i.e. ===) to determine if dependencies have changed, and we typically want deep
@@ -29,7 +28,7 @@ const baseCreateSelector = createSelectorCreator(defaultMemoize, _.isEqual);
 export function useMemoizedSelector<P, R1, R2, T>(
   selector1: ParametricSelector<RootState, P, R1>,
   selector2: ParametricSelector<RootState, P, R2>,
-  combiner: (res1: R1, res2: R2) => T,
+  combiner: (res1: R1, res2: R2) => T
 ) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   return React.useMemo(() => baseCreateSelector(selector1, selector2, combiner), []);

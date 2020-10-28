@@ -8,14 +8,13 @@ import _ from 'navigader/util/lodash';
 import { omitFalsey } from 'navigader/util/omitFalsey';
 import { applyDataFilters, applyDynamicRestFilters, useAsync } from './util';
 
-
 /**
  * Loads a scenario given its ID and params for querying
  *
  * @param {string} scenarioId: the ID of the scenario to get
  * @param {GetScenarioQueryParams} [params]: additional params for querying
  */
-export function useScenario (scenarioId: string, params?: api.GetScenarioQueryParams) {
+export function useScenario(scenarioId: string, params?: api.GetScenarioQueryParams) {
   const dispatch = useDispatch();
 
   // Check the store for scenarios that match the provided filters
@@ -24,9 +23,7 @@ export function useScenario (scenarioId: string, params?: api.GetScenarioQueryPa
     if (!storedScenario) return;
     const matchesDataTypes = applyDataFilters(storedScenario, params);
     const matchesFilters = applyScenarioDynamicRestFilters(storedScenario, params);
-    return matchesDataTypes && matchesFilters
-      ? storedScenario
-      : undefined;
+    return matchesDataTypes && matchesFilters ? storedScenario : undefined;
   })();
 
   const loading = useAsync(
@@ -57,7 +54,7 @@ export function useScenario (scenarioId: string, params?: api.GetScenarioQueryPa
  *
  * @param {GetScenariosQueryParams} [params]: additional params for querying
  */
-export function useScenarios (params: api.GetScenariosQueryParams): Loader<Scenario[]> {
+export function useScenarios(params: api.GetScenariosQueryParams): Loader<Scenario[]> {
   const dispatch = useDispatch();
 
   // Fetch the scenarios
@@ -79,14 +76,15 @@ export function useScenarios (params: api.GetScenariosQueryParams): Loader<Scena
   const selector = useMemoizedSelector(
     slices.models.selectScenarios,
     (state, params: api.GetScenariosQueryParams) => params,
-    (scenarios, params) => scenarios.filter((scenario) => {
-      const matchesDataTypes = applyDataFilters(scenario, params);
-      const matchesFilters = applyDynamicRestFilters(scenario, params);
-      return matchesDataTypes && matchesFilters;
-    })
+    (scenarios, params) =>
+      scenarios.filter((scenario) => {
+        const matchesDataTypes = applyDataFilters(scenario, params);
+        const matchesFilters = applyDynamicRestFilters(scenario, params);
+        return matchesDataTypes && matchesFilters;
+      })
   );
 
-  const scenarios = useSelector(state => selector(state, params));
+  const scenarios = useSelector((state) => selector(state, params));
   return Object.assign(scenarios, { loading });
 }
 
@@ -97,7 +95,7 @@ export function useScenarios (params: api.GetScenariosQueryParams): Loader<Scena
  * @param {Scenario} scenario: the scenario to apply the filters to
  * @param {ScenarioDynamicRestParams} [params]: the scenario-specific dynamic rest params to apply
  */
-function applyScenarioDynamicRestFilters (
+function applyScenarioDynamicRestFilters(
   scenario: Scenario,
   params?: api.ScenarioDynamicRestParams
 ) {
@@ -119,5 +117,5 @@ function applyScenarioDynamicRestFilters (
       case 'report_summary':
         return !_.isUndefined(scenario.report_summary);
     }
-  })
+  });
 }

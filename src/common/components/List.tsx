@@ -11,7 +11,6 @@ import { printWarning } from 'navigader/util';
 import { Avatar, AvatarProps } from './Avatar';
 import { Icon, ValidIcon } from './Icon';
 
-
 /** ============================ Types ===================================== */
 type ListProps = React.HTMLAttributes<HTMLUListElement> & {
   dense?: boolean;
@@ -33,89 +32,86 @@ type ListItemIconProps = React.PropsWithChildren<{
 type ListItemAvatarProps = React.PropsWithChildren<AvatarProps>;
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(() => ({
-  disabled: {
-    cursor: 'default',
-    pointerEvents: 'none',
-    opacity: 0.5
-  }
-}), 'NavigaderListItem');
+const useStyles = makeStylesHook(
+  () => ({
+    disabled: {
+      cursor: 'default',
+      pointerEvents: 'none',
+      opacity: 0.5,
+    },
+  }),
+  'NavigaderListItem'
+);
 
 /** ============================ Components ================================ */
-const ListItemIcon = React.forwardRef<HTMLDivElement, ListItemIconProps>(
-  (props, ref) => {
-    const { children, icon } = props;
+const ListItemIcon = React.forwardRef<HTMLDivElement, ListItemIconProps>((props, ref) => {
+  const { children, icon } = props;
 
-    // Only one of the `icon` and `label` props should be provided
-    const hasBoth = Boolean(children && icon);
-    const hasNeither = !Boolean(children || icon);
-    if (hasBoth || hasNeither) {
-      printWarning('`Menu` component expects one of `icon` or `label` prop');
-    }
-
-    if (icon) {
-      return (
-        <MuiListItemIcon ref={ref}>
-          <Icon name={icon}/>
-        </MuiListItemIcon>
-      );
-    } else if (children) {
-      return <MuiListItemIcon ref={ref}>{children}</MuiListItemIcon>;
-    } else {
-      return null;
-    }
+  // Only one of the `icon` and `label` props should be provided
+  const hasBoth = Boolean(children && icon);
+  const hasNeither = !Boolean(children || icon);
+  if (hasBoth || hasNeither) {
+    printWarning('`Menu` component expects one of `icon` or `label` prop');
   }
-);
 
-const ListItemAvatar = React.forwardRef<HTMLDivElement, ListItemAvatarProps>(
-  (props, ref) => {
+  if (icon) {
     return (
-      <MuiListItemAvatar ref={ref}>
-        <Avatar {...props} />
-      </MuiListItemAvatar>
+      <MuiListItemIcon ref={ref}>
+        <Icon name={icon} />
+      </MuiListItemIcon>
     );
+  } else if (children) {
+    return <MuiListItemIcon ref={ref}>{children}</MuiListItemIcon>;
+  } else {
+    return null;
   }
-);
+});
+
+const ListItemAvatar = React.forwardRef<HTMLDivElement, ListItemAvatarProps>((props, ref) => {
+  return (
+    <MuiListItemAvatar ref={ref}>
+      <Avatar {...props} />
+    </MuiListItemAvatar>
+  );
+});
 
 const ListItemText: React.FC = ({ children }) => <MuiListItemText primary={children} />;
 
 const ListItem = Object.assign(
-  React.forwardRef<HTMLElement, ListItemProps>(
-    ({ button = true, disabled, ...rest }, ref) => {
-      const classes = useStyles();
-      const className = classNames({
-        [classes.disabled]: disabled
-      });
+  React.forwardRef<HTMLElement, ListItemProps>(({ button = true, disabled, ...rest }, ref) => {
+    const classes = useStyles();
+    const className = classNames({
+      [classes.disabled]: disabled,
+    });
 
-      const listItemProps = {
-        className,
-        disabled,
-        ...rest
-      };
+    const listItemProps = {
+      className,
+      disabled,
+      ...rest,
+    };
 
-      if (button) {
-        return <MuiListItem button {...listItemProps} ref={ref as React.RefObject<HTMLDivElement>} />;
-      } else {
-        return (
-          <MuiListItem
-            component="li"
-            ref={ref as React.RefObject<HTMLLIElement>}
-            {...listItemProps}
-          />
-        );
-      }
+    if (button) {
+      return <MuiListItem button {...listItemProps} ref={ref as React.RefObject<HTMLDivElement>} />;
+    } else {
+      return (
+        <MuiListItem
+          component="li"
+          ref={ref as React.RefObject<HTMLLIElement>}
+          {...listItemProps}
+        />
+      );
     }
-  ), {
+  }),
+  {
     Avatar: ListItemAvatar,
     Icon: ListItemIcon,
-    Text: ListItemText
+    Text: ListItemText,
   }
 );
 
 export const List = Object.assign(
-  React.forwardRef<HTMLUListElement, ListProps>(
-    (props, ref) => <MuiList ref={ref} {...props} />
-  ), {
-    Item: ListItem
+  React.forwardRef<HTMLUListElement, ListProps>((props, ref) => <MuiList ref={ref} {...props} />),
+  {
+    Item: ListItem,
   }
 );

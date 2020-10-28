@@ -6,7 +6,6 @@ import { IdType, MeterGroup, PaginationQueryParams, Scenario, Without } from 'na
 import _ from 'navigader/util/lodash';
 import { filterClause } from '../../api';
 
-
 /** ============================ Types ===================================== */
 type MeterGroupsQueryParams = Without<api.MeterGroupsQueryParams, PaginationQueryParams>;
 type UncleanMeterGroupQueryParams = MeterGroupsQueryParams & Partial<PaginationQueryParams>;
@@ -24,7 +23,7 @@ class MeterGroupQueryMap extends Map<MeterGroupsQueryParams, IdSet> {
    * @param {MeterGroupsQueryParams} queryParams: the parameters that were used to fetch the meters
    *   from the server initially, possibly including pagination fields.
    */
-  clean (queryParams: UncleanMeterGroupQueryParams): MeterGroupsQueryParams {
+  clean(queryParams: UncleanMeterGroupQueryParams): MeterGroupsQueryParams {
     return _.omit(queryParams, 'page', 'page_size');
   }
 
@@ -33,7 +32,7 @@ class MeterGroupQueryMap extends Map<MeterGroupsQueryParams, IdSet> {
    *
    * @param {MeterGroupsQueryParams} queryParams: the group of parameters to index the Map with
    */
-  get (queryParams: UncleanMeterGroupQueryParams): IdSet | undefined {
+  get(queryParams: UncleanMeterGroupQueryParams): IdSet | undefined {
     for (let [params, idSet] of this.entries()) {
       if (deepEqual(this.clean(queryParams), params)) {
         return idSet;
@@ -46,7 +45,7 @@ class MeterGroupQueryMap extends Map<MeterGroupsQueryParams, IdSet> {
    *
    * @param {MeterGroupsQueryParams} queryParams: object of meter group query parameters
    */
-  has (queryParams: UncleanMeterGroupQueryParams): boolean {
+  has(queryParams: UncleanMeterGroupQueryParams): boolean {
     for (let params of this.keys()) {
       if (deepEqual(this.clean(queryParams), params)) {
         return true;
@@ -62,10 +61,10 @@ class MeterGroupQueryMap extends Map<MeterGroupsQueryParams, IdSet> {
    * @param queryParams
    * @param ids
    */
-  add (queryParams: UncleanMeterGroupQueryParams, ids: IdType[]) {
+  add(queryParams: UncleanMeterGroupQueryParams, ids: IdType[]) {
     const existingSet = this.get(queryParams);
     if (existingSet) {
-      ids.forEach(id => existingSet.add(id));
+      ids.forEach((id) => existingSet.add(id));
     } else {
       this.set(this.clean(queryParams), new Set([...ids]));
     }
@@ -77,7 +76,7 @@ class MeterGroupQueryMap extends Map<MeterGroupsQueryParams, IdSet> {
    *
    * @param {IdType} id: the ID of the meter group that we wish to stop querying for
    */
-  remove (id: IdType) {
+  remove(id: IdType) {
     for (let [params, idSet] of this.entries()) {
       if (!idSet.has(id)) continue;
 
@@ -95,16 +94,16 @@ class Poller {
   private pollInterval: number;
   private pollingIds = {
     meterGroups: new MeterGroupQueryMap(),
-    scenarios: new Set<IdType>()
+    scenarios: new Set<IdType>(),
   };
 
-  public constructor (interval: number) {
+  public constructor(interval: number) {
     this.pollInterval = window.setInterval(this.poll.bind(this), interval);
   }
 
-  public addMeterGroups (models: MeterGroup[], options?: api.MeterGroupsQueryParams) {
+  public addMeterGroups(models: MeterGroup[], options?: api.MeterGroupsQueryParams) {
     // Filter for unfinished meter groups
-    const unfinished = _.filter(models, s => !s.progress.is_complete);
+    const unfinished = _.filter(models, (s) => !s.progress.is_complete);
     if (unfinished.length === 0) return;
 
     const modelIds = _.map(unfinished, 'id');
@@ -112,8 +111,8 @@ class Poller {
     this.pollingIds.meterGroups.add(optionsKey, modelIds);
   }
 
-  public addScenarios (models: Scenario[]) {
-    const unfinished = _.filter(models, s => !s.progress.is_complete);
+  public addScenarios(models: Scenario[]) {
+    const unfinished = _.filter(models, (s) => !s.progress.is_complete);
     unfinished.forEach(({ id }) => this.pollingIds.scenarios.add(id));
   }
 
@@ -121,10 +120,10 @@ class Poller {
    * Clears out any IDs that are currently being polled for. This is useful when the user logs out
    * and is no longer permitted to access the resources
    */
-  public reset () {
+  public reset() {
     this.pollingIds = {
       meterGroups: new MeterGroupQueryMap(),
-      scenarios: new Set()
+      scenarios: new Set(),
     };
   }
 
@@ -132,25 +131,27 @@ class Poller {
    * The actual polling method. This method is called on each polling interval, and will make a
    * request for each of the possible model types that have IDs to poll for.
    */
-  private async poll () {
+  private async poll() {
     this.pollMeterGroups();
     this.pollScenarios();
   }
 
-  private pollMeterGroups () {
+  private pollMeterGroups() {
     const queries = [...this.pollingIds.meterGroups.entries()];
     if (queries.length === 0) return;
 
     queries.forEach(async ([queryOptions, meterGroupIdSet]) => {
-      const meterGroups = (await api.getMeterGroups({
-        ...queryOptions,
-        filter: {
-          ...queryOptions.filter,
-          id: filterClause.in([...meterGroupIdSet.values()])
-        },
-        page: 1,
-        page_size: 100
-      })).data;
+      const meterGroups = (
+        await api.getMeterGroups({
+          ...queryOptions,
+          filter: {
+            ...queryOptions.filter,
+            id: filterClause.in([...meterGroupIdSet.values()]),
+          },
+          page: 1,
+          page_size: 100,
+        })
+      ).data;
 
       // Remove finished meterGroups
       meterGroups.forEach((meterGroup) => {
@@ -164,16 +165,18 @@ class Poller {
     });
   }
 
-  private async pollScenarios () {
+  private async pollScenarios() {
     const scenarioIds = [...this.pollingIds.scenarios.values()] as IdType[];
     if (scenarioIds.length === 0) return;
 
-    const scenarios = (await api.getScenarios({
-      filter: { id: filterClause.in(scenarioIds) },
-      include: 'report_summary',
-      page: 1,
-      page_size: 100
-    })).data;
+    const scenarios = (
+      await api.getScenarios({
+        filter: { id: filterClause.in(scenarioIds) },
+        include: 'report_summary',
+        page: 1,
+        page_size: 100,
+      })
+    ).data;
 
     // Remove finished scenarios
     scenarios.forEach((scenario) => {

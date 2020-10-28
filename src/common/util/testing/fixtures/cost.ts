@@ -1,16 +1,15 @@
 import { RawCAISORate } from '../../../types';
 
-
 export const caisoRate: RawCAISORate = {
   id: 1,
   name: 'PRC_LMP 2018',
   object_type: 'CAISORate',
   filters: {
-    DATA_ITEM: 'LMP_PRC'
+    DATA_ITEM: 'LMP_PRC',
   },
   data: {
     default: {
-      start: [
+      'start': [
         '2018-01-01T00:00:00',
         '2018-01-01T01:00:00',
         '2018-01-01T02:00:00',
@@ -34,7 +33,7 @@ export const caisoRate: RawCAISORate = {
         '2018-01-01T20:00:00',
         '2018-01-01T21:00:00',
         '2018-01-01T22:00:00',
-        '2018-01-01T23:00:00'
+        '2018-01-01T23:00:00',
       ],
       '$/kwh': [
         0.03645428,
@@ -60,9 +59,9 @@ export const caisoRate: RawCAISORate = {
         0.04273274,
         0.03975889,
         0.03750306,
-        0.03487104
-      ]
-    }
+        0.03487104,
+      ],
+    },
   },
-  year: 2018
+  year: 2018,
 };

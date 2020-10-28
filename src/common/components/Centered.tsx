@@ -3,16 +3,18 @@ import classNames from 'classnames';
 
 import { makeStylesHook } from 'navigader/styles';
 
-
 /** ============================ Types ===================================== */
 type CenteredProps = React.HTMLAttributes<HTMLDivElement>;
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(() => ({
-  wrapper: {
-    textAlign: 'center'
-  }
-}), 'NavigaderCentered');
+const useStyles = makeStylesHook(
+  () => ({
+    wrapper: {
+      textAlign: 'center',
+    },
+  }),
+  'NavigaderCentered'
+);
 
 /** ============================ Components ================================ */
 export const Centered: React.FC<CenteredProps> = ({ className, ...rest }) => {

@@ -1,11 +1,10 @@
 import { KeysMatching } from './common';
 import { Frame288DataType } from './data';
 
-
 /** ============================ Pagination  =============================== */
 export type PaginationSet<Datum> = {
   count: number;
-  data: Datum[]
+  data: Datum[];
 };
 
 export type RawPaginationSet<ResponseSchema> = {
@@ -46,7 +45,7 @@ export type FilterEqualClause = {
 };
 
 export type IncludeExcludeFields<Field extends string = string> = Field | Field[];
-export type DynamicRestFilters = { [key: string]: FilterClause; };
+export type DynamicRestFilters = { [key: string]: FilterClause };
 export type DynamicRestParams<Field extends string = string> = Partial<{
   exclude: IncludeExcludeFields<Field>;
   include: IncludeExcludeFields<Field>;
@@ -59,7 +58,7 @@ export type DataTypeParams = Partial<{
   end_limit: string;
   period: number;
   start: string;
-}>
+}>;
 
 /** ============================ Request management ======================== */
 // This is an experimental type. It represents a resource that is in the process of being loaded.

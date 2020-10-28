@@ -1,3 +1,3 @@
 module.exports = {
-  testEnvironment: 'jest-environment-jsdom-sixteen'
+  testEnvironment: 'jest-environment-jsdom-sixteen',
 };

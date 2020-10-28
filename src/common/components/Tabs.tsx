@@ -6,7 +6,6 @@ import MuiTabs from '@material-ui/core/Tabs';
 
 import { Card } from './Card';
 
-
 /** ============================ Types ===================================== */
 type TabsProps = {
   children: React.ReactElement<TabProps>[];
@@ -23,7 +22,7 @@ type TabsContextType = {
 
 /** ============================ Context =================================== */
 const TabsContext = React.createContext<TabsContextType>({
-  activeTab: ''
+  activeTab: '',
 });
 
 /** ============================ Components ================================ */
@@ -34,41 +33,40 @@ const Tab: React.FC<TabProps> = ({ children, title }) => {
 };
 
 export const Tabs = Object.assign(
-  React.forwardRef<HTMLButtonElement, TabsProps>(
-    ({ children, initialTab }, ref) => {
-      // Iterate over the children and grab the titles
-      const titles = React.Children.map(children, child => child.props.title);
+  React.forwardRef<HTMLButtonElement, TabsProps>(({ children, initialTab }, ref) => {
+    // Iterate over the children and grab the titles
+    const titles = React.Children.map(children, (child) => child.props.title);
 
-      // Component state
-      const [activeTab, setActiveTab] = React.useState(initialTab || titles[0]);
+    // Component state
+    const [activeTab, setActiveTab] = React.useState(initialTab || titles[0]);
 
-      return (
-        <Card padding={0} raised>
-          <MuiAppBar color="default" position="static" elevation={0}>
-            <MuiTabs
-              centered
-              indicatorColor="primary"
-              onChange={handleChange}
-              ref={ref}
-              textColor="primary"
-              value={activeTab}
-            >
-              {titles.map((title, i) => <MuiTab key={i} label={title} value={title} />)}
-            </MuiTabs>
-          </MuiAppBar>
+    return (
+      <Card padding={0} raised>
+        <MuiAppBar color="default" position="static" elevation={0}>
+          <MuiTabs
+            centered
+            indicatorColor="primary"
+            onChange={handleChange}
+            ref={ref}
+            textColor="primary"
+            value={activeTab}
+          >
+            {titles.map((title, i) => (
+              <MuiTab key={i} label={title} value={title} />
+            ))}
+          </MuiTabs>
+        </MuiAppBar>
 
-          <TabsContext.Provider value={{ activeTab }}>
-            {children}
-          </TabsContext.Provider>
-        </Card>
-      );
+        <TabsContext.Provider value={{ activeTab }}>{children}</TabsContext.Provider>
+      </Card>
+    );
 
-      /** ========================== Callbacks ================================= */
-      function handleChange (event: React.ChangeEvent<{}>, newValue: string) {
-        setActiveTab(newValue);
-      }
+    /** ========================== Callbacks ================================= */
+    function handleChange(event: React.ChangeEvent<{}>, newValue: string) {
+      setActiveTab(newValue);
     }
-  ), {
-    Tab
+  }),
+  {
+    Tab,
   }
 );

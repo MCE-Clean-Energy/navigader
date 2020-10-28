@@ -1,6 +1,5 @@
 import { DERStrategy, GHGRate } from 'navigader/types';
 
-
 /**
  * Retrieves and formats the strategy's description. The automated descriptions list their entire
  * DER schedules for every month, beginning with January. We remove that because it makes the text
@@ -8,7 +7,7 @@ import { DERStrategy, GHGRate } from 'navigader/types';
  *
  * @param {DERStrategy} strategy: the strategy to retrieve and format the description of
  */
-export function getStrategyDescription (strategy: DERStrategy) {
+export function getStrategyDescription(strategy: DERStrategy) {
   if (!strategy.description) return;
   const contentEnd = strategy.description.indexOf('January');
   return contentEnd === -1
@@ -22,7 +21,7 @@ export function getStrategyDescription (strategy: DERStrategy) {
  *
  * @param {GHGRate} rate: the GHG rate object to render
  */
-export function renderGHGRate (rate: GHGRate) {
+export function renderGHGRate(rate: GHGRate) {
   if (rate.name !== 'Clean Net Short') return rate.name;
 
   // CNS rates get special attention because their names don't include the year

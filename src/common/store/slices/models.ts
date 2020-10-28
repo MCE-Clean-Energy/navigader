@@ -1,13 +1,25 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import {
-  CAISORate, DERConfiguration, DERStrategy, GHGRate, isOriginFile, isScenario, Meter, OriginFile,
-  RatePlan, RawCAISORate, RawGHGRate, RawMeter, RawOriginFile, RawScenario, Scenario
+  CAISORate,
+  DERConfiguration,
+  DERStrategy,
+  GHGRate,
+  isOriginFile,
+  isScenario,
+  Meter,
+  OriginFile,
+  RatePlan,
+  RawCAISORate,
+  RawGHGRate,
+  RawMeter,
+  RawOriginFile,
+  RawScenario,
+  Scenario,
 } from 'navigader/types';
 import { serializers } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 import { RootState, ModelsSlice } from '../types';
-
 
 /** ============================ Types ===================================== */
 // The `Exterior` vs. `Interior` dichotomy distinguishes between model objects internal to the
@@ -50,7 +62,7 @@ const initialState: ModelsSlice = {
   hasMeterGroups: null,
   meterGroups: [],
   meters: [],
-  ratePlans: []
+  ratePlans: [],
 };
 
 /**
@@ -72,35 +84,38 @@ const slice = createSlice({
         if (modelIndex !== -1) {
           slice.splice(modelIndex, 1);
         }
-      }
+      },
     },
     updateHasMeterGroups: (state, action: UpdateHasMeterGroupsAction) => {
-      state.hasMeterGroups = action.payload
+      state.hasMeterGroups = action.payload;
     },
     updateModels: {
       prepare: (models: ModelClassExterior[]) => ({ payload: models.map(prepareModel) }),
       reducer: (state, action: ModelsAction) => {
-        action.payload.forEach(model => addOrUpdateModel(state, model));
-      }
+        action.payload.forEach((model) => addOrUpdateModel(state, model));
+      },
     },
     updateModel: {
       prepare: (model: ModelClassExterior) => ({ payload: prepareModel(model) }),
-      reducer:(state, action: ModelAction) => {
+      reducer: (state, action: ModelAction) => {
         addOrUpdateModel(state, action.payload);
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 export const { reducer } = slice;
 export const { removeModel, updateHasMeterGroups, updateModels, updateModel } = slice.actions;
 
 /** ============================ Selectors ================================= */
-export const selectCAISORates = (state: RootState) => state.models.caisoRates.map(serializers.parseCAISORate);
+export const selectCAISORates = (state: RootState) =>
+  state.models.caisoRates.map(serializers.parseCAISORate);
 export const selectDERConfigurations = (state: RootState) => state.models.derConfigurations;
 export const selectDERStrategies = (state: RootState) => state.models.derStrategies;
-export const selectGHGRates = (state: RootState) => state.models.ghgRates.map(serializers.parseGHGRate);
-export const selectMeterGroups = (state: RootState) => state.models.meterGroups.map(serializers.parseMeterGroup);
+export const selectGHGRates = (state: RootState) =>
+  state.models.ghgRates.map(serializers.parseGHGRate);
+export const selectMeterGroups = (state: RootState) =>
+  state.models.meterGroups.map(serializers.parseMeterGroup);
 export const selectMeters = (state: RootState) => state.models.meters.map(serializers.parseMeter);
 export const selectHasMeterGroups = (state: RootState) => state.models.hasMeterGroups;
 export const selectRatePlans = (state: RootState) => state.models.ratePlans;
@@ -118,9 +133,8 @@ export const selectScenario = (id: Scenario['id']) => (state: RootState) => {
 
 export const selectScenarios = (state: RootState) => {
   const scenarios = _.filter(state.models.meterGroups, isScenario);
-  return scenarios.map(scenario => serializers.parseScenario(scenario, state.models.meterGroups));
+  return scenarios.map((scenario) => serializers.parseScenario(scenario, state.models.meterGroups));
 };
-
 
 /** ============================ Reducer methods =========================== */
 /**
@@ -130,7 +144,7 @@ export const selectScenarios = (state: RootState) => {
  * @param {ModelsSlice} state: the current state of the `models` slice
  * @param {ModelClassInterior} model: the model to add or update to the store
  */
-function addOrUpdateModel (state: ModelsSlice, model: ModelClassInterior) {
+function addOrUpdateModel(state: ModelsSlice, model: ModelClassInterior) {
   const slice = getSliceForModel(state, model);
   const modelIndex = _.findIndex(slice, ['id', model.id]);
 
@@ -146,7 +160,7 @@ function addOrUpdateModel (state: ModelsSlice, model: ModelClassInterior) {
 }
 
 /** ============================ Helpers =================================== */
-function getSliceForModel (
+function getSliceForModel(
   state: ModelsSlice,
   model: Pick<ModelClassExterior, 'object_type'>
 ): Array<ModelClassInterior> {
@@ -179,7 +193,7 @@ function getSliceForModel (
  *
  * @param {ModelClassExterior} model: the model to prepare
  */
-function prepareModel (model: ModelClassExterior): ModelClassInterior {
+function prepareModel(model: ModelClassExterior): ModelClassInterior {
   switch (model.object_type) {
     // case 'EVSEConfiguration':
     // case 'EVSEStrategy':

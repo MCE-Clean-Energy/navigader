@@ -3,9 +3,8 @@ import {
   Frame288Numeric as Frame288NumericInterface,
   Frame288NumericType,
   Frame288Options,
-  MonthIndex
+  MonthIndex,
 } from 'navigader/types';
-
 
 /** ============================ Types ===================================== */
 type PowerUnit = 'kW' | 'MW' | 'GW';
@@ -20,31 +19,31 @@ export class Frame288Numeric implements Frame288NumericInterface {
   units?: string;
   name?: string;
 
-  constructor (frame: Frame288NumericType, options?: Frame288Options) {
+  constructor(frame: Frame288NumericType, options?: Frame288Options) {
     this.frame = frame;
     this.name = options?.name;
     this.units = options?.units;
-    this.flattened = _.flatten(months.map(i => this.frame[i]));
+    this.flattened = _.flatten(months.map((i) => this.frame[i]));
   }
 
   /**
    * Returns an array of the minimum and maximum values in the dataset
    */
-  getRange (): [number, number] {
+  getRange(): [number, number] {
     return [this.getMin(), this.getMax()];
   }
 
   /**
    * Computes the maximum value in the frame
    */
-  getMax () {
+  getMax() {
     return Math.max(...this.flattened);
   }
 
   /**
    * Computes the minimum value in the frame
    */
-  getMin () {
+  getMin() {
     return Math.min(...this.flattened);
   }
 
@@ -53,7 +52,7 @@ export class Frame288Numeric implements Frame288NumericInterface {
    *
    * @param {MonthIndex} month: the index of the month (integer between 1 and 12, inclusive)
    */
-  getMonth (month: MonthIndex) {
+  getMonth(month: MonthIndex) {
     return this.frame[month];
   }
 
@@ -63,7 +62,7 @@ export class Frame288Numeric implements Frame288NumericInterface {
    * @param {MonthIndex} month: the month to look up
    * @param {number} hour: the hour to look up
    */
-  getValueByMonthHour (month: MonthIndex, hour: number) {
+  getValueByMonthHour(month: MonthIndex, hour: number) {
     return this.getMonth(month)[hour];
   }
 
@@ -72,8 +71,8 @@ export class Frame288Numeric implements Frame288NumericInterface {
    *
    * @param {Date} datetime: the date for which to look up the 288 value
    */
-  getValueByDate (datetime: Date) {
-    return this.getValueByMonthHour(datetime.getMonth() + 1 as MonthIndex, datetime.getHours());
+  getValueByDate(datetime: Date) {
+    return this.getValueByMonthHour((datetime.getMonth() + 1) as MonthIndex, datetime.getHours());
   }
 
   /**
@@ -82,7 +81,7 @@ export class Frame288Numeric implements Frame288NumericInterface {
    * @param {function} fn: the function to call for every datum
    * @param {Frame288Options} [options]: the units and name of the frame
    */
-  map (fn: (n: number) => number, options?: Frame288Options) {
+  map(fn: (n: number) => number, options?: Frame288Options) {
     const mergedOptions = _.defaults({}, options, { name: this.name, units: this.units });
     return new Frame288Numeric(
       months.reduce((memo, monthIndex) => {
@@ -98,14 +97,14 @@ export class Frame288Numeric implements Frame288NumericInterface {
    *
    * @param {string} name: the new name of the frame
    */
-  rename (name: string) {
+  rename(name: string) {
     return new Frame288Numeric(this.frame, { name, units: this.units });
   }
 
   /**
    * Returns a flat array of all values in the frame
    */
-  flatten () {
+  flatten() {
     return this.flattened;
   }
 
@@ -115,8 +114,8 @@ export class Frame288Numeric implements Frame288NumericInterface {
    * @param {number} n: the value to multiply the frame by
    * @param {Frame288Options} [options]: the units and name of the frame
    */
-  multiply (n: number, options?: Frame288Options) {
-    return this.map(value => value * n, options);
+  multiply(n: number, options?: Frame288Options) {
+    return this.map((value) => value * n, options);
   }
 
   /**
@@ -125,8 +124,8 @@ export class Frame288Numeric implements Frame288NumericInterface {
    * @param {number} n: the value to divide the frame by
    * @param {Frame288Options} [options]: the units and name of the frame
    */
-  divide (n: number, options?: Frame288Options) {
-    return this.map(value => value / n, options);
+  divide(n: number, options?: Frame288Options) {
+    return this.map((value) => value / n, options);
   }
 }
 
@@ -136,7 +135,7 @@ export class Frame288Numeric implements Frame288NumericInterface {
 export class PowerFrame288 extends Frame288Numeric {
   units: PowerUnit;
 
-  constructor (frame: Frame288NumericType, options?: Frame288Options<PowerUnit>) {
+  constructor(frame: Frame288NumericType, options?: Frame288Options<PowerUnit>) {
     super(frame, options);
     this.units = options?.units || 'kW';
   }
@@ -144,14 +143,11 @@ export class PowerFrame288 extends Frame288Numeric {
   /**
    * Scales the data down an appropriate amount, such that
    */
-  scale () {
+  scale() {
     const [min, max] = this.getRange();
     const magnitude = Math.log10(Math.max(Math.abs(min), Math.abs(max)));
-    const [divisor, units] = magnitude >= 6
-      ? [1e6, 'GW']
-      : magnitude >= 3
-        ? [1e3, 'MW']
-        : [1, 'kW'];
+    const [divisor, units] =
+      magnitude >= 6 ? [1e6, 'GW'] : magnitude >= 3 ? [1e3, 'MW'] : [1, 'kW'];
 
     return this.divide(divisor, { name: this.name, units });
   }

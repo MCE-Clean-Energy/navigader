@@ -4,14 +4,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import _ from 'navigader/util/lodash';
 import * as api from 'navigader/api';
 import { slices } from 'navigader/store';
-import { CAISORate, CostFunctions, GHGRate, Loader, RatePlan, SystemProfile } from 'navigader/types';
+import {
+  CAISORate,
+  CostFunctions,
+  GHGRate,
+  Loader,
+  RatePlan,
+  SystemProfile,
+} from 'navigader/types';
 import { omitFalsey } from 'navigader/util/omitFalsey';
 import { DataTypeFilters } from './types';
 import { applyDataFilters, useAsync } from './util';
 
-
 /** ============================ Types ===================================== */
-type CAISORateFilters = DataTypeFilters & { year?: number; };
+type CAISORateFilters = DataTypeFilters & { year?: number };
 type UseCostFunctionsParams = Partial<{
   ratePlans: Partial<api.GetRatePlansQueryOptions>;
   caisoRates: Partial<CAISORateFilters>;
@@ -24,14 +30,14 @@ type CostFunctionLoaders = { [CF in keyof CostFunctions]: Loader<CostFunctions[C
  * Loads the rate plans if they haven't been loaded already. Once loaded they will be added to the
  * store
  */
-export function useRatePlans (params?: api.GetRatePlansQueryOptions): Loader<RatePlan[]> {
+export function useRatePlans(params?: api.GetRatePlansQueryOptions): Loader<RatePlan[]> {
   const dispatch = useDispatch();
   const ratePlans = useSelector(slices.models.selectRatePlans);
 
   const loading = useAsync(
     async () => {
       // Even if we already have some ratePlans, we can't know that we have all of them
-      return api.getRatePlans(params)
+      return api.getRatePlans(params);
     },
     ({ data }) => dispatch(slices.models.updateModels(data))
   );
@@ -39,7 +45,7 @@ export function useRatePlans (params?: api.GetRatePlansQueryOptions): Loader<Rat
   return Object.assign([...ratePlans], { loading });
 }
 
-export function useRatePlan (ratePlanId: RatePlan['id'], params?: api.GetRatePlanQueryOptions) {
+export function useRatePlan(ratePlanId: RatePlan['id'], params?: api.GetRatePlanQueryOptions) {
   const dispatch = useDispatch();
 
   const storedRatePlans = useSelector(slices.models.selectRatePlans);
@@ -49,7 +55,7 @@ export function useRatePlan (ratePlanId: RatePlan['id'], params?: api.GetRatePla
     async () => {
       return api.getRatePlan(ratePlanId, params);
     },
-    ratePlan => dispatch(slices.models.updateModel(ratePlan)),
+    (ratePlan) => dispatch(slices.models.updateModel(ratePlan)),
     [ratePlanId]
   );
 
@@ -61,7 +67,7 @@ export function useRatePlan (ratePlanId: RatePlan['id'], params?: api.GetRatePla
  * Loads the GHG rates if they haven't been loaded already. Once loaded they will be added to
  * the store
  */
-export function useGhgRates (): Loader<GHGRate[]> {
+export function useGhgRates(): Loader<GHGRate[]> {
   const dispatch = useDispatch();
   const ghgRates = useSelector(slices.models.selectGHGRates);
 
@@ -73,8 +79,8 @@ export function useGhgRates (): Loader<GHGRate[]> {
         data_format: '288',
         include: ['data'],
         page: 1,
-        page_size: 100
-      })
+        page_size: 100,
+      });
     },
     ({ data }) => dispatch(slices.models.updateModels(data))
   );
@@ -87,7 +93,7 @@ export function useGhgRates (): Loader<GHGRate[]> {
  * Loads the CAISO rates if they haven't been loaded already. Once loaded they will be added to
  * the store
  */
-export function useCAISORates (filters: CAISORateFilters = {}): Loader<CAISORate[]> {
+export function useCAISORates(filters: CAISORateFilters = {}): Loader<CAISORate[]> {
   const dispatch = useDispatch();
 
   // Check the store for CAISO rates that match the provided filters
@@ -104,11 +110,11 @@ export function useCAISORates (filters: CAISORateFilters = {}): Loader<CAISORate
       return api.getCAISORates({
         ...omitFalsey({
           data_types: filters.data_types,
-          period: filters.period
+          period: filters.period,
         }),
         page: 1,
-        page_size: 100
-      })
+        page_size: 100,
+      });
     },
     ({ data }) => dispatch(slices.models.updateModels(data))
   );
@@ -117,7 +123,7 @@ export function useCAISORates (filters: CAISORateFilters = {}): Loader<CAISORate
 }
 
 /** ============================ System profiles =========================== */
-export function useSystemProfiles (): Loader<SystemProfile[]> {
+export function useSystemProfiles(): Loader<SystemProfile[]> {
   const [systemProfiles, setSystemProfiles] = React.useState<SystemProfile[]>([]);
 
   const loading = useAsync(
@@ -125,8 +131,8 @@ export function useSystemProfiles (): Loader<SystemProfile[]> {
       return api.getSystemProfiles({
         include: ['load_serving_entity.*'],
         page: 1,
-        page_size: 100
-      })
+        page_size: 100,
+      });
     },
     ({ data }) => setSystemProfiles(data)
   );
@@ -140,11 +146,11 @@ export function useSystemProfiles (): Loader<SystemProfile[]> {
  * would be a single endpoint for loading them all. In the actual world there isn't, so this call
  * will make multiple API calls, one per cost function category.
  */
-export function useCostFunctions (params?: UseCostFunctionsParams): CostFunctionLoaders {
+export function useCostFunctions(params?: UseCostFunctionsParams): CostFunctionLoaders {
   return {
     ghgRate: useGhgRates(),
     caisoRate: useCAISORates(params?.caisoRates),
     ratePlan: useRatePlans({ ...params?.ratePlans, page: 1, page_size: 100 }),
-    systemProfile: useSystemProfiles()
+    systemProfile: useSystemProfiles(),
   };
 }

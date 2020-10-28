@@ -11,7 +11,6 @@ import { IdType, ObjectWithId } from 'navigader/types';
 import _ from 'navigader/util/lodash';
 import { omitFalsey } from 'navigader/util/omitFalsey';
 
-
 /** ============================ Hooks ===================================== */
 /**
  * A custom hook that builds on `useLocation` to parse the query string. Note that `URLSearchParams`
@@ -20,9 +19,9 @@ import { omitFalsey } from 'navigader/util/omitFalsey';
  *
  * * @param {string[]} params: the names of the query parameters of interest
  */
-export function useQueryParams (params: string[]): Array<string | null> {
+export function useQueryParams(params: string[]): Array<string | null> {
   const urlSearchParams = new URLSearchParams(useLocation().search);
-  return params.map(param => urlSearchParams.get(param))
+  return params.map((param) => urlSearchParams.get(param));
 }
 
 /**
@@ -34,7 +33,7 @@ export function useQueryParams (params: string[]): Array<string | null> {
  *   data from the store slice
  * @param {IdType[]} ids: ordered array of IDs to filter for
  */
-export function useTableSelector <Datum extends ObjectWithId>(
+export function useTableSelector<Datum extends ObjectWithId>(
   dataSelector: (state: RootState) => Datum[],
   ids: IdType[] | null
 ): Datum[] {
@@ -53,7 +52,7 @@ export function useTableSelector <Datum extends ObjectWithId>(
  * @param {any[]} dependencies: the dependencies upon which the color map depends
  * @param {any[]} [initialElements]: initial elements to populate the map with
  */
-export function useColorMap (dependencies: any[], initialElements?: any[]) {
+export function useColorMap(dependencies: any[], initialElements?: any[]) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   return React.useMemo(() => new ColorMap(initialElements), dependencies);
 }

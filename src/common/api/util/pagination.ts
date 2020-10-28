@@ -1,6 +1,5 @@
 import { PaginationSet, RawPaginationSet } from 'navigader/types';
 
-
 /** ============================ Helpers =================================== */
 /**
  * Parses a raw pagination set (the raw response from the back end for a paginated endpoint) into a
@@ -10,7 +9,7 @@ import { PaginationSet, RawPaginationSet } from 'navigader/types';
  * @param {RawPaginationSet} paginationSet: the raw server response to parse
  * @param {string} resultsKey: they key under which the data array lies
  */
-export function parsePaginationSet <ResultsKey extends string, Datum>(
+export function parsePaginationSet<ResultsKey extends string, Datum>(
   paginationSet: RawPaginationSet<Record<ResultsKey, Datum[]>>,
   resultsKey: ResultsKey
 ): PaginationSet<Datum>;
@@ -23,12 +22,12 @@ export function parsePaginationSet <ResultsKey extends string, Datum>(
  * @param {Function} [parseFn]: a function that parses an individual result from its raw version
  *   to its parsed version. Defaults to the identity function
  */
-export function parsePaginationSet <RawSchema, Datum>(
+export function parsePaginationSet<RawSchema, Datum>(
   paginationSet: RawPaginationSet<RawSchema>,
   parseFn: (schema: RawSchema) => Datum[]
 ): PaginationSet<Datum>;
 
-export function parsePaginationSet (paginationSet: any, parseFnOrResultsKey?: any ): any {
+export function parsePaginationSet(paginationSet: any, parseFnOrResultsKey?: any): any {
   const isArray = Array.isArray(paginationSet.results);
 
   // If the results are not array-like, a parse function or results key must be provided
@@ -38,9 +37,10 @@ export function parsePaginationSet (paginationSet: any, parseFnOrResultsKey?: an
 
   let data;
   if (isArray) {
-    data = typeof parseFnOrResultsKey === 'function'
-      ? paginationSet.results.map(parseFnOrResultsKey)
-      : paginationSet.results;
+    data =
+      typeof parseFnOrResultsKey === 'function'
+        ? paginationSet.results.map(parseFnOrResultsKey)
+        : paginationSet.results;
   } else if (typeof parseFnOrResultsKey === 'function') {
     data = parseFnOrResultsKey(paginationSet.results);
   } else {
@@ -49,6 +49,6 @@ export function parsePaginationSet (paginationSet: any, parseFnOrResultsKey?: an
 
   return {
     count: paginationSet.count,
-    data
+    data,
   };
 }

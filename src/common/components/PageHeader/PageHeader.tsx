@@ -11,7 +11,6 @@ import * as Flex from '../Flex';
 import { Link } from '../Link';
 import { Typography } from '../Typography';
 
-
 /** ============================ Types ===================================== */
 type Breadcrumb = string | Tuple<string>;
 type BreadcrumbsProps = {
@@ -24,25 +23,34 @@ type PageHeaderProps = BreadcrumbsProps & {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(theme => ({
-  header: {
-    marginBottom: theme.spacing(2),
-    paddingTop: theme.spacing(2)
-  }
-}), 'PageHeader');
+const useStyles = makeStylesHook(
+  (theme) => ({
+    header: {
+      marginBottom: theme.spacing(2),
+      paddingTop: theme.spacing(2),
+    },
+  }),
+  'PageHeader'
+);
 
-const useBreadcrumbStyles = makeStylesHook(theme => ({
-  breadcrumbsWrapper: {
-    height: 48,
-    paddingTop: theme.spacing(1)
-  }
-}), 'BreadCrumbs');
+const useBreadcrumbStyles = makeStylesHook(
+  (theme) => ({
+    breadcrumbsWrapper: {
+      height: 48,
+      paddingTop: theme.spacing(1),
+    },
+  }),
+  'BreadCrumbs'
+);
 
-const useBackButtonStyles = makeStylesHook(theme => ({
-  backButton: {
-    marginRight: theme.spacing(2)
-  }
-}), 'BackButton');
+const useBackButtonStyles = makeStylesHook(
+  (theme) => ({
+    backButton: {
+      marginRight: theme.spacing(2),
+    },
+  }),
+  'BackButton'
+);
 
 /** ============================ Components ================================ */
 const BackButton: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
@@ -58,16 +66,14 @@ const BackButton: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
     return typeof breadcrumb !== 'string';
   });
 
-  return lastLink
-    ? (
-      <Button
-        className={classes.backButton}
-        icon="back"
-        onClick={routeTo.previousPage}
-        role="back-button"
-      />
-    )
-    : null;
+  return lastLink ? (
+    <Button
+      className={classes.backButton}
+      icon="back"
+      onClick={routeTo.previousPage}
+      role="back-button"
+    />
+  ) : null;
 };
 
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
@@ -89,12 +95,20 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
             // If we've got an `href` and it isn't the last breadcrumb, render a ling
             if (Array.isArray(breadcrumb) && index !== lastLinkIndex) {
               const [text, href] = breadcrumb;
-              return <Link color="inherit" key={text} to={href} variant="body2">{text}</Link>;
+              return (
+                <Link color="inherit" key={text} to={href} variant="body2">
+                  {text}
+                </Link>
+              );
             }
 
             // Otherwise just return the text
             const text = Array.isArray(breadcrumb) ? breadcrumb[0] : breadcrumb;
-            return <Typography color="textPrimary" key={text} variant="body2">{text}</Typography>;
+            return (
+              <Typography color="textPrimary" key={text} variant="body2">
+                {text}
+              </Typography>
+            );
           })}
         </MuiBreadcrumbs>
       </Flex.Item>
@@ -111,16 +125,14 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ actions, breadcrumbs, ti
 
   return (
     <Flex.Container direction="column">
-      <Breadcrumbs breadcrumbs={breadcrumbs}/>
+      <Breadcrumbs breadcrumbs={breadcrumbs} />
       <Flex.Container className={classes.header} justifyContent="space-between">
         <Flex.Item>
           <Typography data-testid="page-header" variant="h4">
             {title}
           </Typography>
         </Flex.Item>
-        <Flex.Item>
-          {actions}
-        </Flex.Item>
+        <Flex.Item>{actions}</Flex.Item>
       </Flex.Container>
     </Flex.Container>
   );

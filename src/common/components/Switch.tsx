@@ -2,7 +2,6 @@ import * as React from 'react';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import MuiSwitch from '@material-ui/core/Switch';
 
-
 /** ============================ Types ===================================== */
 type SwitchProps = {
   checked?: boolean;

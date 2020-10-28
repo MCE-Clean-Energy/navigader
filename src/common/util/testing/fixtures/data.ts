@@ -2,7 +2,6 @@ import { Frame288NumericType, MonthIndex } from 'navigader/types';
 import { IntervalData } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 
-
 /** ============================ Frame 288 ================================= */
 export const frame288: Frame288NumericType = {
   1: [
@@ -29,7 +28,7 @@ export const frame288: Frame288NumericType = {
     586.8858,
     512.8796,
     474.45310000000006,
-    920.7542000000003
+    920.7542000000003,
   ],
   2: [
     1162.3788,
@@ -55,7 +54,7 @@ export const frame288: Frame288NumericType = {
     509.22330000000005,
     499.66439999999994,
     482.6180999999999,
-    1014.3697000000001
+    1014.3697000000001,
   ],
   3: [
     1288.5619,
@@ -81,7 +80,7 @@ export const frame288: Frame288NumericType = {
     564.6566,
     551.0980999999998,
     517.8529,
-    1091.8802
+    1091.8802,
   ],
   4: [
     1268.2487999999996,
@@ -107,7 +106,7 @@ export const frame288: Frame288NumericType = {
     443.61019999999996,
     474.1355,
     458.7997,
-    1073.0408000000002
+    1073.0408000000002,
   ],
   5: [
     1343.8487999999998,
@@ -133,7 +132,7 @@ export const frame288: Frame288NumericType = {
     552.5065000000001,
     608.9455,
     609.2284,
-    1153.9036000000003
+    1153.9036000000003,
   ],
   6: [
     1391.5955000000001,
@@ -159,7 +158,7 @@ export const frame288: Frame288NumericType = {
     805.8356500000001,
     777.2823,
     795.7098000000002,
-    1191.7685999999999
+    1191.7685999999999,
   ],
   7: [
     1370.4042000000002,
@@ -185,7 +184,7 @@ export const frame288: Frame288NumericType = {
     1024.6774,
     968.0662999999998,
     954.7052999999999,
-    1283.0665999999999
+    1283.0665999999999,
   ],
   8: [
     1507.7013100000006,
@@ -211,7 +210,7 @@ export const frame288: Frame288NumericType = {
     860.1049200000001,
     866.8795400000001,
     867.5161900000002,
-    1307.50141
+    1307.50141,
   ],
   9: [
     1465.9351800000004,
@@ -237,7 +236,7 @@ export const frame288: Frame288NumericType = {
     770.13255,
     752.9698999999998,
     747.1024999999998,
-    1241.123
+    1241.123,
   ],
   10: [
     1384.8989,
@@ -263,7 +262,7 @@ export const frame288: Frame288NumericType = {
     766.7257900000001,
     766.7801900000003,
     707.41211,
-    1100.24734
+    1100.24734,
   ],
   11: [
     1481.7490000000003,
@@ -289,7 +288,7 @@ export const frame288: Frame288NumericType = {
     822.6649000000001,
     787.1993999999997,
     658.6391999999998,
-    1151.9806
+    1151.9806,
   ],
   12: [
     1671.116,
@@ -315,8 +314,8 @@ export const frame288: Frame288NumericType = {
     968.1985999999999,
     960.1839000000002,
     802.7332999999999,
-    1155.8885999999998
-  ]
+    1155.8885999999998,
+  ],
 };
 
 /**
@@ -329,12 +328,12 @@ export const makeFrame288 = (
 ): Frame288NumericType => {
   const frame288 = {} as Record<MonthIndex, number[]>;
   const months = _.range(1, 13) as MonthIndex[];
-  months.forEach(m => frame288[m] = _.range(24).map(h => fn(m, h)));
+  months.forEach((m) => (frame288[m] = _.range(24).map((h) => fn(m, h))));
   return frame288;
 };
 
 /** ============================ Interval data ============================= */
-export function makeIntervalData (intervals: Array<[string, number]>, name?: string) {
+export function makeIntervalData(intervals: Array<[string, number]>, name?: string) {
   return new IntervalData(
     intervals.map(([date, value]) => ({ timestamp: new Date(date), timestring: date, value })),
     name || 'test interval'

@@ -1,5 +1,5 @@
-import * as React from "react";
-import { Button, Dialog } from "navigader/components";
+import * as React from 'react';
+import { Button, Dialog } from 'navigader/components';
 
 /** ============================ Types ===================================== */
 type DeleteDialogProps = {

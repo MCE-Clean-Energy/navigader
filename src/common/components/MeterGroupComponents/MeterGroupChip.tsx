@@ -8,7 +8,6 @@ import { Chip, ChipProps } from '../Chip';
 import { ScenarioChip } from '../scenarios';
 import { Tooltip } from '../Tooltip';
 
-
 /** ============================ Types ===================================== */
 type MeterGroupChipProps = Omit<ChipProps, 'label'> & {
   link?: boolean;
@@ -85,7 +84,7 @@ export const MeterGroupChip: React.FC<MeterGroupChipProps> = (props) => {
    * Returns a callback which can be used to link to the meter group's details page. The actual page
    * depends on what type of meter group we're dealing with.
    */
-  function getLinkCb () {
+  function getLinkCb() {
     if (!link) return;
 
     // If the meter group is an origin file, we only enable viewing its details page if it has been

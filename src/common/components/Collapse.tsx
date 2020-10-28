@@ -1,7 +1,6 @@
 import * as React from 'react';
 import MuiCollapse from '@material-ui/core/Collapse';
 
-
 /** ============================ Types ===================================== */
 type CollapseProps = {
   open: boolean;
@@ -10,9 +9,9 @@ type CollapseProps = {
 
 /** ============================ Components ================================ */
 export const Collapse: React.FC<CollapseProps> = ({ open, ...rest }) => {
-  return <MuiCollapse in={open} {...rest} />
+  return <MuiCollapse in={open} {...rest} />;
 };
 
 Collapse.defaultProps = {
-  timeout: 'auto'
+  timeout: 'auto',
 };

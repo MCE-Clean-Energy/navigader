@@ -20,9 +20,12 @@ import { Progress } from '../Progress';
 import { Typography } from '../Typography';
 import { TablePagination } from './Pagination';
 import {
-  DisabledSelectComponent, PaginationCallbackArgs, PaginationState, SortState, TableContext
+  DisabledSelectComponent,
+  PaginationCallbackArgs,
+  PaginationState,
+  SortState,
+  TableContext,
 } from './util';
-
 
 /** ============================ Types ===================================== */
 type EmptyRowProps = React.PropsWithChildren<{
@@ -82,33 +85,39 @@ type TableState = PaginationState & {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(theme => ({
-  progressBarSpacer: {
-    height: 4
-  },
-  table: {
-    '& .disabled-select-component': {
-      display: 'flex',
-      flexFlow: 'row nowrap',
-      justifyContent: 'center',
-      width: '100%'
-    }
-  },
-  toolbar: {
-    justifyContent: 'space-between',
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(1)
-  }
-}), 'NavigaderTable');
+const useStyles = makeStylesHook(
+  (theme) => ({
+    progressBarSpacer: {
+      height: 4,
+    },
+    table: {
+      '& .disabled-select-component': {
+        display: 'flex',
+        flexFlow: 'row nowrap',
+        justifyContent: 'center',
+        width: '100%',
+      },
+    },
+    toolbar: {
+      justifyContent: 'space-between',
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(1),
+    },
+  }),
+  'NavigaderTable'
+);
 
-const useTableCellStyles = makeStylesHook(() => ({
-  stickyHeader: {
-    backgroundColor: white,
-  }
-}), 'NavigaderTableCell');
+const useTableCellStyles = makeStylesHook(
+  () => ({
+    stickyHeader: {
+      backgroundColor: white,
+    },
+  }),
+  'NavigaderTableCell'
+);
 
 /** ============================ Components ================================ */
-export function Table <T extends ObjectWithId>(props: TableProps<T>) {
+export function Table<T extends ObjectWithId>(props: TableProps<T>) {
   const {
     children,
     containerClassName,
@@ -135,7 +144,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     loading: true,
     rowsPerPage: 20,
     selections: new Set(),
-    sorting: initialSorting
+    sorting: initialSorting,
   });
 
   const { count, currentPage, dataIds, rowsPerPage, selections, sorting } = state;
@@ -146,7 +155,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     (paginationSet) => {
       updateState({
         count: paginationSet.count,
-        dataIds: _.map(paginationSet.data, 'id')
+        dataIds: _.map(paginationSet.data, 'id'),
       });
     },
     [currentPage, rowsPerPage, sorting, dataFn]
@@ -156,7 +165,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
   const data = useTableSelector(dataSelector, dataIds);
 
   // Build context for child component tree
-  const selectables = data.filter(d => !disableSelect(d));
+  const selectables = data.filter((d) => !disableSelect(d));
   const tableContext = {
     allSelected: selectables.length > 0 && selectables.length === selections.size,
     data,
@@ -168,28 +177,28 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
     setSortState,
     sortState: sorting,
     toggleAllSelections,
-    toggleRowSelection
+    toggleRowSelection,
   };
 
   return (
     <MuiPaper elevation={raised ? 8 : 0}>
-      {title &&
+      {title && (
         <MuiToolbar className={classes.toolbar}>
           <Typography variant="h6">{title}</Typography>
-          {data &&
+          {data && (
             <Flex.Container alignItems="center">
               {headerActions}
-              {(count !== null && count > 10) &&
+              {count !== null && count > 10 && (
                 <TablePagination
                   count={count}
                   paginationState={state}
                   updatePaginationState={updatePaginationState}
                 />
-              }
+              )}
             </Flex.Container>
-          }
+          )}
         </MuiToolbar>
-      }
+      )}
       <MuiTableContainer className={containerClassName}>
         <MuiTable className={classes.table} {...rest}>
           <TableContext.Provider value={tableContext}>
@@ -202,7 +211,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
   );
 
   /** ========================== Callbacks ================================= */
-  function EmptyRow (props: EmptyRowProps) {
+  function EmptyRow(props: EmptyRowProps) {
     if (count !== 0) return null;
     return (
       <Table.Row>
@@ -217,7 +226,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
    *
    * @param {Partial<TableState>} updates: state updates
    */
-  function updateState (updates: Partial<TableState>) {
+  function updateState(updates: Partial<TableState>) {
     setState((prevState) => {
       const newState = { ...state, ...updates };
 
@@ -235,10 +244,10 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
    *
    * @param {PaginationState} newState: the new pagination state
    */
-  function updatePaginationState (newState: PaginationState) {
+  function updatePaginationState(newState: PaginationState) {
     updateState({
       ...newState,
-      selections: new Set()
+      selections: new Set(),
     });
   }
 
@@ -247,7 +256,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
    *
    * @param {SortState} newState: the new sort state
    */
-  function setSortState (newState: SortState) {
+  function setSortState(newState: SortState) {
     updateState({ sorting: newState });
   }
 
@@ -257,12 +266,12 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
    * @param {boolean} selectAll: true if the checkbox is now checked (i.e. if all rows ought to
    *   become selected)
    */
-  function toggleAllSelections (selectAll: boolean) {
+  function toggleAllSelections(selectAll: boolean) {
     // Can't do anything without data
     if (!data) return;
     if (selectAll) {
-      const selectables = data.filter(d => !disableSelect(d));
-      const selectedIndices = selectables.map(d => data.indexOf(d));
+      const selectables = data.filter((d) => !disableSelect(d));
+      const selectedIndices = selectables.map((d) => data.indexOf(d));
       updateState({ selections: new Set(selectedIndices) });
     } else {
       updateState({ selections: new Set() });
@@ -275,7 +284,7 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
    * @param {number} rowIndex: the index of the row whose selection state is toggling
    * @param {boolean} checked: true if the checkbox is now checked (i.e. if the row is now selected)
    */
-  function toggleRowSelection (rowIndex: number, checked: boolean) {
+  function toggleRowSelection(rowIndex: number, checked: boolean) {
     const newSelections = new Set(selections);
 
     if (checked) newSelections.add(rowIndex);
@@ -289,10 +298,10 @@ export function Table <T extends ObjectWithId>(props: TableProps<T>) {
    *
    * @param {Set<number>} indices: the row indices of the now-selected data
    */
-  function updateSelections (indices: Set<number>) {
+  function updateSelections(indices: Set<number>) {
     if (data && onSelect) {
       // Map the indices to the actual data
-      onSelect([...indices].map(index => data[index]));
+      onSelect([...indices].map((index) => data[index]));
     }
   }
 }
@@ -318,7 +327,7 @@ const TableBody: React.FC = (props) => {
           _isHeaderRow: false,
           _onChange: (checked: boolean) => toggleRowSelection(index, checked),
           _selected: selections.has(index),
-          _disableSelect: disableSelect(datum)
+          _disableSelect: disableSelect(datum),
         });
       })}
     </MuiTableBody>
@@ -327,23 +336,22 @@ const TableBody: React.FC = (props) => {
 
 const TableHead: React.FC = (props) => {
   const { allSelected, data, toggleAllSelections, disableSelect } = React.useContext(TableContext);
-  const selectables = data.filter(d => !disableSelect(d));
+  const selectables = data.filter((d) => !disableSelect(d));
   return (
     <MuiTableHead>
       {React.isValidElement(props.children)
         ? React.cloneElement<TableRowProps<never>>(props.children, {
-          _isHeaderRow: true,
-          _onChange: toggleAllSelections,
-          _selected: allSelected,
-          _disableSelect: selectables.length === 0
-        })
-        : props.children
-      }
+            _isHeaderRow: true,
+            _onChange: toggleAllSelections,
+            _selected: allSelected,
+            _disableSelect: selectables.length === 0,
+          })
+        : props.children}
     </MuiTableHead>
   );
 };
 
-function TableRow<T extends ObjectWithId> (props: TableRowProps<T>) {
+function TableRow<T extends ObjectWithId>(props: TableRowProps<T>) {
   const {
     children,
     className,
@@ -353,7 +361,7 @@ function TableRow<T extends ObjectWithId> (props: TableRowProps<T>) {
     _disableSelect,
     _isHeaderRow,
     _onChange,
-    _selected
+    _selected,
   } = props;
   const { DisabledSelectComponent, hover, selectable } = React.useContext(TableContext);
 
@@ -364,13 +372,13 @@ function TableRow<T extends ObjectWithId> (props: TableRowProps<T>) {
     // The `onChange` callback depends on the cell's context
     checkboxCell = (
       <Table.Cell _columnIndex={colIndex++} _isHeaderRow={_isHeaderRow}>
-        {_disableSelect && !_isHeaderRow && DisabledSelectComponent
-          ? (
-            <div className="disabled-select-component">
-              <DisabledSelectComponent datum={_datum} />
-            </div>
-          ) : <Checkbox checked={_selected} disabled={_disableSelect} onChange={_onChange} />
-        }
+        {_disableSelect && !_isHeaderRow && DisabledSelectComponent ? (
+          <div className="disabled-select-component">
+            <DisabledSelectComponent datum={_datum} />
+          </div>
+        ) : (
+          <Checkbox checked={_selected} disabled={_disableSelect} onChange={_onChange} />
+        )}
       </Table.Cell>
     );
   }
@@ -383,7 +391,7 @@ function TableRow<T extends ObjectWithId> (props: TableRowProps<T>) {
       onMouseLeave={onMouseLeave}
     >
       {checkboxCell}
-      {React.Children.map(children, child =>
+      {React.Children.map(children, (child) =>
         // Add the `_columnIndex` and `_isHeaderRow` props
         React.isValidElement(child)
           ? React.cloneElement(child, { _columnIndex: colIndex++, _isHeaderRow })
@@ -407,7 +415,7 @@ const TableCell: React.FC<TableCellProps> = (props) => {
   if (_columnIndex === 0 || _isHeaderRow) {
     Object.assign(tableCellProps, {
       component: 'th',
-      scope: _isHeaderRow ? 'col' : 'row'
+      scope: _isHeaderRow ? 'col' : 'row',
     });
   }
 
@@ -432,16 +440,14 @@ const TableCell: React.FC<TableCellProps> = (props) => {
   /**
    * Triggered when the user clicks the sort label, indicating they want to sort on a given column
    */
-  function updateSortState () {
-    const newDir = sortState?.key === sortBy
-      ? toggleSortDir(sortState?.dir)
-      : getDefaultSortDir();
+  function updateSortState() {
+    const newDir = sortState?.key === sortBy ? toggleSortDir(sortState?.dir) : getDefaultSortDir();
 
     setSortState({
       dir: newDir,
       // `sortBy` isn't a required column, but is required for rendering the sort label and thus
       // for triggering this callback, hence the non-null assertion
-      key: sortBy!
+      key: sortBy!,
     });
   }
 
@@ -449,7 +455,7 @@ const TableCell: React.FC<TableCellProps> = (props) => {
    * Returns the column's default sorting direction, falling back on the global default sort
    * direction if no sort direction is provided
    */
-  function getDefaultSortDir () {
+  function getDefaultSortDir() {
     return sortDir || DEFAULT_SORT_DIR;
   }
 
@@ -459,11 +465,14 @@ const TableCell: React.FC<TableCellProps> = (props) => {
    *
    * @param {SortDir} [dir]: initial sort direction
    */
-  function toggleSortDir (dir?: SortDir) {
+  function toggleSortDir(dir?: SortDir) {
     switch (dir) {
-      case 'asc': return 'desc';
-      case 'desc': return 'asc';
-      default: return DEFAULT_SORT_DIR;
+      case 'asc':
+        return 'desc';
+      case 'desc':
+        return 'asc';
+      default:
+        return DEFAULT_SORT_DIR;
     }
   }
 };

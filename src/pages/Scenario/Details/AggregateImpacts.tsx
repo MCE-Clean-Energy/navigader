@@ -2,7 +2,11 @@ import * as React from 'react';
 import { DateTime, Duration } from 'luxon';
 
 import {
-  Card, IntervalDataGraph, IntervalDataTuple, ScenariosTable, Typography
+  Card,
+  IntervalDataGraph,
+  IntervalDataTuple,
+  ScenariosTable,
+  Typography,
 } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
 import { DateTuple, MonthIndex, Scenario } from 'navigader/types';
@@ -11,33 +15,38 @@ import { ChartControls, ChartView, TimeDomainOption } from './ChartControls';
 import { GHGCharts, ProcurementCharts } from './Charts';
 import { LoadingModal } from './LoadingModal';
 
-
 /** ============================ Types ===================================== */
 type ScenarioProp = {
   scenario: Scenario;
 };
 
 /** ============================ Styles ==================================== */
-const useIntervalChartStyles = makeStylesHook(theme => ({
-  headingSpacer: {
-    height: 32
-  },
-  loadGraphCard: {
-    // Height of the circular progress component plus 5px padding
-    minHeight: 50,
-    overflow: 'visible',
-    position: 'relative'
-  },
-  loadTypeMenu: {
-    marginTop: theme.spacing(1)
-  }
-}), 'IntervalChart');
+const useIntervalChartStyles = makeStylesHook(
+  (theme) => ({
+    headingSpacer: {
+      height: 32,
+    },
+    loadGraphCard: {
+      // Height of the circular progress component plus 5px padding
+      minHeight: 50,
+      overflow: 'visible',
+      position: 'relative',
+    },
+    loadTypeMenu: {
+      marginTop: theme.spacing(1),
+    },
+  }),
+  'IntervalChart'
+);
 
-const useStyles = makeStylesHook(theme => ({
-  table: {
-    marginTop: theme.spacing(2)
-  }
-}), 'AggregateImpactsTab');
+const useStyles = makeStylesHook(
+  (theme) => ({
+    table: {
+      marginTop: theme.spacing(2),
+    },
+  }),
+  'AggregateImpactsTab'
+);
 
 /** ============================ Components ================================ */
 const IntervalChart: React.FC<ScenarioProp> = ({ scenario }) => {
@@ -51,15 +60,17 @@ const IntervalChart: React.FC<ScenarioProp> = ({ scenario }) => {
   const [timeDomain, setTimeDomain] = React.useState<DateTuple>();
 
   const simulationData = scenario.data.default;
-  const { loading, meterGroup } = useMeterGroup(
-    meter_group!.id,
-    { data_types: 'default', period: 60 }
-  );
+  const { loading, meterGroup } = useMeterGroup(meter_group!.id, {
+    data_types: 'default',
+    period: 60,
+  });
 
   const meterGroupData = meterGroup?.data.default;
   return (
     <div>
-      <Typography useDiv variant="h6">Simulation Results</Typography>
+      <Typography useDiv variant="h6">
+        Simulation Results
+      </Typography>
       <Card className={classes.loadGraphCard} raised>
         <LoadingModal loading={loading} />
         <ChartControls
@@ -70,23 +81,21 @@ const IntervalChart: React.FC<ScenarioProp> = ({ scenario }) => {
           updateMonth={handleMonthChange}
           updateTimeDomain={handleTimeDomainChange}
         />
-        {meterGroupData && simulationData &&
+        {meterGroupData && simulationData && (
           <>
-            {chartView === 'usage' &&
+            {chartView === 'usage' && (
               <IntervalDataGraph
                 axisLabel="Customer load"
                 month={selectedMonth}
                 onTimeDomainChange={setTimeDomain}
                 timeDomain={timeDomain}
-                {
-                  ...scaleLoadData([
-                    meterGroupData.rename('Initial load'),
-                    simulationData.rename('Simulated load')
-                  ])
-                }
+                {...scaleLoadData([
+                  meterGroupData.rename('Initial load'),
+                  simulationData.rename('Simulated load'),
+                ])}
               />
-            }
-            {chartView === 'ghg' &&
+            )}
+            {chartView === 'ghg' && (
               <GHGCharts
                 meterGroupData={meterGroupData}
                 scenarioData={simulationData}
@@ -94,8 +103,8 @@ const IntervalChart: React.FC<ScenarioProp> = ({ scenario }) => {
                 timeDomain={timeDomain}
                 updateTimeDomain={setTimeDomain}
               />
-            }
-            {chartView === 'procurement' &&
+            )}
+            {chartView === 'procurement' && (
               <ProcurementCharts
                 meterGroupData={meterGroupData}
                 scenarioData={simulationData}
@@ -103,9 +112,9 @@ const IntervalChart: React.FC<ScenarioProp> = ({ scenario }) => {
                 timeDomain={timeDomain}
                 updateTimeDomain={setTimeDomain}
               />
-            }
+            )}
           </>
-        }
+        )}
       </Card>
     </div>
   );
@@ -117,7 +126,7 @@ const IntervalChart: React.FC<ScenarioProp> = ({ scenario }) => {
    *
    * @param {MonthIndex} month: the month now being shown
    */
-  function handleMonthChange (month: MonthIndex) {
+  function handleMonthChange(month: MonthIndex) {
     setMonth(month);
     handleTimeDomainChange('1m', month);
   }
@@ -130,7 +139,7 @@ const IntervalChart: React.FC<ScenarioProp> = ({ scenario }) => {
    * @param {TimeDomainOption} timeDomainOption: the timespan to set the domain to
    * @param {MonthIndex} month: the month to start at
    */
-  function handleTimeDomainChange (
+  function handleTimeDomainChange(
     timeDomainOption: TimeDomainOption,
     month: MonthIndex = selectedMonth
   ) {
@@ -168,7 +177,7 @@ export const AggregateImpactsTab: React.FC<ScenarioProp> = ({ scenario }) => {
         />
       </div>
     </>
-  )
+  );
 };
 
 /** ============================ Helpers =================================== */
@@ -177,21 +186,20 @@ export const AggregateImpactsTab: React.FC<ScenarioProp> = ({ scenario }) => {
  *
  * @param {IntervalDataTuple} intervals: the pre-DER and post-DER load interval data
  */
-function scaleLoadData (intervals: IntervalDataTuple) {
-  const [min, max] = intervals.reduce(([curMin, curMax], interval) => {
-    const [minInterval, maxInterval] = interval.valueDomain;
-    return [Math.min(curMin, minInterval), Math.max(curMax, maxInterval)];
-  }, [Infinity, -Infinity]);
+function scaleLoadData(intervals: IntervalDataTuple) {
+  const [min, max] = intervals.reduce(
+    ([curMin, curMax], interval) => {
+      const [minInterval, maxInterval] = interval.valueDomain;
+      return [Math.min(curMin, minInterval), Math.max(curMax, maxInterval)];
+    },
+    [Infinity, -Infinity]
+  );
 
   const magnitude = Math.log10(Math.max(Math.abs(min), Math.abs(max)));
-  const [divisor, units] = magnitude >= 6
-    ? [1e6, 'GW']
-    : magnitude >= 3
-      ? [1e3, 'MW']
-      : [1, 'kW'];
+  const [divisor, units] = magnitude >= 6 ? [1e6, 'GW'] : magnitude >= 3 ? [1e3, 'MW'] : [1, 'kW'];
 
   return {
-    data: intervals.map(interval => interval.divide(divisor)) as IntervalDataTuple,
-    units
+    data: intervals.map((interval) => interval.divide(divisor)) as IntervalDataTuple,
+    units,
   };
 }

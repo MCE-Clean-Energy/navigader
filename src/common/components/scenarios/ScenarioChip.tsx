@@ -12,7 +12,6 @@ import { Popover } from '../Popover';
 import { Tooltip } from '../Tooltip';
 import { Typography } from '../Typography';
 
-
 /** ============================ Types ===================================== */
 type ScenarioChipProps = Omit<ChipProps, 'label'> & {
   className?: string;
@@ -26,25 +25,34 @@ type DERSectionProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useDERSectionStyles = makeStylesHook((theme) => ({
-  gridRow: {
-    padding: `${theme.spacing(1, 2)} !important`
-  }
-}), 'DERSection');
+const useDERSectionStyles = makeStylesHook(
+  (theme) => ({
+    gridRow: {
+      padding: `${theme.spacing(1, 2)} !important`,
+    },
+  }),
+  'DERSection'
+);
 
-const useDetailsBoxStyles = makeStylesHook(theme => ({
-  meterGroup: {
-    borderBottom: `1px solid ${theme.palette.divider}`,
-    padding: theme.spacing(1, 2)
-  }
-}), 'DetailsBox');
+const useDetailsBoxStyles = makeStylesHook(
+  (theme) => ({
+    meterGroup: {
+      borderBottom: `1px solid ${theme.palette.divider}`,
+      padding: theme.spacing(1, 2),
+    },
+  }),
+  'DetailsBox'
+);
 
-const useStyles = makeStylesHook(() => ({
-  hover: {
-    maxWidth: 500,
-    padding: 0
-  }
-}), 'ScenarioChip');
+const useStyles = makeStylesHook(
+  () => ({
+    hover: {
+      maxWidth: 500,
+      padding: 0,
+    },
+  }),
+  'ScenarioChip'
+);
 
 /** ============================ Components ================================ */
 const DERSection: React.FC<DERSectionProps> = ({ field, value }) => {
@@ -102,8 +110,9 @@ export const ScenarioChip: React.FC<ScenarioChipProps> = (props) => {
   const classes = useStyles();
 
   // If the scenario doesn't have its DER info loaded yet, fetch it
-  const { scenario: scenarioWithDER } =
-    hooks.useScenario(scenarioProp.id, { include: ['ders', 'meter_group.*'] });
+  const { scenario: scenarioWithDER } = hooks.useScenario(scenarioProp.id, {
+    include: ['ders', 'meter_group.*'],
+  });
   const scenario = scenarioWithDER || scenarioProp;
 
   // Resolve the icon

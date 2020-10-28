@@ -1,34 +1,26 @@
-import * as React from "react";
-import { useDispatch } from "react-redux";
+import * as React from 'react';
+import { useDispatch } from 'react-redux';
 
-import * as api from "navigader/api";
-import { routes, useRouter } from "navigader/routes";
-import {
-  Grid,
-  List,
-  Menu,
-  PageHeader,
-  Table,
-  Link,
-  PrefetchedTable,
-} from "navigader/components";
-import { slices } from "navigader/store";
-import { formatters } from "navigader/util";
-import { CreateRatePlan } from "./CreateRatePlan";
-import { makeStylesHook } from "navigader/styles";
-import { RatePlan } from "navigader/types";
-import { DeleteDialog } from "./DeleteDialog";
-import { useRatePlans } from "navigader/util/hooks";
+import * as api from 'navigader/api';
+import { routes, useRouter } from 'navigader/routes';
+import { Grid, List, Menu, PageHeader, Table, Link, PrefetchedTable } from 'navigader/components';
+import { slices } from 'navigader/store';
+import { formatters } from 'navigader/util';
+import { CreateRatePlan } from './CreateRatePlan';
+import { makeStylesHook } from 'navigader/styles';
+import { RatePlan } from 'navigader/types';
+import { DeleteDialog } from './DeleteDialog';
+import { useRatePlans } from 'navigader/util/hooks';
 
 /** ============================ Styles ==================================== */
 const useStyle = makeStylesHook(
   () => ({
     fabGutter: {
-      height: "60px",
-      width: "60px",
+      height: '60px',
+      width: '60px',
     },
   }),
-  "FABGutter"
+  'FABGutter'
 );
 
 /** ============================ Components ================================ */
@@ -49,12 +41,7 @@ export const RatePlanList: React.FC = () => {
       <Grid>
         <Grid.Item span={12}>
           {ratePlans && !ratePlans.loading && (
-            <PrefetchedTable
-              aria-label="rate plan table"
-              data={ratePlans}
-              raised
-              stickyHeader
-            >
+            <PrefetchedTable aria-label="rate plan table" data={ratePlans} raised stickyHeader>
               {(ratePlans: RatePlan[]) => (
                 <>
                   <Table.Head>
@@ -69,32 +56,27 @@ export const RatePlanList: React.FC = () => {
                     {ratePlans.map((ratePlan) => (
                       <Table.Row key={ratePlan.id}>
                         <Table.Cell>
-                          <Link
-                            to={routes.rates.ratePlan(ratePlan.id.toString())}
-                          >
+                          <Link to={routes.rates.ratePlan(ratePlan.id.toString())}>
                             {ratePlan.name}
                           </Link>
                         </Table.Cell>
                         <Table.Cell>{ratePlan.sector}</Table.Cell>
                         <Table.Cell>
-                          {ratePlan.start_date &&
-                            formatters.date.standard(ratePlan.start_date)}
+                          {ratePlan.start_date && formatters.date.standard(ratePlan.start_date)}
                         </Table.Cell>
                         <Table.Cell align="right">
                           <Menu
                             anchorOrigin={{
-                              vertical: "center",
-                              horizontal: "center",
+                              vertical: 'center',
+                              horizontal: 'center',
                             }}
                             icon="verticalDots"
                             transformOrigin={{
-                              vertical: "top",
-                              horizontal: "right",
+                              vertical: 'top',
+                              horizontal: 'right',
                             }}
                           >
-                            <List.Item
-                              onClick={routeTo.rates.ratePlan(ratePlan)}
-                            >
+                            <List.Item onClick={routeTo.rates.ratePlan(ratePlan)}>
                               <List.Item.Icon icon="pencil" />
                               <List.Item.Text>View/Edit</List.Item.Text>
                             </List.Item>
@@ -126,8 +108,8 @@ export const RatePlanList: React.FC = () => {
         onClickDelete={clickDelete}
         title="Delete Rate Plan"
         message={
-          "This will permanently delete the Rate Plan and all of its rate data. " +
-          "This action cannot be undone."
+          'This will permanently delete the Rate Plan and all of its rate data. ' +
+          'This action cannot be undone.'
         }
         open={deleteRatePlan !== undefined}
       />

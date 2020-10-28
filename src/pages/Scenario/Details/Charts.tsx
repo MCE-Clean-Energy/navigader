@@ -6,7 +6,6 @@ import { useCAISORates, useGhgRates } from 'navigader/util/hooks';
 import _ from 'navigader/util/lodash';
 import { LoadingModal } from './LoadingModal';
 
-
 /** ============================ Types ====================================== */
 type ChartProps = {
   meterGroupData: IntervalData;
@@ -20,20 +19,23 @@ type ChartProps = {
 export const GHGCharts: React.FC<ChartProps> = (props) => {
   const { meterGroupData, scenarioData, selectedMonth, timeDomain, updateTimeDomain } = props;
   const ghgRates = useGhgRates();
-  const cns2022 = ghgRates && _.find(ghgRates,
-      rate => rate.name === 'Clean Net Short' && rate.effective.includes('2022')
-  )?.data?.rename('Clean Net Short 2022');
+  const cns2022 =
+    ghgRates &&
+    _.find(
+      ghgRates,
+      (rate) => rate.name === 'Clean Net Short' && rate.effective.includes('2022')
+    )?.data?.rename('Clean Net Short 2022');
 
   return (
     <>
       <LoadingModal loading={!cns2022} />
-      {cns2022 &&
+      {cns2022 && (
         <>
           <IntervalDataGraph
             axisLabel="GHG Emissions"
             data={[
               meterGroupData.multiply288(cns2022).rename('Initial GHG emissions'),
-              scenarioData.multiply288(cns2022).rename('Simulated GHG emissions')
+              scenarioData.multiply288(cns2022).rename('Simulated GHG emissions'),
             ]}
             month={selectedMonth}
             timeDomain={timeDomain}
@@ -49,9 +51,9 @@ export const GHGCharts: React.FC<ChartProps> = (props) => {
             {...scaleInvertedData(meterGroupData.align288(cns2022), 'tCO2')}
           />
         </>
-      }
+      )}
     </>
-  )
+  );
 };
 
 export const ProcurementCharts: React.FC<ChartProps> = (props) => {
@@ -62,27 +64,27 @@ export const ProcurementCharts: React.FC<ChartProps> = (props) => {
   const caisoRate = useCAISORates({
     year,
     data_types: 'default',
-    period: 60
+    period: 60,
   })[0];
 
-  const initialProcurement = React.useMemo(() =>
-    caisoRate && meterGroupData
-      .multiply(caisoRate.data.default!)
-      .rename('Initial procurement cost'),
+  const initialProcurement = React.useMemo(
+    () =>
+      caisoRate &&
+      meterGroupData.multiply(caisoRate.data.default!).rename('Initial procurement cost'),
     [meterGroupData, caisoRate]
   );
 
-  const simulatedProcurement = React.useMemo(() =>
-    caisoRate && scenarioData
-      .multiply(caisoRate.data.default!)
-      .rename('Simulated procurement cost'),
+  const simulatedProcurement = React.useMemo(
+    () =>
+      caisoRate &&
+      scenarioData.multiply(caisoRate.data.default!).rename('Simulated procurement cost'),
     [scenarioData, caisoRate]
   );
 
   return (
     <>
       <LoadingModal loading={!(caisoRate && initialProcurement && simulatedProcurement)} />
-      {caisoRate && initialProcurement && simulatedProcurement &&
+      {caisoRate && initialProcurement && simulatedProcurement && (
         <>
           <IntervalDataGraph
             axisLabel="Procurement Costs"
@@ -102,7 +104,7 @@ export const ProcurementCharts: React.FC<ChartProps> = (props) => {
             {...scaleInvertedData(caisoRate.data.default!, '$')}
           />
         </>
-      }
+      )}
     </>
   );
 };
@@ -114,17 +116,13 @@ export const ProcurementCharts: React.FC<ChartProps> = (props) => {
  * @param {IntervalData} interval: the load interval being scaled
  * @param {string} units: the units of the data being scaled
  */
-function scaleInvertedData (interval: IntervalData, units: string) {
+function scaleInvertedData(interval: IntervalData, units: string) {
   const max = interval.valueDomain[1];
   const magnitude = Math.abs(Math.log10(max));
-  const [scale, wattage] = magnitude >= 6
-    ? [1e6, 'GW']
-    : magnitude >= 3
-      ? [1e3, 'MW']
-      : [1, 'kW'];
+  const [scale, wattage] = magnitude >= 6 ? [1e6, 'GW'] : magnitude >= 3 ? [1e3, 'MW'] : [1, 'kW'];
 
   return {
     data: interval.multiply(scale),
-    units: `${units}/${wattage}`
+    units: `${units}/${wattage}`,
   };
 }

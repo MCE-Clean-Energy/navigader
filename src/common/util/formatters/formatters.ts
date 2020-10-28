@@ -5,9 +5,8 @@ import { clamp, percentOf } from '../data';
 import _ from '../lodash';
 import { parseDate } from '../serializers';
 
-
 /** ============================ Types ===================================== */
-type DollarFormatOptions = Partial<{ cents: boolean; }>;
+type DollarFormatOptions = Partial<{ cents: boolean }>;
 type DateFormatterInput = Date | string;
 
 /** ============================ Formatters ================================ */
@@ -20,12 +19,10 @@ type DateFormatterInput = Date | string;
  *   number may be undefined
  * @param {number} maxDecimals: the maximum number of decimals to include
  */
-export function maxDecimals (n: number, maxDecimals: number): number;
-export function maxDecimals (n: any, maxDecimals: number): Nullable<number>;
-export function maxDecimals (n: any, maxDecimals: number) {
-  return typeof n === 'number'
-    ? parseFloat(n.toFixed(maxDecimals))
-    : null;
+export function maxDecimals(n: number, maxDecimals: number): number;
+export function maxDecimals(n: any, maxDecimals: number): Nullable<number>;
+export function maxDecimals(n: any, maxDecimals: number) {
+  return typeof n === 'number' ? parseFloat(n.toFixed(maxDecimals)) : null;
 }
 
 /**
@@ -38,7 +35,7 @@ export function maxDecimals (n: any, maxDecimals: number) {
  *   ...
  *   12: December
  */
-export function getMonthName (monthIndex: number) {
+export function getMonthName(monthIndex: number) {
   const months = [
     'January',
     'February',
@@ -51,7 +48,7 @@ export function getMonthName (monthIndex: number) {
     'September',
     'October',
     'November',
-    'December'
+    'December',
   ];
 
   return months[monthIndex - 1];
@@ -61,21 +58,20 @@ export function getMonthName (monthIndex: number) {
  * Utility methods for formatting dates consistently in the application. This will largely just be a
  * wrapper around Luxon
  */
-const wrapDate = (d: DateFormatterInput) => _.isDate(d) ? d : parseDate(d);
+const wrapDate = (d: DateFormatterInput) => (_.isDate(d) ? d : parseDate(d));
 const formatDate = (d: DateFormatterInput, format: LocaleOptions & DateTimeFormatOptions) =>
   DateTime.fromJSDate(wrapDate(d)).toLocaleString(format);
 export const date = {
-  monthDayHourMinute: (date: DateFormatterInput) => formatDate(date, {
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    month: 'short'
-  }),
+  monthDayHourMinute: (date: DateFormatterInput) =>
+    formatDate(date, {
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      month: 'short',
+    }),
   standard: (date: DateFormatterInput) => formatDate(date, DateTime.DATE_MED),
-  range: (
-    dates: Tuple<DateFormatterInput>,
-    fn: (d: DateFormatterInput) => string
-  ) =>`${fn(dates[0])} - ${fn(dates[1])}`
+  range: (dates: Tuple<DateFormatterInput>, fn: (d: DateFormatterInput) => string) =>
+    `${fn(dates[0])} - ${fn(dates[1])}`,
 };
 
 /**
@@ -87,7 +83,7 @@ export const date = {
  * @param {string} [pluralForm]: the manually provided plural form. If not provided, this will
  *   be inferred according to rules described below
  */
-export function pluralize (singularForm: string, count: number, pluralForm?: string) {
+export function pluralize(singularForm: string, count: number, pluralForm?: string) {
   if (count === 1) return singularForm;
 
   // The plural form is determined crudely. If the word ends in `y`, its plural form will end
@@ -96,7 +92,7 @@ export function pluralize (singularForm: string, count: number, pluralForm?: str
   // `pluralForm` fallback
   if (pluralForm) return pluralForm;
 
-  const endsInYRegex =  /^(?<wordMinusY>[a-zA-Z]+)y$/;
+  const endsInYRegex = /^(?<wordMinusY>[a-zA-Z]+)y$/;
   const match = singularForm.match(endsInYRegex);
 
   if (match && match.groups) {
@@ -111,7 +107,7 @@ export function pluralize (singularForm: string, count: number, pluralForm?: str
  *
  * @param {string} str: the string to capitalize
  */
-export function capitalize (str: string) {
+export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
@@ -126,11 +122,9 @@ export function capitalize (str: string) {
  * @param {number} denominator: the number the percent will be derived from
  * @param {number} [n = 0]: the number of digits to round to
  */
-export function percentage (numerator: number, denominator: number, n: number = 0) {
+export function percentage(numerator: number, denominator: number, n: number = 0) {
   const percent = percentOf(numerator, denominator);
-  return percent === Infinity
-    ? 'Infinity'
-    : maxDecimals(percent, n) + '%';
+  return percent === Infinity ? 'Infinity' : maxDecimals(percent, n) + '%';
 }
 
 /**
@@ -141,7 +135,7 @@ export function percentage (numerator: number, denominator: number, n: number = 
  * @param {number} amt: the dollar amount to render
  * @param {DollarFormatOptions} [options]: optional options
  */
-export function dollars (amt: number | undefined | null, options?: DollarFormatOptions) {
+export function dollars(amt: number | undefined | null, options?: DollarFormatOptions) {
   if (amt === undefined || amt === null) return;
 
   const roundsToOne = [-1, 1].includes(+amt.toFixed(2));
@@ -169,11 +163,9 @@ export function dollars (amt: number | undefined | null, options?: DollarFormatO
  * @param {string} str: the string to (potentially) truncate
  * @param {number} numChars: the number of characters to truncate at
  */
-export function truncateAtLength (str: Maybe<string>, numChars: number) {
+export function truncateAtLength(str: Maybe<string>, numChars: number) {
   if (!str) return;
-  return str.length > numChars
-    ? str.slice(0, numChars) + '...'
-    : str;
+  return str.length > numChars ? str.slice(0, numChars) + '...' : str;
 }
 
 /**
@@ -182,9 +174,9 @@ export function truncateAtLength (str: Maybe<string>, numChars: number) {
  * @param {number} [n]: the number to format. This is made optional to support cases where the
  *   number may be undefined/null
  */
-export function commas (n: number): string;
-export function commas (n: any): Nullable<string>;
-export function commas (n: any) {
+export function commas(n: number): string;
+export function commas(n: any): Nullable<string>;
+export function commas(n: any) {
   if (typeof n !== 'number') return null;
 
   const isNegative = n < 0;
@@ -211,14 +203,14 @@ export function commas (n: any) {
 
 /**
  * Renderes the Filesize (in Bytes) to an easily human readable format.
- * 
+ *
  * @param {number} [size]: Number of bytes.
-*/
+ */
 
 const units = ['byte', 'KB', 'MB', 'GB'];
 const maxIndex = units.length - 1;
 
-export function fileSize (size: number) {
+export function fileSize(size: number) {
   if (size <= 0) return '';
 
   let power = Math.floor(Math.log(size) / Math.log(1000));

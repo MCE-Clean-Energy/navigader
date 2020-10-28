@@ -1,7 +1,13 @@
 import {
-  CostFunctions, DERConfiguration, DERStrategy, DERType, Loader, Nullable, OriginFile, Scenario
+  CostFunctions,
+  DERConfiguration,
+  DERStrategy,
+  DERType,
+  Loader,
+  Nullable,
+  OriginFile,
+  Scenario,
 } from 'navigader/types';
-
 
 export type DERSelection = {
   configurationId: string;
@@ -9,9 +15,11 @@ export type DERSelection = {
   type: DERType;
 };
 
-export type CostFunctionSelections = Partial<{
-  [CF in keyof CostFunctions]: CostFunctions[CF]['id'];
-}>;
+export type CostFunctionSelections = Partial<
+  {
+    [CF in keyof CostFunctions]: CostFunctions[CF]['id'];
+  }
+>;
 
 export type CreateScenarioState = {
   costFunctionSelections: CostFunctionSelections;
@@ -23,7 +31,7 @@ export type CreateScenarioState = {
 
 export type CreateScenarioScreenProps = {
   // Data props
-  costFunctions: { [CF in keyof CostFunctions]: Loader<CostFunctions[CF][]>};
+  costFunctions: { [CF in keyof CostFunctions]: Loader<CostFunctions[CF][]> };
   derConfigurations: Loader<DERConfiguration[]>;
   derStrategies: Loader<DERStrategy[]>;
   originFiles: Loader<OriginFile[]>;

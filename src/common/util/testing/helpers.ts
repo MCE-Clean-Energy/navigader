@@ -1,6 +1,5 @@
 import _ from 'lodash';
 
-
 /** ============================ Miscellaneous helpers ===================== */
 /**
  * Given a URL with a querystring and an array of pairs of strings, asserts that the first string
@@ -10,7 +9,7 @@ import _ from 'lodash';
  * @param {string} url: the URL with the querystring
  * @param {[string, string][]} queryParams: the array of query parameter keys and values
  */
-export function assertHasQueryParams <T extends string>(
+export function assertHasQueryParams<T extends string>(
   url: string,
   queryParams: Array<[T, string | string[]]>
 ) {
@@ -55,10 +54,9 @@ export function assertHasQueryParams <T extends string>(
  * @param {File[]} files: array of files to include in the FileList
  */
 export const makeFileList = (files: File[]): FileList => {
-  return Object.assign(
-    [...files], {
-      item: (n: number) => files[n]
-    });
+  return Object.assign([...files], {
+    item: (n: number) => files[n],
+  });
 };
 
 /**
@@ -77,7 +75,7 @@ export const makeFileList = (files: File[]): FileList => {
  * @param {Array<T>>} array: the array to iterate over
  * @param {function} callback: the async callback to call for each array entry
  */
-export async function asyncForEach <T>(
+export async function asyncForEach<T>(
   array: T[],
   callback: (entry: T, index: number, arr: any[]) => Promise<void>
 ) {
@@ -101,7 +99,7 @@ export async function asyncForEach <T>(
  *
  * @param {T[]} array: an array of any type
  */
-export function getCombinations <T = any>(array: T[]) {
+export function getCombinations<T = any>(array: T[]) {
   // Start with the empty set
   const combinations: Array<T[]> = [[]];
 
@@ -121,7 +119,6 @@ export function getCombinations <T = any>(array: T[]) {
   return combinations;
 }
 
-
 /** ============================ API Helpers =============================== */
 /**
  * Returns a string representing a pagination result. The return value is a string intended to mimic
@@ -130,16 +127,16 @@ export function getCombinations <T = any>(array: T[]) {
  * @param {object} results: the object to return under the `results` key of the response
  * @param {number} [count]: the number of results
  */
-export function makePaginationResponse (results: object, count: number = 1) {
+export function makePaginationResponse(results: object, count: number = 1) {
   return {
     count,
     next: null,
     previous: null,
-    results
+    results,
   };
 }
 
-export function mockFetch (endpoints: Array<[string | RegExp, any]>) {
+export function mockFetch(endpoints: Array<[string | RegExp, any]>) {
   fetchMock.resetMocks();
 
   // Set up URLs to mock

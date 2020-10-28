@@ -4,7 +4,6 @@ import MuiSnackbar from '@material-ui/core/Snackbar';
 import { AlertType, Maybe } from 'navigader/types';
 import { Alert } from './Alert';
 
-
 /** ============================ Types ===================================== */
 type SnackbarProps = {
   autoHideDuration?: number;
@@ -19,14 +18,17 @@ type AlertSnackbarProps = SnackbarProps & {
 };
 
 /** ============================ Components ================================ */
-export const Snackbar: React.FC<SnackbarProps> = (props) =>
-  <MuiSnackbar {...props} />;
+export const Snackbar: React.FC<SnackbarProps> = (props) => <MuiSnackbar {...props} />;
 
 export const AlertSnackbar: React.FC<AlertSnackbarProps> = (props) => {
   const { msg, onClose, type, ...rest } = props;
   return (
     <Snackbar onClose={onClose} {...rest}>
-      {msg && type ? <Alert onClose={onClose} type={type}>{msg}</Alert> : undefined}
+      {msg && type ? (
+        <Alert onClose={onClose} type={type}>
+          {msg}
+        </Alert>
+      ) : undefined}
     </Snackbar>
   );
 };

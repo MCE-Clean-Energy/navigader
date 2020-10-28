@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cleanup, fireEvent, screen } from '@testing-library/react'
+import { cleanup, fireEvent, screen } from '@testing-library/react';
 
 import store, { slices } from 'navigader/store';
 import _ from 'navigader/util/lodash';
@@ -7,18 +7,17 @@ import { asyncForEach, fixtures, renderContextDependentComponent } from 'navigad
 import { SelectCustomers } from './SelectCustomers';
 import { makeDataProps, makeState } from './testing';
 
-
 describe('"Select Customers" page', () => {
   const originFile1 = fixtures.makeOriginFile({
     id: '1',
     meter_count: 20,
-    name: 'My meters'
+    name: 'My meters',
   });
 
   const originFile2 = fixtures.makeOriginFile({
     id: '2',
     meter_count: 322,
-    name: 'Residential customers'
+    name: 'Residential customers',
   });
 
   const scenario1 = fixtures.makeScenario({
@@ -28,8 +27,8 @@ describe('"Select Customers" page', () => {
     name: 'My scenario',
     progress: {
       is_complete: true,
-      percent_complete: 100
-    }
+      percent_complete: 100,
+    },
   });
 
   const scenario2 = fixtures.makeScenario({
@@ -39,8 +38,8 @@ describe('"Select Customers" page', () => {
     name: 'Resi customers w/ solar',
     progress: {
       is_complete: true,
-      percent_complete: 100
-    }
+      percent_complete: 100,
+    },
   });
 
   const originFiles = [originFile1, originFile2];
@@ -94,13 +93,13 @@ describe('"Select Customers" page', () => {
     fireEvent.click(meterGroupChips[0]);
     expect(updateStateMock).toHaveBeenCalledTimes(1);
     expect(updateStateMock.mock.calls[0][0]).toMatchObject({
-      originFileSelections: [originFile1.id]
+      originFileSelections: [originFile1.id],
     });
 
     fireEvent.click(meterGroupChips[1]);
     expect(updateStateMock).toHaveBeenCalledTimes(2);
     expect(updateStateMock.mock.calls[1][0]).toMatchObject({
-      originFileSelections: [originFile2.id]
+      originFileSelections: [originFile2.id],
     });
 
     // Click some scenarios
@@ -117,20 +116,10 @@ describe('"Select Customers" page', () => {
 
   it('Renders the meter count', async () => {
     // All combinations of two meter groups
-    const meterGroupCombinations = [
-      [],
-      [originFile1],
-      [originFile2],
-      [originFile1, originFile2]
-    ];
+    const meterGroupCombinations = [[], [originFile1], [originFile2], [originFile1, originFile2]];
 
     // All combinations of two scenarios
-    const scenarioCombinations = [
-      [],
-      [scenario1],
-      [scenario2],
-      [scenario1, scenario2]
-    ];
+    const scenarioCombinations = [[], [scenario1], [scenario2], [scenario1, scenario2]];
 
     await asyncForEach(meterGroupCombinations, async (selectedMeterGroups) => {
       renderContextDependentComponent(

@@ -1,8 +1,12 @@
 import * as React from 'react';
 
 import {
-  CustomersTable, PageHeader, Progress, ScenarioComparisonChartAxes, ScenarioComparisonChartTitle,
-  ScenariosTable
+  CustomersTable,
+  PageHeader,
+  Progress,
+  ScenarioComparisonChartAxes,
+  ScenarioComparisonChartTitle,
+  ScenariosTable,
 } from 'navigader/components';
 import { routes } from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
@@ -11,16 +15,18 @@ import { useColorMap, useQueryParams, useScenarios } from 'navigader/util/hooks'
 import _ from 'navigader/util/lodash';
 import { ScenarioComparisonChart } from './Chart';
 
-
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(theme => ({
-  tableContainer: {
-    maxHeight: 500
-  },
-  tableWrapper: {
-    marginTop: theme.spacing(2)
-  }
-}), 'CompareScenariosPage');
+const useStyles = makeStylesHook(
+  (theme) => ({
+    tableContainer: {
+      maxHeight: 500,
+    },
+    tableWrapper: {
+      marginTop: theme.spacing(2),
+    },
+  }),
+  'CompareScenariosPage'
+);
 
 /** ============================ Components ================================ */
 export const CompareScenariosPage: React.FC = () => {
@@ -38,66 +44,59 @@ export const CompareScenariosPage: React.FC = () => {
     include: ['ders', 'meter_group.*', 'report', 'report_summary'],
     filter: { id: filterClause.in(idsParam?.split(',')) },
     page: 1,
-    page_size: 100
+    page_size: 100,
   });
 
   const colorMap = useColorMap([scenarios]);
   return (
     <>
       <PageHeader
-        breadcrumbs={[
-          ['Dashboard', routes.dashboard.base],
-          'Scenario Comparison'
-        ]}
+        breadcrumbs={[['Dashboard', routes.dashboard.base], 'Scenario Comparison']}
         title="Scenario Comparison"
       />
-      {scenarios.loading
-        ? <Progress circular />
-        : (
-          <>
-            <ScenarioComparisonChartTitle
-              aggregated={aggregated}
-              averaged={averaged}
-              axes={chartAxes}
-              updateAxes={setChartAxes}
-            />
+      {scenarios.loading ? (
+        <Progress circular />
+      ) : (
+        <>
+          <ScenarioComparisonChartTitle
+            aggregated={aggregated}
+            averaged={averaged}
+            axes={chartAxes}
+            updateAxes={setChartAxes}
+          />
 
-            <ScenarioComparisonChart
-              aggregated={aggregated}
-              averaged={averaged}
-              axes={chartAxes}
-              colorMap={colorMap}
-              highlightedId={hoveredId}
-              scenarios={scenarios}
-              updateAggregated={updateAggregation}
-            />
+          <ScenarioComparisonChart
+            aggregated={aggregated}
+            averaged={averaged}
+            axes={chartAxes}
+            colorMap={colorMap}
+            highlightedId={hoveredId}
+            scenarios={scenarios}
+            updateAggregated={updateAggregation}
+          />
 
-            <div className={classes.tableWrapper}>
-              {
-                aggregated
-                  ? (
-                    <ScenariosTable
-                      averaged={averaged}
-                      className={classes.tableContainer}
-                      colorMap={colorMap}
-                      scenarios={scenarios}
-                      updateAveraged={setAveraged}
-                    />
-                  ) : (
-                    <CustomersTable
-                      className={classes.tableContainer}
-                      colorMap={colorMap}
-                      scenarios={scenarios}
-                      // TODO: need to find way to type scenarios as possessing report
-                      simulations={_.flatten(scenarios.map(s => Object.values(s.report!)))}
-                      updateHover={setHoveredId}
-                    />
-                  )
-              }
-            </div>
-          </>
-        )
-      }
+          <div className={classes.tableWrapper}>
+            {aggregated ? (
+              <ScenariosTable
+                averaged={averaged}
+                className={classes.tableContainer}
+                colorMap={colorMap}
+                scenarios={scenarios}
+                updateAveraged={setAveraged}
+              />
+            ) : (
+              <CustomersTable
+                className={classes.tableContainer}
+                colorMap={colorMap}
+                scenarios={scenarios}
+                // TODO: need to find way to type scenarios as possessing report
+                simulations={_.flatten(scenarios.map((s) => Object.values(s.report!)))}
+                updateHover={setHoveredId}
+              />
+            )}
+          </div>
+        </>
+      )}
     </>
   );
 
@@ -107,7 +106,7 @@ export const CompareScenariosPage: React.FC = () => {
    *
    * @param {boolean} aggregated: whether the graph should now show aggregated results
    */
-  function updateAggregation (aggregated: boolean) {
+  function updateAggregation(aggregated: boolean) {
     setHoveredId(undefined);
     setAggregated(aggregated);
   }

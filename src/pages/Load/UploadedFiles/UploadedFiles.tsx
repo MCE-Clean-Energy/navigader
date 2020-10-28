@@ -3,8 +3,16 @@ import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
 import {
-  Button, Divider, Link, List, Menu, PageHeader, PaginationCallbackArgs, StatusIndicator, Table,
-  Typography
+  Button,
+  Divider,
+  Link,
+  List,
+  Menu,
+  PageHeader,
+  PaginationCallbackArgs,
+  StatusIndicator,
+  Table,
+  Typography,
 } from 'navigader/components';
 import { routes, useRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
@@ -13,16 +21,18 @@ import { OriginFile, PaginationSet } from 'navigader/types';
 import { formatters, models } from 'navigader/util';
 import { DeleteDialog } from './DeleteDialog';
 
-
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(theme => ({
-  pageContent: {
-    marginTop: theme.spacing(1)
-  },
-  uploadButton: {
-    marginRight: theme.spacing(2)
-  }
-}), 'LoadPage');
+const useStyles = makeStylesHook(
+  (theme) => ({
+    pageContent: {
+      marginTop: theme.spacing(1),
+    },
+    uploadButton: {
+      marginRight: theme.spacing(2),
+    },
+  }),
+  'LoadPage'
+);
 
 /** ============================ Components ================================ */
 export const UploadedFiles = () => {
@@ -33,13 +43,13 @@ export const UploadedFiles = () => {
 
   const getOriginFiles = React.useCallback(
     async (state: PaginationCallbackArgs) => {
-      const response = await api.getMeterGroups({
+      const response = (await api.getMeterGroups({
         object_type: 'OriginFile',
         page: state.currentPage + 1,
         page_size: state.rowsPerPage,
         sortKey: state.key,
-        sortDir: state.dir
-      }) as PaginationSet<OriginFile>;
+        sortDir: state.dir,
+      })) as PaginationSet<OriginFile>;
 
       // Add the models to the store and yield the pagination results
       dispatch(slices.models.updateModels(response.data));
@@ -70,24 +80,28 @@ export const UploadedFiles = () => {
           dataSelector={slices.models.selectOriginFiles}
           initialSorting={{
             dir: 'desc',
-            key: 'created_at'
+            key: 'created_at',
           }}
           raised
           stickyHeader
           title="Uploads"
         >
-          {(originFiles, EmptyRow) =>
+          {(originFiles, EmptyRow) => (
             <>
               <Table.Head>
                 <Table.Row>
                   <Table.Cell sortBy="name">Name</Table.Cell>
-                  <Table.Cell sortBy="created_at" sortDir="desc">Uploaded</Table.Cell>
+                  <Table.Cell sortBy="created_at" sortDir="desc">
+                    Uploaded
+                  </Table.Cell>
                   <Table.Cell>Status</Table.Cell>
                   <Table.Cell align="right">Meter Count</Table.Cell>
                   <Table.Cell align="right" sortBy="max_monthly_demand" sortDir="desc">
                     Maximum Monthly Demand (kW)
                   </Table.Cell>
-                  <Table.Cell align="right" sortBy="total_kwh" sortDir="desc">Total kWh</Table.Cell>
+                  <Table.Cell align="right" sortBy="total_kwh" sortDir="desc">
+                    Total kWh
+                  </Table.Cell>
                   <Table.Cell align="right">Menu</Table.Cell>
                 </Table.Row>
               </Table.Head>
@@ -99,17 +113,14 @@ export const UploadedFiles = () => {
                   <Link to={routes.upload}>Visit the upload page?</Link>
                 </EmptyRow>
 
-                {originFiles.map(originFile =>
+                {originFiles.map((originFile) => (
                   <Table.Row key={originFile.id}>
                     <Table.Cell>
-                      {models.meterGroup.isSufficientlyIngested(originFile)
-                        ? (
-                          <Link to={routes.load.meterGroup(originFile.id)}>
-                            {originFile.name}
-                          </Link>
-                        )
-                        : originFile.name
-                      }
+                      {models.meterGroup.isSufficientlyIngested(originFile) ? (
+                        <Link to={routes.load.meterGroup(originFile.id)}>{originFile.name}</Link>
+                      ) : (
+                        originFile.name
+                      )}
                     </Table.Cell>
                     <Table.Cell>
                       <Typography noWrap variant="body2">
@@ -128,7 +139,7 @@ export const UploadedFiles = () => {
                     </Table.Cell>
                     <Table.Cell align="right">
                       <Menu
-                        anchorOrigin={{ vertical: 'center', horizontal: 'center'}}
+                        anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
                         icon="verticalDots"
                         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                       >
@@ -149,24 +160,24 @@ export const UploadedFiles = () => {
                       </Menu>
                     </Table.Cell>
                   </Table.Row>
-                )}
+                ))}
               </Table.Body>
             </>
-          }
+          )}
         </Table>
       </div>
 
-      {deleteOriginFile &&
+      {deleteOriginFile && (
         <DeleteDialog
           onClose={() => setDeleteOriginFile(undefined)}
           originFile={deleteOriginFile}
         />
-      }
+      )}
     </>
   );
 
   /** ========================== Callbacks ================================= */
-  function openDeleteDialog (originFile: OriginFile) {
+  function openDeleteDialog(originFile: OriginFile) {
     setDeleteOriginFile(originFile);
   }
 };

@@ -5,7 +5,6 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import { makeStylesHook } from 'navigader/styles';
 import { printWarning } from 'navigader/util';
 
-
 /** ============================ Types ===================================== */
 type ProgressVariant = 'determinate' | 'indeterminate';
 type ProgressProps = {
@@ -18,16 +17,19 @@ type ProgressProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(theme => ({
-  root: {
-    position: 'relative',
-  },
-  background: {
-    color: theme.palette.grey[100],
-    left: 0,
-    position: 'absolute'
-  }
-}), 'Progress');
+const useStyles = makeStylesHook(
+  (theme) => ({
+    root: {
+      position: 'relative',
+    },
+    background: {
+      color: theme.palette.grey[100],
+      left: 0,
+      position: 'absolute',
+    },
+  }),
+  'Progress'
+);
 
 /** ============================ Components ================================ */
 export const Progress: React.ComponentType<ProgressProps> = React.forwardRef(
@@ -36,24 +38,24 @@ export const Progress: React.ComponentType<ProgressProps> = React.forwardRef(
     const progressProps = {
       ...rest,
       size,
-      variant: (
-        rest.value === undefined
-          ? 'indeterminate'
-          : circular
-            ? 'static'
-            : 'determinate'
-      ) as ProgressVariant
+      variant: (rest.value === undefined
+        ? 'indeterminate'
+        : circular
+        ? 'static'
+        : 'determinate') as ProgressVariant,
     };
-    
+
     if (showBackground && !circular) {
-      printWarning('`Progress` component was provided `showBackground` prop without `circular`' +
-        ' prop. `showBackground` only works with circular progress wheels.');
+      printWarning(
+        '`Progress` component was provided `showBackground` prop without `circular`' +
+          ' prop. `showBackground` only works with circular progress wheels.'
+      );
     }
 
     if (circular) {
       const progress = <CircularProgress {...progressProps} ref={ref} />;
       if (!showBackground) return progress;
-      
+
       return (
         <div className={classes.root}>
           <CircularProgress
@@ -66,7 +68,7 @@ export const Progress: React.ComponentType<ProgressProps> = React.forwardRef(
         </div>
       );
     }
-    
+
     return <LinearProgress {...progressProps} ref={ref} />;
   }
 );

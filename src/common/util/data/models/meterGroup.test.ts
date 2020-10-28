@@ -2,10 +2,9 @@ import _ from 'navigader/util/lodash';
 import { fixtures } from 'navigader/util/testing';
 import * as meterGroup from './meterGroup';
 
-
 /** ============================ Tests ===================================== */
 describe('Meter utility methods', () => {
-  describe('`isSufficientlyIngested` method' ,() => {
+  describe('`isSufficientlyIngested` method', () => {
     it('returns `false` if no scenario is provided', () => {
       expect(meterGroup.isSufficientlyIngested(undefined)).toBeFalsy();
     });
@@ -17,12 +16,12 @@ describe('Meter utility methods', () => {
             meter_count,
             metadata: {
               expected_meter_count: 100,
-              filename: `meter group at ${meter_count}%`
+              filename: `meter group at ${meter_count}%`,
             },
             progress: {
               is_complete: meter_count === 100,
-              percent_complete: meter_count
-            }
+              percent_complete: meter_count,
+            },
           })
         );
 

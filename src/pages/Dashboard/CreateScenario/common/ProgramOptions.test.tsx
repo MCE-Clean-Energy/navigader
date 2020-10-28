@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { fireEvent } from '@testing-library/react'
+import { fireEvent } from '@testing-library/react';
 
 import { fixtures, renderContextDependentComponent } from 'navigader/util/testing';
 import { ProgramOptions } from './ProgramOptions';
-
 
 describe('`ProgramOptions` component', () => {
   it('Renders the strategies grouped by their objective', async () => {
@@ -21,31 +20,31 @@ describe('`ProgramOptions` component', () => {
         update={() => {}}
       />
     );
-    
+
     // Click the strategy select to open it
     const strategyLabel = getByLabelText('Strategy');
     fireEvent.mouseDown(strategyLabel);
     const options = getAllByRole('option');
-    
+
     const optionText = [
       // section 1
       'Bill Reduction',
       'Reduce bill 1',
       'Reduce bill 2',
-      
+
       // section 2
       'GHG Reduction',
       'Reduce GHG',
-      
+
       // section 3
       'Load Flattening',
       'Flatten load',
-      
+
       // section 4
       'Minimize CCA Financial Impacts',
-      'Minimize RA'
+      'Minimize RA',
     ];
-    
+
     // Should be one option per strategy, plus one per strategy sub-header
     expect(options).toHaveLength(9);
     options.forEach((option, i) => expect(option).toHaveTextContent(optionText[i]));

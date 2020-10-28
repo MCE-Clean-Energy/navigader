@@ -6,7 +6,6 @@ import classNames from 'classnames';
 import { makeStylesHook, Theme } from 'navigader/styles';
 import { randomString } from '../util';
 
-
 /** ============================ Types ===================================== */
 export type PopoverOrigin = {
   vertical: 'top' | 'center' | 'bottom';
@@ -21,18 +20,21 @@ type PopoverProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook<PopoverProps>(theme => ({
-  hoverContainer: {
-    padding: theme.spacing(2)
-  },
-  paper: (props) => ({ ...getPaperStyle(props, theme) }),
-  popover: {
-    pointerEvents: 'none'
-  },
-  wrapper: {
-    display: 'inline-block'
-  }
-}), 'NavigaderPopover');
+const useStyles = makeStylesHook<PopoverProps>(
+  (theme) => ({
+    hoverContainer: {
+      padding: theme.spacing(2),
+    },
+    paper: (props) => ({ ...getPaperStyle(props, theme) }),
+    popover: {
+      pointerEvents: 'none',
+    },
+    wrapper: {
+      display: 'inline-block',
+    },
+  }),
+  'NavigaderPopover'
+);
 
 // By default, the Popover will appear centered above the anchor element
 const DEFAULT_ANCHOR_ORIGIN: PopoverOrigin = { vertical: 'top', horizontal: 'center' };
@@ -71,26 +73,24 @@ export const Popover: React.FC<PopoverProps> = (props) => {
         anchorOrigin={anchorOrigin}
         className={classes.popover}
         classes={{
-          paper: classes.paper
+          paper: classes.paper,
         }}
         id={popoverId}
         onClose={handlePopoverClose}
         open={open}
         transformOrigin={transformOrigin}
       >
-        <div className={classNames(classes.hoverContainer, className)}>
-          {HoverComponent}
-        </div>
+        <div className={classNames(classes.hoverContainer, className)}>{HoverComponent}</div>
       </MuiPopover>
     </div>
   );
 
   /** ========================== Callbacks ================================= */
-  function handlePopoverClose () {
+  function handlePopoverClose() {
     setAnchorEl(null);
   }
 
-  function handlePopoverOpen (event: React.MouseEvent<HTMLElement, MouseEvent>) {
+  function handlePopoverOpen(event: React.MouseEvent<HTMLElement, MouseEvent>) {
     setAnchorEl(event.currentTarget);
   }
 };
@@ -107,10 +107,10 @@ export const Popover: React.FC<PopoverProps> = (props) => {
  * @param {PopoverProps} props: the props to the component
  * @param {Theme} theme: the theme object
  */
-function getPaperStyle (props: PopoverProps, theme: Theme) {
+function getPaperStyle(props: PopoverProps, theme: Theme) {
   const {
     anchorOrigin = DEFAULT_ANCHOR_ORIGIN,
-    transformOrigin = DEFAULT_TRANSFORM_ORIGIN
+    transformOrigin = DEFAULT_TRANSFORM_ORIGIN,
   } = props;
 
   const { horizontal: anchorH, vertical: anchorV } = anchorOrigin;
@@ -131,7 +131,7 @@ function getPaperStyle (props: PopoverProps, theme: Theme) {
 
   return cssProps;
 
-  function areOpposed <T extends keyof PopoverOrigin>(
+  function areOpposed<T extends keyof PopoverOrigin>(
     originPropA: PopoverOrigin[T],
     originPropB: PopoverOrigin[T]
   ) {

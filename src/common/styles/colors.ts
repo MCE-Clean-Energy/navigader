@@ -3,7 +3,6 @@ import { Color as MuiColor } from '@material-ui/core';
 
 import _ from 'navigader/util/lodash';
 
-
 /** ============================ Colors ==================================== */
 export const primaryColor = '#EC0B88';
 export const secondaryColor = '#F8B367';
@@ -41,7 +40,7 @@ export const materialColors: Record<MaterialColor, Color> = _.omit(muiColors, 'c
  */
 export class ColorMap {
   private mapping: Map<any, string>;
-  
+
   /**
    * Constructor. Creates new `ColorMap` objects
    *
@@ -49,34 +48,34 @@ export class ColorMap {
    *   useful in circumstances where the entries are ordered but the order in which they render
    *   is inconsistent
    */
-  constructor (initialElements?: any[]) {
+  constructor(initialElements?: any[]) {
     this.mapping = new Map();
-    
+
     if (initialElements) {
-      initialElements.forEach(element => this.setColor(element));
+      initialElements.forEach((element) => this.setColor(element));
     }
   }
-  
+
   /**
    * Returns the color for a given map entry, creating a new one for the entry if it has not yet
    * been entered into the map
    *
    * @param {any} entry: the entity whose color the map will retrieve/create
    */
-  getColor (entry: any): string {
+  getColor(entry: any): string {
     if (this.mapping.has(entry)) {
       return this.mapping.get(entry)!;
     } else {
       return this.setColor(entry);
     }
   }
-  
+
   /**
    * Sets a color for the given entry
    *
    * @param {any} entry: the entity to be associated with a color
    */
-  private setColor (entry: any) {
+  private setColor(entry: any) {
     const colorKey = mapColors[this.mapping.size % mapColors.length];
     const color = materialColors[colorKey][700];
     this.mapping.set(entry, color);

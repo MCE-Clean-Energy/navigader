@@ -1,6 +1,5 @@
 import { ScenarioImpactColumn, ScenarioReportSummaryFields } from 'navigader/types';
 
-
 export type ScatterConfig = {
   data: ScatterDatum[];
   domain: {
@@ -21,7 +20,7 @@ export interface ScatterPlotDatumWrapper {
   readonly tooltipText: string;
   readonly size: number;
 
-  getImpact (axis: ScenarioImpactColumn): [DatumCoordinateValue, DatumLabelFunction];
+  getImpact(axis: ScenarioImpactColumn): [DatumCoordinateValue, DatumLabelFunction];
 }
 
 export type ScatterDatum = {

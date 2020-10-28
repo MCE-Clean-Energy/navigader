@@ -10,7 +10,6 @@ import _ from 'navigader/util/lodash';
 import { NavigaderChart } from './components';
 import { getAxisLabel, VictoryCallbackArg } from './util';
 
-
 /** ============================ Types ===================================== */
 type Frame288GraphProps = {
   axisLabel?: string;
@@ -26,14 +25,17 @@ type LineDatum = {
 };
 
 /** ============================ Styles ===================================== */
-const useStyles = makeStylesHook(() => ({
-  chart: {
-    height: CHART_HEIGHT
-  }
-}), 'Frame288Graph');
+const useStyles = makeStylesHook(
+  () => ({
+    chart: {
+      height: CHART_HEIGHT,
+    },
+  }),
+  'Frame288Graph'
+);
 
 const lineStyle = (colorMap: ColorMap) => ({
-  stroke: colorMap.getColor('line')
+  stroke: colorMap.getColor('line'),
 });
 
 const CHART_HEIGHT = 300;
@@ -42,9 +44,7 @@ const CHART_HEIGHT = 300;
 export const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
   const { axisLabel, data, months } = props;
   const classes = useStyles();
-  const monthIndices = months === 'all'
-    ? _.range(1, 13) as MonthIndex[]
-    : months;
+  const monthIndices = months === 'all' ? (_.range(1, 13) as MonthIndex[]) : months;
 
   // Scale the data
   const frame = data instanceof Frame288Numeric ? data : new Frame288Numeric(data);
@@ -55,11 +55,11 @@ export const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
   const colorMap = useColorMap([data]);
 
   // Convert frames to an array of objects
-  const formattedData: LineDatum[][] = monthIndices.map(monthIndex =>
+  const formattedData: LineDatum[][] = monthIndices.map((monthIndex) =>
     frame.getMonth(monthIndex).map((value, i) => ({
       monthIndex,
       x: i,
-      y: value
+      y: value,
     }))
   );
 
@@ -80,13 +80,13 @@ export const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
         axisLabelComponent={<VictoryLabel dy={-30} />}
       />
 
-      {monthIndices.map((monthIndex, arrayIndex) =>
+      {monthIndices.map((monthIndex, arrayIndex) => (
         <VictoryLine
           data={formattedData[arrayIndex]}
           key={monthIndex}
           style={{ data: lineStyle(colorMap) }}
         />
-      )}
+      ))}
     </NavigaderChart>
   );
 
@@ -96,14 +96,10 @@ export const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
    *
    * @param {number} hour: the hour of the day to render
    */
-  function formatHour (hour: number) {
+  function formatHour(hour: number) {
     const realHour = Math.round(hour);
     const suffix = realHour < 12 ? 'am' : 'pm';
-    const formattedHour = realHour === 0
-      ? 12
-      : realHour <= 12
-        ? realHour
-        : realHour - 12;
+    const formattedHour = realHour === 0 ? 12 : realHour <= 12 ? realHour : realHour - 12;
 
     return formattedHour + suffix;
   }
@@ -113,7 +109,7 @@ export const Frame288Graph: React.FC<Frame288GraphProps> = (props) => {
    *
    * @param {VictoryCallbackArg<LineDatum>} datum: the data point for which the label is made
    */
-  function lineLabel ({ datum }: VictoryCallbackArg<LineDatum>) {
+  function lineLabel({ datum }: VictoryCallbackArg<LineDatum>) {
     const month = formatters.getMonthName(datum.monthIndex);
     const hour = formatHour(datum.x);
     const value = datum.y.toFixed(2);

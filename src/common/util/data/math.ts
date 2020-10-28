@@ -8,7 +8,7 @@
  * @param {number} min: the lower end of the range
  * @param {number} max: the upper end of the range
  */
-export function clamp (value: number, min: number, max: number) {
+export function clamp(value: number, min: number, max: number) {
   if (value < min) return min;
   if (value > max) return max;
   return value;
@@ -26,8 +26,8 @@ export function clamp (value: number, min: number, max: number) {
  *
  * @returns {float}
  */
-export function lerp (amount: number, lower: number, upper: number) {
-  return ((upper - lower) * amount) + lower;
+export function lerp(amount: number, lower: number, upper: number) {
+  return (upper - lower) * amount + lower;
 }
 
 /**
@@ -40,9 +40,9 @@ export function lerp (amount: number, lower: number, upper: number) {
  * @param {number} numerator: the X in "X is what percent of Y?"
  * @param {number} denominator: the X in "Y is what percent of Y?"
  */
-export function percentOf (numerator: number, denominator: number) {
+export function percentOf(numerator: number, denominator: number) {
   if (denominator === 0) return Infinity;
-  return 100 * numerator / denominator;
+  return (100 * numerator) / denominator;
 }
 
 /**
@@ -50,6 +50,6 @@ export function percentOf (numerator: number, denominator: number) {
  *
  * @param {any[]} args: all the operands
  */
-export function xor (...args: any[]) {
-  return args.filter(arg => Boolean(arg)).length === 1;
+export function xor(...args: any[]) {
+  return args.filter((arg) => Boolean(arg)).length === 1;
 }

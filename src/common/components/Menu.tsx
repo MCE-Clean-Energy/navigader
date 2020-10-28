@@ -7,7 +7,6 @@ import { List } from './List';
 import { PopoverOrigin } from './Popover';
 import { ValidIcon } from './Icon';
 
-
 /** ============================ Types ===================================== */
 type MenuProps = {
   anchorOrigin?: PopoverOrigin;
@@ -29,27 +28,29 @@ export const Menu: MenuExport = (props) => {
     transformOrigin = { vertical: 'top', horizontal: 'center' } as PopoverOrigin,
     ...rest
   } = props;
-  
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const menuId = randomString();
-  
+
   // Only one of the `icon` and `label` props should be provided
   const hasBoth = Boolean(label && icon);
   const hasNeither = !Boolean(label || icon);
   if (hasBoth || hasNeither) {
     printWarning('`Menu` component expects one of `icon` or `label` prop');
   }
-  
+
   const menuOpenerProps = {
     'aria-controls': menuId,
     'aria-haspopup': 'true' as React.AriaAttributes['aria-haspopup'],
-    onClick: handleClick
+    'onClick': handleClick,
   };
-  
-  const MenuOpener = icon
-    ? <Button {...menuOpenerProps} icon={icon} />
-    : <Button {...menuOpenerProps}>{label}</Button>;
-  
+
+  const MenuOpener = icon ? (
+    <Button {...menuOpenerProps} icon={icon} />
+  ) : (
+    <Button {...menuOpenerProps}>{label}</Button>
+  );
+
   return (
     <>
       {MenuOpener}
@@ -65,12 +66,12 @@ export const Menu: MenuExport = (props) => {
       />
     </>
   );
-  
-  function handleClick (event: React.MouseEvent<HTMLElement>) {
+
+  function handleClick(event: React.MouseEvent<HTMLElement>) {
     setAnchorEl(event.currentTarget);
   }
 
-  function handleClose () {
+  function handleClose() {
     setAnchorEl(null);
   }
 };

@@ -4,7 +4,7 @@
  *
  * @param {string} route - The base route
  */
-export function appendId (route: string) {
+export function appendId(route: string) {
   return (id?: number | string) => {
     return (id ? [route, id].join('/') : route).concat('/');
   };
@@ -13,5 +13,5 @@ export function appendId (route: string) {
 const beoUri = process.env.REACT_APP_BEO_URI;
 export const beoRoute = {
   restAuth: (rest: string) => `${beoUri}/rest-auth/${rest}`,
-  v1: (rest: string) => `${beoUri}/v1/${rest}`
+  v1: (rest: string) => `${beoUri}/v1/${rest}`,
 };

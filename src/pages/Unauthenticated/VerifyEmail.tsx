@@ -3,7 +3,13 @@ import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
 import {
-  Alert, Button, ContactSupport, Flex, Progress, TextField, Typography
+  Alert,
+  Button,
+  ContactSupport,
+  Flex,
+  Progress,
+  TextField,
+  Typography,
 } from 'navigader/components';
 import { useRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
@@ -11,29 +17,34 @@ import { makeStylesHook } from 'navigader/styles';
 import { useAsync, useQueryParams } from 'navigader/util/hooks';
 import { UnauthenticatedPage } from './UnauthenticatedPage';
 
-
 /** ============================ Types ===================================== */
 type VerifyEmailProps = {
   token: string;
 };
 
 /** ============================ Styles ==================================== */
-const useEnterEmailStyles = makeStylesHook(theme => ({
-  alert: {
-    marginBottom: theme.spacing(1)
-  },
-  textField: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(3),
-    width: '100%'
-  }
-}), 'EnterEmail');
+const useEnterEmailStyles = makeStylesHook(
+  (theme) => ({
+    alert: {
+      marginBottom: theme.spacing(1),
+    },
+    textField: {
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(3),
+      width: '100%',
+    },
+  }),
+  'EnterEmail'
+);
 
-const useVerifyEmailStyles = makeStylesHook(theme => ({
-  paragraph: {
-    marginBottom: theme.spacing(2)
-  }
-}), 'VerifyEmail');
+const useVerifyEmailStyles = makeStylesHook(
+  (theme) => ({
+    paragraph: {
+      marginBottom: theme.spacing(2),
+    },
+  }),
+  'VerifyEmail'
+);
 
 /** ============================ Components ================================ */
 /**
@@ -47,7 +58,7 @@ const VerifyEmail: React.FC<VerifyEmailProps> = ({ token }) => {
 
   useAsync(
     () => api.verifyEmail(token),
-    response => setStatus(response.ok ? 'success' : 'error')
+    (response) => setStatus(response.ok ? 'success' : 'error')
   );
 
   switch (status) {
@@ -62,7 +73,9 @@ const VerifyEmail: React.FC<VerifyEmailProps> = ({ token }) => {
       return (
         <Flex.Container direction="column" alignItems="center">
           <Typography className={classes.paragraph}>Your account has been verified!</Typography>
-          <Button color="primary" onClick={routeTo.login}>Log In</Button>
+          <Button color="primary" onClick={routeTo.login}>
+            Log In
+          </Button>
         </Flex.Container>
       );
     case 'error':
@@ -93,20 +106,21 @@ const EnterEmail: React.FC = () => {
         and you will receive a link to verify your account.
       </Typography>
 
-      <TextField
-        className={classes.textField}
-        label="Email address"
-        onChange={setEmail}
-        outlined
-      />
+      <TextField className={classes.textField} label="Email address" onChange={setEmail} outlined />
 
-      {error && <Alert className={classes.alert} type="error">{error}</Alert>}
-      <Button color="primary" type="submit">Send Email</Button>
+      {error && (
+        <Alert className={classes.alert} type="error">
+          {error}
+        </Alert>
+      )}
+      <Button color="primary" type="submit">
+        Send Email
+      </Button>
     </form>
   );
 
   /** ========================== Callbacks ================================= */
-  async function sendEmail (event: React.FormEvent) {
+  async function sendEmail(event: React.FormEvent) {
     setError('');
     event.preventDefault();
 
@@ -115,9 +129,12 @@ const EnterEmail: React.FC = () => {
       setError(error);
 
       if (response.ok) {
-        dispatch(slices.ui.setMessage({
-          msg: 'Password reset email has been sent', type: 'success'
-        }));
+        dispatch(
+          slices.ui.setMessage({
+            msg: 'Password reset email has been sent',
+            type: 'success',
+          })
+        );
       }
     } catch (e) {
       dispatch(slices.ui.setMessage({ msg: 'Something went wrong', type: 'error' }));
@@ -129,11 +146,7 @@ export const VerifyEmailPage: React.FC = () => {
   const [token] = useQueryParams(['token']);
   return (
     <UnauthenticatedPage>
-      {
-        token
-          ? <VerifyEmail token={token} />
-          : <EnterEmail />
-      }
+      {token ? <VerifyEmail token={token} /> : <EnterEmail />}
     </UnauthenticatedPage>
   );
 };

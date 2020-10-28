@@ -1,27 +1,44 @@
 import { DateTime } from 'luxon';
 
 import {
-  AbstractMeterGroup, AbstractRawMeterGroup, CAISORate, DataTypeMap, GHGRate, isRawScenarioReport,
-  isRawScenarioReportSummary, Meter, MeterGroup, OriginFile, PandasFrame, RawCAISORate,
-  RawDataTypeMap, RawGHGRate, RawMeter, RawMeterGroup, RawOriginFile, RawPandasFrame, RawScenario,
-  Scenario, ScenarioReport, ScenarioReportFields
+  AbstractMeterGroup,
+  AbstractRawMeterGroup,
+  CAISORate,
+  DataTypeMap,
+  GHGRate,
+  isRawScenarioReport,
+  isRawScenarioReportSummary,
+  Meter,
+  MeterGroup,
+  OriginFile,
+  PandasFrame,
+  RawCAISORate,
+  RawDataTypeMap,
+  RawGHGRate,
+  RawMeter,
+  RawMeterGroup,
+  RawOriginFile,
+  RawPandasFrame,
+  RawScenario,
+  Scenario,
+  ScenarioReport,
+  ScenarioReportFields,
 } from 'navigader/types';
 import { Frame288Numeric, makeIntervalData, percentOf } from '../data';
 import _ from '../lodash';
 
-
 /** ============================ Meters ==================================== */
-export function parseMeter (meter: RawMeter): Meter {
+export function parseMeter(meter: RawMeter): Meter {
   return {
     ...meter,
-    data: parseDataField(meter.data, meter.metadata.sa_id.toString(), 'kw', 'index')
+    data: parseDataField(meter.data, meter.metadata.sa_id.toString(), 'kw', 'index'),
   };
 }
 
-export function serializeMeter (meter: Meter): RawMeter {
+export function serializeMeter(meter: Meter): RawMeter {
   return {
     ...meter,
-    data: serializeDataField(meter.data, 'kw', 'index')
+    data: serializeDataField(meter.data, 'kw', 'index'),
   };
 }
 
@@ -35,11 +52,11 @@ const NOT_A_TIME = 'NaT';
  *
  * @param {AbstractRawMeterGroup} meterGroup: the raw meter group object to parse
  */
-function parseAbstractMeterGroup (meterGroup: AbstractRawMeterGroup): AbstractMeterGroup {
+function parseAbstractMeterGroup(meterGroup: AbstractRawMeterGroup): AbstractMeterGroup {
   return {
     ...meterGroup,
     data: parseDataField(meterGroup.data, meterGroup.name, 'kw', 'index'),
-    date_range: parseDateRange(meterGroup.date_range)
+    date_range: parseDateRange(meterGroup.date_range),
   };
 }
 
@@ -49,7 +66,7 @@ function parseAbstractMeterGroup (meterGroup: AbstractRawMeterGroup): AbstractMe
  *
  * @param {RawMeterGroup} rawMeterGroup: the `OriginFile` or `Scenario` object to parse
  */
-export function parseMeterGroup (rawMeterGroup: RawMeterGroup): MeterGroup {
+export function parseMeterGroup(rawMeterGroup: RawMeterGroup): MeterGroup {
   switch (rawMeterGroup.object_type) {
     case 'OriginFile':
       return parseOriginFile(rawMeterGroup);
@@ -63,50 +80,45 @@ export function parseMeterGroup (rawMeterGroup: RawMeterGroup): MeterGroup {
  *
  * @param {Tuple<String>} range: the range of the meter group as provided by the back end
  */
-function parseDateRange (range: AbstractRawMeterGroup['date_range']): AbstractMeterGroup['date_range'] {
+function parseDateRange(
+  range: AbstractRawMeterGroup['date_range']
+): AbstractMeterGroup['date_range'] {
   return range.includes(NOT_A_TIME) ? null : [parseDate(range[0]), parseDate(range[1])];
 }
 
-export function serializeMeterGroup (meterGroup: AbstractMeterGroup): AbstractRawMeterGroup {
+export function serializeMeterGroup(meterGroup: AbstractMeterGroup): AbstractRawMeterGroup {
   const { date_range } = meterGroup;
   return {
     ...meterGroup,
     data: serializeDataField(meterGroup.data, 'kw', 'index'),
-    date_range: date_range === null
-      ? [NOT_A_TIME, NOT_A_TIME]
-      : [serializeDate(date_range[0]), serializeDate(date_range[1])]
+    date_range:
+      date_range === null
+        ? [NOT_A_TIME, NOT_A_TIME]
+        : [serializeDate(date_range[0]), serializeDate(date_range[1])],
   };
 }
 
 /** ============================ Origin Files ============================== */
-export function parseOriginFile (rawOriginFile: RawOriginFile): OriginFile {
-  const percentComplete = rawOriginFile.metadata.expected_meter_count === null
-    ? 0
-    : percentOf(
-      rawOriginFile.meter_count,
-      rawOriginFile.metadata.expected_meter_count
-    );
+export function parseOriginFile(rawOriginFile: RawOriginFile): OriginFile {
+  const percentComplete =
+    rawOriginFile.metadata.expected_meter_count === null
+      ? 0
+      : percentOf(rawOriginFile.meter_count, rawOriginFile.metadata.expected_meter_count);
 
-  const unchangedFields = _.pick(rawOriginFile,
-    'metadata',
-    'object_type'
-  );
+  const unchangedFields = _.pick(rawOriginFile, 'metadata', 'object_type');
 
   return {
     ...parseAbstractMeterGroup(rawOriginFile),
     ...unchangedFields,
     progress: {
       is_complete: percentComplete === 100,
-      percent_complete: parseFloat(percentComplete.toFixed(1))
-    }
+      percent_complete: parseFloat(percentComplete.toFixed(1)),
+    },
   };
 }
 
-export function serializeOriginFile (originFile: OriginFile): RawOriginFile {
-  const unchangedFields = _.pick(originFile,
-    'metadata',
-    'object_type'
-  );
+export function serializeOriginFile(originFile: OriginFile): RawOriginFile {
+  const unchangedFields = _.pick(originFile, 'metadata', 'object_type');
 
   return {
     // Serialize the fields inherited from `MeterGroup`
@@ -123,17 +135,19 @@ export function serializeOriginFile (originFile: OriginFile): RawOriginFile {
  * @param {RawMeterGroup[]} [rawMeterGroups]: set of raw meter groups from which to draw the one
  *   associated with the scenario
  */
-export function parseScenario (
+export function parseScenario(
   rawScenario: RawScenario,
   rawMeterGroups?: RawMeterGroup[]
 ): Scenario {
   const { der_simulation_count, expected_der_simulation_count } = rawScenario;
-  const percentComplete = expected_der_simulation_count === 0
-    ? 0
-    : percentOf(der_simulation_count, expected_der_simulation_count);
+  const percentComplete =
+    expected_der_simulation_count === 0
+      ? 0
+      : percentOf(der_simulation_count, expected_der_simulation_count);
 
   const reportSummary = parseReportSummary(rawScenario.report_summary);
-  const unchangedFields = _.pick(rawScenario,
+  const unchangedFields = _.pick(
+    rawScenario,
     'der_simulation_count',
     'der_simulations',
     'expected_der_simulation_count',
@@ -159,63 +173,64 @@ export function parseScenario (
     meter_group_id: rawScenario.meter_group,
     progress: {
       is_complete: rawScenario.metadata.is_complete,
-      percent_complete: parseFloat(percentComplete.toFixed(1))
+      percent_complete: parseFloat(percentComplete.toFixed(1)),
     },
     report: parseReport(rawScenario.report),
-    report_summary: reportSummary
+    report_summary: reportSummary,
   };
 }
 
-export function parseReport (report: RawScenario['report']): ScenarioReport | undefined {
+export function parseReport(report: RawScenario['report']): ScenarioReport | undefined {
   if (!isRawScenarioReport(report)) return;
   const parsed = parsePandasFrame(report);
 
   // For every simulation ID in the report, gather the values associated with that ID from the
   // other columns and compile them into an object
-  return Object.fromEntries((parsed.ID || []).map((simulationId, rowIndex) => {
-    const simulationFields = Object.fromEntries(
-      Object.entries(parsed).map(
-        ([column, values]) => {
+  return Object.fromEntries(
+    (parsed.ID || []).map((simulationId, rowIndex) => {
+      const simulationFields = Object.fromEntries(
+        Object.entries(parsed).map(([column, values]) => {
           const rowValue = values && values[rowIndex];
           const columnName = column === 'SA ID' ? 'SA_ID' : column;
           return [columnName, rowValue];
-        }
-      )
-    );
+        })
+      );
 
-    return [simulationId, simulationFields as ScenarioReportFields];
-  }));
+      return [simulationId, simulationFields as ScenarioReportFields];
+    })
+  );
 }
 
-export function serializeReport (report: Scenario['report']) {
+export function serializeReport(report: Scenario['report']) {
   if (!report) return;
 
   // First we collect all the report fields
   const reportRows = Object.values(report);
-  const reportFields = new Set(
-    ...reportRows.map(obj => Object.keys(obj))
-  ) as Set<keyof ScenarioReportFields>;
+  const reportFields = new Set(...reportRows.map((obj) => Object.keys(obj))) as Set<
+    keyof ScenarioReportFields
+  >;
 
   // For each of the fields, get each row's value
   const reportPairs = Array.from(reportFields).map((field) => {
     // "SA_ID" is handled specially
     const fieldName = field === 'SA_ID' ? 'SA ID' : field;
-    return [fieldName, _.map(reportRows, field)]
+    return [fieldName, _.map(reportRows, field)];
   });
 
   return _.fromPairs(reportPairs) as RawScenario['report'];
 }
 
-function parseReportSummary (summary: RawScenario['report_summary']) {
+function parseReportSummary(summary: RawScenario['report_summary']) {
   return isRawScenarioReportSummary(summary) ? summary[0] : undefined;
 }
 
-function serializeReportSummary (summary: Scenario['report_summary']) {
+function serializeReportSummary(summary: Scenario['report_summary']) {
   return summary ? { 0: summary } : undefined;
 }
 
-export function serializeScenario (scenario: Scenario): RawScenario {
-  const unchangedFields = _.pick(scenario,
+export function serializeScenario(scenario: Scenario): RawScenario {
+  const unchangedFields = _.pick(
+    scenario,
     'der_simulation_count',
     'der_simulations',
     'expected_der_simulation_count',
@@ -230,50 +245,52 @@ export function serializeScenario (scenario: Scenario): RawScenario {
     ders: scenario.der && [scenario.der],
     meter_group: scenario.meter_group_id,
     report: serializeReport(scenario.report),
-    report_summary: serializeReportSummary(scenario.report_summary)
+    report_summary: serializeReportSummary(scenario.report_summary),
   };
 }
 
 /** ============================ GHG ======================================= */
-export function parseGHGRate (rate: RawGHGRate): GHGRate {
+export function parseGHGRate(rate: RawGHGRate): GHGRate {
   return {
     ...rate,
-    data: rate.data ? new Frame288Numeric(rate.data, {
-      name: rate.name,
-      units: 'tCO2/kW'
-    }) : undefined,
+    data: rate.data
+      ? new Frame288Numeric(rate.data, {
+          name: rate.name,
+          units: 'tCO2/kW',
+        })
+      : undefined,
     id: rate.id,
 
     // This is declared as part of the `RawGHGRate` type but it isn't provided by the backend
-    object_type: 'GHGRate'
+    object_type: 'GHGRate',
   };
 }
 
-export function serializeGHGRate (rate: GHGRate): RawGHGRate {
+export function serializeGHGRate(rate: GHGRate): RawGHGRate {
   return {
     ...rate,
     data: rate.data?.frame,
-    id: rate.id
-  }
+    id: rate.id,
+  };
 }
 
 /** ============================ CAISO Rates =============================== */
-export function parseCAISORate (rate: RawCAISORate): CAISORate {
+export function parseCAISORate(rate: RawCAISORate): CAISORate {
   return {
     ...rate,
     data: parseDataField(rate.data || {}, rate.name, '$/kwh', 'start'),
 
     // This is declared as part of the `RawCAISORate` type but it isn't
     // provided by the backend
-    object_type: 'CAISORate'
+    object_type: 'CAISORate',
   };
 }
 
-export function serializeCAISORate (rate: CAISORate): RawCAISORate {
+export function serializeCAISORate(rate: CAISORate): RawCAISORate {
   return {
     ...rate,
-    data: serializeDataField(rate.data, '$/kwh', 'start')
-  }
+    data: serializeDataField(rate.data, '$/kwh', 'start'),
+  };
 }
 
 /** ============================ Pandas ==================================== */
@@ -283,7 +300,7 @@ export function serializeCAISORate (rate: CAISORate): RawCAISORate {
  *
  * @param {RawPandasFrame} frame: the pandas frame to parse
  */
-export function parsePandasFrame<T extends Record<string, any>> (
+export function parsePandasFrame<T extends Record<string, any>>(
   frame: RawPandasFrame<T>
 ): PandasFrame<T> {
   const frameKeys = Object.keys(frame);
@@ -298,7 +315,7 @@ export function parsePandasFrame<T extends Record<string, any>> (
       return 0;
     });
 
-    return [key, orderedIndices.map(index => frame[key][+index])];
+    return [key, orderedIndices.map((index) => frame[key][+index])];
   });
 
   return _.fromPairs(frameProps) as PandasFrame<T>;
@@ -309,15 +326,12 @@ export function parsePandasFrame<T extends Record<string, any>> (
  *
  * @param {PandasFrame} frame: the parsed Pandas frame to serialize
  */
-export function serializePandasFrame<T extends Record<string, any>> (
+export function serializePandasFrame<T extends Record<string, any>>(
   frame: PandasFrame<T>
 ): RawPandasFrame<T> {
   const frameKeys = Object.keys(frame);
   const frameProps = frameKeys.map((key: keyof T) => {
-    return [
-      key,
-      frame[key].reduce((frameField, a, i) => ({ ...frameField, [i]: a }), {})
-    ];
+    return [key, frame[key].reduce((frameField, a, i) => ({ ...frameField, [i]: a }), {})];
   });
 
   return _.fromPairs(frameProps) as RawPandasFrame<T>;
@@ -331,7 +345,7 @@ export function serializePandasFrame<T extends Record<string, any>> (
  * @param unit
  * @param column
  */
-function parseDataField <Column extends string, Unit extends string>(
+function parseDataField<Column extends string, Unit extends string>(
   obj: RawDataTypeMap<Unit, Column>,
   name: string,
   unit: Unit,
@@ -339,9 +353,7 @@ function parseDataField <Column extends string, Unit extends string>(
 ): DataTypeMap {
   return {
     ...obj,
-    default: obj.default
-      ? makeIntervalData({ ...obj.default, name }, column, unit)
-      : undefined
+    default: obj.default ? makeIntervalData({ ...obj.default, name }, column, unit) : undefined,
   };
 }
 
@@ -351,16 +363,14 @@ function parseDataField <Column extends string, Unit extends string>(
  * @param unit
  * @param column
  */
-function serializeDataField <Column extends string, Unit extends string>(
+function serializeDataField<Column extends string, Unit extends string>(
   obj: DataTypeMap,
   unit: Unit,
   column: Column
 ): RawDataTypeMap<Unit, Column> {
   return {
     ...obj,
-    default: obj.default
-      ? obj.default.serialize(unit, column)
-      : undefined
+    default: obj.default ? obj.default.serialize(unit, column) : undefined,
   };
 }
 
@@ -372,7 +382,7 @@ function serializeDataField <Column extends string, Unit extends string>(
  *
  * @param {string} dateString: the string to parse.
  */
-export function parseDate (dateString: string) {
+export function parseDate(dateString: string) {
   return DateTime.fromISO(dateString).toJSDate();
 }
 
@@ -384,6 +394,6 @@ export function parseDate (dateString: string) {
  *
  * @param {Date} date: the date object to serialize
  */
-export function serializeDate (date: Date) {
+export function serializeDate(date: Date) {
   return date.toISOString();
 }

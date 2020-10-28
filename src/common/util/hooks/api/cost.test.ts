@@ -1,5 +1,5 @@
 import { EnhancedStore } from '@reduxjs/toolkit';
-import { HookResult } from '@testing-library/react-hooks'
+import { HookResult } from '@testing-library/react-hooks';
 
 import { makeStore } from 'navigader/store';
 import { CAISORate } from 'navigader/types';
@@ -8,27 +8,22 @@ import { fixtures, makePaginationResponse, mockFetch } from 'navigader/util/test
 import { useCAISORates } from './cost';
 import { assertAPICalled, testHook } from './test_utils';
 
-
 describe('Cost hooks', () => {
   // Make a fresh store before each test
   let store: EnhancedStore;
-  beforeEach(() => store = makeStore());
+  beforeEach(() => (store = makeStore()));
 
   describe('`useCAISORates` hook', () => {
-    function assertCAISORateAPICalled (result: HookResult<CAISORate[] | undefined>) {
-      assertAPICalled(
-        '/cost/caiso_rate/',
-        result,
-        (rates) => {
-          expect(rates).toHaveLength(1);
-          expect(rates![0].id).toEqual(fixtures.caisoRate.id)
-        }
-      );
+    function assertCAISORateAPICalled(result: HookResult<CAISORate[] | undefined>) {
+      assertAPICalled('/cost/caiso_rate/', result, (rates) => {
+        expect(rates).toHaveLength(1);
+        expect(rates![0].id).toEqual(fixtures.caisoRate.id);
+      });
     }
 
     beforeEach(() => {
       mockFetch([
-        ['/cost/caiso_rate/', makePaginationResponse({ caiso_rates: [fixtures.caisoRate] })]
+        ['/cost/caiso_rate/', makePaginationResponse({ caiso_rates: [fixtures.caisoRate] })],
       ]);
     });
 
@@ -44,10 +39,10 @@ describe('Cost hooks', () => {
         id: 4,
         data: {
           default: {
-            start: ['2018-01-01T00:00:00', '2018-01-01T00:15:00'],
-            '$/kwh': [0.03645428, 0.03476417]
-          }
-        }
+            'start': ['2018-01-01T00:00:00', '2018-01-01T00:15:00'],
+            '$/kwh': [0.03645428, 0.03476417],
+          },
+        },
       };
 
       // Request rate from 2018 with 1-hour period data
@@ -68,12 +63,7 @@ describe('Cost hooks', () => {
       // Request rate from 2018 with 1-hour period data
       const rateFilters = { year: 2018, data: 'default', period: 60 };
       const caisoRate = serializers.parseCAISORate(fixtures.caisoRate);
-      const result = await testHook(
-        store,
-        useCAISORates,
-        [caisoRate],
-        rateFilters
-      );
+      const result = await testHook(store, useCAISORates, [caisoRate], rateFilters);
 
       expect(result.current).toHaveLength(1);
 

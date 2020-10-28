@@ -8,7 +8,6 @@ import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { UnauthenticatedPage } from './UnauthenticatedPage';
 
-
 /** ============================ Types ===================================== */
 type SignupState = {
   email: '';
@@ -18,18 +17,21 @@ type SignupState = {
 };
 
 /** ============================ Styles ==================================== */
-const useEnterEmailStyles = makeStylesHook(theme => ({
-  alert: {
-    marginTop: theme.spacing(2)
-  },
-  button: {
-    marginTop: theme.spacing(3)
-  },
-  textField: {
-    marginTop: theme.spacing(2),
-    width: '100%'
-  }
-}), 'SignupPage');
+const useEnterEmailStyles = makeStylesHook(
+  (theme) => ({
+    alert: {
+      marginTop: theme.spacing(2),
+    },
+    button: {
+      marginTop: theme.spacing(3),
+    },
+    textField: {
+      marginTop: theme.spacing(2),
+      width: '100%',
+    },
+  }),
+  'SignupPage'
+);
 
 /** ============================ Components ================================ */
 /**
@@ -47,7 +49,7 @@ export const SignupPage: React.FC = () => {
     email: '',
     password1: '',
     password2: '',
-    username: ''
+    username: '',
   });
 
   return (
@@ -83,21 +85,27 @@ export const SignupPage: React.FC = () => {
           outlined
         />
 
-        {error && <Alert className={classes.alert} type="error">{error}</Alert>}
-        <Button className={classes.button} color="primary" type="submit">Sign Up</Button>
+        {error && (
+          <Alert className={classes.alert} type="error">
+            {error}
+          </Alert>
+        )}
+        <Button className={classes.button} color="primary" type="submit">
+          Sign Up
+        </Button>
       </form>
     </UnauthenticatedPage>
   );
 
   /** ========================== Helpers =================================== */
-  function updateStateField (field: keyof SignupState) {
+  function updateStateField(field: keyof SignupState) {
     return function (value: string) {
       setState({ ...state, [field]: value });
-    }
+    };
   }
 
   /** ========================== Callbacks ================================= */
-  async function signup (event: React.FormEvent) {
+  async function signup(event: React.FormEvent) {
     setError(undefined);
     event.preventDefault();
 
@@ -111,12 +119,14 @@ export const SignupPage: React.FC = () => {
 
       setError(error);
       if (response.ok) {
-        dispatch(slices.ui.setMessage({
-          msg:
-            `A confirmation email has been sent to ${state.email}. Please confirm your account ` +
-            'and log in.',
-          type: 'success'
-        }));
+        dispatch(
+          slices.ui.setMessage({
+            msg:
+              `A confirmation email has been sent to ${state.email}. Please confirm your account ` +
+              'and log in.',
+            type: 'success',
+          })
+        );
         routeTo.login();
       }
     } catch (e) {

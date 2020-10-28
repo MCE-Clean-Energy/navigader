@@ -5,7 +5,6 @@ import _ from 'navigader/util/lodash';
 import { omitFalsey } from 'navigader/util/omitFalsey';
 import { DataTypeFilters } from './types';
 
-
 /**
  * Hook for calling an asynchronous method
  *
@@ -13,7 +12,7 @@ import { DataTypeFilters } from './types';
  * @param {function} callback: a callback to execute once the function has completed
  * @param {any[]} dependencies: the dependency array
  */
-export function useAsync <T>(
+export function useAsync<T>(
   fn: () => Promise<Maybe<T>>,
   callback: (response: T) => void,
   dependencies: any[] = []
@@ -52,14 +51,14 @@ export function useAsync <T>(
  * @param {DataObject|undefined} model: the model to apply the filters to, if any
  * @param {DataTypeFilters|undefined} filters: the data filters, if any
  */
-export function applyDataFilters (model: Maybe<DataObject>, filters: Maybe<DataTypeFilters>) {
+export function applyDataFilters(model: Maybe<DataObject>, filters: Maybe<DataTypeFilters>) {
   if (!model) return false;
   if (!filters) return true;
 
   if (filters.data_types) {
     const typesNeeded = _.isArray(filters.data_types) ? filters.data_types : [filters.data_types];
     const typesPresent = Object.keys(omitFalsey(model.data));
-    if (!_.every(typesNeeded.map(type => typesPresent.includes(type)))) {
+    if (!_.every(typesNeeded.map((type) => typesPresent.includes(type)))) {
       return false;
     }
   }
@@ -81,7 +80,7 @@ export function applyDataFilters (model: Maybe<DataObject>, filters: Maybe<DataT
  * @param {object} model: the model to apply the filters to
  * @param {DynamicRestParams} [params]: the dynamic rest filters to apply
  */
-export function applyDynamicRestFilters (model: Maybe<object>, params?: DynamicRestParams) {
+export function applyDynamicRestFilters(model: Maybe<object>, params?: DynamicRestParams) {
   return _.every(params?.filter, (clause, field) => {
     const value = _.get(model, field);
     switch (clause.operation) {

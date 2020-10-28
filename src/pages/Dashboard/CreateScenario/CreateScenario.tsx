@@ -4,7 +4,7 @@ import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import { Button, Flex, PageHeader, Stepper } from 'navigader/components';
 import { routes, useRouter } from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
-import { hooks } from 'navigader/util'
+import { hooks } from 'navigader/util';
 import { CreateScenarioState, stepPaths } from './common';
 import { Review } from './Review';
 import { SelectCostFunctions } from './SelectCostFunctions';
@@ -12,17 +12,19 @@ import { SelectCustomers } from './SelectCustomers';
 import { SelectDERs } from './SelectDERs';
 import { StepActions } from './StepActions';
 
-
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(theme => ({
-  stepActions: {
-    marginTop: theme.spacing(3)
-  },
-  stepper: {
-    backgroundColor: 'inherit',
-    marginBottom: theme.spacing(3)
-  }
-}), 'CreateScenario');
+const useStyles = makeStylesHook(
+  (theme) => ({
+    stepActions: {
+      marginTop: theme.spacing(3),
+    },
+    stepper: {
+      backgroundColor: 'inherit',
+      marginBottom: theme.spacing(3),
+    },
+  }),
+  'CreateScenario'
+);
 
 /** ============================ Components ================================ */
 const CreateScenarioPage: React.FC = () => {
@@ -31,12 +33,20 @@ const CreateScenarioPage: React.FC = () => {
   const classes = useStyles();
 
   // Load data
-  const derConfigurations = hooks.useDERConfigurations({ include: 'data', page: 1, page_size: 100 });
+  const derConfigurations = hooks.useDERConfigurations({
+    include: 'data',
+    page: 1,
+    page_size: 100,
+  });
   const derStrategies = hooks.useDERStrategies({ include: 'data', page: 1, page_size: 100 });
   const originFiles = hooks.useOriginFiles({ page: 1, page_size: 100 });
-  const scenarios = hooks.useScenarios({ include: ['ders', 'meter_group', 'report_summary'], page: 1, page_size: 100 });
+  const scenarios = hooks.useScenarios({
+    include: ['ders', 'meter_group', 'report_summary'],
+    page: 1,
+    page_size: 100,
+  });
   const costFunctions = hooks.useCostFunctions({
-    ratePlans: { include: ['rate_collections.*'] }
+    ratePlans: { include: ['rate_collections.*'] },
   });
 
   // All state for the page is handled here
@@ -45,7 +55,7 @@ const CreateScenarioPage: React.FC = () => {
     derSelections: [{}],
     originFileSelections: [],
     name: null,
-    scenarioSelections: []
+    scenarioSelections: [],
   });
 
   const stepLabels = ['Select Customers', 'Select DERs', 'Select Cost Functions', 'Review'];
@@ -63,17 +73,21 @@ const CreateScenarioPage: React.FC = () => {
 
     // State props
     state,
-    updateState
+    updateState,
   };
 
   return (
     <>
       <Flex.Container direction="column" grow>
         <PageHeader
-          actions={<Button color="secondary" onClick={routeTo.dashboard.base}>Cancel</Button>}
+          actions={
+            <Button color="secondary" onClick={routeTo.dashboard.base}>
+              Cancel
+            </Button>
+          }
           breadcrumbs={[
             ['Dashboard', routes.dashboard.base],
-            ['Create Scenario', routes.dashboard.createScenario.review]
+            ['Create Scenario', routes.dashboard.createScenario.review],
           ]}
           title="Create Scenario"
         />
@@ -100,16 +114,13 @@ const CreateScenarioPage: React.FC = () => {
       </Flex.Container>
 
       <Flex.Item className={classes.stepActions}>
-        <StepActions
-          activeStep={activeStep}
-          {...screenProps}
-        />
+        <StepActions activeStep={activeStep} {...screenProps} />
       </Flex.Item>
     </>
   );
 
   /** ========================== Callbacks ================================= */
-  function updateState (newState: Partial<CreateScenarioState>) {
+  function updateState(newState: Partial<CreateScenarioState>) {
     setState({ ...state, ...newState });
   }
 };

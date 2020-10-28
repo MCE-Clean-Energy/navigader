@@ -9,41 +9,33 @@ import { OriginFile, Scenario } from 'navigader/types';
 import { omitFalsey, printWarning } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 import {
-  CreateScenarioScreenProps, stepPaths, stepNumbers, validateCustomerSelections,
-  validateDerSelections
+  CreateScenarioScreenProps,
+  stepPaths,
+  stepNumbers,
+  validateCustomerSelections,
+  validateDerSelections,
 } from './common';
-
 
 /** ============================ Types ===================================== */
 type StepActionProps = CreateScenarioScreenProps & { activeStep: number };
 
 /** ============================ Components ================================ */
 export const StepActions: React.FC<StepActionProps> = (props) => {
-  const {
-    activeStep,
-    originFiles,
-    scenarios,
-    state
-  } = props;
+  const { activeStep, originFiles, scenarios, state } = props;
 
   const routeTo = useRouter();
   const dispatch = useDispatch();
   const [createInProcess, setCreateInProcess] = React.useState(false);
-  const prevButton = activeStep === 0
-    ? null
-    : <Button onClick={goBack}>Back</Button>;
+  const prevButton = activeStep === 0 ? null : <Button onClick={goBack}>Back</Button>;
 
   const onReviewPage = activeStep === stepNumbers.review;
   const nextButtonText = onReviewPage ? 'Create Scenario' : 'Next';
   const nextButtonCb = onReviewPage ? createScenario : goForward;
-  const nextButton =
-    <Button
-      color="primary"
-      disabled={disableNext()}
-      onClick={nextButtonCb}
-    >
+  const nextButton = (
+    <Button color="primary" disabled={disableNext()} onClick={nextButtonCb}>
       {nextButtonText}
-    </Button>;
+    </Button>
+  );
 
   return (
     <Flex.Container justifyContent="space-between">
@@ -53,12 +45,12 @@ export const StepActions: React.FC<StepActionProps> = (props) => {
   );
 
   /** ========================== Callbacks ================================= */
-  function goBack () {
+  function goBack() {
     if (activeStep === 0) return;
     routeTo.page(stepPaths[activeStep - 1])();
   }
 
-  function goForward () {
+  function goForward() {
     if (activeStep === stepPaths.length - 1) return;
     routeTo.page(stepPaths[activeStep + 1])();
   }
@@ -66,24 +58,26 @@ export const StepActions: React.FC<StepActionProps> = (props) => {
   /**
    * Validates all inputs and makes a POST request to the back end to create a study/scenarios.
    */
-  async function createScenario () {
+  async function createScenario() {
     const {
       costFunctionSelections,
       derSelections,
       originFileSelections,
       name,
-      scenarioSelections
+      scenarioSelections,
     } = state;
 
     // Validate all inputs
-    if (!(
-      !!name &&
-      validateDerSelections(derSelections) &&
-      validateCustomerSelections(
-        getCustomerSelection(originFiles, originFileSelections),
-        getCustomerSelection(scenarios, scenarioSelections)
+    if (
+      !(
+        !!name &&
+        validateDerSelections(derSelections) &&
+        validateCustomerSelections(
+          getCustomerSelection(originFiles, originFileSelections),
+          getCustomerSelection(scenarios, scenarioSelections)
+        )
       )
-    )) {
+    ) {
       printWarning('`createScenario` method ran with invalid inputs!');
       return;
     }
@@ -112,7 +106,7 @@ export const StepActions: React.FC<StepActionProps> = (props) => {
    * Triggered when the POST request succeeds. Shows a success message and redirects the user to
    * the dashboard.
    */
-  function handleStudyCreationSuccess () {
+  function handleStudyCreationSuccess() {
     dispatch(setMessage({ msg: 'Scenario created!', type: 'success' }));
     routeTo.dashboard.base();
   }
@@ -120,11 +114,9 @@ export const StepActions: React.FC<StepActionProps> = (props) => {
   /**
    * Triggered when the POST request fails. Shows an error message.
    */
-  function handleStudyCreationFailure () {
+  function handleStudyCreationFailure() {
     setCreateInProcess(false);
-    dispatch(
-      setMessage({ msg: 'An error occurred. Please try submitting again.', type: 'error' })
-    );
+    dispatch(setMessage({ msg: 'An error occurred. Please try submitting again.', type: 'error' }));
   }
 
   /**
@@ -133,7 +125,7 @@ export const StepActions: React.FC<StepActionProps> = (props) => {
    *   - On the "Customer Selection" page, at least one meter group must be selected
    *   - On the "Review" page, all the above validations must pass and a name must be provided
    */
-  function disableNext () {
+  function disableNext() {
     const hasScenarioName = !!state.name;
     const hasValidDerSelections = validateDerSelections(state.derSelections);
     const hasValidCustomerSelections = validateCustomerSelections(
@@ -143,11 +135,10 @@ export const StepActions: React.FC<StepActionProps> = (props) => {
 
     switch (activeStep) {
       case stepNumbers.review:
-        return !(
-          hasValidDerSelections &&
-          hasValidCustomerSelections &&
-          hasScenarioName
-        ) || createInProcess;
+        return (
+          !(hasValidDerSelections && hasValidCustomerSelections && hasScenarioName) ||
+          createInProcess
+        );
       case stepNumbers.selectCostFunctions:
         return false;
       case stepNumbers.selectCustomers:
@@ -159,9 +150,6 @@ export const StepActions: React.FC<StepActionProps> = (props) => {
 };
 
 /** ============================ Helpers =================================== */
-function getCustomerSelection <T extends OriginFile | Scenario>(
-  customers: T[],
-  ids: string[]
-): T[] {
-  return omitFalsey(ids.map(id => _.find(customers, ['id', id])));
+function getCustomerSelection<T extends OriginFile | Scenario>(customers: T[], ids: string[]): T[] {
+  return omitFalsey(ids.map((id) => _.find(customers, ['id', id])));
 }

@@ -9,7 +9,6 @@ import { makeStylesHook } from 'navigader/styles';
 import { useQueryParams } from 'navigader/util/hooks';
 import { UnauthenticatedPage } from './UnauthenticatedPage';
 
-
 /** ============================ Types ===================================== */
 type ConfirmResetProps = {
   token: string;
@@ -17,26 +16,32 @@ type ConfirmResetProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useEnterEmailStyles = makeStylesHook(theme => ({
-  alert: {
-    marginBottom: theme.spacing(1)
-  },
-  textField: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(3),
-    width: '100%'
-  }
-}), 'EnterEmail');
+const useEnterEmailStyles = makeStylesHook(
+  (theme) => ({
+    alert: {
+      marginBottom: theme.spacing(1),
+    },
+    textField: {
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(3),
+      width: '100%',
+    },
+  }),
+  'EnterEmail'
+);
 
-const useConfirmResetStyles = makeStylesHook(theme => ({
-  alert: {
-    marginBottom: theme.spacing(1)
-  },
-  confirmPassword: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(3),
-  }
-}), 'ConfirmReset');
+const useConfirmResetStyles = makeStylesHook(
+  (theme) => ({
+    alert: {
+      marginBottom: theme.spacing(1),
+    },
+    confirmPassword: {
+      marginTop: theme.spacing(1),
+      marginBottom: theme.spacing(3),
+    },
+  }),
+  'ConfirmReset'
+);
 
 /** ============================ Components ================================ */
 /**
@@ -63,13 +68,19 @@ const ConfirmReset: React.FC<ConfirmResetProps> = ({ token, uid }) => {
         type="password"
       />
 
-      {error && <Alert className={classes.alert} type="error">{error}</Alert>}
-      <Button color="primary" type="submit">Change password</Button>
+      {error && (
+        <Alert className={classes.alert} type="error">
+          {error}
+        </Alert>
+      )}
+      <Button color="primary" type="submit">
+        Change password
+      </Button>
     </form>
   );
 
   /** ========================== Callbacks ================================= */
-  async function confirmReset (event: React.FormEvent) {
+  async function confirmReset(event: React.FormEvent) {
     setError(undefined);
     event.preventDefault();
 
@@ -78,9 +89,12 @@ const ConfirmReset: React.FC<ConfirmResetProps> = ({ token, uid }) => {
       setError(error);
 
       if (response.ok) {
-        dispatch(slices.ui.setMessage({
-          msg: 'Your password has been reset!', type: 'success'
-        }));
+        dispatch(
+          slices.ui.setMessage({
+            msg: 'Your password has been reset!',
+            type: 'success',
+          })
+        );
         routeTo.login();
       }
     } catch (e) {
@@ -115,13 +129,19 @@ const EnterEmail: React.FC = () => {
         outlined
       />
 
-      {error && <Alert className={classes.alert} type="error">{error}</Alert>}
-      <Button color="primary" type="submit">Send Email</Button>
+      {error && (
+        <Alert className={classes.alert} type="error">
+          {error}
+        </Alert>
+      )}
+      <Button color="primary" type="submit">
+        Send Email
+      </Button>
     </form>
   );
 
   /** ========================== Callbacks ================================= */
-  async function sendEmail (event: React.FormEvent) {
+  async function sendEmail(event: React.FormEvent) {
     setError(undefined);
     event.preventDefault();
 
@@ -130,9 +150,12 @@ const EnterEmail: React.FC = () => {
       setError(error);
 
       if (response.ok) {
-        dispatch(slices.ui.setMessage({
-          msg: 'Password reset email has been sent', type: 'success'
-        }));
+        dispatch(
+          slices.ui.setMessage({
+            msg: 'Password reset email has been sent',
+            type: 'success',
+          })
+        );
       }
     } catch (e) {
       dispatch(slices.ui.setMessage({ msg: 'Something went wrong', type: 'error' }));
@@ -144,11 +167,7 @@ export const ResetPasswordPage: React.FC = () => {
   const [token, uid] = useQueryParams(['token', 'uid']);
   return (
     <UnauthenticatedPage>
-      {
-        token && uid
-          ? <ConfirmReset token={token} uid={uid} />
-          : <EnterEmail />
-      }
+      {token && uid ? <ConfirmReset token={token} uid={uid} /> : <EnterEmail />}
     </UnauthenticatedPage>
   );
 };

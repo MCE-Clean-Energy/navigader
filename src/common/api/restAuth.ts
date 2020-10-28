@@ -1,7 +1,6 @@
 import { cookieManager } from 'navigader/util/cookies';
 import { beoRoute, postRequest } from './util';
 
-
 /** ============================ Types ===================================== */
 type ErrorArray = string[];
 type LoginResponse = {
@@ -40,7 +39,7 @@ type ResendVerificationEmailResponse = Partial<{
 }>;
 
 /** ============================ API Methods =============================== */
-export async function login (email: string, password: string) {
+export async function login(email: string, password: string) {
   const response = await postRequest(routes.login, { email, password });
   const json: LoginResponse = await response.json();
 
@@ -51,15 +50,15 @@ export async function login (email: string, password: string) {
 
   return {
     response,
-    error: (json.non_field_errors || [])[0]
-  }
+    error: (json.non_field_errors || [])[0],
+  };
 }
 
-export async function logout () {
+export async function logout() {
   return await postRequest(routes.logout);
 }
 
-export async function changePassword (
+export async function changePassword(
   oldPassword: string,
   newPassword1: string,
   newPassword2: string
@@ -67,22 +66,22 @@ export async function changePassword (
   const response = await postRequest(routes.password.change, {
     old_password: oldPassword,
     new_password1: newPassword1,
-    new_password2: newPassword2
+    new_password2: newPassword2,
   });
 
   return await response.json();
 }
 
-export async function sendResetPasswordEmail (email: string) {
+export async function sendResetPasswordEmail(email: string) {
   const response = await postRequest(routes.password.reset, { email });
   const json: SendPasswordResetEmailResponse = await response.json();
   return {
     response,
-    error: (json.email || [])[0]
+    error: (json.email || [])[0],
   };
 }
 
-export async function confirmPasswordReset (
+export async function confirmPasswordReset(
   password1: string,
   password2: string,
   token: string,
@@ -93,11 +92,11 @@ export async function confirmPasswordReset (
   const json: ConfirmPasswordResetResponse = await response.json();
   return {
     response,
-    error: (json.new_password1 || json.new_password2 || json.token || json.uid || [])[0]
+    error: (json.new_password1 || json.new_password2 || json.token || json.uid || [])[0],
   };
 }
 
-export async function signUp (
+export async function signUp(
   email: string,
   password1: string,
   password2: string,
@@ -108,20 +107,25 @@ export async function signUp (
   const json: SignupResponse = await response.json();
   return {
     response,
-    error: (json.username || json.password1 || json.password2 || json.email || json.non_field_errors || [])[0]
+    error: (json.username ||
+      json.password1 ||
+      json.password2 ||
+      json.email ||
+      json.non_field_errors ||
+      [])[0],
   };
 }
 
-export async function resendVerificationEmail (email: string) {
+export async function resendVerificationEmail(email: string) {
   const response = await postRequest(routes.registration.resendVerification, { email });
   const json: ResendVerificationEmailResponse = await response.json();
   return {
     response,
-    error: (json.email || json.non_field_errors || [])[0]
+    error: (json.email || json.non_field_errors || [])[0],
   };
 }
 
-export async function verifyEmail (key: string) {
+export async function verifyEmail(key: string) {
   return await postRequest(routes.registration.verifyEmail, { key });
 }
 
@@ -134,11 +138,11 @@ const routes = {
   password: {
     change: passwordRoute('change/'),
     confirmReset: passwordRoute('reset/confirm/'),
-    reset: passwordRoute('reset/')
+    reset: passwordRoute('reset/'),
   },
   registration: {
     resendVerification: registrationRoute('resend-verification/'),
     signup: registrationRoute(),
-    verifyEmail: registrationRoute('verify-email/')
-  }
+    verifyEmail: registrationRoute('verify-email/'),
+  },
 };

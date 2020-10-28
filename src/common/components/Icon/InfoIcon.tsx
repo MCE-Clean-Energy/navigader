@@ -3,7 +3,6 @@ import * as React from 'react';
 import { Tooltip } from '../Tooltip';
 import { Icon } from './Icon';
 
-
 /** ============================ Types ===================================== */
 type InfoIconProps = {
   text: string;

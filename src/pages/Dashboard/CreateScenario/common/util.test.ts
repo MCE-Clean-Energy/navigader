@@ -2,7 +2,6 @@ import _ from 'navigader/util/lodash';
 import { fixtures } from 'navigader/util/testing';
 import * as util from './util';
 
-
 describe('CreateScenario utilities', () => {
   describe('validateCustomerSelections method', () => {
     const emptyMeterGroups = _.range(10).map(() => fixtures.makeOriginFile({ meter_count: 0 }));
@@ -16,7 +15,7 @@ describe('CreateScenario utilities', () => {
       expect(util.validateCustomerSelections([], [])).toBeFalsy();
     });
 
-    it ('returns true when at least one non-empty meter group or scenario is provided', () => {
+    it('returns true when at least one non-empty meter group or scenario is provided', () => {
       const meterGroup = fixtures.makeOriginFile({ meter_count: 1 });
       const scenario = fixtures.makeScenario({ meter_count: 1 });
       expect(util.validateCustomerSelections([meterGroup], [])).toBeTruthy();
@@ -26,9 +25,8 @@ describe('CreateScenario utilities', () => {
       expect(util.validateCustomerSelections([], [scenario])).toBeTruthy();
 
       expect(util.validateCustomerSelections([meterGroup], [scenario])).toBeTruthy();
-      expect(util.validateCustomerSelections(
-        [...emptyMeterGroups, meterGroup],
-        [scenario])
+      expect(
+        util.validateCustomerSelections([...emptyMeterGroups, meterGroup], [scenario])
       ).toBeTruthy();
     });
   });

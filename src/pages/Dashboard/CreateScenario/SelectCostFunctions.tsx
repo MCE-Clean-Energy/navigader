@@ -6,7 +6,6 @@ import { CAISORate, GHGRate, Loader, Maybe, RatePlan, SystemProfile } from 'navi
 import { models } from 'navigader/util';
 import { CreateScenarioScreenProps, CreateScenarioState } from './common';
 
-
 /** ============================ Types ===================================== */
 type CostFunction = GHGRate | RatePlan | CAISORate | SystemProfile;
 type CostFunctionCardProps<T extends CostFunction> = {
@@ -18,37 +17,42 @@ type CostFunctionCardProps<T extends CostFunction> = {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(theme => ({
-  cardTitle: {
-    padding: theme.spacing(2, 2, 0)
-  },
-  radioList: {
-    maxHeight: 500,
-    overflowY: 'auto'
-  }
-}), 'CostFunctionCard');
+const useStyles = makeStylesHook(
+  (theme) => ({
+    cardTitle: {
+      padding: theme.spacing(2, 2, 0),
+    },
+    radioList: {
+      maxHeight: 500,
+      overflowY: 'auto',
+    },
+  }),
+  'CostFunctionCard'
+);
 
 /** ============================ Components ================================ */
-function CostFunctionCard <T extends CostFunction>(props: CostFunctionCardProps<T>) {
-  const { costFunctions, onChange, renderer = cf => cf.name, title, value } = props;
+function CostFunctionCard<T extends CostFunction>(props: CostFunctionCardProps<T>) {
+  const { costFunctions, onChange, renderer = (cf) => cf.name, title, value } = props;
   const classes = useStyles();
   return (
     <Card padding={0} raised>
-      <Typography className={classes.cardTitle} useDiv variant="h6">{title}</Typography>
+      <Typography className={classes.cardTitle} useDiv variant="h6">
+        {title}
+      </Typography>
       <Radio.Group
         className={classes.radioList}
         onChange={onChange}
         value={value?.toString() || ''}
       >
         <List dense>
-          {costFunctions.map(costFunction =>
-              <List.Item button={false} key={costFunction.id}>
-                <Radio
-                  label={<Typography variant="body2">{renderer(costFunction)}</Typography>}
-                  value={costFunction.id.toString()}
-                />
-              </List.Item>
-          )}
+          {costFunctions.map((costFunction) => (
+            <List.Item button={false} key={costFunction.id}>
+              <Radio
+                label={<Typography variant="body2">{renderer(costFunction)}</Typography>}
+                value={costFunction.id.toString()}
+              />
+            </List.Item>
+          ))}
         </List>
       </Radio.Group>
     </Card>
@@ -98,14 +102,14 @@ export const SelectCostFunctions: React.FC<CreateScenarioScreenProps> = (props) 
     </Grid>
   );
 
-  function makeOnChangeCallback (key: keyof CreateScenarioState['costFunctionSelections']) {
+  function makeOnChangeCallback(key: keyof CreateScenarioState['costFunctionSelections']) {
     return (value: string) => {
       updateState({
         costFunctionSelections: {
           ...state.costFunctionSelections,
-          [key]: +value
-        }
+          [key]: +value,
+        },
       });
-    }
+    };
   }
 };

@@ -3,7 +3,6 @@ import * as React from 'react';
 import { RowsPerPageOption, SortDir } from 'navigader/types';
 import { isProduction } from 'navigader/util';
 
-
 /** ============================ Types ===================================== */
 export type PaginationCallbackArgs = PaginationState & Partial<SortState>;
 export type PaginationState = {
@@ -20,11 +19,11 @@ export type DisabledSelectComponent<T> = React.FC<{ datum: T }>;
 
 type TableContextType<T> = {
   allSelected: boolean;
-  data: T[],
+  data: T[];
   disableSelect: (datum: T) => boolean;
   DisabledSelectComponent?: DisabledSelectComponent<T>;
   hover: boolean;
-  selectable: boolean,
+  selectable: boolean;
   selections: Set<number>;
   setSortState: (state: SortState) => void;
   sortState?: SortState;
@@ -43,7 +42,7 @@ export const TableContext = React.createContext<TableContextType<any>>({
   selections: new Set(),
   setSortState: () => {},
   toggleAllSelections: () => {},
-  toggleRowSelection: () => {}
+  toggleRowSelection: () => {},
 });
 
 if (!isProduction()) {

@@ -1,7 +1,6 @@
 import { QueryParams } from 'navigader/types';
 import { appendQueryString, getRequestHeaders } from 'navigader/util';
 
-
 /** ============================ Types ===================================== */
 // Needless to say, this is not a complete set of HTTP method types. It is the set of the ones used
 // in the NavigaDER application.
@@ -15,11 +14,11 @@ type HttpMethodType = 'DELETE' | 'GET' | 'PATCH' | 'POST';
  * @param {string} route: the LOCAL route to send the request to. I.e. this should begin with a "/"
  * @param {object} body: the body of the request. Typically this will be JSON.
  */
-function makeJsonRequest (method: HttpMethodType, route: string, body?: string | FormData) {
+function makeJsonRequest(method: HttpMethodType, route: string, body?: string | FormData) {
   return fetch(route, {
     body,
     headers: getRequestHeaders('application/json'),
-    method
+    method,
   });
 }
 
@@ -29,11 +28,11 @@ function makeJsonRequest (method: HttpMethodType, route: string, body?: string |
  * @param {string} route: the route to send the request to
  * @param {object} formFields: an object mapping form data fields to their values
  */
-export function makeFormPost (route: string, formFields: object) {
+export function makeFormPost(route: string, formFields: object) {
   return fetch(route, {
     body: objToFormData(formFields),
     headers: getRequestHeaders(),
-    method: 'POST'
+    method: 'POST',
   });
 }
 
@@ -44,7 +43,7 @@ export function makeFormPost (route: string, formFields: object) {
  * @param {string} route: the route to send the request to
  * @param {object} formFields: an object mapping form data fields to their values
  */
-export function makeFormXhrPost (route: string, formFields: object) {
+export function makeFormXhrPost(route: string, formFields: object) {
   // Make the XHR object
   const xhr = new XMLHttpRequest();
   xhr.open('POST', route);
@@ -62,15 +61,15 @@ export function deleteRequest(route: string) {
   return makeJsonRequest('DELETE', route);
 }
 
-export function getRequest (route: string, queryParams?: QueryParams) {
+export function getRequest(route: string, queryParams?: QueryParams) {
   return makeJsonRequest('GET', appendQueryString(route, queryParams));
 }
 
-export function postRequest (route: string, body: object = {}) {
+export function postRequest(route: string, body: object = {}) {
   return makeJsonRequest('POST', route, JSON.stringify(body));
 }
 
-export function patchRequest (route: string, body: object) {
+export function patchRequest(route: string, body: object) {
   return makeJsonRequest('PATCH', route, JSON.stringify(body));
 }
 
@@ -81,7 +80,7 @@ export function patchRequest (route: string, body: object) {
  *
  * @param {object} formFields: the object to convert to a FormData object
  */
-function objToFormData (formFields: object) {
+function objToFormData(formFields: object) {
   const formData = new FormData();
   Object.entries(formFields).forEach(([fieldName, value]) => {
     formData.append(fieldName, value);

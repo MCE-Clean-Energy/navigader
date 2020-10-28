@@ -8,18 +8,20 @@ import { makeStylesHook } from 'navigader/styles';
 import { MeterGroup } from 'navigader/types';
 import { formatters } from 'navigader/util';
 
-
 /** ============================ Types ===================================== */
 type MetersTableProps = {
   meterGroupId: MeterGroup['id'];
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(() => ({
-  tableContainer: {
-    maxHeight: 500
-  }
-}), 'MetersTable');
+const useStyles = makeStylesHook(
+  () => ({
+    tableContainer: {
+      maxHeight: 500,
+    },
+  }),
+  'MetersTable'
+);
 
 /** ============================ Components ================================ */
 const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
@@ -31,7 +33,7 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
       const response = await api.getMeters({
         meterGroupId,
         page: state.currentPage + 1,
-        page_size: state.rowsPerPage
+        page_size: state.rowsPerPage,
       });
 
       // Add the models to the store and yield the pagination results
@@ -52,7 +54,7 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
       stickyHeader
       title="Meters"
     >
-      {meters =>
+      {(meters) => (
         <>
           <Table.Head>
             <Table.Row>
@@ -63,7 +65,7 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
             </Table.Row>
           </Table.Head>
           <Table.Body>
-            {meters.map(meter =>
+            {meters.map((meter) => (
               <Table.Row key={meter.id}>
                 <Table.Cell>{meter.metadata.sa_id}</Table.Cell>
                 <Table.Cell>{meter.metadata.rate_plan_name}</Table.Cell>
@@ -74,10 +76,10 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
                   {formatters.commas(formatters.maxDecimals(meter.total_kwh, 2))}
                 </Table.Cell>
               </Table.Row>
-            )}
+            ))}
           </Table.Body>
         </>
-      }
+      )}
     </Table>
   );
 };

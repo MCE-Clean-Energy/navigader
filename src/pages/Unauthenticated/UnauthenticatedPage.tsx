@@ -4,39 +4,38 @@ import classNames from 'classnames';
 import { Branding, Card, Flex, Typography } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
 
-
 /** ============================ Styles ==================================== */
 const LOGO_WIDTH = 300;
-const useStyles = makeStylesHook(theme => ({
-  container: {
-    height: '100vh'
-  },
-  content: {
-    marginTop: theme.spacing(6),
-    maxWidth: LOGO_WIDTH,
-    width: LOGO_WIDTH
-  },
-  gradient: {
-    width: '50%'
-  },
-  navigader: {
-    letterSpacing: 25
-  },
-  rightSide: {
-    width: '50%'
-  },
-  rightSideCardContent: {
-    height: '100%'
-  }
-}), 'UnauthenticatedPage');
+const useStyles = makeStylesHook(
+  (theme) => ({
+    container: {
+      height: '100vh',
+    },
+    content: {
+      marginTop: theme.spacing(6),
+      maxWidth: LOGO_WIDTH,
+      width: LOGO_WIDTH,
+    },
+    gradient: {
+      width: '50%',
+    },
+    navigader: {
+      letterSpacing: 25,
+    },
+    rightSide: {
+      width: '50%',
+    },
+    rightSideCardContent: {
+      height: '100%',
+    },
+  }),
+  'UnauthenticatedPage'
+);
 
 /** ============================ Components ================================ */
 export const UnauthenticatedPage: React.FC = ({ children }) => {
   const classes = useStyles();
-  const gradientClasses = classNames(
-    classes.gradient,
-    Branding.useGradientStyles().root
-  );
+  const gradientClasses = classNames(classes.gradient, Branding.useGradientStyles().root);
 
   return (
     <Flex.Container alignItems="stretch" className={classes.container}>

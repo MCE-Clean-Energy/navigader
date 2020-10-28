@@ -19,7 +19,6 @@ import { Tooltip } from '../Tooltip';
 import { Typography } from '../Typography';
 import { ImpactColumnHeader } from './ImpactColumnHeader';
 
-
 /** ============================ Types ===================================== */
 type ScenariosTableProps = {
   actionsMenu?: (scenario: Scenario) => React.ReactElement;
@@ -33,10 +32,10 @@ type ScenariosTableProps = {
   updateAveraged?: (averaged: boolean) => void;
 };
 
-
 /** ============================ Components ================================ */
-const ScenarioStatus: DisabledSelectComponent<Scenario> =
-  ({ datum }) => <StatusIndicator meterGroup={datum} />;
+const ScenarioStatus: DisabledSelectComponent<Scenario> = ({ datum }) => (
+  <StatusIndicator meterGroup={datum} />
+);
 
 export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
   const {
@@ -48,7 +47,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
     onSelect,
     scenarios,
     title = 'Scenarios',
-    updateAveraged
+    updateAveraged,
   } = props;
   const dispatch = useDispatch();
 
@@ -60,7 +59,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
   if ((hasAveragedProp && !hasUpdateAveragedProp) || (hasUpdateAveragedProp && !hasAveragedProp)) {
     printWarning(
       '`ScenariosTable` component expects both or neither of the `averaged` and ' +
-      '`updateAveraged` props.'
+        '`updateAveraged` props.'
     );
   }
 
@@ -77,7 +76,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
       const response = await api.getScenarios({
         include: ['ders', 'meter_group.*', 'report_summary'],
         page: state.currentPage + 1,
-        page_size: state.rowsPerPage
+        page_size: state.rowsPerPage,
       });
 
       // Unfinished scenarios should be polled for
@@ -88,7 +87,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
 
       // Add the models to the store and yield the pagination results
       dispatch(slices.models.updateModels([...meterGroups, ...scenarios]));
-      return response
+      return response;
     },
     [dispatch]
   );
@@ -121,7 +120,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
       stickyHeader
       title={title}
     >
-      {(scenarios: Scenario[], EmptyRow: React.ElementType) =>
+      {(scenarios: Scenario[], EmptyRow: React.ElementType) => (
         <>
           <Table.Head>
             <Table.Row>
@@ -137,7 +136,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 info={{
                   measuresImpact: 'in customer electricity usage',
                   negativeMeans: 'electricity consumption from the grid has gone down',
-                  positiveMeans: 'electricity consumption from the grid has gone up'
+                  positiveMeans: 'electricity consumption from the grid has gone up',
                 }}
                 units="kWh"
               />
@@ -147,9 +146,13 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 info={{
                   measuresImpact: 'in GHG emissions',
                   negativeMeans: 'GHG emissions have gone down',
-                  positiveMeans: 'GHG emissions have gone up'
+                  positiveMeans: 'GHG emissions have gone up',
                 }}
-                units={<>tCO<sub>2</sub></>}
+                units={
+                  <>
+                    tCO<sub>2</sub>
+                  </>
+                }
               />
               <ImpactColumnHeader
                 averaged={innerAveraged}
@@ -157,7 +160,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 info={{
                   measuresImpact: 'to resource adequacy requirements',
                   negativeMeans: 'resource adequacy requirements have gone down',
-                  positiveMeans: 'resource adequacy requirements have gone up'
+                  positiveMeans: 'resource adequacy requirements have gone up',
                 }}
                 units="kW"
               />
@@ -167,7 +170,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 info={{
                   measuresImpact: 'to expenses incurred procuring electricity',
                   negativeMeans: 'CCA procurement expenses have gone down',
-                  positiveMeans: 'CCA procurement expenses have gone up'
+                  positiveMeans: 'CCA procurement expenses have gone up',
                 }}
                 units="$"
               />
@@ -175,9 +178,9 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 averaged={innerAveraged}
                 column="Revenue Impact"
                 info={{
-                  measuresImpact: 'to CCA\'s electricity sales',
+                  measuresImpact: "to CCA's electricity sales",
                   negativeMeans: 'revenues from electricity sales have gone down',
-                  positiveMeans: 'revenues from electricity sales have gone up'
+                  positiveMeans: 'revenues from electricity sales have gone up',
                 }}
                 units="$"
               />
@@ -189,7 +192,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                     'to overall expenses. Calculated as procurement expenses plus $6/kW for RA ' +
                     'impacts',
                   negativeMeans: 'overall expenses have gone down',
-                  positiveMeans: 'overall expenses have gone up'
+                  positiveMeans: 'overall expenses have gone up',
                 }}
                 units="$"
               />
@@ -197,10 +200,9 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 averaged={innerAveraged}
                 column="Profits Impact"
                 info={{
-                  measuresImpact:
-                    'to overall profits. Calculated as revenues minus expenses',
+                  measuresImpact: 'to overall profits. Calculated as revenues minus expenses',
                   negativeMeans: 'overall profits have gone down',
-                  positiveMeans: 'overall profits have gone up'
+                  positiveMeans: 'overall profits have gone up',
                 }}
                 units="$"
               />
@@ -209,26 +211,23 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
           </Table.Head>
           <Table.Body>
             {/** Only renders if there's no data */}
-            <EmptyRow colSpan={10}>
-              {NoScenariosRow}
-            </EmptyRow>
+            <EmptyRow colSpan={10}>{NoScenariosRow}</EmptyRow>
 
-            {scenarios.map(scenario =>
+            {scenarios.map((scenario) => (
               <Table.Row key={scenario.id}>
-                {colorMap &&
+                {colorMap && (
                   <Table.Cell>
-                    <Avatar color={colorMap?.getColor(scenario.id)} size="small">&nbsp;</Avatar>
+                    <Avatar color={colorMap?.getColor(scenario.id)} size="small">
+                      &nbsp;
+                    </Avatar>
                   </Table.Cell>
-                }
+                )}
                 <Table.Cell>
-                  {scenario.progress.is_complete
-                    ? (
-                      <Link to={routes.scenario(scenario.id)}>
-                        {scenario.name}
-                      </Link>
-                    )
-                    : scenario.name
-                  }
+                  {scenario.progress.is_complete ? (
+                    <Link to={routes.scenario(scenario.id)}>{scenario.name}</Link>
+                  ) : (
+                    scenario.name
+                  )}
                 </Table.Cell>
                 <Table.Cell>
                   <Typography noWrap variant="body2">
@@ -239,53 +238,39 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                   <MeterGroupChip link meterGroup={scenario.meter_group!} showCount />
                 </Table.Cell>
                 <Table.Cell>
-                  {scenario.der &&
+                  {scenario.der && (
                     <Flex.Container alignItems="center">
                       <Flex.Item>
                         <DERIcon type={scenario.der.der_configuration.der_type} />
                       </Flex.Item>
-                      <Flex.Item>
-                        {scenario.der.der_configuration.name}
-                      </Flex.Item>
+                      <Flex.Item>{scenario.der.der_configuration.name}</Flex.Item>
                     </Flex.Container>
-                  }
+                  )}
                 </Table.Cell>
                 <Table.Cell>
-                  {scenario.der &&
+                  {scenario.der && (
                     <Tooltip title={models.der.getStrategyDescription(scenario.der.der_strategy)}>
                       <div>{scenario.der.der_strategy.name}</div>
                     </Tooltip>
-                  }
+                  )}
                 </Table.Cell>
                 <Table.Cell align="right">
-                  {
-                    formatters.commas(
-                      formatters.maxDecimals(getField(scenario, 'UsageDelta', innerAveraged), 2)
-                    ) ?? '-'
-                  }
+                  {formatters.commas(
+                    formatters.maxDecimals(getField(scenario, 'UsageDelta', innerAveraged), 2)
+                  ) ?? '-'}
                 </Table.Cell>
                 <Table.Cell align="right">
-                  {
-                    formatters.commas(
-                      formatters.maxDecimals(
-                        getField(scenario, 'GHGDelta', innerAveraged), 2
-                      )
-                    ) ?? '-'
-                  }
+                  {formatters.commas(
+                    formatters.maxDecimals(getField(scenario, 'GHGDelta', innerAveraged), 2)
+                  ) ?? '-'}
                 </Table.Cell>
                 <Table.Cell align="right">
-                  {
-                    formatters.commas(
-                      formatters.maxDecimals(getField(scenario, 'RADelta', innerAveraged), 2)
-                    ) ?? '-'
-                  }
+                  {formatters.commas(
+                    formatters.maxDecimals(getField(scenario, 'RADelta', innerAveraged), 2)
+                  ) ?? '-'}
                 </Table.Cell>
                 <Table.Cell align="right">
-                  {
-                    formatters.dollars(
-                      getField(scenario, 'ProcurementDelta', innerAveraged)
-                    ) ?? '-'
-                  }
+                  {formatters.dollars(getField(scenario, 'ProcurementDelta', innerAveraged)) ?? '-'}
                 </Table.Cell>
                 <Table.Cell align="right">
                   {formatters.dollars(getField(scenario, 'BillRevenueDelta', innerAveraged)) ?? '-'}
@@ -298,10 +283,10 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 </Table.Cell>
                 {actionsMenu && <Table.Cell>{actionsMenu(scenario)}</Table.Cell>}
               </Table.Row>
-            )}
+            ))}
           </Table.Body>
         </>
-      }
+      )}
     </TableComponent>
   );
 
@@ -313,7 +298,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
    * @param {boolean} checked: whether the switch is checked, i.e. `true` if values should be
    *   averaged
    */
-  function handleSwitchToggle (checked: boolean) {
+  function handleSwitchToggle(checked: boolean) {
     if (hasAveragedProp && updateAveraged) {
       updateAveraged(checked);
     } else {
@@ -322,7 +307,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
   }
 
   /** ========================== Helpers =================================== */
-  function getField (scenario: Scenario, field: keyof ScenarioReportSummary, averaged: boolean) {
+  function getField(scenario: Scenario, field: keyof ScenarioReportSummary, averaged: boolean) {
     const value = scenario.report_summary?.[field];
     if (typeof value !== 'number') return;
     return averaged ? value / scenario.meter_count : value;

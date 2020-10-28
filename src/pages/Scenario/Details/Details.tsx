@@ -9,16 +9,18 @@ import { useScenario } from 'navigader/util/hooks';
 import { AggregateImpactsTab } from './AggregateImpacts';
 import { CustomerImpactsTab } from './CustomerImpactsTab';
 
-
 /** ============================ Styles ==================================== */
-const useScenarioContextStyles = makeStylesHook(theme => ({
-  meterGroup: {
-    marginLeft: theme.spacing(3)
-  },
-  container: {
-    marginBottom: theme.spacing(3)
-  }
-}), 'ScenarioContext');
+const useScenarioContextStyles = makeStylesHook(
+  (theme) => ({
+    meterGroup: {
+      marginLeft: theme.spacing(3),
+    },
+    container: {
+      marginBottom: theme.spacing(3),
+    },
+  }),
+  'ScenarioContext'
+);
 
 /** ============================ Components ================================ */
 const ScenarioContext: React.FC<{ scenario: Scenario }> = ({ scenario }) => {
@@ -27,12 +29,12 @@ const ScenarioContext: React.FC<{ scenario: Scenario }> = ({ scenario }) => {
   return (
     <Flex.Container alignItems="center" className={classes.container}>
       <Flex.Item>
-        {scenario &&
+        {scenario && (
           <DERCard
             configuration={scenario.der?.der_configuration}
             strategy={scenario.der?.der_strategy}
           />
-        }
+        )}
       </Flex.Item>
       <Flex.Item className={classes.meterGroup}>
         <MeterGroupChip link meterGroup={scenario?.meter_group} showCount />
@@ -46,16 +48,13 @@ export const ScenarioResultsPage: React.FC = () => {
   const { loading, scenario } = useScenario(id, {
     data_types: 'default',
     include: ['ders', 'meter_group.*', 'report', 'report_summary'],
-    period: 60
+    period: 60,
   });
 
   return (
     <>
       <PageHeader
-        breadcrumbs={[
-          ['Dashboard', routes.dashboard.base],
-          'Scenario Details'
-        ]}
+        breadcrumbs={[['Dashboard', routes.dashboard.base], 'Scenario Details']}
         title="Scenario Details"
       />
 

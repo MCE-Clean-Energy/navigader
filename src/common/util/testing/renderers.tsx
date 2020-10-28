@@ -8,13 +8,12 @@ import { ThemeProvider } from 'navigader/components';
 import store from 'navigader/store';
 import { AppRoutes } from '../../../App';
 
-
 export const renderAppRoute = (startingPages: string | string[], startingIndex: number = 0) => {
   const routerProps = {
     initialEntries: Array.isArray(startingPages) ? startingPages : [startingPages],
-    initialIndex: startingIndex
+    initialIndex: startingIndex,
   } as MemoryRouterProps;
-  
+
   return render(
     <Provider store={store}>
       <MemoryRouter {...routerProps}>

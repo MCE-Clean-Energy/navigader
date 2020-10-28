@@ -1,7 +1,13 @@
 import {
-  capitalize, commas, date, dollars, maxDecimals, percentage, pluralize, truncateAtLength
+  capitalize,
+  commas,
+  date,
+  dollars,
+  maxDecimals,
+  percentage,
+  pluralize,
+  truncateAtLength,
 } from './formatters';
-
 
 describe('formatting methods', () => {
   describe('date formatters', () => {

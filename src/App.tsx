@@ -8,7 +8,6 @@ import { slices } from 'navigader/store';
 import { models } from 'navigader/util';
 import * as pages from './pages';
 
-
 /** ============================ Types ===================================== */
 type UnauthenticatedRouteProps = RouteProps & Required<Pick<RouteProps, 'component'>>;
 
@@ -58,33 +57,35 @@ export const AppRoutes: React.FC = () => {
   );
 
   /** ========================== Callbacks ================================= */
-  function handleClose () {
+  function handleClose() {
     dispatch(slices.ui.closeSnackbar());
   }
 };
 
-const UnauthenticatedRoute: React.FC<UnauthenticatedRouteProps> = ({ component, ...rest }) =>
+const UnauthenticatedRoute: React.FC<UnauthenticatedRouteProps> = ({ component, ...rest }) => (
   <Route
     {...rest}
-    render={props =>
-      models.user.isAuthenticated()
-        ? <Redirect to={{ pathname: routes.dashboard.base, state: { from: props.location } }} />
-        : React.createElement(component, props)
+    render={(props) =>
+      models.user.isAuthenticated() ? (
+        <Redirect to={{ pathname: routes.dashboard.base, state: { from: props.location } }} />
+      ) : (
+        React.createElement(component, props)
+      )
     }
-  />;
+  />
+);
 
 const RequireAuth: React.FC<{ children: React.ReactElement }> = ({ children }) =>
-  models.user.isAuthenticated()
-    ? children
-    : <Redirect to={routes.login} />;
+  models.user.isAuthenticated() ? children : <Redirect to={routes.login} />;
 
 /**
  * The application's root component. This component is not rendered by tests
  */
-const App: React.FC = () =>
+const App: React.FC = () => (
   <Router>
     <AppRoutes />
-  </Router>;
+  </Router>
+);
 
 /** ============================ Exports =================================== */
 export default App;

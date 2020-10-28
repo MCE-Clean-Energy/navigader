@@ -4,13 +4,12 @@ import { AlertType, Nullable } from 'navigader/types';
 import _ from 'navigader/util/lodash';
 import { RootState, UiSlice } from '../types';
 
-
 // The default snackbar duration in ms
 const DEFAULT_DURATION = 6000;
 
 /** ============================ Types ===================================== */
 type SetMessagePayload = {
-  duration?: Nullable<number>
+  duration?: Nullable<number>;
   msg: string;
   type: AlertType;
 };
@@ -24,11 +23,11 @@ const slice = createSlice({
   name: 'ui',
   initialState: {
     snackbar: {
-      open: false
-    }
+      open: false,
+    },
   } as UiSlice,
   reducers: {
-    clearMessage: state => {
+    clearMessage: (state) => {
       // Don't clear the message if the snackbar is still open
       if (!state.snackbar.open) {
         delete state.snackbar.duration;
@@ -36,18 +35,21 @@ const slice = createSlice({
         delete state.snackbar.type;
       }
     },
-    closeSnackbar: state => {
+    closeSnackbar: (state) => {
       state.snackbar.open = false;
     },
     setMessage: (state, action: PayloadAction<SetMessagePayload>) => {
-      state.snackbar = _.defaults({
-        ...action.payload,
-        open: true
-      }, {
-        duration: DEFAULT_DURATION
-      });
-    }
-  }
+      state.snackbar = _.defaults(
+        {
+          ...action.payload,
+          open: true,
+        },
+        {
+          duration: DEFAULT_DURATION,
+        }
+      );
+    },
+  },
 });
 
 /** ============================ Actions =================================== */

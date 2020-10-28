@@ -3,29 +3,38 @@ import * as React from 'react';
 import { Card, Link, PageHeader, PrefetchedTable, Table, Typography } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
 
-
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(theme => ({
-  boldParagraph: {
-    marginTop: theme.spacing(2)
-  },
-  secondColumn: {
-    width: 200
-  },
-  table: {
-    marginTop: theme.spacing(2)
-  }
-}), 'Roadmap');
+const useStyles = makeStylesHook(
+  (theme) => ({
+    boldParagraph: {
+      marginTop: theme.spacing(2),
+    },
+    secondColumn: {
+      width: 200,
+    },
+    table: {
+      marginTop: theme.spacing(2),
+    },
+  }),
+  'Roadmap'
+);
 
-const useFirstColumnStyles = makeStylesHook(() => ({
-  firstColumn: {
-    borderRight: '1px solid rgba(224, 224, 224, 1)'
-  }
-}), 'RoadmapFirstColumn');
+const useFirstColumnStyles = makeStylesHook(
+  () => ({
+    firstColumn: {
+      borderRight: '1px solid rgba(224, 224, 224, 1)',
+    },
+  }),
+  'RoadmapFirstColumn'
+);
 
 /** ============================ Components ================================ */
-const Complete = () => <Typography color="success" variant="body1">Complete!</Typography>;
-const FirstColumn: React.FC<{ rowSpan?: number; }> = (props) => {
+const Complete = () => (
+  <Typography color="success" variant="body1">
+    Complete!
+  </Typography>
+);
+const FirstColumn: React.FC<{ rowSpan?: number }> = (props) => {
   const classes = useFirstColumnStyles();
   return <Table.Cell className={classes.firstColumn} {...props} />;
 };
@@ -54,7 +63,7 @@ export const RoadmapPage: React.FC = () => {
 
       <div className={classes.table}>
         <PrefetchedTable data={[]} hover={false} raised title="Built Features">
-          {() =>
+          {() => (
             <>
               <Table.Head>
                 <Table.Row>
@@ -164,13 +173,13 @@ export const RoadmapPage: React.FC = () => {
                 </Table.Row>
               </Table.Body>
             </>
-          }
+          )}
         </PrefetchedTable>
       </div>
 
       <div className={classes.table}>
         <PrefetchedTable data={[]} hover={false} raised title="Development of Additional Features">
-          {() =>
+          {() => (
             <>
               <Table.Head>
                 <Table.Row>
@@ -212,7 +221,10 @@ export const RoadmapPage: React.FC = () => {
                   <Table.Cell>
                     Multiple PV strategies will be available to the user for selection when creating
                     a DER program scenario (powered by NREL's&nbsp;
-                    <Link.NewTab to="https://pvwatts.nrel.gov/" useAnchor>PVWatts</Link.NewTab>).
+                    <Link.NewTab to="https://pvwatts.nrel.gov/" useAnchor>
+                      PVWatts
+                    </Link.NewTab>
+                    ).
                   </Table.Cell>
                 </Table.Row>
                 <Table.Row>
@@ -239,7 +251,7 @@ export const RoadmapPage: React.FC = () => {
                 </Table.Row>
               </Table.Body>
             </>
-          }
+          )}
         </PrefetchedTable>
       </div>
     </>

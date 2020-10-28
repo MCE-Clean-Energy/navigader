@@ -1,7 +1,14 @@
 import * as React from 'react';
 
 import {
-  Card, Flex, Grid, Link, MeterGroupChip, ScenarioChip, TextField, Typography
+  Card,
+  Flex,
+  Grid,
+  Link,
+  MeterGroupChip,
+  ScenarioChip,
+  TextField,
+  Typography,
 } from 'navigader/components';
 import { routes } from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
@@ -10,18 +17,20 @@ import { CreateScenarioScreenProps, DerCardReadOnly, validateDerSelections } fro
 import { CostFunction, CostFunctions, Maybe } from 'navigader/types';
 import { models } from 'navigader/util';
 
-
 /** ============================ Types ===================================== */
 type CostFunctionSectionProps = CreateScenarioScreenProps & { functionClass: keyof CostFunctions };
 
 /** ============================ Styles ==================================== */
-const useSelectedCustomersStyles = makeStylesHook(theme => ({
-  chipContainer: {
-    '& > *': {
-      margin: theme.spacing(0.5)
-    }
-  },
-}), 'SelectedCustomers');
+const useSelectedCustomersStyles = makeStylesHook(
+  (theme) => ({
+    chipContainer: {
+      '& > *': {
+        margin: theme.spacing(0.5),
+      },
+    },
+  }),
+  'SelectedCustomers'
+);
 
 /** ============================ Components ================================ */
 const SelectedCustomers: React.FC<CreateScenarioScreenProps> = (props) => {
@@ -29,21 +38,24 @@ const SelectedCustomers: React.FC<CreateScenarioScreenProps> = (props) => {
   const classes = useSelectedCustomersStyles();
   return (
     <Card raised>
-      <Typography useDiv variant="h6">Customers</Typography>
+      <Typography useDiv variant="h6">
+        Customers
+      </Typography>
 
       {(() => {
         // If there aren't any meter groups or scenarios selected...
         if (state.originFileSelections.concat(state.scenarioSelections).length === 0) {
           return (
             <Typography variant="body1">
-              None selected. <Link to={routes.dashboard.createScenario.selectCustomers}>Add customers</Link>
+              None selected.{' '}
+              <Link to={routes.dashboard.createScenario.selectCustomers}>Add customers</Link>
             </Typography>
           );
         }
 
         return (
           <Flex.Container className={classes.chipContainer} wrap>
-            {state.originFileSelections.map(meterGroupId =>
+            {state.originFileSelections.map((meterGroupId) => (
               <MeterGroupChip
                 color="primary"
                 icon="checkMark"
@@ -51,15 +63,15 @@ const SelectedCustomers: React.FC<CreateScenarioScreenProps> = (props) => {
                 meterGroup={_.find(originFiles, { id: meterGroupId })}
                 showCount
               />
-            )}
+            ))}
 
-            {state.scenarioSelections.map(scenarioId =>
+            {state.scenarioSelections.map((scenarioId) => (
               <ScenarioChip
                 color="primary"
                 key={scenarioId}
                 scenario={_.find(scenarios, { id: scenarioId })!}
               />
-            )}
+            ))}
           </Flex.Container>
         );
       })()}
@@ -71,7 +83,9 @@ const SelectedDers: React.FC<CreateScenarioScreenProps> = (props) => {
   const { derConfigurations, derStrategies, state } = props;
   return (
     <Card raised>
-      <Typography useDiv variant="h6">DERs</Typography>
+      <Typography useDiv variant="h6">
+        DERs
+      </Typography>
 
       {(() => {
         // If there aren't any DERs selected or any are invalid...
@@ -83,7 +97,7 @@ const SelectedDers: React.FC<CreateScenarioScreenProps> = (props) => {
           );
         }
 
-        return state.derSelections.map((selectedDer, index) =>
+        return state.derSelections.map((selectedDer, index) => (
           <DerCardReadOnly
             CardProps={{ outlined: true }}
             configurations={derConfigurations}
@@ -92,7 +106,7 @@ const SelectedDers: React.FC<CreateScenarioScreenProps> = (props) => {
             numDers={state.derSelections.length}
             strategies={derStrategies}
           />
-        );
+        ));
       })()}
     </Card>
   );
@@ -127,7 +141,7 @@ const CostFunctionSection: React.FC<CostFunctionSectionProps> = (props) => {
   );
 
   /** ========================== Helpers =================================== */
-  function renderClassName () {
+  function renderClassName() {
     switch (functionClass) {
       case 'caisoRate':
         return 'Procurement Rate';
@@ -140,7 +154,7 @@ const CostFunctionSection: React.FC<CostFunctionSectionProps> = (props) => {
     }
   }
 
-  function renderCostFunction (selection: CostFunction) {
+  function renderCostFunction(selection: CostFunction) {
     switch (selection.object_type) {
       case 'CAISORate':
       case 'RatePlan':
@@ -155,7 +169,9 @@ const CostFunctionSection: React.FC<CostFunctionSectionProps> = (props) => {
 const SelectedCostFunctions: React.FC<CreateScenarioScreenProps> = (props) => {
   return (
     <Card raised>
-      <Typography useDiv variant="h6">Cost Functions</Typography>
+      <Typography useDiv variant="h6">
+        Cost Functions
+      </Typography>
 
       {(() => {
         // If there aren't any cost functions selected...
@@ -174,7 +190,7 @@ const SelectedCostFunctions: React.FC<CreateScenarioScreenProps> = (props) => {
             <CostFunctionSection {...props} functionClass="ratePlan" />
             <CostFunctionSection {...props} functionClass="systemProfile" />
           </Grid>
-        )
+        );
       })()}
     </Card>
   );
@@ -209,12 +225,11 @@ export const Review: React.FC<CreateScenarioScreenProps> = (props) => {
           <SelectedCostFunctions {...props} />
         </Grid.Item>
       </Grid>
-
     </>
   );
 
   /** ========================== Callbacks ================================= */
-  function handleNameChange (newName: string) {
+  function handleNameChange(newName: string) {
     props.updateState({ name: newName === '' ? null : newName });
   }
 };

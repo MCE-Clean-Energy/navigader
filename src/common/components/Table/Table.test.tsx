@@ -5,29 +5,30 @@ import range from 'lodash/range';
 import { asyncForEach, renderContextDependentComponent } from 'navigader/util/testing';
 import { Table } from './Table';
 
-
 describe('`Table` component', () => {
   describe('`TablePagination` component', () => {
     it('should show pagination if there are more than 10 records', async () => {
-      const data = range(25).map(n => ({ id: n }));
+      const data = range(25).map((n) => ({ id: n }));
       const { getAllByRole, getByTestId, getByTitle } = renderContextDependentComponent(
         <Table
-          dataFn={({ currentPage, rowsPerPage }) => Promise.resolve({
-            count: data.length,
-            data: data.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage)
-          })}
+          dataFn={({ currentPage, rowsPerPage }) =>
+            Promise.resolve({
+              count: data.length,
+              data: data.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage),
+            })
+          }
           dataSelector={() => data}
           title="Test table"
         >
-          {data =>
+          {(data) => (
             <Table.Body>
-              {data.map(datum =>
+              {data.map((datum) => (
                 <Table.Row key={datum.id}>
                   <Table.Cell>{datum.id}</Table.Cell>
                 </Table.Row>
-              )}
+              ))}
             </Table.Body>
-          }
+          )}
         </Table>
       );
 
@@ -53,24 +54,26 @@ describe('`Table` component', () => {
 
     it('should not show pagination if there are 10 or fewer records', () => {
       asyncForEach(range(0, 10), async (n) => {
-        const data = range(n).map(m => ({ id: m }));
+        const data = range(n).map((m) => ({ id: m }));
         const { getAllByRole, getByTestId, getByTitle } = renderContextDependentComponent(
           <Table
-            dataFn={({ currentPage, rowsPerPage }) => Promise.resolve({
-              count: data.length,
-              data: data.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage)
-            })}
+            dataFn={({ currentPage, rowsPerPage }) =>
+              Promise.resolve({
+                count: data.length,
+                data: data.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage),
+              })
+            }
             dataSelector={() => data}
           >
-            {data =>
+            {(data) => (
               <Table.Body>
-                {data.map(datum =>
+                {data.map((datum) => (
                   <Table.Row key={datum.id}>
                     <Table.Cell>{datum.id}</Table.Cell>
                   </Table.Row>
-                )}
+                ))}
               </Table.Body>
-            }
+            )}
           </Table>
         );
 

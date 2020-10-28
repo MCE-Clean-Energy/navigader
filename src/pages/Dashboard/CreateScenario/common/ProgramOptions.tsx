@@ -7,7 +7,6 @@ import { models } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 import { DERSelection } from './types';
 
-
 /** ============================ Types ===================================== */
 type ProgramOptionsProps = {
   configurations: DERConfiguration[];
@@ -19,19 +18,21 @@ type ProgramOptionsProps = {
 // Makes the "configurations" and "strategies" types non-required. When those resources are still
 // loading, we will not render any program options
 type LoadedProps = 'configurations' | 'strategies';
-type ProgramOptionsWhileLoadingProps =
-  | Omit<ProgramOptionsProps, LoadedProps>
-  & Partial<Pick<ProgramOptionsProps, LoadedProps>>
+type ProgramOptionsWhileLoadingProps = Omit<ProgramOptionsProps, LoadedProps> &
+  Partial<Pick<ProgramOptionsProps, LoadedProps>>;
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(() => ({
-  configurationSelect: {
-    width: 200
-  },
-  strategySelect: {
-    maxWidth: 300
-  }
-}), 'ProgramOptions');
+const useStyles = makeStylesHook(
+  () => ({
+    configurationSelect: {
+      width: 200,
+    },
+    strategySelect: {
+      maxWidth: 300,
+    },
+  }),
+  'ProgramOptions'
+);
 
 /** ============================ Components ================================ */
 export const ProgramOptions: React.FC<ProgramOptionsWhileLoadingProps> = (props) => {
@@ -53,11 +54,9 @@ export const ProgramOptions: React.FC<ProgramOptionsWhileLoadingProps> = (props)
 
   // Split the strategies by objective
   const strategyGroups = _.sortBy(
-    _.toPairs(
-      _.groupBy(derTypeStrategies, 'objective')
-    ).map(([strategyType, strategies]) => ({
+    _.toPairs(_.groupBy(derTypeStrategies, 'objective')).map(([strategyType, strategies]) => ({
       title: formatStrategyType(strategyType as DERStrategyType),
-      options: strategies
+      options: strategies,
     })),
     'title'
   );
@@ -92,16 +91,16 @@ export const ProgramOptions: React.FC<ProgramOptionsWhileLoadingProps> = (props)
   );
 
   /** ========================== Callbacks ================================= */
-  function updateConfiguration (configuration: DERConfiguration) {
+  function updateConfiguration(configuration: DERConfiguration) {
     update({ configurationId: configuration.id });
   }
 
-  function updateStrategy (strategy: DERStrategy) {
+  function updateStrategy(strategy: DERStrategy) {
     update({ strategyId: strategy.id });
   }
 
   /** ========================== Helpers =================================== */
-  function formatStrategyType (type: DERStrategyType) {
+  function formatStrategyType(type: DERStrategyType) {
     switch (type) {
       case 'load_flattening':
         return 'Load Flattening';

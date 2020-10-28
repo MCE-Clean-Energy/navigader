@@ -4,7 +4,6 @@ import * as React from 'react';
 import { OriginFile, RatePlan, Scenario } from 'navigader/types';
 import _ from 'navigader/util/lodash';
 
-
 /** ============================ Dashboard Routes ========================== */
 const dashboardBase = '/dashboard';
 const createScenarioBase = `${dashboardBase}/create-scenario`;
@@ -12,26 +11,24 @@ const dashboard = {
   base: dashboardBase,
   createScenario: {
     base: createScenarioBase,
-    review:              `${createScenarioBase}/review`,
+    review: `${createScenarioBase}/review`,
     selectCostFunctions: `${createScenarioBase}/select-cost-functions`,
-    selectCustomers:     `${createScenarioBase}/select-customers`,
-    selectDers:          `${createScenarioBase}/select-ders`
-  }
+    selectCustomers: `${createScenarioBase}/select-customers`,
+    selectDers: `${createScenarioBase}/select-ders`,
+  },
 };
 
 /** ============================ Scenario Routes =========================== */
 const scenario = (id: string) => `/scenario/${id}`;
 scenario.compare = (ids?: string[]) => {
-  const qs = ids && ids.length
-    ? `?ids=${ids.join(',')}`
-    : '';
+  const qs = ids && ids.length ? `?ids=${ids.join(',')}` : '';
 
   return `/scenario/compare/${qs}`;
 };
 
 const load = {
   base: '/load',
-  meterGroup: (id: string) => `/load/group/${id}`
+  meterGroup: (id: string) => `/load/group/${id}`,
 };
 
 /** ============================ Other Routes ============================== */
@@ -42,14 +39,14 @@ const roadmap = '/roadmap';
 const upload = '/upload';
 const rates = {
   base: '/rates',
-  ratePlan: (id: string) => `/rates/${id}`
+  ratePlan: (id: string) => `/rates/${id}`,
 };
 const registration = {
   signup: '/registration/signup',
 
   // BEWARE!! This route is referenced explicitly on the back end. Changing it
   // here without changing it there will COMPLETELY BREAK SIGN UP!
-  verify: '/registration/verify'
+  verify: '/registration/verify',
 };
 
 /** ============================ Routes Object ============================= */
@@ -79,12 +76,13 @@ export const useRouter = () => {
     dashboard: {
       base: () => history.push(routes.dashboard.base),
       createScenario: {
-        base:                () => history.push(routes.dashboard.createScenario.base),
-        review:              () => history.push(routes.dashboard.createScenario.review),
-        selectCostFunctions: () => history.push(routes.dashboard.createScenario.selectCostFunctions),
-        selectCustomers:     () => history.push(routes.dashboard.createScenario.selectCustomers),
-        selectDers:          () => history.push(routes.dashboard.createScenario.selectDers),
-      }
+        base: () => history.push(routes.dashboard.createScenario.base),
+        review: () => history.push(routes.dashboard.createScenario.review),
+        selectCostFunctions: () =>
+          history.push(routes.dashboard.createScenario.selectCostFunctions),
+        selectCustomers: () => history.push(routes.dashboard.createScenario.selectCustomers),
+        selectDers: () => history.push(routes.dashboard.createScenario.selectDers),
+      },
     },
 
     login: () => history.push(routes.login),
@@ -97,17 +95,17 @@ export const useRouter = () => {
         // `Card` has a callback too.
         event.stopPropagation();
         history.push(routes.load.meterGroup(originFile.id));
-      }
+      };
     },
 
     rates: {
       ratePlan: (ratePlan: RatePlan) => () => {
-        history.push(routes.rates.ratePlan(ratePlan.id.toString()))
-      }
+        history.push(routes.rates.ratePlan(ratePlan.id.toString()));
+      },
     },
     registration: {
       signup: () => history.push(routes.registration.signup),
-      verify: () => history.push(routes.registration.verify)
+      verify: () => history.push(routes.registration.verify),
     },
     roadmap: () => history.push(routes.roadmap),
 
@@ -115,7 +113,7 @@ export const useRouter = () => {
       details: (scenario: Scenario) => () => history.push(routes.scenario(scenario.id)),
       compare: (scenarios: Scenario[]) => () => {
         history.push(routes.scenario.compare(_.map(scenarios, 'id')));
-      }
+      },
     },
 
     settings: () => history.push(routes.settings),
@@ -126,6 +124,6 @@ export const useRouter = () => {
     page: (route: string) => () => history.push(route),
 
     // Special route, allowing components to go backwards in history
-    previousPage: () => history.goBack()
-  }
+    previousPage: () => history.goBack(),
+  };
 };

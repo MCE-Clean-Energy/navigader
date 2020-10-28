@@ -7,7 +7,6 @@ import { setMessage } from 'navigader/store/slices/ui';
 import { updateModel } from 'navigader/store/slices/models';
 import { Scenario } from 'navigader/types';
 
-
 /** ============================ Types ===================================== */
 type RenameDialogProps = {
   onClose: () => void;
@@ -24,9 +23,7 @@ const RenameDialog: React.FC<RenameDialogProps> = (props) => {
     <Dialog open onClose={onClose} aria-labelledby="rename-dialog-title">
       <Dialog.Title id="rename-dialog-title">Rename Scenario</Dialog.Title>
       <Dialog.Content>
-        <Dialog.ContentText>
-          The Names can be at most 128 characters long.
-        </Dialog.ContentText>
+        <Dialog.ContentText>The Names can be at most 128 characters long.</Dialog.ContentText>
 
         <TextField autoFocus id="name" label="Scenario name" onChange={updateName} value={name} />
       </Dialog.Content>
@@ -40,7 +37,7 @@ const RenameDialog: React.FC<RenameDialogProps> = (props) => {
   );
 
   /** ========================== Callbacks ================================= */
-  async function renameScenario () {
+  async function renameScenario() {
     onClose();
 
     // Optimistically update the scenario. This will be reverted if the update fails
@@ -58,7 +55,7 @@ const RenameDialog: React.FC<RenameDialogProps> = (props) => {
     }
   }
 
-  function updateName (newName: string) {
+  function updateName(newName: string) {
     setName(newName);
   }
 };

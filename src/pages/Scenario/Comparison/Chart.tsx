@@ -1,11 +1,17 @@
 import * as React from 'react';
 
 import {
-  Card, Flex, Grid, List, ScenarioComparison, ScenarioComparisonChartAxes, Switch, Typography
+  Card,
+  Flex,
+  Grid,
+  List,
+  ScenarioComparison,
+  ScenarioComparisonChartAxes,
+  Switch,
+  Typography,
 } from 'navigader/components';
 import { ColorMap, makeStylesHook } from 'navigader/styles';
 import { Scenario } from 'navigader/types';
-
 
 /** ============================ Types ===================================== */
 type ScenarioComparisonChartProps = {
@@ -22,27 +28,30 @@ type ControlsProps = Pick<ScenarioComparisonChartProps, 'aggregated' | 'updateAg
 type LegendCardProps = Pick<ScenarioComparisonChartProps, 'colorMap' | 'scenarios'>;
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(theme => ({
-  legend: {
-    flexGrow: 1,
-    marginTop: theme.spacing(2),
-    maxHeight: '100%',
-    overflow: 'auto',
-    position: 'relative'
-  },
-  legendHeader: {
-    marginLeft: theme.spacing(1)
-  },
-  list: {
-    left: 0,
-    position: 'absolute',
-    top: 0,
-    width: '100%'
-  },
-  rightSideContainer: {
-    height: '100%'
-  }
-}), 'ScenarioComparisonChart');
+const useStyles = makeStylesHook(
+  (theme) => ({
+    legend: {
+      flexGrow: 1,
+      marginTop: theme.spacing(2),
+      maxHeight: '100%',
+      overflow: 'auto',
+      position: 'relative',
+    },
+    legendHeader: {
+      marginLeft: theme.spacing(1),
+    },
+    list: {
+      left: 0,
+      position: 'absolute',
+      top: 0,
+      width: '100%',
+    },
+    rightSideContainer: {
+      height: '100%',
+    },
+  }),
+  'ScenarioComparisonChart'
+);
 
 /** ============================ Components ================================ */
 const Controls: React.FC<ControlsProps> = (props) => {
@@ -50,16 +59,12 @@ const Controls: React.FC<ControlsProps> = (props) => {
 
   return (
     <Card raised>
-      <Switch
-        checked={aggregated}
-        label="Aggregate Customers"
-        onChange={handleSwitchChange}
-      />
+      <Switch checked={aggregated} label="Aggregate Customers" onChange={handleSwitchChange} />
     </Card>
   );
 
   /** ========================== Callbacks ================================= */
-  function handleSwitchChange (checked: boolean) {
+  function handleSwitchChange(checked: boolean) {
     updateAggregated(checked);
   }
 };
@@ -73,18 +78,16 @@ const LegendCard: React.FC<LegendCardProps> = ({ colorMap, scenarios }) => {
           Legend
         </Typography>
 
-        {scenarios.map(scenario =>
+        {scenarios.map((scenario) => (
           <List.Item button={false} key={scenario.id}>
-            <List.Item.Avatar color={colorMap.getColor(scenario.id)}>
-              &nbsp;
-            </List.Item.Avatar>
+            <List.Item.Avatar color={colorMap.getColor(scenario.id)}>&nbsp;</List.Item.Avatar>
             <List.Item.Text>
               <Typography noWrap useDiv>
                 {scenario.name}
               </Typography>
             </List.Item.Text>
           </List.Item>
-        )}
+        ))}
       </List>
     </Card>
   );
@@ -98,7 +101,7 @@ export const ScenarioComparisonChart: React.FC<ScenarioComparisonChartProps> = (
     colorMap,
     highlightedId,
     scenarios,
-    updateAggregated
+    updateAggregated,
   } = props;
 
   const classes = useStyles();

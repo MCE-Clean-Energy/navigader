@@ -9,7 +9,6 @@ import { Statistic } from '../Statistic';
 import { Tooltip } from '../Tooltip';
 import { DERIcon } from './DERIcon';
 
-
 /** ============================ Types ===================================== */
 type DERCardProps = {
   CardProps?: CardProps;
@@ -19,13 +18,16 @@ type DERCardProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook<DERCardProps>(theme => ({
-  flexContainer: {
-    '& > *': {
-      marginRight: theme.spacing(2)
-    }
-  },
-}), 'DERCard');
+const useStyles = makeStylesHook<DERCardProps>(
+  (theme) => ({
+    flexContainer: {
+      '& > *': {
+        marginRight: theme.spacing(2),
+      },
+    },
+  }),
+  'DERCard'
+);
 
 /** ============================ Components ================================ */
 export const DERCard: React.FC<DERCardProps> = (props) => {
@@ -40,14 +42,14 @@ export const DERCard: React.FC<DERCardProps> = (props) => {
           <Statistic
             title="Type"
             value={
-              derType
-                ? (
-                  <Flex.Container>
-                    <DERIcon type={derType}/>
-                    {derType}
-                  </Flex.Container>
-                )
-                : 'None'
+              derType ? (
+                <Flex.Container>
+                  <DERIcon type={derType} />
+                  {derType}
+                </Flex.Container>
+              ) : (
+                'None'
+              )
             }
           />
         </Flex.Item>
@@ -60,13 +62,13 @@ export const DERCard: React.FC<DERCardProps> = (props) => {
           <Statistic
             title="Strategy"
             value={
-              strategy
-                ? (
-                  <Tooltip title={models.der.getStrategyDescription(strategy)}>
-                    <div>{strategy.name}</div>
-                  </Tooltip>
-                )
-                : 'None'
+              strategy ? (
+                <Tooltip title={models.der.getStrategyDescription(strategy)}>
+                  <div>{strategy.name}</div>
+                </Tooltip>
+              ) : (
+                'None'
+              )
             }
           />
         </Flex.Item>

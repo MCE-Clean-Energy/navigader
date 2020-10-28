@@ -9,7 +9,6 @@ import { omitFalsey } from 'navigader/util/omitFalsey';
 import { DataTypeFilters } from './types';
 import { applyDataFilters, useAsync } from './util';
 
-
 /**
  * Retrieves a meter group from the store that matches the given ID and data filters, and fetches
  * it from the backend if it's not found in the store.
@@ -18,7 +17,7 @@ import { applyDataFilters, useAsync } from './util';
  * `undefined` to simplify cases in which the ID may not be ready at component mount time
  * @param {DataTypeFilters} [filters]: any data type filters to apply to the meter group
  */
-export function useMeterGroup (meterGroupId: Maybe<string>, filters: DataTypeFilters = {}) {
+export function useMeterGroup(meterGroupId: Maybe<string>, filters: DataTypeFilters = {}) {
   const dispatch = useDispatch();
 
   // Check the store for meter group that matches the provided filters
@@ -32,12 +31,15 @@ export function useMeterGroup (meterGroupId: Maybe<string>, filters: DataTypeFil
     async () => {
       // If we've already got the meter group which passes the filters, no need to fetch
       if (!meterGroupId || meterGroup) return;
-      return api.getMeterGroup(meterGroupId, omitFalsey({
-        data_types: filters.data_types,
-        period: filters.period
-      }));
+      return api.getMeterGroup(
+        meterGroupId,
+        omitFalsey({
+          data_types: filters.data_types,
+          period: filters.period,
+        })
+      );
     },
-    meterGroup => dispatch(slices.models.updateModels([meterGroup])),
+    (meterGroup) => dispatch(slices.models.updateModels([meterGroup])),
     [meterGroupId]
   );
 
@@ -49,7 +51,7 @@ export function useMeterGroup (meterGroupId: Maybe<string>, filters: DataTypeFil
  *
  * @param {MeterGroupsQueryParams} params: additional params for querying
  */
-export function useMeterGroups (params: api.MeterGroupsQueryParams): Loader<MeterGroup[]> {
+export function useMeterGroups(params: api.MeterGroupsQueryParams): Loader<MeterGroup[]> {
   const dispatch = useDispatch();
 
   // Fetch the meter groups
@@ -60,7 +62,7 @@ export function useMeterGroups (params: api.MeterGroupsQueryParams): Loader<Mete
       models.polling.addMeterGroups(data, params);
 
       // Add all of them to the store
-      dispatch(slices.models.updateModels(data))
+      dispatch(slices.models.updateModels(data));
     }
   );
 
@@ -69,12 +71,12 @@ export function useMeterGroups (params: api.MeterGroupsQueryParams): Loader<Mete
 }
 
 /** ============================ Origin Files ============================== */
-export function useOriginFiles (params: api.MeterGroupsQueryParams): Loader<OriginFile[]> {
+export function useOriginFiles(params: api.MeterGroupsQueryParams): Loader<OriginFile[]> {
   const meterGroups = useMeterGroups({ ...params, object_type: 'OriginFile' });
   return Object.assign(meterGroups.filter(isOriginFile), { loading: meterGroups.loading });
 }
 
-export function useOriginFile (...args: Parameters<typeof useMeterGroup>) {
+export function useOriginFile(...args: Parameters<typeof useMeterGroup>) {
   const { loading, meterGroup } = useMeterGroup(...args);
 
   if (meterGroup && !isOriginFile(meterGroup)) {

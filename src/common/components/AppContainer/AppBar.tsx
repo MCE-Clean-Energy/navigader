@@ -14,7 +14,6 @@ import { AccountMenu } from './AccountMenu';
 import { DRAWER_WIDTH } from './common';
 import { Feedback } from './Feedback';
 
-
 /** ============================ Types ===================================== */
 type AppBarProps = {
   drawerOpen: boolean;
@@ -23,52 +22,55 @@ type AppBarProps = {
 
 /** ============================ Styles ==================================== */
 const barMargin = DRAWER_WIDTH - 60;
-const useStyles = makeStylesHook(theme => ({
-  appBar: {
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: {
-    width: `calc(100% - ${barMargin}px)`,
-    marginLeft: barMargin,
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  container: {
-    boxSizing: 'border-box',
-    width: '100%'
-  },
-  gradient: {
-    bottom: 0,
-    display: 'flex',
-    alignItems: 'center',
-    left: 0,
-    padding: `0 ${theme.spacing(2)}px`,
-    position: 'absolute',
-    right: 0,
-    top: 0
-  },
-  menuButton: {
-    marginRight: theme.spacing(2)
-  },
-  rightSide: {
-    color: white,
-    '& > *': {
-      color: 'inherit',
-      marginLeft: theme.spacing(1)
-    }
-  },
-  navigaderText: {
-    width: 250
-  },
-  toolbar: {
-    position: 'relative'
-  }
-}), 'AppBar');
+const useStyles = makeStylesHook(
+  (theme) => ({
+    appBar: {
+      transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+    },
+    appBarShift: {
+      width: `calc(100% - ${barMargin}px)`,
+      marginLeft: barMargin,
+      transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+    },
+    container: {
+      boxSizing: 'border-box',
+      width: '100%',
+    },
+    gradient: {
+      bottom: 0,
+      display: 'flex',
+      alignItems: 'center',
+      left: 0,
+      padding: `0 ${theme.spacing(2)}px`,
+      position: 'absolute',
+      right: 0,
+      top: 0,
+    },
+    menuButton: {
+      marginRight: theme.spacing(2),
+    },
+    rightSide: {
+      'color': white,
+      '& > *': {
+        color: 'inherit',
+        marginLeft: theme.spacing(1),
+      },
+    },
+    navigaderText: {
+      width: 250,
+    },
+    toolbar: {
+      position: 'relative',
+    },
+  }),
+  'AppBar'
+);
 
 /** ============================ Components ================================ */
 export const AppBar: React.FC<AppBarProps> = ({ drawerOpen, openDrawer }) => {

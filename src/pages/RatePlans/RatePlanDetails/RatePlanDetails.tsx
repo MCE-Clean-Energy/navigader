@@ -1,9 +1,9 @@
-import * as React from "react";
-import { useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import * as React from 'react';
+import { useParams } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
-import { routes } from "navigader/routes";
-import _ from "navigader/util/lodash";
+import { routes } from 'navigader/routes';
+import _ from 'navigader/util/lodash';
 import {
   Grid,
   PageHeader,
@@ -14,17 +14,14 @@ import {
   Flex,
   Button,
   Card,
-} from "navigader/components";
-import * as api from "navigader/api";
-import { formatters, hooks } from "navigader/util";
-import { RateCollectionView } from "./RateCollectionView";
-import {
-  CreateRateCollectionForm,
-  FormErrorObject,
-} from "./CreateRateCollectionForm";
-import { slices } from "navigader/store";
-import { RateCollection } from "navigader/types";
-import { AlertSnackbar } from "navigader/components";
+} from 'navigader/components';
+import * as api from 'navigader/api';
+import { formatters, hooks } from 'navigader/util';
+import { RateCollectionView } from './RateCollectionView';
+import { CreateRateCollectionForm, FormErrorObject } from './CreateRateCollectionForm';
+import { slices } from 'navigader/store';
+import { RateCollection } from 'navigader/types';
+import { AlertSnackbar } from 'navigader/components';
 
 /** ============================ Components ================================ */
 export const RatePlanDetails: React.FC = () => {
@@ -33,20 +30,13 @@ export const RatePlanDetails: React.FC = () => {
   let [errors, setErrors] = React.useState<FormErrorObject>();
   const { id } = useParams<{ id: string }>();
   const { loading, ratePlan } = hooks.useRatePlan(+id, {
-    include: "rate_collections.*",
+    include: 'rate_collections.*',
   });
-  const collections = _.sortBy(
-    ratePlan?.rate_collections,
-    "effective_date"
-  ).reverse();
-  let [selectedCollection, setSelectedCollection] = React.useState<
-    RateCollection | undefined
-  >();
+  const collections = _.sortBy(ratePlan?.rate_collections, 'effective_date').reverse();
+  let [selectedCollection, setSelectedCollection] = React.useState<RateCollection | undefined>();
 
   React.useEffect(() => {
-    setSelectedCollection((curr) =>
-      curr && collections.includes(curr) ? curr : collections[0]
-    );
+    setSelectedCollection((curr) => (curr && collections.includes(curr) ? curr : collections[0]));
   }, [collections]);
 
   const createRateCollection = React.useCallback(
@@ -55,9 +45,7 @@ export const RatePlanDetails: React.FC = () => {
         if (ratePlan && xhr.status === 201) {
           const rateCollection = JSON.parse(xhr.response).rate_collection;
           let updatedRatePlan = Object.assign({}, ratePlan, {
-            rate_collections: [rateCollection].concat(
-              ratePlan.rate_collections
-            ),
+            rate_collections: [rateCollection].concat(ratePlan.rate_collections),
           });
           dispatch(slices.models.updateModel(updatedRatePlan));
           setCreateFormOpen(false);
@@ -70,7 +58,7 @@ export const RatePlanDetails: React.FC = () => {
   );
 
   const deleteRateCollection = React.useCallback(
-    async (collectionId: RateCollection["id"]) => {
+    async (collectionId: RateCollection['id']) => {
       const response = await api.deleteRateCollection(collectionId);
       if (ratePlan && response.ok) {
         let updatedRatePlan = Object.assign({}, ratePlan, {
@@ -89,10 +77,10 @@ export const RatePlanDetails: React.FC = () => {
       <Grid.Item span={12}>
         <PageHeader
           breadcrumbs={[
-            ["Rate Plans", routes.rates.base],
-            ["Current Rate Plan", routes.rates.ratePlan(id)],
+            ['Rate Plans', routes.rates.base],
+            ['Current Rate Plan', routes.rates.ratePlan(id)],
           ]}
-          title={ratePlan?.name || ""}
+          title={ratePlan?.name || ''}
         />
       </Grid.Item>
       {!loading ? (
@@ -107,7 +95,7 @@ export const RatePlanDetails: React.FC = () => {
                   onClick={() => {
                     setCreateFormOpen((o) => !o);
                   }}
-                  icon={createFormOpen ? "close" : "plus"}
+                  icon={createFormOpen ? 'close' : 'plus'}
                 ></Button>
               </Flex.Item>
             </Flex.Container>
@@ -120,9 +108,7 @@ export const RatePlanDetails: React.FC = () => {
               {collections?.map((rate_collection, idx) => (
                 <List.Item
                   selected={
-                    selectedCollection
-                      ? selectedCollection.id === rate_collection.id
-                      : idx === 0
+                    selectedCollection ? selectedCollection.id === rate_collection.id : idx === 0
                   }
                   key={rate_collection.id}
                   onClick={() => setSelectedCollection(rate_collection)}

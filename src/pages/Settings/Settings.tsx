@@ -6,7 +6,6 @@ import { Alert, Button, Card, PageHeader, TextField, Typography } from 'navigade
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 
-
 /** ============================ Types ===================================== */
 enum FormError {
   // Errors we can catch on the front end
@@ -16,7 +15,7 @@ enum FormError {
   passwordMismatch,
 
   // Errors from the server
-  oldPasswordInvalid
+  oldPasswordInvalid,
 }
 
 type ChangePasswordError = FormError | string[];
@@ -25,21 +24,27 @@ type ErrorAlertProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(theme => ({
-  inputsWrapper: {
-    marginBottom: theme.spacing(3)
-  },
-  textfield: {
-    marginTop: theme.spacing(1),
-    width: 500
-  }
-}), 'SettingsPage');
+const useStyles = makeStylesHook(
+  (theme) => ({
+    inputsWrapper: {
+      marginBottom: theme.spacing(3),
+    },
+    textfield: {
+      marginTop: theme.spacing(1),
+      width: 500,
+    },
+  }),
+  'SettingsPage'
+);
 
-const useErrorAlertStyles = makeStylesHook(theme => ({
-  alert: {
-    marginBottom: theme.spacing(1)
-  }
-}), 'SettingsPage');
+const useErrorAlertStyles = makeStylesHook(
+  (theme) => ({
+    alert: {
+      marginBottom: theme.spacing(1),
+    },
+  }),
+  'SettingsPage'
+);
 
 /** ============================ Components ================================ */
 const ErrorAlert: React.FC<ErrorAlertProps> = ({ error }) => {
@@ -65,7 +70,11 @@ const ErrorAlert: React.FC<ErrorAlertProps> = ({ error }) => {
     }
   })();
 
-  return <Alert className={classes.alert} type="error">{errorText}</Alert>;
+  return (
+    <Alert className={classes.alert} type="error">
+      {errorText}
+    </Alert>
+  );
 };
 
 export const SettingsPage: React.FC = () => {
@@ -128,14 +137,16 @@ export const SettingsPage: React.FC = () => {
 
           <ErrorAlert error={error} />
 
-          <Button color="primary" onClick={updatePassword}>Update</Button>
+          <Button color="primary" onClick={updatePassword}>
+            Update
+          </Button>
         </Card>
       </div>
     </>
   );
 
   /** ========================== Callbacks ================================= */
-  async function updatePassword () {
+  async function updatePassword() {
     // Validate the inputs
     const error = validateInputs();
     setError(error);
@@ -161,7 +172,7 @@ export const SettingsPage: React.FC = () => {
   /**
    * Helper function to validate the password inputs
    */
-  function validateInputs () {
+  function validateInputs() {
     if (!oldPassword) {
       focusInput(oldPasswordRef);
       return FormError.noOldPassword;
@@ -181,7 +192,7 @@ export const SettingsPage: React.FC = () => {
    *
    * @param {React.RefObject} ref: the `ref` to the input that should be focused
    */
-  function focusInput (ref: React.RefObject<HTMLInputElement>) {
+  function focusInput(ref: React.RefObject<HTMLInputElement>) {
     if (ref.current) {
       ref.current.focus();
     }

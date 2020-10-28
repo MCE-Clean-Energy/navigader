@@ -4,7 +4,6 @@ import MuiTooltip from '@material-ui/core/Tooltip';
 import { makeStylesHook } from 'navigader/styles';
 import { Fade } from './Fade';
 
-
 /** ============================ Types ===================================== */
 type TooltipPlacement =
   | 'bottom-end'
@@ -29,12 +28,15 @@ type TooltipProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook<Pick<TooltipProps, 'maxWidth'>>(theme => ({
-  tooltip: props => ({
-    fontSize: theme.typography.body2.fontSize,
-    maxWidth: props.maxWidth
-  })
-}), 'Tooltip');
+const useStyles = makeStylesHook<Pick<TooltipProps, 'maxWidth'>>(
+  (theme) => ({
+    tooltip: (props) => ({
+      fontSize: theme.typography.body2.fontSize,
+      maxWidth: props.maxWidth,
+    }),
+  }),
+  'Tooltip'
+);
 
 // Length of the transition's duration and delay, in milliseconds
 const defaultDelay = 1000;
@@ -47,9 +49,12 @@ export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
     // Compute the tooltip's delay
     const enterDelay = React.useMemo(() => {
       switch (typeof delay) {
-        case 'boolean': return defaultDelay;
-        case 'number': return delay;
-        default: return 0;
+        case 'boolean':
+          return defaultDelay;
+        case 'number':
+          return delay;
+        default:
+          return 0;
       }
     }, [delay]);
 

@@ -6,7 +6,6 @@ import { Button, Dialog } from 'navigader/components';
 import { slices } from 'navigader/store';
 import { OriginFile } from 'navigader/types';
 
-
 /** ============================ Types ===================================== */
 type DeleteDialogProps = {
   onClose: () => void;
@@ -28,13 +27,15 @@ export const DeleteDialog: React.FC<DeleteDialogProps> = (props) => {
       </Dialog.Content>
       <Dialog.Actions>
         <Button.Text onClick={onClose}>Cancel</Button.Text>
-        <Button.Text color="primary" onClick={deleteOriginFile}>Delete</Button.Text>
+        <Button.Text color="primary" onClick={deleteOriginFile}>
+          Delete
+        </Button.Text>
       </Dialog.Actions>
     </Dialog>
   );
 
   /** ========================== Callbacks ================================= */
-  async function deleteOriginFile () {
+  async function deleteOriginFile() {
     onClose();
 
     // Optimistically delete the originFile. This will be reverted if the request fails.

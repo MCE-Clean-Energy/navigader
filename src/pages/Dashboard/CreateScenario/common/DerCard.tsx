@@ -7,7 +7,6 @@ import _ from 'navigader/util/lodash';
 import { ProgramOptions } from './ProgramOptions';
 import { DERSelection } from './types';
 
-
 /** ============================ Types ===================================== */
 type DerSelectionCardReadOnlyProps = {
   CardProps?: CardProps;
@@ -23,34 +22,33 @@ type DerSelectionCardProps = DerSelectionCardReadOnlyProps & {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook<DerSelectionCardReadOnlyProps>(theme => ({
-  derCard: {
-    '&:not(:last-of-type)': {
-      marginBottom: theme.spacing(2)
-    }
-  },
-  flexContainer: {
-    '& > *': {
-      marginRight: theme.spacing(2)
-    }
-  },
-  deleteIcon: (props) => ({
-    // When there is only 1 DER in the list, don't make the icon invisible and un-clickable
-    cursor: props.numDers > 1 ? 'pointer' : 'default',
-    ...theme.mixins.transition(
-      'opacity',
-      props.numDers > 1,
-      [1, 0]
-    )
+const useStyles = makeStylesHook<DerSelectionCardReadOnlyProps>(
+  (theme) => ({
+    derCard: {
+      '&:not(:last-of-type)': {
+        marginBottom: theme.spacing(2),
+      },
+    },
+    flexContainer: {
+      '& > *': {
+        marginRight: theme.spacing(2),
+      },
+    },
+    deleteIcon: (props) => ({
+      // When there is only 1 DER in the list, don't make the icon invisible and un-clickable
+      cursor: props.numDers > 1 ? 'pointer' : 'default',
+      ...theme.mixins.transition('opacity', props.numDers > 1, [1, 0]),
+    }),
+    deleteIconContainer: {
+      marginRight: 0,
+      marginLeft: 'auto',
+    },
+    typeSelect: {
+      width: 200,
+    },
   }),
-  deleteIconContainer: {
-    marginRight: 0,
-    marginLeft: 'auto',
-  },
-  typeSelect: {
-    width: 200
-  }
-}), 'CreatedScenario/DerCard');
+  'CreatedScenario/DerCard'
+);
 
 /** ============================ Components ================================ */
 export const DerSelectionCard: React.FC<DerSelectionCardProps> = (props) => {
@@ -73,14 +71,14 @@ export const DerSelectionCard: React.FC<DerSelectionCardProps> = (props) => {
         <ProgramOptions {...props} />
 
         <Flex.Item className={classes.deleteIconContainer}>
-          <Button className={classes.deleteIcon} icon="trash" onClick={deleteDer}/>
+          <Button className={classes.deleteIcon} icon="trash" onClick={deleteDer} />
         </Flex.Item>
       </Flex.Container>
     </Card>
   );
 
   /** ========================== Callbacks ================================= */
-  function renderDEROption (option: DERType) {
+  function renderDEROption(option: DERType) {
     switch (option) {
       // case 'EVSE':
       //   return 'EV Supply Equipment';
@@ -97,11 +95,11 @@ export const DerSelectionCard: React.FC<DerSelectionCardProps> = (props) => {
    *
    * @param {DERType} type: the DER's new type
    */
-  function updateType (type: DERType) {
+  function updateType(type: DERType) {
     props.update({
       configurationId: undefined,
       strategyId: undefined,
-      type
+      type,
     });
   }
 
@@ -109,7 +107,7 @@ export const DerSelectionCard: React.FC<DerSelectionCardProps> = (props) => {
    * Removes the DER configuration from the list of selected DERs. Doesn't allow deleting the
    * last DER selection
    */
-  function deleteDer () {
+  function deleteDer() {
     if (props.numDers === 1) return;
     props.delete();
   }

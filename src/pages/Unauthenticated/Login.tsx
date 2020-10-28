@@ -6,23 +6,25 @@ import { routes, useRouter } from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
 import { UnauthenticatedPage } from './UnauthenticatedPage';
 
-
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(theme => ({
-  links: {
-    marginTop: theme.spacing(2),
-    '& > a': {
-      display: 'block',
-      lineHeight: '1.5rem'
-    }
-  },
-  loginField: {
-    width: '100%',
-    '& + &': {
-      margin: theme.spacing(2, 0, 1)
-    }
-  }
-}), 'LoginPage');
+const useStyles = makeStylesHook(
+  (theme) => ({
+    links: {
+      'marginTop': theme.spacing(2),
+      '& > a': {
+        display: 'block',
+        lineHeight: '1.5rem',
+      },
+    },
+    loginField: {
+      'width': '100%',
+      '& + &': {
+        margin: theme.spacing(2, 0, 1),
+      },
+    },
+  }),
+  'LoginPage'
+);
 
 /** ============================ Components ================================ */
 export const LoginPage: React.FC = () => {
@@ -60,11 +62,17 @@ export const LoginPage: React.FC = () => {
           type="password"
         />
 
-        <Button color="primary" type="submit">Log in</Button>
+        <Button color="primary" type="submit">
+          Log in
+        </Button>
 
         <div className={classes.links}>
-          <Link to={routes.resetPassword} variant="body2">Forgot password?</Link>
-          <Link to={routes.registration.signup} variant="body2">Sign up</Link>
+          <Link to={routes.resetPassword} variant="body2">
+            Forgot password?
+          </Link>
+          <Link to={routes.registration.signup} variant="body2">
+            Sign up
+          </Link>
         </div>
       </form>
     </UnauthenticatedPage>
@@ -77,7 +85,7 @@ export const LoginPage: React.FC = () => {
    * @param event: FormEvent
    *   The event object
    */
-  async function onSubmit (event: React.FormEvent) {
+  async function onSubmit(event: React.FormEvent) {
     setError(false);
     event.preventDefault();
 

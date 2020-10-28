@@ -1,14 +1,19 @@
 import * as React from 'react';
 
 import {
-  Card, Flex, Grid, MeterGroupChip, Progress, ScenarioChip, Typography
+  Card,
+  Flex,
+  Grid,
+  MeterGroupChip,
+  Progress,
+  ScenarioChip,
+  Typography,
 } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
 import { OriginFile, Scenario } from 'navigader/types';
 import { formatters, models } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 import { CreateScenarioScreenProps } from './common';
-
 
 /** ============================ Types ===================================== */
 type CommonChipProps = {
@@ -17,35 +22,44 @@ type CommonChipProps = {
 };
 
 type SelectOriginFileChipProps = CommonChipProps & { originFile: OriginFile };
-type SelectScenarioChipProps = CommonChipProps & { scenario: Scenario }
+type SelectScenarioChipProps = CommonChipProps & { scenario: Scenario };
 type SelectionCardProps = { title: string };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(theme => ({
-  chipContainer: {
-    '& > *': {
-      margin: theme.spacing(0.5)
-    }
-  },
-  meterCount: {
-    marginTop: 'auto',
-    textAlign: 'right'
-  }
-}), 'SelectCustomers');
+const useStyles = makeStylesHook(
+  (theme) => ({
+    chipContainer: {
+      '& > *': {
+        margin: theme.spacing(0.5),
+      },
+    },
+    meterCount: {
+      marginTop: 'auto',
+      textAlign: 'right',
+    },
+  }),
+  'SelectCustomers'
+);
 
-const useCustomerChipStyles = makeStylesHook(theme => ({
-  meterGroupChip: {
-    marginBottom: theme.spacing(2)
-  }
-}), 'SelectOriginFileChip');
+const useCustomerChipStyles = makeStylesHook(
+  (theme) => ({
+    meterGroupChip: {
+      marginBottom: theme.spacing(2),
+    },
+  }),
+  'SelectOriginFileChip'
+);
 
-const useSelectionCardStyles = makeStylesHook((theme) => ({
-  card: {
-    ...theme.mixins.flex({ direction: 'column', wrap: 'nowrap' }),
-    height: '100%',
-    boxSizing: 'border-box'
-  }
-}), 'SelectionCard');
+const useSelectionCardStyles = makeStylesHook(
+  (theme) => ({
+    card: {
+      ...theme.mixins.flex({ direction: 'column', wrap: 'nowrap' }),
+      height: '100%',
+      boxSizing: 'border-box',
+    },
+  }),
+  'SelectionCard'
+);
 
 /** ============================ Components ================================ */
 const SelectionCard: React.FC<SelectionCardProps> = ({ title, children }) => {
@@ -64,11 +78,7 @@ const SelectOriginFileChip: React.FC<SelectOriginFileChipProps> = (props) => {
   const { meter_count } = originFile;
   const { expected_meter_count } = originFile.metadata;
   const isIngested = models.meterGroup.isSufficientlyIngested(originFile);
-  const icon = isIngested
-    ? selected
-      ? 'checkMark'
-      : 'plus'
-    : undefined;
+  const icon = isIngested ? (selected ? 'checkMark' : 'plus') : undefined;
 
   return (
     <MeterGroupChip
@@ -84,13 +94,14 @@ const SelectOriginFileChip: React.FC<SelectOriginFileChipProps> = (props) => {
   );
 
   /** ========================== Helpers =================================== */
-  function getTooltipText () {
+  function getTooltipText() {
     if (isIngested) return;
 
     // If the meter group can not yet be run in a scenario, render a tooltip explaining why
-    const percentComplete = expected_meter_count === null
-      ? '0%'
-      : formatters.percentage(meter_count, expected_meter_count);
+    const percentComplete =
+      expected_meter_count === null
+        ? '0%'
+        : formatters.percentage(meter_count, expected_meter_count);
 
     return `
       This file has successfully uploaded but is still being processed. It is currently
@@ -111,36 +122,32 @@ const MeterGroups: React.FC<CreateScenarioScreenProps> = (props) => {
 
   return (
     <SelectionCard title="Uploaded Files">
-      {originFiles.loading
-        ? <Progress/>
-        : (
-          <>
-            <Flex.Container className={classes.chipContainer} wrap>
-              {originFiles.map(originFile =>
-                <SelectOriginFileChip
-                  key={originFile.id}
-                  originFile={originFile}
-                  onClick={toggleMeterGroup.bind(null, originFile.id)}
-                  selected={state.originFileSelections.includes(originFile.id)}
-                />
-              )}
-            </Flex.Container>
-            <div className={classes.meterCount}>
-              Number of meters: {selectedMeterCount}
-            </div>
-          </>
-        )
-      }
+      {originFiles.loading ? (
+        <Progress />
+      ) : (
+        <>
+          <Flex.Container className={classes.chipContainer} wrap>
+            {originFiles.map((originFile) => (
+              <SelectOriginFileChip
+                key={originFile.id}
+                originFile={originFile}
+                onClick={toggleMeterGroup.bind(null, originFile.id)}
+                selected={state.originFileSelections.includes(originFile.id)}
+              />
+            ))}
+          </Flex.Container>
+          <div className={classes.meterCount}>Number of meters: {selectedMeterCount}</div>
+        </>
+      )}
     </SelectionCard>
   );
 
   /** ========================== Callbacks ================================= */
-  function toggleMeterGroup (id: string) {
+  function toggleMeterGroup(id: string) {
     updateState({
-      originFileSelections:
-        state.originFileSelections.includes(id)
-          ? _.without(state.originFileSelections, id)
-          : [...state.originFileSelections, id]
+      originFileSelections: state.originFileSelections.includes(id)
+        ? _.without(state.originFileSelections, id)
+        : [...state.originFileSelections, id],
     });
   }
 };
@@ -161,7 +168,7 @@ const SelectScenarioChip: React.FC<SelectScenarioChipProps> = ({ scenario, onCli
   );
 
   /** ========================== Helpers =================================== */
-  function getTooltipText () {
+  function getTooltipText() {
     if (is_complete) return undefined;
 
     let rationale = `It is currently ${percent_complete}% complete`;
@@ -169,7 +176,7 @@ const SelectScenarioChip: React.FC<SelectScenarioChipProps> = ({ scenario, onCli
       rationale = `
         The simulation has finished, and aggregate statistics are being produced. It should be
         available for use shortly
-      `
+      `;
     }
 
     return `
@@ -190,45 +197,38 @@ const Scenarios: React.FC<CreateScenarioScreenProps> = (props) => {
 
   return (
     <SelectionCard title="Scenarios">
-      {scenarios.loading
-        ? <Progress />
-        : scenarios.length === 0
-          ? (
-            <Typography variant="body2">
-              No scenarios have been run yet. Once you have run a scenario, you will be able to use
-              it as the input to another scenario. This allows simulating multiple DERs on the same
-              customer segment.
-            </Typography>
-          )
-          : (
-            <>
-              <Flex.Container className={classes.chipContainer} wrap>
-                {scenarios.map(scenario =>
-                  <SelectScenarioChip
-                    key={scenario.id}
-                    onClick={toggleScenario.bind(null, scenario.id)}
-                    scenario={scenario}
-                    selected={state.scenarioSelections.includes(scenario.id)}
-                  />
-                )}
-              </Flex.Container>
-              <div className={classes.meterCount}>
-                Number of meters: {selectedMeterCount}
-              </div>
-            </>
-          )
-      }
-
+      {scenarios.loading ? (
+        <Progress />
+      ) : scenarios.length === 0 ? (
+        <Typography variant="body2">
+          No scenarios have been run yet. Once you have run a scenario, you will be able to use it
+          as the input to another scenario. This allows simulating multiple DERs on the same
+          customer segment.
+        </Typography>
+      ) : (
+        <>
+          <Flex.Container className={classes.chipContainer} wrap>
+            {scenarios.map((scenario) => (
+              <SelectScenarioChip
+                key={scenario.id}
+                onClick={toggleScenario.bind(null, scenario.id)}
+                scenario={scenario}
+                selected={state.scenarioSelections.includes(scenario.id)}
+              />
+            ))}
+          </Flex.Container>
+          <div className={classes.meterCount}>Number of meters: {selectedMeterCount}</div>
+        </>
+      )}
     </SelectionCard>
   );
 
   /** ========================== Callbacks ================================= */
-  function toggleScenario (id: string) {
+  function toggleScenario(id: string) {
     updateState({
-      scenarioSelections:
-        state.scenarioSelections.includes(id)
-          ? _.without(state.scenarioSelections, id)
-          : [...state.scenarioSelections, id]
+      scenarioSelections: state.scenarioSelections.includes(id)
+        ? _.without(state.scenarioSelections, id)
+        : [...state.scenarioSelections, id],
     });
   }
 };

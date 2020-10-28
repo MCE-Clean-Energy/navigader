@@ -34,7 +34,9 @@ export type Maybe<T> = T | undefined;
 
 // Used in places where a generic `id` field is expected
 export type IdType = string | number;
-export interface ObjectWithId { id: IdType }
+export interface ObjectWithId {
+  id: IdType;
+}
 
 // Tuples
 export type Tuple<T> = [T, T];
@@ -54,15 +56,68 @@ export type Without<T1, T2> = Omit<T1, keyof T2>;
 //   type UserStringFields = KeysMatching<User, string> --> 'name'
 //   type UserOtherFields = KeysMatching<User, number | Date> --> 'id' | 'joined'
 export type KeysMatching<T, V> = {
-  [K in keyof T]-?: T[K] extends V ? K : never
+  [K in keyof T]-?: T[K] extends V ? K : never;
 }[keyof T];
 
 // All US states and territories plus DC and military mail. Taken from the `localflavor` Python
 // package.
 export type StateChoice =
-  | 'AL' | 'AK' | 'AS' | 'AZ' | 'AR' | 'AA' | 'AE' | 'AP' | 'CA' | 'CO'
-  | 'CT' | 'DE' | 'DC' | 'FL' | 'GA' | 'GU' | 'HI' | 'ID' | 'IL' | 'IN'
-  | 'IA' | 'KS' | 'KY' | 'LA' | 'ME' | 'MD' | 'MA' | 'MI' | 'MN' | 'MS'
-  | 'MO' | 'MT' | 'NE' | 'NV' | 'NH' | 'NJ' | 'NM' | 'NY' | 'NC' | 'ND'
-  | 'MP' | 'OH' | 'OK' | 'OR' | 'PA' | 'PR' | 'RI' | 'SC' | 'SD' | 'TN'
-  | 'TX' | 'UT' | 'VT' | 'VI' | 'VA' | 'WA' | 'WV' | 'WI' | 'WY';
+  | 'AL'
+  | 'AK'
+  | 'AS'
+  | 'AZ'
+  | 'AR'
+  | 'AA'
+  | 'AE'
+  | 'AP'
+  | 'CA'
+  | 'CO'
+  | 'CT'
+  | 'DE'
+  | 'DC'
+  | 'FL'
+  | 'GA'
+  | 'GU'
+  | 'HI'
+  | 'ID'
+  | 'IL'
+  | 'IN'
+  | 'IA'
+  | 'KS'
+  | 'KY'
+  | 'LA'
+  | 'ME'
+  | 'MD'
+  | 'MA'
+  | 'MI'
+  | 'MN'
+  | 'MS'
+  | 'MO'
+  | 'MT'
+  | 'NE'
+  | 'NV'
+  | 'NH'
+  | 'NJ'
+  | 'NM'
+  | 'NY'
+  | 'NC'
+  | 'ND'
+  | 'MP'
+  | 'OH'
+  | 'OK'
+  | 'OR'
+  | 'PA'
+  | 'PR'
+  | 'RI'
+  | 'SC'
+  | 'SD'
+  | 'TN'
+  | 'TX'
+  | 'UT'
+  | 'VT'
+  | 'VI'
+  | 'VA'
+  | 'WA'
+  | 'WV'
+  | 'WI'
+  | 'WY';

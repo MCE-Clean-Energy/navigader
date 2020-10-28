@@ -2,19 +2,18 @@ import { DateTime } from 'luxon';
 
 import { OriginFile, RawOriginFile } from 'navigader/types';
 
-
 /** ============================ Fixture creators ========================== */
-export function makeOriginFile (meterGroupProps?: Partial<OriginFile>): OriginFile {
+export function makeOriginFile(meterGroupProps?: Partial<OriginFile>): OriginFile {
   return Object.assign({}, defaultMeterGroup, meterGroupProps);
 }
 
-export function makeRawOriginFile (rawMeterGroupProps?: Partial<RawOriginFile>): RawOriginFile {
+export function makeRawOriginFile(rawMeterGroupProps?: Partial<RawOriginFile>): RawOriginFile {
   return Object.assign({}, defaultRawMeterGroup, rawMeterGroupProps);
 }
 
 /** ============================ Fixture data ============================== */
 export const meterData = {
-  "1": [
+  '1': [
     891.3588477419354,
     809.7569683870968,
     757.9226706451614,
@@ -38,9 +37,9 @@ export const meterData = {
     1387.2194429032256,
     1347.5149367741935,
     1239.6770970967746,
-    1069.7046400000002
+    1069.7046400000002,
   ],
-  "2": [
+  '2': [
     865.6230164285719,
     796.0864664285715,
     747.83061,
@@ -64,9 +63,9 @@ export const meterData = {
     1310.4407171428568,
     1287.9853664285715,
     1196.262243214286,
-    1030.3474196428574
+    1030.3474196428574,
   ],
-  "3": [
+  '3': [
     887.4788941935484,
     788.468048064516,
     730.4323170967742,
@@ -90,9 +89,9 @@ export const meterData = {
     1230.8626593548386,
     1279.8270993548385,
     1219.4952090322577,
-    1058.7544390322585
+    1058.7544390322585,
   ],
-  "4": [
+  '4': [
     827.6052130000002,
     743.1946409999997,
     676.0362763333329,
@@ -116,9 +115,9 @@ export const meterData = {
     1041.0497336666663,
     1179.115747333333,
     1147.1021693333337,
-    983.0775006666665
+    983.0775006666665,
   ],
-  "5": [
+  '5': [
     855.4155535483872,
     764.4022690322578,
     684.4921600000001,
@@ -142,9 +141,9 @@ export const meterData = {
     947.7878119354841,
     1155.8354580645162,
     1171.145679354839,
-    1021.3747851612903
+    1021.3747851612903,
   ],
-  "6": [
+  '6': [
     984.913920666667,
     845.5593489999999,
     745.18387,
@@ -168,9 +167,9 @@ export const meterData = {
     1195.1024630000004,
     1354.5599993333328,
     1360.0200430000002,
-    1178.5167856666667
+    1178.5167856666667,
   ],
-  "7": [
+  '7': [
     1063.69246,
     924.6010480645161,
     805.7631822580641,
@@ -194,9 +193,9 @@ export const meterData = {
     1539.7629622580644,
     1592.6883090322583,
     1527.0664270967743,
-    1299.0447419354841
+    1299.0447419354841,
   ],
-  "8": [
+  '8': [
     978.4638193548388,
     886.3436625806454,
     775.4246941935485,
@@ -220,9 +219,9 @@ export const meterData = {
     1407.9787864516127,
     1456.447191935484,
     1383.9077019354836,
-    1186.9379277419353
+    1186.9379277419353,
   ],
-  "9": [
+  '9': [
     884.5086846666669,
     820.9896756666669,
     725.6636680000003,
@@ -246,9 +245,9 @@ export const meterData = {
     1289.3655196666664,
     1289.898868,
     1215.2608336666667,
-    1050.8500936666665
+    1050.8500936666665,
   ],
-  "10": [
+  '10': [
     842.541751935484,
     795.0090183870968,
     715.2246448387094,
@@ -272,9 +271,9 @@ export const meterData = {
     1200.8152125806453,
     1173.5696896774193,
     1123.2487848387095,
-    988.6877829032258
+    988.6877829032258,
   ],
-  "11": [
+  '11': [
     873.6380386666668,
     820.1758160000003,
     737.2359686666666,
@@ -298,9 +297,9 @@ export const meterData = {
     1290.1255513333333,
     1246.7649459999998,
     1173.566349,
-    1025.8924943333336
+    1025.8924943333336,
   ],
-  "12": [
+  '12': [
     997.7231287096771,
     914.3061396774194,
     815.408574516129,
@@ -324,47 +323,47 @@ export const meterData = {
     1505.105539032258,
     1471.8770558064518,
     1390.009863870968,
-    1174.526190967742
-  ]
+    1174.526190967742,
+  ],
 };
 
 const defaultMeterGroup: OriginFile = {
-  "id": "35b9919c-b7f9-4d28-8cf0-ac61bb9036d2",
-  "created_at": "2020-02-12T20:05:05.695388",
-  "object_type": "OriginFile",
-  "metadata": {
-    "expected_meter_count": 797,
-    "filename": "origin_files/nem_e6_60min.csv"
+  id: '35b9919c-b7f9-4d28-8cf0-ac61bb9036d2',
+  created_at: '2020-02-12T20:05:05.695388',
+  object_type: 'OriginFile',
+  metadata: {
+    expected_meter_count: 797,
+    filename: 'origin_files/nem_e6_60min.csv',
   },
-  "progress": {
-    "is_complete": true,
-    "percent_complete": 100
+  progress: {
+    is_complete: true,
+    percent_complete: 100,
   },
-  "date_range": [
-    DateTime.fromISO("2019-01-01T00:00:00").toJSDate(),
-    DateTime.fromISO("2020-01-01T00:00:00").toJSDate()
+  date_range: [
+    DateTime.fromISO('2019-01-01T00:00:00').toJSDate(),
+    DateTime.fromISO('2020-01-01T00:00:00').toJSDate(),
   ],
-  "name": "NEM E6",
-  "meter_count": 797,
-  "meters": [],
-  "data": {
-    "average": meterData
-  }
+  name: 'NEM E6',
+  meter_count: 797,
+  meters: [],
+  data: {
+    average: meterData,
+  },
 };
 
 const defaultRawMeterGroup: RawOriginFile = {
-  "id": "35b9919c-b7f9-4d28-8cf0-ac61bb9036d2",
-  "created_at": "2020-02-12T20:05:05.695388",
-  "object_type": "OriginFile",
-  "metadata": {
-    "expected_meter_count": 797,
-    "filename": "origin_files/nem_e6_60min.csv"
+  id: '35b9919c-b7f9-4d28-8cf0-ac61bb9036d2',
+  created_at: '2020-02-12T20:05:05.695388',
+  object_type: 'OriginFile',
+  metadata: {
+    expected_meter_count: 797,
+    filename: 'origin_files/nem_e6_60min.csv',
   },
-  "date_range": ["2019-01-01T00:00:00", "2020-01-01T00:00:00"],
-  "name": "NEM E6",
-  "meter_count": 797,
-  "meters": [],
-  "data": {
-    "average": meterData
-  }
+  date_range: ['2019-01-01T00:00:00', '2020-01-01T00:00:00'],
+  name: 'NEM E6',
+  meter_count: 797,
+  meters: [],
+  data: {
+    average: meterData,
+  },
 };

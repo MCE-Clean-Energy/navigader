@@ -1,23 +1,23 @@
-import * as React from "react";
+import * as React from 'react';
 
-import * as api from "navigader/api";
-import { AlertType, Maybe } from "navigader/types";
-import { formatters, percentOf } from "navigader/util";
-import { Button } from "./Button";
-import { ContactSupport } from "./ContactSupport";
-import { AlertSnackbar } from "./Snackbar";
-import { Tooltip } from "./Tooltip";
-import { Typography } from "./Typography";
+import * as api from 'navigader/api';
+import { AlertType, Maybe } from 'navigader/types';
+import { formatters, percentOf } from 'navigader/util';
+import { Button } from './Button';
+import { ContactSupport } from './ContactSupport';
+import { AlertSnackbar } from './Snackbar';
+import { Tooltip } from './Tooltip';
+import { Typography } from './Typography';
 
 /** ============================ Types ===================================== */
-type DownloadStatus = "downloading" | "error" | "success";
+type DownloadStatus = 'downloading' | 'error' | 'success';
 type FileDownloadProps = {
   downloadFn: (cb: api.util.ProgressCallback) => Promise<unknown>;
 };
 
 type FileSizeProps = {
   size: number;
-}
+};
 
 /** ============================ Components ================================ */
 export const FileDownload: React.FC<FileDownloadProps> = ({ downloadFn }) => {
@@ -28,20 +28,17 @@ export const FileDownload: React.FC<FileDownloadProps> = ({ downloadFn }) => {
   // Get the alert message and type in an IIFE
   const [type, message] = ((): [Maybe<AlertType>, React.ReactNode] => {
     switch (status) {
-      case "downloading":
+      case 'downloading':
+        return ['info', `Downloading file... ${Math.round(progress)}% complete`];
+      case 'error':
         return [
-          "info",
-          `Downloading file... ${Math.round(progress)}% complete`,
-        ];
-      case "error":
-        return [
-          "error",
+          'error',
           <Typography>
             Download failed! Please try again or <ContactSupport />
           </Typography>,
         ];
-      case "success":
-        return ["success", "Download complete!"];
+      case 'success':
+        return ['success', 'Download complete!'];
       default:
         return [undefined, null];
     }
@@ -49,7 +46,7 @@ export const FileDownload: React.FC<FileDownloadProps> = ({ downloadFn }) => {
 
   const snackbarProps = {
     msg: message,
-    onClose: status === "downloading" ? undefined : closeSnackbar,
+    onClose: status === 'downloading' ? undefined : closeSnackbar,
     open: Boolean(status),
     type,
   };
@@ -57,11 +54,7 @@ export const FileDownload: React.FC<FileDownloadProps> = ({ downloadFn }) => {
   return (
     <>
       <Tooltip title="Download">
-        <Button
-          disabled={Boolean(status)}
-          icon="download"
-          onClick={downloadData}
-        />
+        <Button disabled={Boolean(status)} icon="download" onClick={downloadData} />
       </Tooltip>
       <AlertSnackbar {...snackbarProps} />
     </>
@@ -70,13 +63,11 @@ export const FileDownload: React.FC<FileDownloadProps> = ({ downloadFn }) => {
   /** ========================== Callbacks ================================= */
   async function downloadData() {
     try {
-      setStatus("downloading");
-      await downloadFn((progress, total) =>
-        setProgress(percentOf(progress, total))
-      );
-      setStatus("success");
+      setStatus('downloading');
+      await downloadFn((progress, total) => setProgress(percentOf(progress, total)));
+      setStatus('success');
     } catch (e) {
-      setStatus("error");
+      setStatus('error');
     }
   }
 

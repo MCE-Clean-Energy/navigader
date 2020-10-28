@@ -1,13 +1,12 @@
 import { isOriginFile, isScenario, OriginFile } from 'navigader/types';
 
-
 /**
  * Returns a display name for the given meter group
  *
  * @param {any} meterGroup: the meter group object to display. The overload that accepts
  *   undefined is there to enable usage in situations where the meter group is optional
  */
-export function getDisplayName (meterGroup: any) {
+export function getDisplayName(meterGroup: any) {
   if (isOriginFile(meterGroup)) {
     return meterGroup.name || meterGroup.metadata.filename.replace(/origin_files\//, '');
   } else if (isScenario(meterGroup)) {
@@ -22,7 +21,7 @@ export function getDisplayName (meterGroup: any) {
  *
  * @param {OriginFile} originFile: the meter group we want to run a scenario with
  */
-export function isSufficientlyIngested (originFile: OriginFile | undefined) {
+export function isSufficientlyIngested(originFile: OriginFile | undefined) {
   if (!originFile) return false;
 
   // If origin files have sufficiently finished ingesting, they are selectable. We don't

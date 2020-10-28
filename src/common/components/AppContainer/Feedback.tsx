@@ -8,7 +8,6 @@ import { Button } from '../Button';
 import { Dialog } from '../Dialog';
 import { TextField } from '../TextField';
 
-
 /** ============================ Components ================================ */
 export const Feedback: React.FC = () => {
   const dispatch = useDispatch();
@@ -42,18 +41,20 @@ export const Feedback: React.FC = () => {
   );
 
   /** ========================== Callbacks ================================= */
-  function closeDialog () {
+  function closeDialog() {
     setDialogOpen(false);
   }
 
-  function submitFeedback () {
+  function submitFeedback() {
     sendSupportEmail('NavigaDER feedback', feedback);
     setFeedback('');
-    dispatch(slices.ui.setMessage({
-      duration: null,
-      msg: 'Thank you for your feedback!',
-      type: 'success'
-    }));
+    dispatch(
+      slices.ui.setMessage({
+        duration: null,
+        msg: 'Thank you for your feedback!',
+        type: 'success',
+      })
+    );
     closeDialog();
   }
 };

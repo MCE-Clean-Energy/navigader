@@ -5,11 +5,10 @@ import { slices } from 'navigader/store';
 import { DERConfiguration, DERStrategy, Loader } from 'navigader/types';
 import { useAsync } from './util';
 
-
 /**
  * Loads DER strategies
  */
-export function useDERStrategies (params: api.DERQueryParams): Loader<DERStrategy[]> {
+export function useDERStrategies(params: api.DERQueryParams): Loader<DERStrategy[]> {
   const dispatch = useDispatch();
 
   // Fetch the DER strategies
@@ -25,7 +24,7 @@ export function useDERStrategies (params: api.DERQueryParams): Loader<DERStrateg
 /**
  * Loads DER configurations
  */
-export function useDERConfigurations (params: api.DERQueryParams): Loader<DERConfiguration[]> {
+export function useDERConfigurations(params: api.DERQueryParams): Loader<DERConfiguration[]> {
   const dispatch = useDispatch();
 
   // Fetch the meter groups

@@ -3,18 +3,20 @@ import * as React from 'react';
 import logo from 'navigader/images/logo.png';
 import { makeStylesHook } from 'navigader/styles';
 
-
 /** ============================ Types ===================================== */
 type LogoProps = {
   width?: number | string;
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook<LogoProps>(() => ({
-  logo: props => ({
-    width: props.width
-  })
-}), 'Logo');
+const useStyles = makeStylesHook<LogoProps>(
+  () => ({
+    logo: (props) => ({
+      width: props.width,
+    }),
+  }),
+  'Logo'
+);
 
 /** ============================ Components ================================ */
 export const Logo: React.FC<LogoProps> = (props) => {
@@ -23,5 +25,5 @@ export const Logo: React.FC<LogoProps> = (props) => {
 };
 
 Logo.defaultProps = {
-  width: '100%'
+  width: '100%',
 };

@@ -3,6 +3,7 @@
 The front-end of the BEO project.
 
 ## Set Up
+
 Clone the repository and install dependencies:
 
 ```bash
@@ -14,9 +15,9 @@ npm run install
 Building the application requires a `.env` file to specify certain environment variables:
 
 - `REACT_APP_ENV`: a simple representation of the current environment. Typicall `prod` or
- `staging` or `local` 
+  `staging` or `local`
 - `REACT_APP_BEO_URI`: the URI of the `beo_datastore` backend that will be serving data to the
- front end. This should omit a trailing `/`.
+  front end. This should omit a trailing `/`.
 
 Full example:
 
@@ -26,16 +27,17 @@ REACT_APP_BEO_URI=http://localhost:8000
 ```
 
 ## Deployment
+
 There are scripts contained in the `/scripts` directory for handling deployment to various
- environments. You will need the AWS CLI, which entails [installing](http://docs.aws.amazon.com/cli/latest/userguide/installing.html)
- the CLI, creating a user in AWS with the proper security credentials for writing to the bucket, and
- configuring the CLI with `aws configure`.
- 
- Once set up with the CLI, you can deploy by simply calling the proper script:
- 
- ```bash
+environments. You will need the AWS CLI, which entails [installing](http://docs.aws.amazon.com/cli/latest/userguide/installing.html)
+the CLI, creating a user in AWS with the proper security credentials for writing to the bucket, and
+configuring the CLI with `aws configure`.
+
+Once set up with the CLI, you can deploy by simply calling the proper script:
+
+```bash
 ./scripts/deploy-staging.sh
- ```
+```
 
 ## Available Scripts
 

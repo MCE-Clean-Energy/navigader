@@ -5,29 +5,30 @@ import _ from 'navigader/util/lodash';
 import { Table, TableProps } from './Table';
 import { PaginationState, SortState } from './util';
 
-
 /** ============================ Types ===================================== */
-type PrefetchedTableProps<T extends ObjectWithId> =
-  & Omit<TableProps<T>, 'dataFn' | 'dataSelector'>
-  & { data: T[] };
-
+type PrefetchedTableProps<T extends ObjectWithId> = Omit<
+  TableProps<T>,
+  'dataFn' | 'dataSelector'
+> & { data: T[] };
 
 /** ============================ Components ================================ */
-export function PrefetchedTable <T extends ObjectWithId>(props: PrefetchedTableProps<T>) {
+export function PrefetchedTable<T extends ObjectWithId>(props: PrefetchedTableProps<T>) {
   const { data, ...rest } = props;
   return (
     <Table
-      dataFn={state => Promise.resolve({
-        count: data.length,
-        data: getDataPage(data, state)
-      })}
+      dataFn={(state) =>
+        Promise.resolve({
+          count: data.length,
+          data: getDataPage(data, state),
+        })
+      }
       dataSelector={() => data}
       {...rest}
     />
   );
 }
 
-function getDataPage (data: any[], state: PaginationState & Partial<SortState>) {
+function getDataPage(data: any[], state: PaginationState & Partial<SortState>) {
   const { currentPage, dir, key, rowsPerPage } = state;
   let sorted = data;
   if (key) {

@@ -38,9 +38,12 @@
     "@types/react-redux": "^7.1.9",
     "@types/react-router-dom": "^5.1.5",
     "@types/testing-library__react": "^10.2.0",
+    "husky": "3.1.0",
     "jest-environment-jsdom-sixteen": "^1.0.3",
     "jest-fetch-mock": "^3.0.3",
     "madge": "^3.10.0",
+    "prettier": "2.1.2",
+    "pretty-quick": "^3.1.0",
     "react-scripts": "^4.0.0-next.98",
     "react-test-renderer": "^16.13.1",
     "typescript": "^4.0.3",
@@ -66,5 +69,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
   }
 }

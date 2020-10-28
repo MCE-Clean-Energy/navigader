@@ -1,31 +1,27 @@
-import * as React from "react";
+import * as React from 'react';
 
-import * as api from "navigader/api";
-import { slices } from "navigader/store";
-import { Dialog, Button, TextField, Select, Grid } from "navigader/components";
-import { CreateRatePlanParams } from "navigader/api";
-import { useDispatch } from "react-redux";
+import * as api from 'navigader/api';
+import { slices } from 'navigader/store';
+import { Dialog, Button, TextField, Select, Grid } from 'navigader/components';
+import { CreateRatePlanParams } from 'navigader/api';
+import { useDispatch } from 'react-redux';
 
 /* ============================ Components ================================= */
 export const CreateRatePlan: React.FC = () => {
   const dispatch = useDispatch();
   let [dialogOpen, setDialogOpen] = React.useState(false);
-  let [name, updateName] = React.useState<string>("");
-  let [sector, updateSector] = React.useState<string>("Residential");
+  let [name, updateName] = React.useState<string>('');
+  let [sector, updateSector] = React.useState<string>('Residential');
 
   const onSubmit = async (params: CreateRatePlanParams) => {
     const response = await api.createRatePlan(params);
     dispatch(slices.models.updateModel(response));
     return response;
-  }
+  };
 
   return (
     <>
-      <Button.Fab
-        name={"plus"}
-        color="primary"
-        onClick={() => setDialogOpen(true)}
-      ></Button.Fab>
+      <Button.Fab name={'plus'} color="primary" onClick={() => setDialogOpen(true)}></Button.Fab>
       <Dialog
         fullWidth
         open={dialogOpen}
@@ -49,13 +45,7 @@ export const CreateRatePlan: React.FC = () => {
               <Select
                 label="Sector"
                 onChange={updateSector}
-                options={[
-                  "Commercial",
-                  "Residential",
-                  "Industrial",
-                  "Agricultural",
-                  "Lighting",
-                ]}
+                options={['Commercial', 'Residential', 'Industrial', 'Agricultural', 'Lighting']}
                 value={sector}
               />
             </Grid.Item>

@@ -9,20 +9,22 @@ import { makeStylesHook, materialColors } from 'navigader/styles';
 import { randomString } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 
-
 /** ============================ Types ===================================== */
 type NavigaderChartProps = Omit<VictoryChartProps, 'theme'> & {
   className?: string;
 };
 
 /** ============================ Styles ===================================== */
-const useStyles = makeStylesHook(() => ({
-  container: {
-    '& svg': {
-      overflow: 'visible'
-    }
-  }
-}), 'NavigaderChart');
+const useStyles = makeStylesHook(
+  () => ({
+    container: {
+      '& svg': {
+        overflow: 'visible',
+      },
+    },
+  }),
+  'NavigaderChart'
+);
 
 // Colors
 const blueGrey50 = materialColors.blueGrey[50];
@@ -46,10 +48,11 @@ const strokeLinejoin = 'round';
 
 /** ============================ Components ================================ */
 // Creates the styling for tooltip drop shadows
-const TooltipShadows: React.FC<{ id: string }> = ({ id }) =>
+const TooltipShadows: React.FC<{ id: string }> = ({ id }) => (
   <filter id={getFilterId(id)}>
     <feDropShadow stdDeviation="2" />
-  </filter>;
+  </filter>
+);
 
 export const NavigaderChart: React.FC<NavigaderChartProps> = ({ children, className, ...rest }) => {
   const chartId = React.useMemo(() => randomString(), []);
@@ -57,12 +60,12 @@ export const NavigaderChart: React.FC<NavigaderChartProps> = ({ children, classN
   return (
     <div className={classNames(useStyles().container, className)}>
       <ContainerDimensions>
-        {({ width }: Dimensions) =>
+        {({ width }: Dimensions) => (
           <VictoryChart theme={getChartTheme(chartId)} width={rest.width || width} {...rest}>
             <TooltipShadows id={chartId} />
             {children}
           </VictoryChart>
-        }
+        )}
       </ContainerDimensions>
     </div>
   );
@@ -77,14 +80,14 @@ export const NavigaderChart: React.FC<NavigaderChartProps> = ({ children, classN
  *   multiple charts are rendered simultaneously there will be multiple `<filter>` elements on the
  *   page simultaneously.
  */
-function getChartTheme (chartId: string): VictoryThemeDefinition {
+function getChartTheme(chartId: string): VictoryThemeDefinition {
   return _.merge({}, VictoryTheme.material, {
     area: {
       style: {
         data: {
-          opacity: 0.3
-        }
-      }
+          opacity: 0.3,
+        },
+      },
     },
     axis: {
       style: {
@@ -92,26 +95,26 @@ function getChartTheme (chartId: string): VictoryThemeDefinition {
           stroke: blueGrey300,
           strokeWidth: 2,
           strokeLinecap,
-          strokeLinejoin
+          strokeLinejoin,
         },
         axisLabel: {
           ...centeredLabelStyles,
-          padding: 15
+          padding: 15,
         },
         grid: {
           stroke: blueGrey50,
           strokeDasharray: '5, 5',
           strokeLinecap,
-          strokeLinejoin
+          strokeLinejoin,
         },
         ticks: {
           size: 5,
           stroke: blueGrey300,
           strokeWidth: 1,
           strokeLinecap,
-          strokeLinejoin
+          strokeLinejoin,
         },
-        tickLabels: baseLabelStyles
+        tickLabels: baseLabelStyles,
       },
     },
     legend: {
@@ -119,44 +122,43 @@ function getChartTheme (chartId: string): VictoryThemeDefinition {
       style: {
         data: {
           type: 'circle',
-          opacity: 0.5
+          opacity: 0.5,
         },
-        labels: baseLabelStyles
-      }
+        labels: baseLabelStyles,
+      },
     },
     line: {
       style: {
         data: {
           opacity: 0.3,
-          strokeWidth: 2
+          strokeWidth: 2,
         },
-        labels: centeredLabelStyles
-      }
+        labels: centeredLabelStyles,
+      },
     },
     tooltip: {
       cornerRadius: 5,
-      pointerLength: 10
+      pointerLength: 10,
     },
     voronoi: {
       style: {
         labels: {
           ...centeredLabelStyles,
           padding: 5,
-          pointerEvents: 'none'
+          pointerEvents: 'none',
         },
         flyout: {
           filter: `url(#${getFilterId(chartId)})`,
           fontSize: 16,
           strokeWidth: 0,
           fill: materialColors.grey[200],
-          pointerEvents: 'none'
-        }
-      }
-    }
+          pointerEvents: 'none',
+        },
+      },
+    },
   });
 }
 
-function getFilterId (chartId: string) {
+function getFilterId(chartId: string) {
   return `${chartId}-tooltip-drop-shadow`;
 }
-

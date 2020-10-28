@@ -1,15 +1,21 @@
 import {
-  AlertType, DERStrategy, DERConfiguration, Nullable, RatePlan, RawCAISORate, RawGHGRate, RawMeter,
-  RawMeterGroup
+  AlertType,
+  DERStrategy,
+  DERConfiguration,
+  Nullable,
+  RatePlan,
+  RawCAISORate,
+  RawGHGRate,
+  RawMeter,
+  RawMeterGroup,
 } from 'navigader/types';
-
 
 /** ============================ Slices ==================================== */
 export type ModelsSlice = {
   caisoRates: RawCAISORate[];
   derConfigurations: DERConfiguration[];
   derStrategies: DERStrategy[];
-  ghgRates: RawGHGRate[]
+  ghgRates: RawGHGRate[];
   hasMeterGroups: Nullable<boolean>;
   meterGroups: RawMeterGroup[];
   meters: RawMeter[];
@@ -22,12 +28,12 @@ export type UiSlice = {
     msg?: string;
     open: boolean;
     type?: AlertType;
-  }
+  };
 };
 
 /** ============================ Root state ================================ */
 export type RootState = {
-  models: ModelsSlice
+  models: ModelsSlice;
   ui: UiSlice;
 };
 

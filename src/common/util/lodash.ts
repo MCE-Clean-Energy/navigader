@@ -37,7 +37,6 @@ import toPairs from 'lodash/toPairs';
 import without from 'lodash/without';
 import zip from 'lodash/zip';
 
-
 const _ = {
   clone,
   defaults,
@@ -68,7 +67,7 @@ const _ = {
   sumBy,
   toPairs,
   without,
-  zip
+  zip,
 };
 
 export default _;

@@ -1,12 +1,17 @@
 import * as React from 'react';
 
 import {
-  Card, Flex, Frame288Graph, MonthSelector, Toggle, Tooltip, Typography
+  Card,
+  Flex,
+  Frame288Graph,
+  MonthSelector,
+  Toggle,
+  Tooltip,
+  Typography,
 } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
 import { Frame288DataType, MeterGroup, MonthsOption } from 'navigader/types';
 import { formatters, PowerFrame288 } from 'navigader/util';
-
 
 /** ============================ Types ===================================== */
 type LoadGraphCommonProps = {
@@ -28,28 +33,34 @@ type LoadTypeSelectorProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(theme => ({
-  card: {
-    // Makes the graph tooltips visible
-    overflow: 'visible'
-  },
-  graphTitle: {
-    marginBottom: theme.spacing(1)
-  },
-  loadTypeMenu: {
-    marginTop: theme.spacing(1)
-  }
-}), 'LoadGraph');
+const useStyles = makeStylesHook(
+  (theme) => ({
+    card: {
+      // Makes the graph tooltips visible
+      overflow: 'visible',
+    },
+    graphTitle: {
+      marginBottom: theme.spacing(1),
+    },
+    loadTypeMenu: {
+      marginTop: theme.spacing(1),
+    },
+  }),
+  'LoadGraph'
+);
 
-const useLoadTypeSelectorStyles = makeStylesHook(() => ({
-  tooltipAnchor: {
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0
-  }
-}), 'LoadTypeSelector');
+const useLoadTypeSelectorStyles = makeStylesHook(
+  () => ({
+    tooltipAnchor: {
+      bottom: 0,
+      left: 0,
+      position: 'absolute',
+      right: 0,
+      top: 0,
+    },
+  }),
+  'LoadTypeSelector'
+);
 
 /** ============================ Components ================================ */
 const Graph: React.FC<LoadGraphProps> = ({ dataType, meterGroup, months }) => {
@@ -89,7 +100,7 @@ export const LoadTypeSelector: React.FC<LoadTypeSelectorProps> = (props) => {
   const loadTypeOptions: Frame288DataType[] = ['average', 'maximum', 'minimum'];
   return (
     <Toggle.Group exclusive onChange={selectType} size="small" value={selectedType}>
-      {loadTypeOptions.map(loadType =>
+      {loadTypeOptions.map((loadType) => (
         <Toggle.Button aria-label={tooltips[loadType]} key={loadType} value={loadType}>
           {formatters.capitalize(loadType)}
 
@@ -98,12 +109,12 @@ export const LoadTypeSelector: React.FC<LoadTypeSelectorProps> = (props) => {
             <span className={classes.tooltipAnchor} />
           </Tooltip>
         </Toggle.Button>
-      )}
+      ))}
     </Toggle.Group>
   );
 
   /** ========================== Callbacks ================================= */
-  function selectType (loadType: Frame288DataType) {
+  function selectType(loadType: Frame288DataType) {
     // Don't update if they click the same load type again
     if (selectedType !== loadType) {
       changeType(loadType);
@@ -114,5 +125,5 @@ export const LoadTypeSelector: React.FC<LoadTypeSelectorProps> = (props) => {
 const tooltips = {
   average: 'The average interval reading at each month-hour of all meters summed',
   maximum: 'The maximum interval reading at each month-hour of all meters summed',
-  minimum: 'The minimum interval reading at each month-hour of all meters summed'
+  minimum: 'The minimum interval reading at each month-hour of all meters summed',
 };

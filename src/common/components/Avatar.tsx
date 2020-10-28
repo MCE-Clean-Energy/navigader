@@ -5,7 +5,6 @@ import classNames from 'classnames';
 import { makeStylesHook } from 'navigader/styles';
 import _ from 'navigader/util/lodash';
 
-
 /** ============================ Types ===================================== */
 type AvatarSize = 'default' | 'small';
 export type AvatarProps = {
@@ -15,18 +14,21 @@ export type AvatarProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook<AvatarProps>(theme => ({
-  avatar: ({ color = 'grey', size = 'default' }) => ({
-    color: theme.palette.getContrastText(color),
-    backgroundColor: color,
-    height: sizeMap[size],
-    width: sizeMap[size]
-  })
-}), 'NavigaderAvatar');
+const useStyles = makeStylesHook<AvatarProps>(
+  (theme) => ({
+    avatar: ({ color = 'grey', size = 'default' }) => ({
+      color: theme.palette.getContrastText(color),
+      backgroundColor: color,
+      height: sizeMap[size],
+      width: sizeMap[size],
+    }),
+  }),
+  'NavigaderAvatar'
+);
 
 const sizeMap = {
-  'default': 40,
-  'small': 24
+  default: 40,
+  small: 24,
 };
 
 /** ============================ Components ================================ */

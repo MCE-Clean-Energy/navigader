@@ -5,7 +5,6 @@ import { ScenarioImpactColumn, Tuple } from 'navigader/types';
 import { Select } from '../../Select';
 import { Typography } from '../../Typography';
 
-
 /** ============================ Types ===================================== */
 export type ScenarioComparisonChartAxes = Tuple<ScenarioImpactColumn>;
 type ChartTitleProps = {
@@ -16,30 +15,43 @@ type ChartTitleProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(theme => ({
-  wrapper: {
-    marginBottom: theme.spacing(1),
-    '& > *:not(:first-child)': {
-      marginLeft: theme.spacing(2)
-    }
-  }
-}), 'ChartTitle');
+const useStyles = makeStylesHook(
+  (theme) => ({
+    wrapper: {
+      'marginBottom': theme.spacing(1),
+      '& > *:not(:first-child)': {
+        marginLeft: theme.spacing(2),
+      },
+    },
+  }),
+  'ChartTitle'
+);
 
 /** ============================ Components ================================ */
-const TitleText: React.FC = props => <Typography {...props} emphasis="bold" variant="subtitle1" />;
+const TitleText: React.FC = (props) => (
+  <Typography {...props} emphasis="bold" variant="subtitle1" />
+);
 export const ScenarioComparisonChartTitle: React.FC<ChartTitleProps> = (props) => {
   const { aggregated, averaged, axes, updateAxes } = props;
   const classes = useStyles();
-  const axisOptions: ScenarioImpactColumn[]
-    = ['Usage', 'GHG', 'Procurement', 'RA', 'Revenue', 'Expense', 'Profit'];
+  const axisOptions: ScenarioImpactColumn[] = [
+    'Usage',
+    'GHG',
+    'Procurement',
+    'RA',
+    'Revenue',
+    'Expense',
+    'Profit',
+  ];
 
-  const AxisSelect: React.FC<{ index: 0 | 1 }> = ({ index }) =>
+  const AxisSelect: React.FC<{ index: 0 | 1 }> = ({ index }) => (
     <Select
       onChange={updateAxis(index)}
       options={axisOptions}
       renderOption={renderAxisOption}
       value={axes[index]}
-    />;
+    />
+  );
 
   return (
     <div className={classes.wrapper}>
@@ -51,19 +63,19 @@ export const ScenarioComparisonChartTitle: React.FC<ChartTitleProps> = (props) =
   );
 
   /** ========================== Callbacks ================================= */
-  function updateAxis (index: number) {
+  function updateAxis(index: number) {
     return (newAxis: ScenarioImpactColumn) => {
       updateAxes(index === 0 ? [newAxis, axes[1]] : [axes[0], newAxis]);
     };
   }
 
-  function renderAxisOption (axis: ScenarioImpactColumn) {
+  function renderAxisOption(axis: ScenarioImpactColumn) {
     return `${axis} Impacts`;
   }
 };
 
 /** ============================ Helpers =================================== */
-export function getAxisLabel (axis: ScenarioImpactColumn) {
+export function getAxisLabel(axis: ScenarioImpactColumn) {
   switch (axis) {
     case 'GHG':
       return 'GHG Impacts (tCO2/year)';

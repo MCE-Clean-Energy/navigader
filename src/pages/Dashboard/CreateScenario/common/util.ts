@@ -3,13 +3,12 @@ import { OriginFile, Scenario } from 'navigader/types';
 import _ from 'navigader/util/lodash';
 import { DERSelection } from './types';
 
-
 // Order of steps
 export const stepPaths = [
   routes.dashboard.createScenario.selectCustomers,
   routes.dashboard.createScenario.selectDers,
   routes.dashboard.createScenario.selectCostFunctions,
-  routes.dashboard.createScenario.review
+  routes.dashboard.createScenario.review,
 ];
 
 // Indices of steps
@@ -17,7 +16,7 @@ export const stepNumbers = {
   review: stepPaths.indexOf(routes.dashboard.createScenario.review),
   selectCostFunctions: stepPaths.indexOf(routes.dashboard.createScenario.selectCostFunctions),
   selectCustomers: stepPaths.indexOf(routes.dashboard.createScenario.selectCustomers),
-  selectDers: stepPaths.indexOf(routes.dashboard.createScenario.selectDers)
+  selectDers: stepPaths.indexOf(routes.dashboard.createScenario.selectDers),
 };
 
 /**
@@ -27,7 +26,7 @@ export const stepNumbers = {
  *
  * @param {DERSelection} ders: the DER selections to validate
  */
-export function validateDerSelections (ders: Partial<DERSelection>[]): ders is DERSelection[] {
+export function validateDerSelections(ders: Partial<DERSelection>[]): ders is DERSelection[] {
   if (ders.length === 0) return false;
 
   return ders.every((der) => {
@@ -46,7 +45,7 @@ export function validateDerSelections (ders: Partial<DERSelection>[]): ders is D
  * @param {OriginFile[]} originFiles: the meter group selections to validate
  * @param {Scenario[]} scenarios: the scenario selections to validate
  */
-export function validateCustomerSelections (originFiles: OriginFile[], scenarios: Scenario[]) {
+export function validateCustomerSelections(originFiles: OriginFile[], scenarios: Scenario[]) {
   if (scenarios.length) return true;
   if (originFiles.length === 0) return false;
   return _.sumBy(originFiles, 'meter_count') > 0;

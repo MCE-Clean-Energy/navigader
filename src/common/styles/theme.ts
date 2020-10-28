@@ -4,7 +4,6 @@ import { BaseCSSProperties, CreateCSSProperties } from '@material-ui/core/styles
 
 import { primaryColor, secondaryColor } from './colors';
 
-
 // Flex types
 export type AlignItemsValue = 'center' | 'flex-start' | 'stretch';
 export type FlexDirection = 'row' | 'column';
@@ -30,8 +29,11 @@ declare module '@material-ui/core/styles/createMixins' {
   interface Mixins {
     flex: (args: FlexArgs) => CreateCSSProperties;
 
-    transition:
-      (property: string, activated: boolean, bounds: TransitionBounds) => BaseCSSProperties;
+    transition: (
+      property: string,
+      activated: boolean,
+      bounds: TransitionBounds
+    ) => BaseCSSProperties;
   }
 }
 
@@ -42,24 +44,24 @@ export const theme = createMuiTheme({
       display: 'flex',
       flexDirection: direction,
       flexWrap: wrap,
-      justifyContent: justify
+      justifyContent: justify,
     }),
     transition: (property, activated, bounds) => ({
       transition: `${property} 0.25s`,
-      [property]: activated ? bounds[0] : bounds[1]
-    })
+      [property]: activated ? bounds[0] : bounds[1],
+    }),
   },
   palette: {
     primary: {
-      main: primaryColor
+      main: primaryColor,
     },
     secondary: {
-      main: secondaryColor
-    }
+      main: secondaryColor,
+    },
   },
   typography: {
-    fontSize: 16
-  }
+    fontSize: 16,
+  },
 });
 
 export type Theme = typeof theme;

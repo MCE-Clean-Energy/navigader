@@ -2,72 +2,79 @@ import { Frame288Numeric } from 'navigader/util';
 import { fixtures } from 'navigader/util/testing';
 import { makeIntervalData } from './interval';
 
-
 describe('`IntervalData` class', () => {
   /** ========================== Test fixtures ============================= */
-  const kwInterval = makeIntervalData({
-    times: [
-      '2020-06-02T18:00:00',
-      '2020-06-02T18:15:00',
-      '2020-06-02T18:30:00'
+  const kwInterval = makeIntervalData(
+    {
+      times: ['2020-06-02T18:00:00', '2020-06-02T18:15:00', '2020-06-02T18:30:00'],
+      kw: [1, 2, 3],
+      name: 'KW interval',
+    },
+    'times',
+    'kw'
+  );
+
+  const sparseInterval = fixtures.makeIntervalData(
+    [
+      ['2020-01-01T18:00:00', 1],
+      ['2020-02-01T18:00:00', 1],
+      ['2020-03-01T18:00:00', 1],
+      ['2020-04-01T18:00:00', 1],
+      ['2020-05-01T18:00:00', 1],
+      ['2020-06-01T18:00:00', 1],
+      ['2020-07-01T18:00:00', 1],
+      ['2020-08-01T18:00:00', 1],
+      ['2020-09-01T18:00:00', 1],
+      ['2020-10-01T18:00:00', 1],
+      ['2020-11-01T18:00:00', 1],
+      ['2020-12-01T18:00:00', 1],
     ],
-    kw: [1, 2, 3],
-    name: 'KW interval'
-  }, 'times', 'kw');
+    'Sparse interval'
+  );
 
-  const sparseInterval = fixtures.makeIntervalData([
-    ['2020-01-01T18:00:00', 1],
-    ['2020-02-01T18:00:00', 1],
-    ['2020-03-01T18:00:00', 1],
-    ['2020-04-01T18:00:00', 1],
-    ['2020-05-01T18:00:00', 1],
-    ['2020-06-01T18:00:00', 1],
-    ['2020-07-01T18:00:00', 1],
-    ['2020-08-01T18:00:00', 1],
-    ['2020-09-01T18:00:00', 1],
-    ['2020-10-01T18:00:00', 1],
-    ['2020-11-01T18:00:00', 1],
-    ['2020-12-01T18:00:00', 1],
-  ], 'Sparse interval');
-
-  const juneInterval = fixtures.makeIntervalData([
-    ['2020-06-02T18:00:00', 1],
-    ['2020-06-02T18:15:00', 2],
-    ['2020-06-02T18:30:00', 3],
-    ['2020-06-02T18:45:00', 4]
-  ], 'June interval');
+  const juneInterval = fixtures.makeIntervalData(
+    [
+      ['2020-06-02T18:00:00', 1],
+      ['2020-06-02T18:15:00', 2],
+      ['2020-06-02T18:30:00', 3],
+      ['2020-06-02T18:45:00', 4],
+    ],
+    'June interval'
+  );
 
   // Frame288 where each month has the same hour values, which are equal to their hour index
   const hourFrame288 = new Frame288Numeric(fixtures.makeFrame288((m, h) => h));
 
   // Frame288 where each month's hour values are the same across the day, set to the month index
-  const monthFrame288 = new Frame288Numeric(fixtures.makeFrame288(m => m));
+  const monthFrame288 = new Frame288Numeric(fixtures.makeFrame288((m) => m));
 
   /** ========================== Tests ===================================== */
   describe('`serialize` method', () => {
     it('returns the object with the expected keys and values', () => {
       expect(kwInterval.serialize('kw', 'times')).toEqual({
-        times: [
-          '2020-06-02T18:00:00',
-          '2020-06-02T18:15:00',
-          '2020-06-02T18:30:00'
-        ],
-        kw: [1, 2, 3]
+        times: ['2020-06-02T18:00:00', '2020-06-02T18:15:00', '2020-06-02T18:30:00'],
+        kw: [1, 2, 3],
       });
     });
   });
 
   describe('`period` getter', () => {
     it('calculates the period correctly', () => {
-      const hourInterval = fixtures.makeIntervalData([
-        ['2020-06-02T18:00:00', 1],
-        ['2020-06-02T19:00:00', 2]
-      ], 'Hour interval');
+      const hourInterval = fixtures.makeIntervalData(
+        [
+          ['2020-06-02T18:00:00', 1],
+          ['2020-06-02T19:00:00', 2],
+        ],
+        'Hour interval'
+      );
 
-      const fifteenMinuteInterval = fixtures.makeIntervalData([
-        ['2020-06-02T18:00:00', 1],
-        ['2020-06-02T18:15:00', 2]
-      ], '15 minute interval');
+      const fifteenMinuteInterval = fixtures.makeIntervalData(
+        [
+          ['2020-06-02T18:00:00', 1],
+          ['2020-06-02T18:15:00', 2],
+        ],
+        '15 minute interval'
+      );
 
       expect(hourInterval.period).toEqual(60);
       expect(fifteenMinuteInterval.period).toEqual(15);
@@ -94,28 +101,25 @@ describe('`IntervalData` class', () => {
     });
 
     it('handles filtering by `range`', () => {
-      expect(juneInterval.filter({
-        range: [
-          new Date('2020-06-02T18:15:00'),
-          new Date('2020-06-02T18:45:00')
-        ]
-      }).values).toEqual([2, 3, 4]);
+      expect(
+        juneInterval.filter({
+          range: [new Date('2020-06-02T18:15:00'), new Date('2020-06-02T18:45:00')],
+        }).values
+      ).toEqual([2, 3, 4]);
 
       // start 1 second later and we lose the first datum
-      expect(juneInterval.filter({
-        range: [
-          new Date('2020-06-02T18:15:01'),
-          new Date('2020-06-02T18:45:00')
-        ]
-      }).values).toEqual([3, 4]);
+      expect(
+        juneInterval.filter({
+          range: [new Date('2020-06-02T18:15:01'), new Date('2020-06-02T18:45:00')],
+        }).values
+      ).toEqual([3, 4]);
 
       // end 1 second earlier and we lose the last datum
-      expect(juneInterval.filter({
-        range: [
-          new Date('2020-06-02T18:15:01'),
-          new Date('2020-06-02T18:44:59')
-        ]
-      }).values).toEqual([3]);
+      expect(
+        juneInterval.filter({
+          range: [new Date('2020-06-02T18:15:01'), new Date('2020-06-02T18:44:59')],
+        }).values
+      ).toEqual([3]);
     });
 
     it('handles filtering by `month`', () => {
@@ -123,12 +127,15 @@ describe('`IntervalData` class', () => {
       expect(juneInterval.filter({ month: 6 }).values).toEqual([1, 2, 3, 4]);
       expect(juneInterval.filter({ month: 7 }).values).toEqual([]);
 
-      const monthInterval = fixtures.makeIntervalData([
-        ['2020-06-02T18:00:00', 1],
-        ['2020-07-02T18:15:00', 2],
-        ['2020-08-02T18:30:00', 3],
-        ['2020-09-02T18:45:00', 4]
-      ], 'summer');
+      const monthInterval = fixtures.makeIntervalData(
+        [
+          ['2020-06-02T18:00:00', 1],
+          ['2020-07-02T18:15:00', 2],
+          ['2020-08-02T18:30:00', 3],
+          ['2020-09-02T18:45:00', 4],
+        ],
+        'summer'
+      );
 
       expect(monthInterval.filter({ month: 6 }).values).toEqual([1]);
       expect(monthInterval.filter({ month: 7 }).values).toEqual([2]);
@@ -144,36 +151,48 @@ describe('`IntervalData` class', () => {
     });
 
     it('drops intervals that do not align', () => {
-      const interval1 = fixtures.makeIntervalData([
-        ['2020-06-02T17:45:00', 1],
-        ['2020-06-02T18:00:00', 2],
-        ['2020-06-02T18:15:00', 3],
-        ['2020-06-02T18:30:00', 4]
-      ], 'earlier');
+      const interval1 = fixtures.makeIntervalData(
+        [
+          ['2020-06-02T17:45:00', 1],
+          ['2020-06-02T18:00:00', 2],
+          ['2020-06-02T18:15:00', 3],
+          ['2020-06-02T18:30:00', 4],
+        ],
+        'earlier'
+      );
 
-      const interval2 = fixtures.makeIntervalData([
-        ['2020-06-02T18:00:00', 4],
-        ['2020-06-02T18:15:00', 3],
-        ['2020-06-02T18:30:00', 2],
-        ['2020-06-02T18:45:00', 1]
-      ], 'later');
+      const interval2 = fixtures.makeIntervalData(
+        [
+          ['2020-06-02T18:00:00', 4],
+          ['2020-06-02T18:15:00', 3],
+          ['2020-06-02T18:30:00', 2],
+          ['2020-06-02T18:45:00', 1],
+        ],
+        'later'
+      );
 
       expect(interval1.subtract(interval2).values).toEqual([-2, 0, 2]);
 
       // Dates don't align
-      const june1Interval = fixtures.makeIntervalData([
-        ['2020-06-01T18:00:00', 1],
-        ['2020-06-01T18:15:00', 2],
-        ['2020-06-01T18:30:00', 3],
-        ['2020-06-01T18:45:00', 4]
-      ], 'June 1');
+      const june1Interval = fixtures.makeIntervalData(
+        [
+          ['2020-06-01T18:00:00', 1],
+          ['2020-06-01T18:15:00', 2],
+          ['2020-06-01T18:30:00', 3],
+          ['2020-06-01T18:45:00', 4],
+        ],
+        'June 1'
+      );
 
-      const june2Interval = fixtures.makeIntervalData([
-        ['2020-06-02T18:00:00', 4],
-        ['2020-06-02T18:15:00', 3],
-        ['2020-06-02T18:30:00', 2],
-        ['2020-06-02T18:45:00', 1]
-      ], 'June 2');
+      const june2Interval = fixtures.makeIntervalData(
+        [
+          ['2020-06-02T18:00:00', 4],
+          ['2020-06-02T18:15:00', 3],
+          ['2020-06-02T18:30:00', 2],
+          ['2020-06-02T18:45:00', 1],
+        ],
+        'June 2'
+      );
 
       expect(june1Interval.subtract(june2Interval).values).toEqual([]);
     });
@@ -181,12 +200,15 @@ describe('`IntervalData` class', () => {
 
   describe('`divide` method', () => {
     it('divides the intervals value respectively', () => {
-      const largeInterval = fixtures.makeIntervalData([
-        ['2020-06-02T18:00:00', 100],
-        ['2020-06-02T18:15:00', 200],
-        ['2020-06-02T18:30:00', 450],
-        ['2020-06-02T18:45:00', 827]
-      ], 'large');
+      const largeInterval = fixtures.makeIntervalData(
+        [
+          ['2020-06-02T18:00:00', 100],
+          ['2020-06-02T18:15:00', 200],
+          ['2020-06-02T18:30:00', 450],
+          ['2020-06-02T18:45:00', 827],
+        ],
+        'large'
+      );
 
       expect(largeInterval.divide(100).values).toEqual([1, 2, 4.5, 8.27]);
     });
@@ -194,12 +216,15 @@ describe('`IntervalData` class', () => {
 
   describe('`multiply` method', () => {
     it('multiplies the intervals values respectively', () => {
-      const largeInterval = fixtures.makeIntervalData([
-        ['2020-06-02T18:00:00', 1],
-        ['2020-06-02T18:15:00', 2],
-        ['2020-06-02T18:30:00', 3],
-        ['2020-06-02T18:45:00', 4]
-      ], 'multiplier');
+      const largeInterval = fixtures.makeIntervalData(
+        [
+          ['2020-06-02T18:00:00', 1],
+          ['2020-06-02T18:15:00', 2],
+          ['2020-06-02T18:30:00', 3],
+          ['2020-06-02T18:45:00', 4],
+        ],
+        'multiplier'
+      );
 
       expect(largeInterval.multiply(5).values).toEqual([5, 10, 15, 20]);
     });
@@ -213,13 +238,13 @@ describe('`IntervalData` class', () => {
         { name, timestamp: new Date('2020-06-02T18:00:00'), value: 1 },
         { name, timestamp: new Date('2020-06-02T18:15:00'), value: 2 },
         { name, timestamp: new Date('2020-06-02T18:30:00'), value: 3 },
-      ])
+      ]);
     });
   });
 
   describe('`map` method', () => {
     it('applies the mapping function to each datum', () => {
-      const squared = kwInterval.map(n => n.value ** 2);
+      const squared = kwInterval.map((n) => n.value ** 2);
       expect(squared.values).toEqual([1, 4, 9]);
     });
   });
@@ -243,8 +268,8 @@ describe('`IntervalData` class', () => {
         timestamp: sparseInterval.domain.timestamp,
         value: [
           monthFrame288.getValueByMonthHour(1, 18),
-          monthFrame288.getValueByMonthHour(12, 18)
-        ]
+          monthFrame288.getValueByMonthHour(12, 18),
+        ],
       });
     });
 
@@ -271,10 +296,13 @@ describe('`IntervalData` class', () => {
 
   describe('`rename` method', () => {
     it('renames the interval', () => {
-      const hourInterval = fixtures.makeIntervalData([
-        ['June 2, 2020 18:00:00', 1],
-        ['June 2, 2020 19:00:00', 2]
-      ], 'Hour interval');
+      const hourInterval = fixtures.makeIntervalData(
+        [
+          ['June 2, 2020 18:00:00', 1],
+          ['June 2, 2020 19:00:00', 2],
+        ],
+        'Hour interval'
+      );
       expect(hourInterval.name).toEqual('Hour interval');
 
       const renamed = hourInterval.rename('60-minute interval');

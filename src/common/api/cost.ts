@@ -12,10 +12,10 @@ import {
   CostFunctions,
   SystemProfile,
   GHGRate,
-  CAISORate
-} from "navigader/types";
-import { appendQueryString, omitFalsey, serializers } from "navigader/util";
-import _ from "navigader/util/lodash";
+  CAISORate,
+} from 'navigader/types';
+import { appendQueryString, omitFalsey, serializers } from 'navigader/util';
+import _ from 'navigader/util/lodash';
 import {
   appendId,
   beoRoute,
@@ -27,7 +27,7 @@ import {
   patchRequest,
   postRequest,
   ProgressCallback,
-} from "./util";
+} from './util';
 
 /** ============================ Types ===================================== */
 type DerSelection = {
@@ -35,37 +35,33 @@ type DerSelection = {
   strategyId: string;
 };
 
-export type CostFunctionSelections = Partial<{
-  [CF in keyof CostFunctions]: CostFunctions[CF]['id'];
-}>;
+export type CostFunctionSelections = Partial<
+  {
+    [CF in keyof CostFunctions]: CostFunctions[CF]['id'];
+  }
+>;
 
 /** Query params */
 export type GetScenarioQueryParams = ScenarioDynamicRestParams & DataTypeParams;
 export type GetScenariosQueryParams = GetScenarioQueryParams & PaginationQueryParams;
 export type ScenarioDynamicRestParams = DynamicRestParams<
-  | 'ders'
-  | 'meter_group'
-  | 'meter_group.*'
-  | 'report'
-  | 'report_summary'
+  'ders' | 'meter_group' | 'meter_group.*' | 'report' | 'report_summary'
 >;
 
-type GetGHGRatesQueryOptions = PaginationQueryParams & DynamicRestParams & (
-  { data_format: '288'; } |
-  { data_format: 'interval'; period: '1H' | '15M'; start: string; end_limit: string; }
-);
+type GetGHGRatesQueryOptions = PaginationQueryParams &
+  DynamicRestParams &
+  (
+    | { data_format: '288' }
+    | { data_format: 'interval'; period: '1H' | '15M'; start: string; end_limit: string }
+  );
 
-export type GetCAISORatesQueryOptions =
-  & PaginationQueryParams
-  & DynamicRestParams
-  & DataTypeParams
-  & { year?: number };
+export type GetCAISORatesQueryOptions = PaginationQueryParams &
+  DynamicRestParams &
+  DataTypeParams & { year?: number };
 
 type RatePlanIncludeFields = 'rate_collections.*';
-export type GetRatePlanQueryOptions = & DynamicRestParams<RatePlanIncludeFields>;
-export type GetRatePlansQueryOptions =
-  GetRatePlanQueryOptions
-  & PaginationQueryParams;
+export type GetRatePlanQueryOptions = DynamicRestParams<RatePlanIncludeFields>;
+export type GetRatePlansQueryOptions = GetRatePlanQueryOptions & PaginationQueryParams;
 export type CreateRatePlanParams = Required<Pick<RatePlan, 'name' | 'sector'>>;
 export type CreateRateCollectionParams = {
   rate_data_csv: File;
@@ -73,16 +69,15 @@ export type CreateRateCollectionParams = {
 };
 
 type SystemProfileIncludeFields = 'load_serving_entity.*';
-export type GetSystemProfilesQueryOptions =
-  & DynamicRestParams<SystemProfileIncludeFields>
-  & PaginationQueryParams;
+export type GetSystemProfilesQueryOptions = DynamicRestParams<SystemProfileIncludeFields> &
+  PaginationQueryParams;
 
 /** Responses */
 type GetScenariosResponse = { meter_groups?: RawMeterGroup[]; scenarios: RawScenario[] };
 type GetScenarioResponse = { meter_groups?: RawMeterGroup[]; scenario: RawScenario };
 type GetGHGRatesResponse = { ghg_rates: RawGHGRate[] };
 type GetCAISORatesResponse = { caiso_rates: RawCAISORate[] };
-type RawRatePlan = Omit<RatePlan, "rate_collections"> & { rate_collections?: number[] };
+type RawRatePlan = Omit<RatePlan, 'rate_collections'> & { rate_collections?: number[] };
 type GetRatePlansResponse = {
   rate_collections?: RateCollection[];
   rate_plans: RawRatePlan[];
@@ -93,29 +88,26 @@ type CreateRatePlanResponse = {
 type GetSystemProfilesResponse = { system_profiles: SystemProfile[] };
 
 /** ============================ Scenarios =============================== */
-export async function postScenario (
+export async function postScenario(
   scenarioName: string,
   meterGroupIds: string[],
   ders: DerSelection[],
   costFunctions: CostFunctionSelections
 ) {
-  return await postRequest(
-    routes.scenarios(),
-    {
-      cost_functions: {
-        ghg_rate: costFunctions.ghgRate,
-        procurement_rate: costFunctions.caisoRate,
-        rate_plan: costFunctions.ratePlan,
-        system_profile: costFunctions.systemProfile
-      },
-      name: scenarioName,
-      meter_group_ids: meterGroupIds,
-      ders: ders.map(({ configurationId, strategyId }) => ({
-        der_configuration_id: configurationId,
-        der_strategy_id: strategyId
-      }))
-    }
-  );
+  return await postRequest(routes.scenarios(), {
+    cost_functions: {
+      ghg_rate: costFunctions.ghgRate,
+      procurement_rate: costFunctions.caisoRate,
+      rate_plan: costFunctions.ratePlan,
+      system_profile: costFunctions.systemProfile,
+    },
+    name: scenarioName,
+    meter_group_ids: meterGroupIds,
+    ders: ders.map(({ configurationId, strategyId }) => ({
+      der_configuration_id: configurationId,
+      der_strategy_id: strategyId,
+    })),
+  });
 }
 
 /**
@@ -123,27 +115,26 @@ export async function postScenario (
  *
  * @param {GetScenariosQueryParams} queryParams: parameters for filtering the result set
  */
-export async function getScenarios (queryParams: GetScenariosQueryParams) {
-  const response = await getRequest(routes.scenarios(), queryParams).then(res => res.json());
+export async function getScenarios(queryParams: GetScenariosQueryParams) {
+  const response = await getRequest(routes.scenarios(), queryParams).then((res) => res.json());
 
   // Parse the meter results
   return parsePaginationSet<GetScenariosResponse, Scenario>(
     response,
     ({ meter_groups = [], scenarios }) =>
-      scenarios.map(scenario => serializers.parseScenario(scenario, meter_groups))
+      scenarios.map((scenario) => serializers.parseScenario(scenario, meter_groups))
   );
 }
 
-export async function patchScenario (scenarioId: string, updates: Partial<Scenario>) {
-  return await patchRequest(
-    routes.scenarios(scenarioId),
-    updates
-  );
+export async function patchScenario(scenarioId: string, updates: Partial<Scenario>) {
+  return await patchRequest(routes.scenarios(scenarioId), updates);
 }
 
-export async function getScenario (id: string, queryParams?: GetScenarioQueryParams) {
-  const { meter_groups = [], scenario }: GetScenarioResponse =
-    await getRequest(routes.scenarios(id), queryParams).then(res => res.json());
+export async function getScenario(id: string, queryParams?: GetScenarioQueryParams) {
+  const { meter_groups = [], scenario }: GetScenarioResponse = await getRequest(
+    routes.scenarios(id),
+    queryParams
+  ).then((res) => res.json());
 
   return serializers.parseScenario(scenario, meter_groups);
 }
@@ -153,7 +144,7 @@ export async function getScenario (id: string, queryParams?: GetScenarioQueryPar
  *
  * @param {string} id: the ID of the scenario
  */
-export async function deleteScenario (id: string) {
+export async function deleteScenario(id: string) {
   return await deleteRequest(routes.scenarios(id));
 }
 
@@ -162,10 +153,10 @@ export async function deleteScenario (id: string) {
  *
  * @param {string[]} ids: the IDs of the scenarios to fetch summary data from
  */
-export async function downloadSummaryData (ids: string[]) {
+export async function downloadSummaryData(ids: string[]) {
   const url = appendQueryString(routes.scenarios.download, {
     ids,
-    level: 'summary'
+    level: 'summary',
   });
   return downloadFile(url, 'scenario-summary-data.csv');
 }
@@ -176,80 +167,76 @@ export async function downloadSummaryData (ids: string[]) {
  * @param {string[]} ids: the IDs of the scenarios to fetch customer data from
  * @param {ProgressCallback} onProgress: callback to execute when the download progresses
  */
-export async function downloadCustomerData (ids: string[], onProgress?: ProgressCallback) {
+export async function downloadCustomerData(ids: string[], onProgress?: ProgressCallback) {
   const url = appendQueryString(routes.scenarios.download, {
     ids,
-    level: 'customer'
+    level: 'customer',
   });
 
   return downloadFile(url, 'scenario-customer-data.csv', onProgress);
 }
 
-export function downloadRateCollectionData(
-  id: RatePlan['id'],
-  onProgress?: ProgressCallback
-) {
+export function downloadRateCollectionData(id: RatePlan['id'], onProgress?: ProgressCallback) {
   const url = routes.rate_collections.download(id);
   return downloadFile(url, 'rate-collection-data.csv', onProgress);
 }
 
 /** ============================ GHG ======================================= */
-export async function getGhgRates (options?: GetGHGRatesQueryOptions) {
-  const response = await getRequest(routes.ghg_rate, options).then(res => res.json());
+export async function getGhgRates(options?: GetGHGRatesQueryOptions) {
+  const response = await getRequest(routes.ghg_rate, options).then((res) => res.json());
 
   // Parse the GHG rate results into full-fledged `NavigaderObjects`
-  return parsePaginationSet<GetGHGRatesResponse, GHGRate>(
-    response,
-    ({ ghg_rates }) => ghg_rates.map(serializers.parseGHGRate)
+  return parsePaginationSet<GetGHGRatesResponse, GHGRate>(response, ({ ghg_rates }) =>
+    ghg_rates.map(serializers.parseGHGRate)
   );
 }
 
 /** ============================ Procurement =============================== */
-export async function getCAISORates (options?: GetCAISORatesQueryOptions) {
-  const response = await getRequest(routes.caiso_rate, options).then(res => res.json());
+export async function getCAISORates(options?: GetCAISORatesQueryOptions) {
+  const response = await getRequest(routes.caiso_rate, options).then((res) => res.json());
 
   // Parse the GHG rate results into full-fledged `NavigaderObjects`
-  return parsePaginationSet<GetCAISORatesResponse, CAISORate>(
-    response,
-    ({ caiso_rates }) => caiso_rates.map(serializers.parseCAISORate)
+  return parsePaginationSet<GetCAISORatesResponse, CAISORate>(response, ({ caiso_rates }) =>
+    caiso_rates.map(serializers.parseCAISORate)
   );
 }
 
 /** ============================ Rate plans ================================ */
-export async function getRatePlans (params?: GetRatePlansQueryOptions) {
-  const response = await getRequest(routes.rate_plans(), params).then(res => res.json());
+export async function getRatePlans(params?: GetRatePlansQueryOptions) {
+  const response = await getRequest(routes.rate_plans(), params).then((res) => res.json());
 
   // Parse the rate plan results into full-fledged `NavigaderObjects`, nesting the rate collections
   // under the plan
   return parsePaginationSet<GetRatePlansResponse, RatePlan>(
     response,
-    ({ rate_collections, rate_plans }) => rate_plans.map(plan => ({
-      ...plan,
-      rate_collections: omitFalsey((plan.rate_collections || []).map(
-        collectionId => _.find(rate_collections, { id: collectionId })
-      )),
+    ({ rate_collections, rate_plans }) =>
+      rate_plans.map((plan) => ({
+        ...plan,
+        rate_collections: omitFalsey(
+          (plan.rate_collections || []).map((collectionId) =>
+            _.find(rate_collections, { id: collectionId })
+          )
+        ),
 
-      // This field is included in the `RatePlan` type but not provided by the backend
-      object_type: 'RatePlan'
-    }))
+        // This field is included in the `RatePlan` type but not provided by the backend
+        object_type: 'RatePlan',
+      }))
   );
 }
 
-export async function getRatePlan (
+export async function getRatePlan(
   id: RatePlan['id'],
   params?: DynamicRestParams<RatePlanIncludeFields>
 ): Promise<RatePlan> {
-  const response = await getRequest(routes.rate_plans(id), params).then(res => res.json());
+  const response = await getRequest(routes.rate_plans(id), params).then((res) => res.json());
   return {
     ...response.rate_plan,
-    rate_collections: omitFalsey((response.rate_collections || undefined)),
-    object_type: "RatePlan"
+    rate_collections: omitFalsey(response.rate_collections || undefined),
+    object_type: 'RatePlan',
   };
 }
 
-export async function createRatePlan(
-  params: CreateRatePlanParams
-): Promise<RatePlan> {
+export async function createRatePlan(params: CreateRatePlanParams): Promise<RatePlan> {
   const response: CreateRatePlanResponse = await postRequest(
     routes.rate_plans(),
     params
@@ -257,8 +244,8 @@ export async function createRatePlan(
 
   return {
     ...response.rate_plan,
-    rate_collections: [],  // New Rate Plans always have empty rate_collection sets
-    object_type: "RatePlan",
+    rate_collections: [], // New Rate Plans always have empty rate_collection sets
+    object_type: 'RatePlan',
   };
 }
 
@@ -272,10 +259,7 @@ export function createRateCollection(
   params: CreateRateCollectionParams,
   callback: (response: XMLHttpRequest) => void
 ) {
-  const xhr = makeFormXhrPost(
-    routes.rate_collections(),
-    params
-  );
+  const xhr = makeFormXhrPost(routes.rate_collections(), params);
   xhr.onreadystatechange = () => {
     if (xhr.readyState === XMLHttpRequest.DONE) {
       callback(xhr);
@@ -288,17 +272,18 @@ export async function deleteRateCollection(id: RateCollection['id']) {
 }
 
 /** ============================ System profiles =========================== */
-export async function getSystemProfiles (params?: GetSystemProfilesQueryOptions) {
-  const response = await getRequest(routes.system_profile, params).then(res => res.json());
+export async function getSystemProfiles(params?: GetSystemProfilesQueryOptions) {
+  const response = await getRequest(routes.system_profile, params).then((res) => res.json());
 
   return parsePaginationSet<GetSystemProfilesResponse, SystemProfile>(
     response,
-    ({ system_profiles }) => system_profiles.map(systemProfile => ({
-      ...systemProfile,
+    ({ system_profiles }) =>
+      system_profiles.map((systemProfile) => ({
+        ...systemProfile,
 
-      // This field is included in the `SystemProfile` type but not provided by the backend
-      object_type: 'SystemProfile'
-    }))
+        // This field is included in the `SystemProfile` type but not provided by the backend
+        object_type: 'SystemProfile',
+      }))
   );
 }
 
@@ -308,13 +293,11 @@ const routes = {
   caiso_rate: baseRoute('caiso_rate/'),
   ghg_rate: baseRoute('ghg_rate/'),
   system_profile: baseRoute('system_profile/'),
-  scenarios: Object.assign(
-    appendId(baseRoute('scenario')), {
-      download: baseRoute('scenario/download/')
-    }
-  ),
-  rate_plans: appendId(baseRoute("rate_plan")),
-  rate_collections: Object.assign(appendId(baseRoute("rate_collection")), {
+  scenarios: Object.assign(appendId(baseRoute('scenario')), {
+    download: baseRoute('scenario/download/'),
+  }),
+  rate_plans: appendId(baseRoute('rate_plan')),
+  rate_collections: Object.assign(appendId(baseRoute('rate_collection')), {
     download: (id: RatePlan['id']) => routes.rate_collections(id) + 'download/',
   }),
 };

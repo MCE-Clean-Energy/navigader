@@ -9,7 +9,6 @@ import { Centered } from '../Centered';
 import * as Flex from '../Flex';
 import { DRAWER_WIDTH } from './common';
 
-
 /** ============================ Types ===================================== */
 type DrawerButtonProps = {
   linkTo: string;
@@ -21,57 +20,63 @@ type SideDrawerProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useDrawerStyles = makeStylesHook(theme => ({
-  appBarSpacer: {
-    ...theme.mixins.toolbar
-  },
-  drawer: {
-    height: '100vh',
-    flexShrink: 0,
-    width: DRAWER_WIDTH,
-    boxShadow: theme.shadows[24]
-  },
-  drawerHeader: {
-    ...theme.mixins.flex({ align: 'center', justify: 'flex-end' }),
-    ...theme.mixins.toolbar,
-    padding: theme.spacing(0, 1),
-    '& > *': {
-      color: 'inherit'
-    }
-  },
-  drawerLogo: {
-    padding: theme.spacing(2)
-  },
-  drawerPaper: {
-    backgroundColor: theme.palette.primary.main,
-    borderRight: 'none',
-    color: white,
-    width: DRAWER_WIDTH
-  },
-  flexContainer: {
-    flexGrow: 1,
-    marginTop: theme.spacing(2)
-  }
-}), 'SideDrawer');
-
-const useDrawerButtonStyles = makeStylesHook(theme => ({
-  root: {
-    padding: theme.spacing(1),
-    transition: theme.transitions.create('background-color', {
-      duration: theme.transitions.duration.shortest
-    }),
-    width: '100%',
-    '&:hover': {
-      backgroundColor: theme.palette.action.hover,
-      // Reset on touch devices, it doesn't add specificity
-      '@media (hover: none)': {
-        backgroundColor: 'transparent'
-      }
+const useDrawerStyles = makeStylesHook(
+  (theme) => ({
+    appBarSpacer: {
+      ...theme.mixins.toolbar,
     },
-    // Renders it in button font
-    ...theme.typography.button
-  }
-}), 'DrawerButton');
+    drawer: {
+      height: '100vh',
+      flexShrink: 0,
+      width: DRAWER_WIDTH,
+      boxShadow: theme.shadows[24],
+    },
+    drawerHeader: {
+      ...theme.mixins.flex({ align: 'center', justify: 'flex-end' }),
+      ...theme.mixins.toolbar,
+      'padding': theme.spacing(0, 1),
+      '& > *': {
+        color: 'inherit',
+      },
+    },
+    drawerLogo: {
+      padding: theme.spacing(2),
+    },
+    drawerPaper: {
+      backgroundColor: theme.palette.primary.main,
+      borderRight: 'none',
+      color: white,
+      width: DRAWER_WIDTH,
+    },
+    flexContainer: {
+      flexGrow: 1,
+      marginTop: theme.spacing(2),
+    },
+  }),
+  'SideDrawer'
+);
+
+const useDrawerButtonStyles = makeStylesHook(
+  (theme) => ({
+    root: {
+      'padding': theme.spacing(1),
+      'transition': theme.transitions.create('background-color', {
+        duration: theme.transitions.duration.shortest,
+      }),
+      'width': '100%',
+      '&:hover': {
+        'backgroundColor': theme.palette.action.hover,
+        // Reset on touch devices, it doesn't add specificity
+        '@media (hover: none)': {
+          backgroundColor: 'transparent',
+        },
+      },
+      // Renders it in button font
+      ...theme.typography.button,
+    },
+  }),
+  'DrawerButton'
+);
 
 /** ============================ Components ================================ */
 const DrawerButton: React.FC<DrawerButtonProps> = ({ children, linkTo }) => {

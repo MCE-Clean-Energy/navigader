@@ -2,12 +2,13 @@ import * as React from 'react';
 import { cleanup } from '@testing-library/react';
 
 import {
-  asyncForEach, getCombinations, renderContextDependentComponent
+  asyncForEach,
+  getCombinations,
+  renderContextDependentComponent,
 } from 'navigader/util/testing';
 import { stepNumbers, CostFunctionSelections, DERSelection } from './common';
 import { StepActions } from './StepActions';
 import { makeDataProps, makeState } from './testing';
-
 
 describe('`Step Actions` component', () => {
   describe('DER selection page', () => {
@@ -52,7 +53,7 @@ describe('`Step Actions` component', () => {
       const validDer: DERSelection = {
         configurationId: 'a',
         strategyId: 'b',
-        type: 'Battery'
+        type: 'Battery',
       };
 
       const { getAllByRole } = renderContextDependentComponent(
@@ -72,9 +73,9 @@ describe('`Step Actions` component', () => {
   });
 
   describe('Cost function page', () => {
-    function makeCostFunctionState (costFunctionKeys: Array<keyof CostFunctionSelections>) {
+    function makeCostFunctionState(costFunctionKeys: Array<keyof CostFunctionSelections>) {
       const costFunctionState: CostFunctionSelections = {};
-      costFunctionKeys.forEach(key => {
+      costFunctionKeys.forEach((key) => {
         costFunctionState[key] = 1;
       });
       return costFunctionState;
@@ -86,7 +87,7 @@ describe('`Step Actions` component', () => {
         'caisoRate',
         'ghgRate',
         'ratePlan',
-        'systemProfile'
+        'systemProfile',
       ]);
       expect(combinations).toHaveLength(Math.pow(2, 4));
 
@@ -107,7 +108,6 @@ describe('`Step Actions` component', () => {
 
         await cleanup();
       });
-      }
-    );
+    });
   });
 });

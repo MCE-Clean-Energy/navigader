@@ -2,10 +2,9 @@ import { DeferrableFields } from './api';
 import { NavigaderObject, Nullable, StateChoice } from './common';
 import { DataObject, Frame288Numeric, Frame288NumericType, RawDataObject } from './data';
 
-
 /** ============================ CAISO Rates =============================== */
 type CAISORateFilters = Partial<{
-  DATA_ITEM: 'LMP_PRC'
+  DATA_ITEM: 'LMP_PRC';
 }>;
 
 type CAISORateCommon = {
@@ -28,14 +27,16 @@ export type LoadServingEntity = {
   state: StateChoice;
 };
 
-export type RateComponent =
-  & { rate: number; unit: string }
-  & Partial<{ max: number; adj: number; sell: number }>;
+export type RateComponent = { rate: number; unit: string } & Partial<{
+  max: number;
+  adj: number;
+  sell: number;
+}>;
 
 export type RateBucket = Partial<{
   energyRateTiers: RateComponent[];
   demandRateTiers: RateComponent[];
-}>
+}>;
 
 export type EnergyKeyVal = { key: string; val: number };
 export type RateData = Partial<{
@@ -48,7 +49,7 @@ export type RateData = Partial<{
   demandRateStrux: RateBucket[];
   energyKeyVals: EnergyKeyVal[];
   demandRateUnits: string;
-}>
+}>;
 
 export type RateCollection = {
   effective_date: string;
@@ -60,19 +61,23 @@ export type RateCollection = {
   rate_data: RateData;
 };
 
-export interface RatePlan extends DeferrableFields<{
-  demand_max: Nullable<number>;
-  demand_min: Nullable<number>;
-  description: Nullable<string>;
-  id: number;
-  load_serving_entity: LoadServingEntity;
-  object_type: 'RatePlan';
-  name: string;
-}, {
-  sector: string;
-  rate_collections: RateCollection[];
-  start_date: string;
-}> {}
+export interface RatePlan
+  extends DeferrableFields<
+    {
+      demand_max: Nullable<number>;
+      demand_min: Nullable<number>;
+      description: Nullable<string>;
+      id: number;
+      load_serving_entity: LoadServingEntity;
+      object_type: 'RatePlan';
+      name: string;
+    },
+    {
+      sector: string;
+      rate_collections: RateCollection[];
+      start_date: string;
+    }
+  > {}
 
 /** ============================ GHG Rates ================================ */
 export type RawGHGRate = {
@@ -85,21 +90,24 @@ export type RawGHGRate = {
   source: string;
 };
 
-export interface GHGRate extends
-  Omit<NavigaderObject<'GHGRate'>, 'created_at' | 'id'>,
-  Omit<RawGHGRate, 'data'>
-{
-  data?: Frame288Numeric
+export interface GHGRate
+  extends Omit<NavigaderObject<'GHGRate'>, 'created_at' | 'id'>,
+    Omit<RawGHGRate, 'data'> {
+  data?: Frame288Numeric;
 }
 
 /** ============================ System profiles ================================ */
-export interface SystemProfile extends DeferrableFields<{
-  id: number;
-  object_type: 'SystemProfile';
-  name: string;
-}, {
-  load_serving_entity: LoadServingEntity;
-}> {}
+export interface SystemProfile
+  extends DeferrableFields<
+    {
+      id: number;
+      object_type: 'SystemProfile';
+      name: string;
+    },
+    {
+      load_serving_entity: LoadServingEntity;
+    }
+  > {}
 
 export type CostFunction = CostFunctions[keyof CostFunctions];
 export type CostFunctions = {

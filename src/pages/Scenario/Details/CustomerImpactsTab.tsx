@@ -1,13 +1,15 @@
 import * as React from 'react';
 
 import {
-  Card, CustomersTable, ScenarioComparisonChartAxes, ScenarioComparison,
-  ScenarioComparisonChartTitle
+  Card,
+  CustomersTable,
+  ScenarioComparisonChartAxes,
+  ScenarioComparison,
+  ScenarioComparisonChartTitle,
 } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
 import { Scenario } from 'navigader/types';
 import { useColorMap } from 'navigader/util/hooks';
-
 
 /** ============================ Types ===================================== */
 type CustomerImpactsTabProps = {
@@ -15,14 +17,17 @@ type CustomerImpactsTabProps = {
 };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(theme => ({
-  table: {
-    maxHeight: 500
-  },
-  tableContainer: {
-    marginTop: theme.spacing(2)
-  },
-}), 'CustomerImpactsTab');
+const useStyles = makeStylesHook(
+  (theme) => ({
+    table: {
+      maxHeight: 500,
+    },
+    tableContainer: {
+      marginTop: theme.spacing(2),
+    },
+  }),
+  'CustomerImpactsTab'
+);
 
 /** ============================ Components ================================ */
 export const CustomerImpactsTab: React.FC<CustomerImpactsTabProps> = ({ scenario }) => {

@@ -1,11 +1,10 @@
 import _ from 'navigader/util/lodash';
-import { fixtures } from 'navigader/util/testing'
+import { fixtures } from 'navigader/util/testing';
 import * as der from './der';
-
 
 /** ============================ Tests ===================================== */
 describe('DER utility methods', () => {
-  describe('`getStrategyDescription` method' ,() => {
+  describe('`getStrategyDescription` method', () => {
     it('returns the description unchanged if "January" is not found', () => {
       const nonDefaultDescription = fixtures.makeDerStrategy({ description: 'Custom description' });
       expect(der.getStrategyDescription(nonDefaultDescription)).toEqual('Custom description');

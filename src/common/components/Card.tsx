@@ -8,7 +8,6 @@ import classNames from 'classnames';
 
 import { makeStylesHook } from 'navigader/styles';
 
-
 /** ============================ Types ===================================== */
 export type CardProps = React.HTMLAttributes<HTMLDivElement> & {
   raised?: boolean;
@@ -16,31 +15,33 @@ export type CardProps = React.HTMLAttributes<HTMLDivElement> & {
   // style props
   padding?: number | string;
   outlined?: boolean;
-}
+};
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook<CardProps>(() => ({
-  card: props => ({
-    padding: props.padding
-  })
-}), 'NavigaderCard');
+const useStyles = makeStylesHook<CardProps>(
+  () => ({
+    card: (props) => ({
+      padding: props.padding,
+    }),
+  }),
+  'NavigaderCard'
+);
 
 /** ============================ Components ================================ */
 export const Card = Object.assign(
-  React.forwardRef<HTMLDivElement, CardProps>(
-    ({ className, outlined, ...rest }, ref) => {
-      const classes = classNames(className, useStyles(rest).card);
-      const variant = outlined ? 'outlined' : 'elevation';
-      return <MuiCard variant={variant} className={classes} {...rest} ref={ref} />;
-    }
-  ), {
+  React.forwardRef<HTMLDivElement, CardProps>(({ className, outlined, ...rest }, ref) => {
+    const classes = classNames(className, useStyles(rest).card);
+    const variant = outlined ? 'outlined' : 'elevation';
+    return <MuiCard variant={variant} className={classes} {...rest} ref={ref} />;
+  }),
+  {
     ActionArea: MuiCardActionArea,
     Actions: MuiCardActions,
     Content: MuiCardContent,
-    Media: MuiCardMedia
+    Media: MuiCardMedia,
   }
 );
 
 Card.defaultProps = {
-  padding: '1rem'
+  padding: '1rem',
 };

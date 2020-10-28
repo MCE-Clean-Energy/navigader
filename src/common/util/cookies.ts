@@ -3,7 +3,6 @@
  */
 import Cookies from 'js-cookie';
 
-
 /** ============================ Types ===================================== */
 type CookieType = 'authToken' | 'csrftoken';
 type CookieValue = string | undefined;
@@ -16,7 +15,7 @@ class CookieManager {
    *
    * @param {CookieType} name: the name of the cookie to get
    */
-  private static getCookie (name: CookieType) {
+  private static getCookie(name: CookieType) {
     return Cookies.get(CookieManager.prefix(name));
   }
 
@@ -26,7 +25,7 @@ class CookieManager {
    * @param {CookieType} name: the name of the cookie to set
    * @param {CookieValue} value: the value of the cookie. If undefined the cookie is removed
    */
-  private static setCookie (name: CookieType, value: CookieValue) {
+  private static setCookie(name: CookieType, value: CookieValue) {
     if (value === undefined) {
       CookieManager.removeCookie(name);
       return;
@@ -40,7 +39,7 @@ class CookieManager {
    *
    * @param {CookieType} name: the name of the cookie to get
    */
-  private static removeCookie (name: CookieType) {
+  private static removeCookie(name: CookieType) {
     Cookies.remove(CookieManager.prefix(name));
   }
 
@@ -51,34 +50,32 @@ class CookieManager {
    *
    * @param {CookieType} name: the name of the cookie
    */
-  private static prefix (name: CookieType) {
+  private static prefix(name: CookieType) {
     const env = process.env.REACT_APP_ENV;
-    return typeof env === 'undefined'
-      ? name
-      : [env, name].join('-');
-    }
+    return typeof env === 'undefined' ? name : [env, name].join('-');
+  }
 
   /* =========================== Cookie accessors/modifiers ================ */
-  get authToken () {
+  get authToken() {
     return CookieManager.getCookie('authToken');
   }
 
-  set authToken (value: CookieValue) {
+  set authToken(value: CookieValue) {
     CookieManager.setCookie('authToken', value);
   }
 
-  get csrfToken () {
+  get csrfToken() {
     return CookieManager.getCookie('csrftoken');
   }
 
-  set csrfToken (value: CookieValue) {
+  set csrfToken(value: CookieValue) {
     CookieManager.setCookie('csrftoken', value);
   }
 
   remove = {
     authToken: () => CookieManager.removeCookie('authToken'),
     csrfToken: () => CookieManager.removeCookie('csrftoken'),
-  }
+  };
 }
 
 export const cookieManager = new CookieManager();

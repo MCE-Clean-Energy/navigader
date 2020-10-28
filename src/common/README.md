@@ -6,7 +6,7 @@ within the app, code from the `common` directory can be imported like so:
 
 ```typescript
 import { Card } from 'navigader/components';
-``` 
+```
 
 This spares us from having to use large relative paths for such imports:
 

@@ -7,7 +7,6 @@ import { makeFileList, renderContextDependentComponent } from 'navigader/util/te
 import { UploadPage } from './UploadPage';
 import { fileSize } from 'navigader/util/formatters';
 
-
 describe('Upload page', () => {
   describe('`fileSize` helper function', () => {
     it('Handles "bytes"', () => {
@@ -55,29 +54,29 @@ describe('Upload page', () => {
     afterEach(() => mock.teardown());
 
     // Can't use the file selector, so attach a file to the input directly
-    function selectFile (getByTestId: GetByTestId, name: string) {
+    function selectFile(getByTestId: GetByTestId, name: string) {
       const file = new File([], name, { type: 'text/csv' });
       const fileInput = getByTestId('hidden-upload-input-15');
-      fireEvent.change(fileInput, { target: { files: makeFileList([file]) }});
+      fireEvent.change(fileInput, { target: { files: makeFileList([file]) } });
     }
 
-    function getUploadButton (getByTestId: GetByTestId) {
+    function getUploadButton(getByTestId: GetByTestId) {
       return getByTestId('upload-button') as HTMLButtonElement;
     }
 
-    function getNameInput (getByRole: GetByRole) {
+    function getNameInput(getByRole: GetByRole) {
       return getByRole('textbox') as HTMLInputElement;
     }
 
-    function enterFileName (getByRole: GetByRole, name: string) {
-      fireEvent.change(getNameInput(getByRole), { target: { value: name }});
+    function enterFileName(getByRole: GetByRole, name: string) {
+      fireEvent.change(getNameInput(getByRole), { target: { value: name } });
     }
 
     it('changes the upload name when the input value changes', () => {
       const { getByRole, getByTestId } = renderContextDependentComponent(<UploadPage />);
 
       // Select a file to upload, enter a name and upload
-      selectFile(getByTestId, "file_name_i_dont_want_to_keep.csv");
+      selectFile(getByTestId, 'file_name_i_dont_want_to_keep.csv');
       expect(getNameInput(getByRole).value).toEqual('file_name_i_dont_want_to_keep');
 
       // Update the file name
@@ -90,7 +89,7 @@ describe('Upload page', () => {
 
       // Mock XHR to respond successfully
       mock.post(util.beoRoute.v1('load/origin_file/'), {
-        status: 201
+        status: 201,
       });
 
       // Select a file to upload
@@ -105,7 +104,9 @@ describe('Upload page', () => {
     });
 
     it('allows uploading twice', async () => {
-      const { findByText, getByRole, getByTestId } = renderContextDependentComponent(<UploadPage />);
+      const { findByText, getByRole, getByTestId } = renderContextDependentComponent(
+        <UploadPage />
+      );
 
       // Select a file to upload, enter a name and upload
       selectFile(getByTestId, 'my_upload.csv');
@@ -114,7 +115,7 @@ describe('Upload page', () => {
 
       // Mock XHR to respond successfully
       mock.post(util.beoRoute.v1('load/origin_file/'), {
-        status: 201
+        status: 201,
       });
 
       // Success message should now show

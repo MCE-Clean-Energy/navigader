@@ -2,7 +2,6 @@ import { NavigaderObject, Nullable, ProgressFields, RawPandasFrame } from './com
 import { DERInfo } from './der';
 import { AbstractMeterGroup, OriginFile, AbstractRawMeterGroup, RawOriginFile } from './meter';
 
-
 /** ============================ Meter Groups ============================== */
 export type RawMeterGroup = RawOriginFile | RawScenario;
 export type MeterGroup = OriginFile | Scenario;
@@ -25,17 +24,13 @@ type ScenarioMetadata = {
   is_complete: boolean;
 };
 
-export type RawScenario =
-  & AbstractRawMeterGroup
-  & NavigaderObject<'Scenario'>
-  & {
+export type RawScenario = AbstractRawMeterGroup &
+  NavigaderObject<'Scenario'> & {
     der_simulation_count: number;
     expected_der_simulation_count: number;
     metadata: ScenarioMetadata;
-  }
-
-  // Fields that can be requested but which are not included by default
-  & Partial<{
+  } & // Fields that can be requested but which are not included by default
+  Partial<{
     der_simulations: string[];
     ders: [DERInfo];
     meter_group: string;
@@ -43,14 +38,12 @@ export type RawScenario =
     report_summary: RawScenarioReportSummary | EmptyReportSummary;
   }>;
 
-export type Scenario =
-  & AbstractMeterGroup
-  & Omit<RawScenario, 'data' | 'date_range' | 'ders' | 'meter_group' | 'report' | 'report_summary'>
-  & ProgressFields
-  & { meter_group_id?: string }
-
-  // Fields that can be requested but which are not included by default
-  & Partial<{
+export type Scenario = AbstractMeterGroup &
+  Omit<RawScenario, 'data' | 'date_range' | 'ders' | 'meter_group' | 'report' | 'report_summary'> &
+  ProgressFields & {
+    meter_group_id?: string;
+  } & // Fields that can be requested but which are not included by default
+  Partial<{
     der: DERInfo;
     meter_group: MeterGroup;
     report: ScenarioReport;
@@ -58,11 +51,8 @@ export type Scenario =
   }>;
 
 /** ============================ Report ==================================== */
-export type ProcurementReport = { [key in ProcurementKeys]?: number; };
-type ProcurementKeys =
-  | 'ProcurementDelta'
-  | 'ProcurementPostDER'
-  | 'ProcurementPreDER';
+export type ProcurementReport = { [key in ProcurementKeys]?: number };
+type ProcurementKeys = 'ProcurementDelta' | 'ProcurementPostDER' | 'ProcurementPreDER';
 
 type UsageReport = {
   UsagePreDER: number;
@@ -98,21 +88,19 @@ type ResourceAdequacyReport = {
   RADelta: Nullable<number>;
 };
 
-type ScenarioReportFieldsCommon = { ID: string; ScenarioID: string; } & Partial<
-  & UsageReport
-  & FinancialReport
-  & GHGReport
-  & ResourceAdequacyReport
-  & ProcurementReport
-  & CustomerMeterReport
+type ScenarioReportFieldsCommon = { ID: string; ScenarioID: string } & Partial<
+  UsageReport &
+    FinancialReport &
+    GHGReport &
+    ResourceAdequacyReport &
+    ProcurementReport &
+    CustomerMeterReport
 >;
 
-export type RawScenarioReportFields = ScenarioReportFieldsCommon & { "SA ID": number; };
-export type ScenarioReportFields =
-  & ScenarioReportFieldsCommon
-  & { SA_ID: number; };
+export type RawScenarioReportFields = ScenarioReportFieldsCommon & { 'SA ID': number };
+export type ScenarioReportFields = ScenarioReportFieldsCommon & { SA_ID: number };
 
-export type EmptyReport = { index: {}; };
+export type EmptyReport = { index: {} };
 export type RawScenarioReport = RawPandasFrame<RawScenarioReportFields>;
 export type ScenarioReport = {
   [id: string]: ScenarioReportFields;

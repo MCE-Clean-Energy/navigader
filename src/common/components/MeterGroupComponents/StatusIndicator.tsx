@@ -6,7 +6,6 @@ import { Tooltip } from '../Tooltip';
 import { Icon } from '../Icon';
 import { Progress } from '../Progress';
 
-
 /** ============================ Types ===================================== */
 type ScenarioStatusProps = { meterGroup: MeterGroup };
 

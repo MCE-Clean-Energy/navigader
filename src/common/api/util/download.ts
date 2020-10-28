@@ -7,7 +7,6 @@
 import { Nullable } from 'navigader/types';
 import { getRequestHeaders } from 'navigader/util';
 
-
 /** ============================ Types ===================================== */
 export type ProgressCallback = (receivedLength: number, contentLength: number) => void;
 
@@ -20,7 +19,7 @@ export type ProgressCallback = (receivedLength: number, contentLength: number) =
  *   returned with the response
  * @param {ProgressCallback} onProgress: a callback to run when a new chunk is downloaded
  */
-export async function downloadFile (
+export async function downloadFile(
   url: string,
   defaultFileName: string,
   onProgress?: ProgressCallback
@@ -60,7 +59,7 @@ function getFileNameFromContentDispositionHeader(response: Response): Nullable<s
  * @param {Blob} blob: the blob to save
  * @param {string} fileName: the name of the file
  */
-function saveBlob (blob: Blob, fileName: string) {
+function saveBlob(blob: Blob, fileName: string) {
   // MS Edge and IE don't allow using a blob object directly as link href, instead it is necessary
   // to use msSaveOrOpenBlob
   if (window.navigator?.msSaveOrOpenBlob) {
@@ -89,10 +88,10 @@ function saveBlob (blob: Blob, fileName: string) {
  * @param {string} url: the URL of the file
  * @param {ProgressCallback} onProgress: a callback to run when a new chunk is downloaded
  */
-export async function fetchFile (url: string, onProgress?: ProgressCallback) {
+export async function fetchFile(url: string, onProgress?: ProgressCallback) {
   let requestInit: RequestInit = {
     method: 'GET',
-    headers: getRequestHeaders('application/json')
+    headers: getRequestHeaders('application/json'),
   };
 
   // Fetch the file

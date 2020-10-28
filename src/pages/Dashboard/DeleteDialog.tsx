@@ -6,7 +6,6 @@ import { Button, Dialog } from 'navigader/components';
 import { slices } from 'navigader/store';
 import { Scenario } from 'navigader/types';
 
-
 /** ============================ Types ===================================== */
 type DeleteDialogProps = {
   onClose: () => void;
@@ -29,13 +28,15 @@ export const DeleteDialog: React.FC<DeleteDialogProps> = (props) => {
       </Dialog.Content>
       <Dialog.Actions>
         <Button.Text onClick={onClose}>Cancel</Button.Text>
-        <Button.Text color="primary" onClick={deleteScenario}>Delete</Button.Text>
+        <Button.Text color="primary" onClick={deleteScenario}>
+          Delete
+        </Button.Text>
       </Dialog.Actions>
     </Dialog>
   );
 
   /** ========================== Callbacks ================================= */
-  async function deleteScenario () {
+  async function deleteScenario() {
     onClose();
 
     // Optimistically delete the scenario. This will be reverted if the request fails.
