@@ -7,7 +7,7 @@ import { slices } from 'navigader/store';
 import { CAISORate, CostFunctions, GHGRate, Loader, RatePlan, SystemProfile } from 'navigader/types';
 import { omitFalsey } from 'navigader/util/omitFalsey';
 import { DataTypeFilters } from './types';
-import { applyDataFilters, applyDynamicRestIncludes, useAsync } from './util';
+import { applyDataFilters, useAsync } from './util';
 
 
 /** ============================ Types ===================================== */
@@ -30,6 +30,7 @@ export function useRatePlans (params?: api.GetRatePlansQueryOptions): Loader<Rat
 
   const loading = useAsync(
     async () => {
+      // Even if we already have some ratePlans, we can't know that we have all of them
       return api.getRatePlans(params)
     },
     ({ data }) => dispatch(slices.models.updateModels(data))
@@ -42,14 +43,10 @@ export function useRatePlan (ratePlanId: RatePlan['id'], params?: api.GetRatePla
   const dispatch = useDispatch();
 
   const storedRatePlans = useSelector(slices.models.selectRatePlans);
-  const ratePlan = (() => {
-    const ratePlan = _.find(storedRatePlans, { id: ratePlanId });
-    return applyDynamicRestIncludes(ratePlan, params) ? ratePlan : undefined;
-  })();
+  const ratePlan = _.find(storedRatePlans, { id: ratePlanId });
 
   const loading = useAsync(
     async () => {
-      // If we've already got the rate plan 
       return api.getRatePlan(ratePlanId, params);
     },
     ratePlan => dispatch(slices.models.updateModel(ratePlan)),

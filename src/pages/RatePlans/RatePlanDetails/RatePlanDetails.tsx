@@ -41,7 +41,7 @@ export const RatePlanDetails: React.FC = () => {
   ).reverse();
   let [selectedCollection, setSelectedCollection] = React.useState<
     RateCollection | undefined
-  >(collections[0] || undefined);
+  >();
 
   React.useEffect(() => {
     setSelectedCollection((curr) =>

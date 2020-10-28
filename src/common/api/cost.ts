@@ -186,7 +186,7 @@ export async function downloadCustomerData (ids: string[], onProgress?: Progress
 }
 
 export function downloadRateCollectionData(
-  id: string,
+  id: RatePlan['id'],
   onProgress?: ProgressCallback
 ) {
   const url = routes.rate_collections.download(id);
@@ -315,6 +315,6 @@ const routes = {
   ),
   rate_plans: appendId(baseRoute("rate_plan")),
   rate_collections: Object.assign(appendId(baseRoute("rate_collection")), {
-    download: (id: string) => baseRoute(routes.rate_collections(id) + 'download/'),
+    download: (id: RatePlan['id']) => routes.rate_collections(id) + 'download/',
   }),
 };

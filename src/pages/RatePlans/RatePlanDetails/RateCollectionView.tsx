@@ -88,7 +88,7 @@ export const RateCollectionView: React.FC<RateCollectionViewsProps> = ({
             >
               <List.Item
                 onClick={() => {
-                  api.downloadRateCollectionData(rateCollection.id.toString());
+                  api.downloadRateCollectionData(rateCollection.id);
                 }}
               >
                 <List.Item.Icon icon="download" />
