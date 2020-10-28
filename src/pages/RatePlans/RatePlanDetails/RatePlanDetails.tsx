@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 import { routes } from "navigader/routes";
 import _ from "navigader/util/lodash";
@@ -21,54 +22,42 @@ import {
   CreateRateCollectionForm,
   FormErrorObject,
 } from "./CreateRateCollectionForm";
-import { useDispatch } from "react-redux";
 import { slices } from "navigader/store";
-import { RateCollection, RatePlan } from "navigader/types";
+import { RateCollection } from "navigader/types";
 import { AlertSnackbar } from "navigader/components";
 
 /** ============================ Components ================================ */
 export const RatePlanDetails: React.FC = () => {
   const dispatch = useDispatch();
-  let [selectedCollectionIdx, setSelectedIdx] = React.useState(0);
   let [createFormOpen, setCreateFormOpen] = React.useState(false);
-  let [ratePlan, setRatePlan] = React.useState<RatePlan>();
+  let [errors, setErrors] = React.useState<FormErrorObject>();
+  const { id } = useParams<{ id: string }>();
+  const { loading, ratePlan } = hooks.useRatePlan(+id, {
+    include: "rate_collections.*",
+  });
+  const collections = _.sortBy(
+    ratePlan?.rate_collections,
+    "effective_date"
+  ).reverse();
   let [selectedCollection, setSelectedCollection] = React.useState<
     RateCollection | undefined
-  >();
-  let [collections, setCollections] = React.useState<RateCollection[]>([]);
-  let [errors, setErrors] = React.useState<FormErrorObject>();
-
-  const { id } = useParams<{ id: string }>();
-
-  let ratePlans = hooks.useRatePlans({
-    include: "rate_collections.*",
-    page: 1,
-    page_size: 100,
-  });
+  >(collections[0] || undefined);
 
   React.useEffect(() => {
-    setRatePlan(_.find(ratePlans, { id: +id }));
-  }, [id, setRatePlan, ratePlans]);
-
-  React.useEffect(() => {
-    setCollections(
-      ratePlan
-        ? _.sortBy(ratePlan.rate_collections, "effective_date").reverse()
-        : []
+    setSelectedCollection((curr) =>
+      curr && collections.includes(curr) ? curr : collections[0]
     );
-  }, [ratePlan]);
-
-  React.useEffect(() => {
-    setSelectedCollection(collections[selectedCollectionIdx]);
-  }, [collections, selectedCollectionIdx]);
+  }, [collections]);
 
   const createRateCollection = React.useCallback(
-    async (params: api.CreateRateCollectionParams) => {
+    (params: api.CreateRateCollectionParams) => {
       api.createRateCollection(params, (xhr) => {
         if (ratePlan && xhr.status === 201) {
           const rateCollection = JSON.parse(xhr.response).rate_collection;
           let updatedRatePlan = Object.assign({}, ratePlan, {
-            rate_collections: [rateCollection].concat(collections),
+            rate_collections: [rateCollection].concat(
+              ratePlan.rate_collections
+            ),
           });
           dispatch(slices.models.updateModel(updatedRatePlan));
           setCreateFormOpen(false);
@@ -77,22 +66,22 @@ export const RatePlanDetails: React.FC = () => {
         }
       });
     },
-    [dispatch, ratePlan, collections]
+    [dispatch, ratePlan]
   );
 
   const deleteRateCollection = React.useCallback(
-    async (collectionId: string) => {
+    async (collectionId: RateCollection["id"]) => {
       const response = await api.deleteRateCollection(collectionId);
-      if (ratePlan && response.status === 204) {
+      if (ratePlan && response.ok) {
         let updatedRatePlan = Object.assign({}, ratePlan, {
           rate_collections: _.without(collections, selectedCollection),
         });
         dispatch(slices.models.removeModel(ratePlan));
         dispatch(slices.models.updateModel(updatedRatePlan));
-        setSelectedIdx(0);
+        setSelectedCollection(collections[0]);
       }
     },
-    [dispatch, ratePlan, collections, selectedCollection]
+    [dispatch, ratePlan, selectedCollection, collections]
   );
 
   return (
@@ -106,7 +95,7 @@ export const RatePlanDetails: React.FC = () => {
           title={ratePlan?.name || ""}
         />
       </Grid.Item>
-      {ratePlan ? (
+      {!loading ? (
         <>
           <Grid.Item span={3}>
             <Flex.Container>
@@ -128,11 +117,15 @@ export const RatePlanDetails: React.FC = () => {
               errors={errors}
             />
             <List>
-              {collections.map((rate_collection, idx) => (
+              {collections?.map((rate_collection, idx) => (
                 <List.Item
-                  selected={idx === selectedCollectionIdx}
+                  selected={
+                    selectedCollection
+                      ? selectedCollection.id === rate_collection.id
+                      : idx === 0
+                  }
                   key={rate_collection.id}
-                  onClick={() => setSelectedIdx(idx)}
+                  onClick={() => setSelectedCollection(rate_collection)}
                 >
                   {formatters.date.standard(rate_collection.effective_date)}
                 </List.Item>

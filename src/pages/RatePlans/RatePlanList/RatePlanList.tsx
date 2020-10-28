@@ -15,7 +15,6 @@ import {
 import { slices } from "navigader/store";
 import { formatters } from "navigader/util";
 import { CreateRatePlan } from "./CreateRatePlan";
-import { CreateRatePlanParams } from "navigader/api";
 import { makeStylesHook } from "navigader/styles";
 import { RatePlan } from "navigader/types";
 import { DeleteDialog } from "./DeleteDialog";
@@ -40,19 +39,9 @@ export const RatePlanList: React.FC = () => {
   const [deleteRatePlan, setDeleteRatePlan] = React.useState<RatePlan>();
 
   const ratePlans = useRatePlans({
-    include: "rate_collections.*",
     page: 1,
     page_size: 100,
   });
-
-  const createRatePlan = React.useCallback(
-    async (params: CreateRatePlanParams) => {
-      const response = await api.createRatePlan(params);
-      dispatch(slices.models.updateModel(response));
-      return response;
-    },
-    [dispatch]
-  );
 
   return (
     <>
@@ -61,7 +50,7 @@ export const RatePlanList: React.FC = () => {
         <Grid.Item span={12}>
           {ratePlans && !ratePlans.loading && (
             <PrefetchedTable
-              aria-label="meter table"
+              aria-label="rate plan table"
               data={ratePlans}
               raised
               stickyHeader
@@ -129,7 +118,7 @@ export const RatePlanList: React.FC = () => {
         </Grid.Item>
         <Grid.Item className={classes.fabGutter} span={12}></Grid.Item>
       </Grid>
-      <CreateRatePlan onSubmit={createRatePlan} />
+      <CreateRatePlan />
       <DeleteDialog
         onClose={() => {
           setDeleteRatePlan(undefined);
@@ -150,7 +139,7 @@ export const RatePlanList: React.FC = () => {
   async function clickDelete() {
     if (deleteRatePlan) {
       const response = await api.deleteRatePlan(deleteRatePlan.id.toString());
-      if (response.status === 204) {
+      if (response.ok) {
         dispatch(slices.models.removeModel(deleteRatePlan));
       }
     }

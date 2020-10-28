@@ -9,13 +9,10 @@ import { makeStylesHook } from 'navigader/styles';
 
 
 /** ============================ Styles ===================================== */
-const useStyles = makeStylesHook(() => ({
+const useStyles = makeStylesHook((theme) => ({
   fab: {
-    margin: 0,
-    top: 'auto',
-    right: 20,
-    bottom: 20,
-    left: 'auto',
+    right: theme.spacing(3),
+    bottom: theme.spacing(3),
     position: 'fixed',
   }
 }), 'FAB');

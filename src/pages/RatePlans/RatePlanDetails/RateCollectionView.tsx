@@ -15,14 +15,14 @@ import {
 } from "navigader/components";
 import * as api from "navigader/api";
 import { formatters } from "navigader/util";
-import { RateCollection, RateBucket } from "navigader/types/cost";
+import { RateCollection, RateBucket, RatePlan } from "navigader/types/cost";
 import { DeleteDialog } from "../RatePlanList/DeleteDialog";
 
 
 /** ============================ Types ===================================== */
 type RateCollectionViewsProps = {
   rateCollection: RateCollection;
-  onDelete: (id: string) => void;
+  onDelete: (id: RatePlan['id'] ) => void;
 };
 
 type RateBucketViewProps = {
@@ -206,7 +206,7 @@ export const RateCollectionView: React.FC<RateCollectionViewsProps> = ({
           setDeleteDialogOpen(false);
         }}
         onClickDelete={() => {
-          onDelete(rateCollection.id.toString());
+          onDelete(rateCollection.id);
         }}
         title="Delete Rate Plan"
         message={

@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import _ from 'navigader/util/lodash';
 import * as api from 'navigader/api';
 import { slices } from 'navigader/store';
 import { CAISORate, CostFunctions, GHGRate, Loader, RatePlan, SystemProfile } from 'navigader/types';
 import { omitFalsey } from 'navigader/util/omitFalsey';
 import { DataTypeFilters } from './types';
-import { applyDataFilters, useAsync } from './util';
+import { applyDataFilters, applyDynamicRestIncludes, useAsync } from './util';
 
 
 /** ============================ Types ===================================== */
@@ -29,14 +30,33 @@ export function useRatePlans (params?: api.GetRatePlansQueryOptions): Loader<Rat
 
   const loading = useAsync(
     async () => {
-      // If we've already loaded the rates, we don't need to do so again
-      if (ratePlans.length) return;
       return api.getRatePlans(params)
     },
     ({ data }) => dispatch(slices.models.updateModels(data))
   );
 
   return Object.assign([...ratePlans], { loading });
+}
+
+export function useRatePlan (ratePlanId: RatePlan['id'], params?: api.GetRatePlanQueryOptions) {
+  const dispatch = useDispatch();
+
+  const storedRatePlans = useSelector(slices.models.selectRatePlans);
+  const ratePlan = (() => {
+    const ratePlan = _.find(storedRatePlans, { id: ratePlanId });
+    return applyDynamicRestIncludes(ratePlan, params) ? ratePlan : undefined;
+  })();
+
+  const loading = useAsync(
+    async () => {
+      // If we've already got the rate plan 
+      return api.getRatePlan(ratePlanId, params);
+    },
+    ratePlan => dispatch(slices.models.updateModel(ratePlan)),
+    [ratePlanId]
+  );
+
+  return { loading, ratePlan };
 }
 
 /** ============================ GHG Rates ================================= */

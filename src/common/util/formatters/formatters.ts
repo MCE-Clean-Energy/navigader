@@ -218,7 +218,7 @@ export function commas (n: any) {
 const units = ['byte', 'KB', 'MB', 'GB'];
 const maxIndex = units.length - 1;
 
-export function renderFileSize (size: number) {
+export function fileSize (size: number) {
   if (size <= 0) return '';
 
   let power = Math.floor(Math.log(size) / Math.log(1000));

@@ -10,7 +10,7 @@ import { routes } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { Maybe } from 'navigader/types';
-import { renderFileSize } from 'navigader/util/formatters';
+import { FileSize } from 'navigader/components';
 
 
 /** ============================ Types ===================================== */
@@ -85,9 +85,7 @@ const FileComponent: React.FC<FileCardProps> = ({ file, progress, startUpload, s
           <Typography useDiv variant="subtitle2">{file.name}</Typography>
         </Flex.Item>
         <Flex.Item className={classes.fileSize}>
-          <Typography color="textSecondary" variant="body2">
-            {renderFileSize(file.size)}
-          </Typography>
+          <FileSize size={file.size} />
         </Flex.Item>
       </Flex.Container>
 

@@ -1,9 +1,17 @@
 import * as React from "react";
-import { Button, Card, Grid, Typography, Flex } from "navigader/components";
+import { useParams } from "react-router-dom";
+
+import {
+  Button,
+  Card,
+  Grid,
+  Typography,
+  Flex,
+  FileSize,
+} from "navigader/components";
 import { makeStylesHook } from "navigader/styles";
 import { formatters } from "navigader/util";
 import { CreateRateCollectionParams } from "navigader/api";
-import { useParams } from "react-router-dom";
 
 /** ============================ Types ===================================== */
 export type FormErrorObject = {
@@ -38,7 +46,7 @@ const ErrorDetails: React.FC<ErrorDetailProps> = (params) => {
   const { errors } = params;
   return (
     <>
-      {Object.keys(errors).map((field: string) => (
+      {Object.entries(errors).map(([field, error]) => (
         <Grid.Item key={field} span={12}>
           <Grid>
             <Grid.Item span={6}>
@@ -48,7 +56,7 @@ const ErrorDetails: React.FC<ErrorDetailProps> = (params) => {
             </Grid.Item>
             <Grid.Item span={6}>
               <Typography color="error" variant="body2">
-                {errors[field]}
+                {error}
               </Typography>
             </Grid.Item>
           </Grid>
@@ -78,24 +86,22 @@ export const CreateRateCollectionForm: React.FC<CreateRateCollectionFormProps> =
                 Select Rate File
               </Button>
             </Grid.Item>
+            <Grid.Item span={12}>
+              {file && (
+                <Flex.Container justifyContent="flex-start">
+                  <Flex.Item grow>
+                    <Typography useDiv variant="subtitle2">
+                      {formatters.truncateAtLength(file.name, 20)}
+                    </Typography>
+                  </Flex.Item>
+                  <Flex.Item>
+                    <FileSize size={file.size} />
+                  </Flex.Item>
+                </Flex.Container>
+              )}
+            </Grid.Item>
+            {errors && <ErrorDetails errors={errors} />}
           </Grid>
-          <Grid.Item span={12}>
-            {file && (
-              <Flex.Container justifyContent="flex-start">
-                <Flex.Item grow>
-                  <Typography useDiv variant="subtitle2">
-                    {formatters.truncateAtLength(file.name, 20)}
-                  </Typography>
-                </Flex.Item>
-                <Flex.Item>
-                  <Typography variant="body2">
-                    {formatters.renderFileSize(file.size)}
-                  </Typography>
-                </Flex.Item>
-              </Flex.Container>
-            )}
-          </Grid.Item>
-          {errors && <ErrorDetails errors={errors} />}
         </Card.Content>
         <Card.Actions className={classes.submitButton}>
           <Button.Text
@@ -116,7 +122,6 @@ export const CreateRateCollectionForm: React.FC<CreateRateCollectionFormProps> =
       <input
         accept=".csv"
         className={classes.fileUpload}
-        data-testid={`hidden-upload-input`}
         onChange={onFileChange}
         ref={fileUpload}
         type="file"
@@ -131,7 +136,6 @@ export const CreateRateCollectionForm: React.FC<CreateRateCollectionFormProps> =
   }
 
   function onFileChange(event: React.ChangeEvent<HTMLInputElement>) {
-    if (event.target?.files?.length) setFile(event.target.files.item(0));
-    else setFile(null);
+    setFile(event.target?.files?.item(0) || null);
   }
 };

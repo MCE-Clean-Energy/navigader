@@ -6,7 +6,7 @@ import { Scenario, ScenarioReportFields } from 'navigader/types';
 import { formatters } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 import { Avatar } from '../Avatar';
-import { FileDownload } from '../FileDownload';
+import { FileDownload } from '../File';
 import { PrefetchedTable, Table } from '../Table';
 import { Tooltip } from '../Tooltip';
 import { ImpactColumnHeader } from './ImpactColumnHeader';

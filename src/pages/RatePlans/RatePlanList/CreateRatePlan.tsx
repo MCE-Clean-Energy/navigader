@@ -1,18 +1,23 @@
 import * as React from "react";
 
+import * as api from "navigader/api";
+import { slices } from "navigader/store";
 import { Dialog, Button, TextField, Select, Grid } from "navigader/components";
 import { CreateRatePlanParams } from "navigader/api";
+import { useDispatch } from "react-redux";
 
-/* ================================= Types ================================= */
-type CreateRatePlanProps = {
-  onSubmit: (params: CreateRatePlanParams) => void;
-};
-
-export const CreateRatePlan: React.FC<CreateRatePlanProps> = (props) => {
+/* ============================ Components ================================= */
+export const CreateRatePlan: React.FC = () => {
+  const dispatch = useDispatch();
   let [dialogOpen, setDialogOpen] = React.useState(false);
   let [name, updateName] = React.useState<string>("");
   let [sector, updateSector] = React.useState<string>("Residential");
-  const { onSubmit } = props;
+
+  const onSubmit = async (params: CreateRatePlanParams) => {
+    const response = await api.createRatePlan(params);
+    dispatch(slices.models.updateModel(response));
+    return response;
+  }
 
   return (
     <>

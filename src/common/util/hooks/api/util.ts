@@ -4,6 +4,7 @@ import { DataObject, DynamicRestParams, Maybe } from 'navigader/types';
 import _ from 'navigader/util/lodash';
 import { omitFalsey } from 'navigader/util/omitFalsey';
 import { DataTypeFilters } from './types';
+import { isArray } from 'lodash';
 
 
 /**
@@ -81,7 +82,7 @@ export function applyDataFilters (model: Maybe<DataObject>, filters: Maybe<DataT
  * @param {object} model: the model to apply the filters to
  * @param {DynamicRestParams} [params]: the dynamic rest filters to apply
  */
-export function applyDynamicRestFilters (model: object, params?: DynamicRestParams) {
+export function applyDynamicRestFilters (model: Maybe<object>, params?: DynamicRestParams) {
   return _.every(params?.filter, (clause, field) => {
     const value = _.get(model, field);
     switch (clause.operation) {
@@ -91,4 +92,19 @@ export function applyDynamicRestFilters (model: object, params?: DynamicRestPara
         return value === clause.value;
     }
   });
+}
+
+export function applyDynamicRestIncludes (model: Maybe<object>, params?: DynamicRestParams) {
+  if (params) {
+    let fields = params.include;
+    if (fields && !isArray(fields)) {
+      fields = [fields];
+    }
+    return _.every(fields, (field) => {
+      const effectiveField = field.split('.')[0];
+      const value = _.get(model, effectiveField);
+      return !(!value)
+    })
+  }
+  return true;
 }

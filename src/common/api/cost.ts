@@ -12,7 +12,7 @@ import {
   CostFunctions,
   SystemProfile,
   GHGRate,
-  CAISORate,
+  CAISORate
 } from "navigader/types";
 import { appendQueryString, omitFalsey, serializers } from "navigader/util";
 import _ from "navigader/util/lodash";
@@ -62,13 +62,11 @@ export type GetCAISORatesQueryOptions =
   & { year?: number };
 
 type RatePlanIncludeFields = 'rate_collections.*';
+export type GetRatePlanQueryOptions = & DynamicRestParams<RatePlanIncludeFields>;
 export type GetRatePlansQueryOptions =
-  & DynamicRestParams<RatePlanIncludeFields>
+  GetRatePlanQueryOptions
   & PaginationQueryParams;
-export type CreateRatePlanParams = {
-  name: string;
-  sector: string;
-};
+export type CreateRatePlanParams = Required<Pick<RatePlan, 'name' | 'sector'>>;
 export type CreateRateCollectionParams = {
   rate_data_csv: File;
   rate_plan: string;
@@ -187,12 +185,11 @@ export async function downloadCustomerData (ids: string[], onProgress?: Progress
   return downloadFile(url, 'scenario-customer-data.csv', onProgress);
 }
 
-export async function downloadRateCollectionData(
+export function downloadRateCollectionData(
   id: string,
   onProgress?: ProgressCallback
 ) {
   const url = routes.rate_collections.download(id);
-
   return downloadFile(url, 'rate-collection-data.csv', onProgress);
 }
 
@@ -238,6 +235,18 @@ export async function getRatePlans (params?: GetRatePlansQueryOptions) {
   );
 }
 
+export async function getRatePlan (
+  id: RatePlan['id'],
+  params?: DynamicRestParams<RatePlanIncludeFields>
+): Promise<RatePlan> {
+  const response = await getRequest(routes.rate_plans(id), params).then(res => res.json());
+  return {
+    ...response.rate_plan,
+    rate_collections: omitFalsey((response.rate_collections || undefined)),
+    object_type: "RatePlan"
+  };
+}
+
 export async function createRatePlan(
   params: CreateRatePlanParams
 ): Promise<RatePlan> {
@@ -254,34 +263,28 @@ export async function createRatePlan(
 }
 
 export async function deleteRatePlan(id: string) {
-  const response = await deleteRequest(
-    routes.rate_plans(id)
-  );
-  return response;
+  return await deleteRequest(routes.rate_plans(id));
 }
 
 /** ============================= Rate Collections ========================= */
 
-export async function createRateCollection(
+export function createRateCollection(
   params: CreateRateCollectionParams,
   callback: (response: XMLHttpRequest) => void
 ) {
-  const xhr: XMLHttpRequest = makeFormXhrPost(
+  const xhr = makeFormXhrPost(
     routes.rate_collections(),
     params
   );
-  xhr.onreadystatechange = async () => {
+  xhr.onreadystatechange = () => {
     if (xhr.readyState === XMLHttpRequest.DONE) {
       callback(xhr);
     }
   };
 }
 
-export async function deleteRateCollection(id: string) {
-  const response = await deleteRequest(
-    routes.rate_collections(id)
-  );
-  return response;
+export async function deleteRateCollection(id: RateCollection['id']) {
+  return await deleteRequest(routes.rate_collections(id));
 }
 
 /** ============================ System profiles =========================== */
@@ -312,6 +315,6 @@ const routes = {
   ),
   rate_plans: appendId(baseRoute("rate_plan")),
   rate_collections: Object.assign(appendId(baseRoute("rate_collection")), {
-    download: (id: string) => baseRoute(`rate_collection/${id}/download/`),
+    download: (id: string) => baseRoute(routes.rate_collections(id) + 'download/'),
   }),
 };
