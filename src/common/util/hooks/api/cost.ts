@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import _ from 'navigader/util/lodash';
 import * as api from 'navigader/api';
 import { slices } from 'navigader/store';
 import { CAISORate, CostFunctions, GHGRate, Loader, RatePlan, SystemProfile } from 'navigader/types';
@@ -29,14 +30,30 @@ export function useRatePlans (params?: api.GetRatePlansQueryOptions): Loader<Rat
 
   const loading = useAsync(
     async () => {
-      // If we've already loaded the rates, we don't need to do so again
-      if (ratePlans.length) return;
+      // Even if we already have some ratePlans, we can't know that we have all of them
       return api.getRatePlans(params)
     },
     ({ data }) => dispatch(slices.models.updateModels(data))
   );
 
   return Object.assign([...ratePlans], { loading });
+}
+
+export function useRatePlan (ratePlanId: RatePlan['id'], params?: api.GetRatePlanQueryOptions) {
+  const dispatch = useDispatch();
+
+  const storedRatePlans = useSelector(slices.models.selectRatePlans);
+  const ratePlan = _.find(storedRatePlans, { id: ratePlanId });
+
+  const loading = useAsync(
+    async () => {
+      return api.getRatePlan(ratePlanId, params);
+    },
+    ratePlan => dispatch(slices.models.updateModel(ratePlan)),
+    [ratePlanId]
+  );
+
+  return { loading, ratePlan };
 }
 
 /** ============================ GHG Rates ================================= */

@@ -16,6 +16,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Schedule from '@material-ui/icons/Schedule';
 import SystemUpdateAltIcon from '@material-ui/icons/SystemUpdateAlt';
+import Close from '@material-ui/icons/Close';
 import WbSunny from '@material-ui/icons/WbSunny';
 
 import { MaterialColor, materialColors } from 'navigader/styles';
@@ -47,7 +48,8 @@ export type ValidIcon =
   | 'plus'
   | 'sun'
   | 'trash'
-  | 'verticalDots';
+  | 'verticalDots'
+  | 'close';
 
 export type IconProps = {
   color?: IconColor | MaterialColor;
@@ -63,12 +65,12 @@ export const Icon: React.ComponentType<IconProps> = React.forwardRef<SVGSVGEleme
       ? { htmlColor: materialColors[color][500] }
       : { color };
 
-    const sizeProps = {
-      'fontSize': typeof size === 'string' ? size : undefined,
-      'style': typeof size === 'number' ? { fontSize: size } : undefined
-    };
+  const sizeProps = {
+    'fontSize': typeof size === 'string' ? size : undefined,
+    'style': typeof size === 'number' ? { fontSize: size } : undefined
+  };
 
-    return <IconComponent ref={ref} {...colorProps} {...sizeProps} {...rest} />;
+  return <IconComponent ref={ref} {...colorProps} {...sizeProps} {...rest} />;
   }
 );
 
@@ -93,7 +95,8 @@ const iconMap: Record<ValidIcon, typeof SvgIcon> = {
   plus: AddIcon,
   sun: WbSunny,
   trash: DeleteIcon,
-  verticalDots: MoreVert
+  verticalDots: MoreVert,
+  close: Close,
 };
 
 function isMaterialColor (color?: IconColor | MaterialColor): color is MaterialColor {

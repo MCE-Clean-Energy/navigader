@@ -81,7 +81,7 @@ export function applyDataFilters (model: Maybe<DataObject>, filters: Maybe<DataT
  * @param {object} model: the model to apply the filters to
  * @param {DynamicRestParams} [params]: the dynamic rest filters to apply
  */
-export function applyDynamicRestFilters (model: object, params?: DynamicRestParams) {
+export function applyDynamicRestFilters (model: Maybe<object>, params?: DynamicRestParams) {
   return _.every(params?.filter, (clause, field) => {
     const value = _.get(model, field);
     switch (clause.operation) {

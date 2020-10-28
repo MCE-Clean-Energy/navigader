@@ -19,7 +19,7 @@ export * from './ders';
 export * from './Dialog';
 export * from './Divider';
 export * from './Fade';
-export * from './FileDownload';
+export * from './File';
 export * from './graphs';
 export * from './Grid';
 export * from './HoverText';

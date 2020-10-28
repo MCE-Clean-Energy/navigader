@@ -4,43 +4,44 @@ import mock from 'xhr-mock';
 
 import { util } from 'navigader/api';
 import { makeFileList, renderContextDependentComponent } from 'navigader/util/testing';
-import { renderFileSize, UploadPage } from './UploadPage';
+import { UploadPage } from './UploadPage';
+import { fileSize } from 'navigader/util/formatters';
 
 
 describe('Upload page', () => {
-  describe('`renderFileSize` helper function', () => {
+  describe('`fileSize` helper function', () => {
     it('Handles "bytes"', () => {
-      expect(renderFileSize(1)).toEqual('1 byte');
-      expect(renderFileSize(123)).toEqual('123 bytes');
+      expect(fileSize(1)).toEqual('1 byte');
+      expect(fileSize(123)).toEqual('123 bytes');
     });
 
     it('Handles "KB"', () => {
-      expect(renderFileSize(1000)).toEqual('1 KB');
-      expect(renderFileSize(123049)).toEqual('123 KB');
-      expect(renderFileSize(123456)).toEqual('123.5 KB');
-      expect(renderFileSize(123897)).toEqual('123.9 KB');
-      expect(renderFileSize(123987)).toEqual('124 KB');
+      expect(fileSize(1000)).toEqual('1 KB');
+      expect(fileSize(123049)).toEqual('123 KB');
+      expect(fileSize(123456)).toEqual('123.5 KB');
+      expect(fileSize(123897)).toEqual('123.9 KB');
+      expect(fileSize(123987)).toEqual('124 KB');
     });
 
     it('Handles "MB"', () => {
-      expect(renderFileSize(1000000)).toEqual('1 MB');
-      expect(renderFileSize(123000001)).toEqual('123 MB');
-      expect(renderFileSize(123456000)).toEqual('123.5 MB');
-      expect(renderFileSize(123897000)).toEqual('123.9 MB');
-      expect(renderFileSize(123987000)).toEqual('124 MB');
+      expect(fileSize(1000000)).toEqual('1 MB');
+      expect(fileSize(123000001)).toEqual('123 MB');
+      expect(fileSize(123456000)).toEqual('123.5 MB');
+      expect(fileSize(123897000)).toEqual('123.9 MB');
+      expect(fileSize(123987000)).toEqual('124 MB');
     });
 
     it('Handles "GB"', () => {
-      expect(renderFileSize(1000000000)).toEqual('1 GB');
-      expect(renderFileSize(123000001042)).toEqual('123 GB');
-      expect(renderFileSize(123456000000)).toEqual('123.5 GB');
-      expect(renderFileSize(123897000000)).toEqual('123.9 GB');
-      expect(renderFileSize(123987000000)).toEqual('124 GB');
+      expect(fileSize(1000000000)).toEqual('1 GB');
+      expect(fileSize(123000001042)).toEqual('123 GB');
+      expect(fileSize(123456000000)).toEqual('123.5 GB');
+      expect(fileSize(123897000000)).toEqual('123.9 GB');
+      expect(fileSize(123987000000)).toEqual('124 GB');
     });
 
     it('Handles 0 or negative elegantly', () => {
-      expect(renderFileSize(0)).toEqual('');
-      expect(renderFileSize(-123)).toEqual('');
+      expect(fileSize(0)).toEqual('');
+      expect(fileSize(-123)).toEqual('');
     });
   });
 

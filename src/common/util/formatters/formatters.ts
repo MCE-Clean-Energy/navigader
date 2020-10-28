@@ -208,3 +208,33 @@ export function commas (n: any) {
   const sign = isNegative ? '-' : '';
   return [sign, integerStr, decimals].join('');
 }
+
+/**
+ * Renderes the Filesize (in Bytes) to an easily human readable format.
+ * 
+ * @param {number} [size]: Number of bytes.
+*/
+
+const units = ['byte', 'KB', 'MB', 'GB'];
+const maxIndex = units.length - 1;
+
+export function fileSize (size: number) {
+  if (size <= 0) return '';
+
+  let power = Math.floor(Math.log(size) / Math.log(1000));
+  if (power > maxIndex) {
+    power = maxIndex;
+  }
+
+  const val = size / Math.pow(1000, power);
+
+  let suffix;
+  if (power === 0) {
+    // If the power is 0, we may pluralize the unit ("byte" vs "bytes")
+    suffix = val === 1 ? 'byte' : 'bytes';
+  } else {
+    suffix = units[power];
+  }
+
+  return `${parseFloat(val.toFixed(1))} ${suffix}`;
+}
