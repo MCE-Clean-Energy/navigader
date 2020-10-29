@@ -120,7 +120,7 @@ const DashboardTable: React.FC = () => {
     async () => {
       // Don't fetch the meter groups if we already know how many we have
       if (hasMeterGroups !== null) return;
-      return api.getMeterGroups({ page: 1, page_size: 1 });
+      return api.getMeterGroups({ page: 0, pageSize: 1 });
     },
     (res) => dispatch(slices.models.updateHasMeterGroups(res.count >= 1))
   );

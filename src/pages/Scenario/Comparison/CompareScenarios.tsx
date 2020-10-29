@@ -43,8 +43,8 @@ export const CompareScenariosPage: React.FC = () => {
   const scenarios = useScenarios({
     include: ['ders', 'meter_group.*', 'report', 'report_summary'],
     filter: { id: filterClause.in(idsParam?.split(',')) },
-    page: 1,
-    page_size: 100,
+    page: 0,
+    pageSize: 100,
   });
 
   const colorMap = useColorMap([scenarios]);

@@ -23,7 +23,7 @@ describe('scenario hooks', () => {
       initialScenarios: Scenario[],
       params: Partial<api.GetScenariosQueryParams> = {}
     ) {
-      return testHook(store, useScenarios, initialScenarios, { ...params, page: 1, page_size: 10 });
+      return testHook(store, useScenarios, initialScenarios, { ...params, page: 0, pageSize: 10 });
     }
 
     beforeEach(() => {

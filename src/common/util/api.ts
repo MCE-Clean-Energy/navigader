@@ -5,7 +5,6 @@ import {
   IncludeExcludeFields,
   QueryParams,
   QueryStringPrimitive,
-  SortDir,
 } from 'navigader/types';
 import { cookieManager } from './cookies';
 import _ from './lodash';
@@ -35,9 +34,16 @@ function makeFilterQueryParams(filterClauses: DynamicRestParams['filter']): Quer
   return queryParamPairs;
 }
 
-function makeSortQueryParam(sortKey?: string, sortDir?: SortDir) {
-  if (!sortKey) return [];
-  return [['sort[]', (sortDir === 'desc' ? '-' : '') + sortKey]];
+function makePaginationQueryParams(params: QueryParams) {
+  const { page, pageSize, sortDir, sortKey } = params;
+  const queryParamPairs = [];
+
+  // Handle the 1-indexing for the backend
+  if (!_.isUndefined(page)) queryParamPairs.push(['page', page + 1]);
+  if (pageSize) queryParamPairs.push(['page_size', pageSize]);
+  if (sortKey) queryParamPairs.push(['sort[]', (sortDir === 'desc' ? '-' : '') + sortKey]);
+
+  return queryParamPairs;
 }
 
 function makeIncludeExcludeQueryParam(
@@ -67,7 +73,7 @@ export function appendQueryString(route: string, params?: QueryParams): string {
     ...makeIncludeExcludeQueryParam('include', params.include),
     ...makeIncludeExcludeQueryParam('exclude', params.exclude),
     ...makeFilterQueryParams(params.filter),
-    ...makeSortQueryParam(params.sortKey, params.sortDir),
+    ...makePaginationQueryParams(params),
   ];
 
   // Handle all other params
@@ -75,6 +81,8 @@ export function appendQueryString(route: string, params?: QueryParams): string {
     'exclude',
     'include',
     'filter',
+    'page',
+    'pageSize',
     'sortKey',
     'sortDir',
   ]);

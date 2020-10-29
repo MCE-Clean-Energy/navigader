@@ -31,8 +31,8 @@ export const RatePlanList: React.FC = () => {
   const [deleteRatePlan, setDeleteRatePlan] = React.useState<RatePlan>();
 
   const ratePlans = useRatePlans({
-    page: 1,
-    page_size: 100,
+    page: 0,
+    pageSize: 100,
   });
 
   return (
@@ -98,7 +98,7 @@ export const RatePlanList: React.FC = () => {
             </PrefetchedTable>
           )}
         </Grid.Item>
-        <Grid.Item className={classes.fabGutter} span={12}></Grid.Item>
+        <Grid.Item className={classes.fabGutter} span={12} />
       </Grid>
       <CreateRatePlan />
       <DeleteDialog

@@ -33,20 +33,14 @@ const CreateScenarioPage: React.FC = () => {
   const classes = useStyles();
 
   // Load data
-  const derConfigurations = hooks.useDERConfigurations({
-    include: 'data',
-    page: 1,
-    page_size: 100,
-  });
-  const derStrategies = hooks.useDERStrategies({ include: 'data', page: 1, page_size: 100 });
-  const originFiles = hooks.useOriginFiles({ page: 1, page_size: 100 });
+  const derConfigurations = hooks.useDERConfigurations({ include: 'data', page: 0, pageSize: 100 });
+  const costFunctions = hooks.useCostFunctions({ ratePlans: { include: ['rate_collections.*'] } });
+  const derStrategies = hooks.useDERStrategies({ include: 'data', page: 0, pageSize: 100 });
+  const originFiles = hooks.useOriginFiles({ page: 0, pageSize: 100 });
   const scenarios = hooks.useScenarios({
     include: ['ders', 'meter_group', 'report_summary'],
-    page: 1,
-    page_size: 100,
-  });
-  const costFunctions = hooks.useCostFunctions({
-    ratePlans: { include: ['rate_collections.*'] },
+    page: 0,
+    pageSize: 100,
   });
 
   // All state for the page is handled here

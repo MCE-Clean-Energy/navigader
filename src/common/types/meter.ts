@@ -29,8 +29,7 @@ export type AbstractRawMeterGroup = MeterAggregateMetrics &
     id: string;
     meter_count: number;
     name: string;
-  } & // Fields that can be requested but which are not included by default
-  Partial<{ meters: string[] }>;
+  } & Partial<{ meters: string[] }>; // Fields that can be requested but which are not included by default
 
 export type AbstractMeterGroup = Omit<AbstractRawMeterGroup, 'data' | 'date_range'> &
   DataObject & { date_range: Nullable<Tuple<Date>> };

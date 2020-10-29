@@ -24,7 +24,7 @@ class MeterGroupQueryMap extends Map<MeterGroupsQueryParams, IdSet> {
    *   from the server initially, possibly including pagination fields.
    */
   clean(queryParams: UncleanMeterGroupQueryParams): MeterGroupsQueryParams {
-    return _.omit(queryParams, 'page', 'page_size');
+    return _.omit(queryParams, 'page', 'pageSize');
   }
 
   /**
@@ -148,8 +148,8 @@ class Poller {
             ...queryOptions.filter,
             id: filterClause.in([...meterGroupIdSet.values()]),
           },
-          page: 1,
-          page_size: 100,
+          page: 0,
+          pageSize: 100,
         })
       ).data;
 
@@ -173,8 +173,8 @@ class Poller {
       await api.getScenarios({
         filter: { id: filterClause.in(scenarioIds) },
         include: 'report_summary',
-        page: 1,
-        page_size: 100,
+        page: 0,
+        pageSize: 100,
       })
     ).data;
 

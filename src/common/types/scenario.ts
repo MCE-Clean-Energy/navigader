@@ -29,8 +29,7 @@ export type RawScenario = AbstractRawMeterGroup &
     der_simulation_count: number;
     expected_der_simulation_count: number;
     metadata: ScenarioMetadata;
-  } & // Fields that can be requested but which are not included by default
-  Partial<{
+  } & Partial<{ // Fields that can be requested but which are not included by default
     der_simulations: string[];
     ders: [DERInfo];
     meter_group: string;
@@ -42,8 +41,7 @@ export type Scenario = AbstractMeterGroup &
   Omit<RawScenario, 'data' | 'date_range' | 'ders' | 'meter_group' | 'report' | 'report_summary'> &
   ProgressFields & {
     meter_group_id?: string;
-  } & // Fields that can be requested but which are not included by default
-  Partial<{
+  } & Partial<{ // Fields that can be requested but which are not included by default
     der: DERInfo;
     meter_group: MeterGroup;
     report: ScenarioReport;

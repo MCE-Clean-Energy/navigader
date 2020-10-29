@@ -60,8 +60,8 @@ const LinkedScenariosCard: React.FC<{ originFile: OriginFile }> = ({ originFile 
     // Including `meter_group` returns the scenario with the meter group ID, so it gets parsed with
     // the meter group attached
     include: ['ders', 'meter_group', 'report_summary'],
-    page: 1,
-    page_size: 100,
+    page: 0,
+    pageSize: 100,
   });
 
   return (

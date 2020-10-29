@@ -1,9 +1,8 @@
 import * as React from 'react';
 
-import { ObjectWithId } from 'navigader/types';
+import { ObjectWithId, PaginationQueryParams } from 'navigader/types';
 import _ from 'navigader/util/lodash';
 import { Table, TableProps } from './Table';
-import { PaginationState, SortState } from './util';
 
 /** ============================ Types ===================================== */
 type PrefetchedTableProps<T extends ObjectWithId> = Omit<
@@ -28,14 +27,14 @@ export function PrefetchedTable<T extends ObjectWithId>(props: PrefetchedTablePr
   );
 }
 
-function getDataPage(data: any[], state: PaginationState & Partial<SortState>) {
-  const { currentPage, dir, key, rowsPerPage } = state;
+function getDataPage(data: any[], state: PaginationQueryParams) {
+  const { page, pageSize, sortDir, sortKey } = state;
   let sorted = data;
-  if (key) {
+  if (sortKey) {
     // `sortBy` sorts in ascending order by default
-    sorted = _.sortBy(data, [key]);
-    if (dir === 'desc') sorted.reverse();
+    sorted = _.sortBy(data, [sortKey]);
+    if (sortDir === 'desc') sorted.reverse();
   }
 
-  return sorted.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
+  return sorted.slice(page * pageSize, (page + 1) * pageSize);
 }

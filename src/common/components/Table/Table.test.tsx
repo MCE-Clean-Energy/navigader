@@ -11,10 +11,10 @@ describe('`Table` component', () => {
       const data = range(25).map((n) => ({ id: n }));
       const { getAllByRole, getByTestId, getByTitle } = renderContextDependentComponent(
         <Table
-          dataFn={({ currentPage, rowsPerPage }) =>
+          dataFn={({ page, pageSize }) =>
             Promise.resolve({
               count: data.length,
-              data: data.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage),
+              data: data.slice(page * pageSize, (page + 1) * pageSize),
             })
           }
           dataSelector={() => data}
@@ -55,12 +55,12 @@ describe('`Table` component', () => {
     it('should not show pagination if there are 10 or fewer records', () => {
       asyncForEach(range(0, 10), async (n) => {
         const data = range(n).map((m) => ({ id: m }));
-        const { getAllByRole, getByTestId, getByTitle } = renderContextDependentComponent(
+        const { getAllByRole, getByTestId } = renderContextDependentComponent(
           <Table
-            dataFn={({ currentPage, rowsPerPage }) =>
+            dataFn={({ page, pageSize }) =>
               Promise.resolve({
                 count: data.length,
-                data: data.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage),
+                data: data.slice(page * pageSize, (page + 1) * pageSize),
               })
             }
             dataSelector={() => data}

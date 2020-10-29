@@ -5,7 +5,7 @@ import * as api from 'navigader/api';
 import { routes } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { ColorMap } from 'navigader/styles';
-import { Scenario, ScenarioReportSummary } from 'navigader/types';
+import { PaginationQueryParams, Scenario, ScenarioReportSummary } from 'navigader/types';
 import { formatters, models, omitFalsey, printWarning } from 'navigader/util';
 import _ from 'navigader/util/lodash';
 import { Avatar } from '../Avatar';
@@ -14,7 +14,7 @@ import * as Flex from '../Flex';
 import { Link } from '../Link';
 import { MeterGroupChip, StatusIndicator } from '../MeterGroupComponents';
 import { Switch } from '../Switch';
-import { DisabledSelectComponent, PaginationState, PrefetchedTable, Table } from '../Table';
+import { DisabledSelectComponent, PrefetchedTable, Table } from '../Table';
 import { Tooltip } from '../Tooltip';
 import { Typography } from '../Typography';
 import { ImpactColumnHeader } from './ImpactColumnHeader';
@@ -72,11 +72,10 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
   }, [averaged, hasAveragedProp]);
 
   const getScenarios = React.useCallback(
-    async (state: PaginationState) => {
+    async (params: PaginationQueryParams) => {
       const response = await api.getScenarios({
         include: ['ders', 'meter_group.*', 'report_summary'],
-        page: state.currentPage + 1,
-        page_size: state.rowsPerPage,
+        ...params,
       });
 
       // Unfinished scenarios should be polled for
@@ -115,6 +114,10 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
           </div>
         </Tooltip>
       }
+      initialSorting={{
+        dir: 'desc',
+        key: 'created_at',
+      }}
       onSelect={onSelect}
       raised
       stickyHeader
@@ -125,11 +128,13 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
           <Table.Head>
             <Table.Row>
               {colorMap && <Table.Cell />}
-              <Table.Cell>Name</Table.Cell>
-              <Table.Cell>Created</Table.Cell>
-              <Table.Cell>Customer Segment</Table.Cell>
-              <Table.Cell>DER</Table.Cell>
-              <Table.Cell>Program Strategy</Table.Cell>
+              <Table.Cell sortBy="name">Name</Table.Cell>
+              <Table.Cell sortBy="created_at" sortDir="desc">
+                Created
+              </Table.Cell>
+              <Table.Cell sortBy="meter_group.name">Customer Segment</Table.Cell>
+              <Table.Cell sortBy="der_configuration.name">DER</Table.Cell>
+              <Table.Cell sortBy="der_strategy.name">Program Strategy</Table.Cell>
               <ImpactColumnHeader
                 averaged={innerAveraged}
                 column="Usage Impact"

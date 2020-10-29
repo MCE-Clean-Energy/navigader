@@ -1,22 +1,10 @@
 import * as React from 'react';
 
-import { RowsPerPageOption, SortDir } from 'navigader/types';
+import { SortFields } from 'navigader/types';
 import { isProduction } from 'navigader/util';
 
 /** ============================ Types ===================================== */
-export type PaginationCallbackArgs = PaginationState & Partial<SortState>;
-export type PaginationState = {
-  currentPage: number;
-  rowsPerPage: RowsPerPageOption;
-};
-
-export type SortState = {
-  dir: SortDir;
-  key: string;
-};
-
 export type DisabledSelectComponent<T> = React.FC<{ datum: T }>;
-
 type TableContextType<T> = {
   allSelected: boolean;
   data: T[];
@@ -25,8 +13,8 @@ type TableContextType<T> = {
   hover: boolean;
   selectable: boolean;
   selections: Set<number>;
-  setSortState: (state: SortState) => void;
-  sortState?: SortState;
+  setSortState: (state: SortFields) => void;
+  sortState: SortFields;
   toggleAllSelections: (allSelected: boolean) => void;
   toggleRowSelection: (rowIndex: number, checked: boolean) => void;
 };
@@ -41,6 +29,7 @@ export const TableContext = React.createContext<TableContextType<any>>({
   selectable: false,
   selections: new Set(),
   setSortState: () => {},
+  sortState: {},
   toggleAllSelections: () => {},
   toggleRowSelection: () => {},
 });

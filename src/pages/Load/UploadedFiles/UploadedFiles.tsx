@@ -9,7 +9,6 @@ import {
   List,
   Menu,
   PageHeader,
-  PaginationCallbackArgs,
   StatusIndicator,
   Table,
   Typography,
@@ -17,7 +16,7 @@ import {
 import { routes, useRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
-import { OriginFile, PaginationSet } from 'navigader/types';
+import { OriginFile, PaginationQueryParams, PaginationSet } from 'navigader/types';
 import { formatters, models } from 'navigader/util';
 import { DeleteDialog } from './DeleteDialog';
 
@@ -42,13 +41,10 @@ export const UploadedFiles = () => {
   const [deleteOriginFile, setDeleteOriginFile] = React.useState<OriginFile>();
 
   const getOriginFiles = React.useCallback(
-    async (state: PaginationCallbackArgs) => {
+    async (state: PaginationQueryParams) => {
       const response = (await api.getMeterGroups({
         object_type: 'OriginFile',
-        page: state.currentPage + 1,
-        page_size: state.rowsPerPage,
-        sortKey: state.key,
-        sortDir: state.dir,
+        ...state,
       })) as PaginationSet<OriginFile>;
 
       // Add the models to the store and yield the pagination results

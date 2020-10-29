@@ -11,7 +11,15 @@ import MuiToolbar from '@material-ui/core/Toolbar';
 
 import { RootState } from 'navigader/store';
 import { makeStylesHook, white } from 'navigader/styles';
-import { IdType, Maybe, ObjectWithId, PaginationSet, SortDir } from 'navigader/types';
+import {
+  IdType,
+  ObjectWithId,
+  PaginationFields,
+  PaginationQueryParams,
+  PaginationSet,
+  SortDir,
+  SortFields,
+} from 'navigader/types';
 import { useAsync, useTableSelector } from 'navigader/util/hooks';
 import _ from 'navigader/util/lodash';
 import { Checkbox } from '../Checkbox';
@@ -19,15 +27,10 @@ import * as Flex from '../Flex';
 import { Progress } from '../Progress';
 import { Typography } from '../Typography';
 import { TablePagination } from './Pagination';
-import {
-  DisabledSelectComponent,
-  PaginationCallbackArgs,
-  PaginationState,
-  SortState,
-  TableContext,
-} from './util';
+import { DisabledSelectComponent, TableContext } from './util';
 
 /** ============================ Types ===================================== */
+type SortFieldsShorthand = { dir: SortDir; key: string };
 type EmptyRowProps = React.PropsWithChildren<{
   colSpan: number;
 }>;
@@ -35,13 +38,13 @@ type EmptyRowProps = React.PropsWithChildren<{
 export type TableProps<T extends ObjectWithId> = {
   children: (data: T[], emptyRow: React.FC<EmptyRowProps>) => React.ReactElement;
   containerClassName?: string;
-  dataFn: (state: PaginationCallbackArgs) => Promise<PaginationSet<T>>;
+  dataFn: (state: PaginationQueryParams) => Promise<PaginationSet<T>>;
   dataSelector: (state: RootState) => T[];
   disableSelect?: (datum: T) => boolean;
   DisabledSelectComponent?: DisabledSelectComponent<T>;
   headerActions?: React.ReactNode;
   hover?: boolean;
-  initialSorting?: SortState;
+  initialSorting?: SortFieldsShorthand;
   onSelect?: (selections: T[]) => void;
   raised?: boolean;
   size?: 'small' | 'medium';
@@ -55,7 +58,7 @@ export type TableCellProps = {
   colSpan?: number;
   rowSpan?: number;
   sortBy?: string;
-  sortDir?: SortState['dir'];
+  sortDir?: SortDir;
   // These props should not be provided by consuming components-- they are provided by the
   // `TableHead` and `TableBody` components
   _columnIndex?: number;
@@ -76,12 +79,12 @@ type TableRowProps<T extends ObjectWithId> = React.PropsWithChildren<{
   _selected?: boolean;
 }>;
 
-type TableState = PaginationState & {
+type TableState = PaginationFields & {
   count: number | null;
   dataIds: IdType[] | null;
   loading: boolean;
   selections: Set<number>;
-  sorting: Maybe<SortState>;
+  sorting: SortFields;
 };
 
 /** ============================ Styles ==================================== */
@@ -139,26 +142,26 @@ export function Table<T extends ObjectWithId>(props: TableProps<T>) {
   // State
   const [state, setState] = React.useState<TableState>({
     count: null,
-    currentPage: 0,
     dataIds: null,
     loading: true,
-    rowsPerPage: 20,
+    page: 0,
+    pageSize: 20,
     selections: new Set(),
-    sorting: initialSorting,
+    sorting: { sortDir: initialSorting?.dir, sortKey: initialSorting?.key },
   });
 
-  const { count, currentPage, dataIds, rowsPerPage, selections, sorting } = state;
+  const { count, dataIds, page, pageSize, selections, sorting } = state;
 
   // Load data
   const loading = useAsync(
-    () => dataFn({ currentPage, rowsPerPage, ...sorting }),
+    () => dataFn({ page, pageSize, ...sorting }),
     (paginationSet) => {
       updateState({
         count: paginationSet.count,
         dataIds: _.map(paginationSet.data, 'id'),
       });
     },
-    [currentPage, rowsPerPage, sorting, dataFn]
+    [dataFn, page, pageSize, sorting]
   );
 
   // Get the data from the store using the IDs
@@ -242,9 +245,9 @@ export function Table<T extends ObjectWithId>(props: TableProps<T>) {
   /**
    * Updates the pagination state, resetting selections
    *
-   * @param {PaginationState} newState: the new pagination state
+   * @param {PaginationFields} newState: the new pagination state
    */
-  function updatePaginationState(newState: PaginationState) {
+  function updatePaginationState(newState: PaginationFields) {
     updateState({
       ...newState,
       selections: new Set(),
@@ -254,9 +257,9 @@ export function Table<T extends ObjectWithId>(props: TableProps<T>) {
   /**
    * Updates the sorting state
    *
-   * @param {SortState} newState: the new sort state
+   * @param {SortFields} newState: the new sort state
    */
-  function setSortState(newState: SortState) {
+  function setSortState(newState: SortFields) {
     updateState({ sorting: newState });
   }
 
@@ -420,12 +423,12 @@ const TableCell: React.FC<TableCellProps> = (props) => {
   }
 
   if (sortBy) {
-    const active = sortBy === sortState?.key;
+    const active = sortBy === sortState?.sortKey;
     return (
       <MuiTableCell {...tableCellProps}>
         <MuiTableSortLabel
           active={active}
-          direction={active ? sortState?.dir : getDefaultSortDir()}
+          direction={active ? sortState?.sortDir : getDefaultSortDir()}
           onClick={updateSortState}
         >
           {children}
@@ -441,13 +444,14 @@ const TableCell: React.FC<TableCellProps> = (props) => {
    * Triggered when the user clicks the sort label, indicating they want to sort on a given column
    */
   function updateSortState() {
-    const newDir = sortState?.key === sortBy ? toggleSortDir(sortState?.dir) : getDefaultSortDir();
+    const newDir =
+      sortState?.sortKey === sortBy ? toggleSortDir(sortState?.sortDir) : getDefaultSortDir();
 
     setSortState({
-      dir: newDir,
-      // `sortBy` isn't a required column, but is required for rendering the sort label and thus
+      sortDir: newDir,
+      // `sortBy` isn't a required prop, but is required for rendering the sort label and thus
       // for triggering this callback, hence the non-null assertion
-      key: sortBy!,
+      sortKey: sortBy!,
     });
   }
 

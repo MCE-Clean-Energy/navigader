@@ -78,8 +78,8 @@ export function useGhgRates(): Loader<GHGRate[]> {
       return api.getGhgRates({
         data_format: '288',
         include: ['data'],
-        page: 1,
-        page_size: 100,
+        page: 0,
+        pageSize: 100,
       });
     },
     ({ data }) => dispatch(slices.models.updateModels(data))
@@ -112,8 +112,8 @@ export function useCAISORates(filters: CAISORateFilters = {}): Loader<CAISORate[
           data_types: filters.data_types,
           period: filters.period,
         }),
-        page: 1,
-        page_size: 100,
+        page: 0,
+        pageSize: 100,
       });
     },
     ({ data }) => dispatch(slices.models.updateModels(data))
@@ -130,8 +130,8 @@ export function useSystemProfiles(): Loader<SystemProfile[]> {
     async () => {
       return api.getSystemProfiles({
         include: ['load_serving_entity.*'],
-        page: 1,
-        page_size: 100,
+        page: 0,
+        pageSize: 100,
       });
     },
     ({ data }) => setSystemProfiles(data)
@@ -150,7 +150,7 @@ export function useCostFunctions(params?: UseCostFunctionsParams): CostFunctionL
   return {
     ghgRate: useGhgRates(),
     caisoRate: useCAISORates(params?.caisoRates),
-    ratePlan: useRatePlans({ ...params?.ratePlans, page: 1, page_size: 100 }),
+    ratePlan: useRatePlans({ ...params?.ratePlans, page: 0, pageSize: 100 }),
     systemProfile: useSystemProfiles(),
   };
 }

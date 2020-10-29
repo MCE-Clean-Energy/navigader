@@ -2,10 +2,10 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
-import { Table, PaginationState } from 'navigader/components';
+import { Table } from 'navigader/components';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
-import { MeterGroup } from 'navigader/types';
+import { MeterGroup, PaginationQueryParams } from 'navigader/types';
 import { formatters } from 'navigader/util';
 
 /** ============================ Types ===================================== */
@@ -29,12 +29,8 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
   const dispatch = useDispatch();
 
   const getMeters = React.useCallback(
-    async (state: PaginationState) => {
-      const response = await api.getMeters({
-        meterGroupId,
-        page: state.currentPage + 1,
-        page_size: state.rowsPerPage,
-      });
+    async (state: PaginationQueryParams) => {
+      const response = await api.getMeters({ meterGroupId, ...state });
 
       // Add the models to the store and yield the pagination results
       dispatch(slices.models.updateModels(response.data));
