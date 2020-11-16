@@ -1,9 +1,9 @@
+import _ from 'lodash';
 import * as React from 'react';
 import MuiAvatar from '@material-ui/core/Avatar';
 import classNames from 'classnames';
 
 import { makeStylesHook } from 'navigader/styles';
-import _ from 'navigader/util/lodash';
 
 /** ============================ Types ===================================== */
 type AvatarSize = 'default' | 'small';

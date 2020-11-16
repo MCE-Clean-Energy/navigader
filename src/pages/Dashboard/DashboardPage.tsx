@@ -14,7 +14,7 @@ import {
   ScenariosTable,
   Typography,
 } from 'navigader/components';
-import { routes, useRouter } from 'navigader/routes';
+import { routes, usePushRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { Scenario } from 'navigader/types';
@@ -69,7 +69,7 @@ const EmptyTableRow: React.FC = () => {
 };
 
 const PageHeaderActions: React.FC<PageHeaderActionsProps> = ({ selections }) => {
-  const routeTo = useRouter();
+  const routeTo = usePushRouter();
   const classes = useStyles();
   const hasMeterGroups = useSelector(slices.models.selectHasMeterGroups);
 
@@ -111,7 +111,7 @@ const DashboardTable: React.FC = () => {
   const [deleteScenario, setDeleteScenario] = React.useState<Scenario>();
   const [renameScenario, setRenameScenario] = React.useState<Scenario>();
   const [selections, setSelections] = React.useState<Scenario[]>([]);
-  const routeTo = useRouter();
+  const routeTo = usePushRouter();
   const dispatch = useDispatch();
   const hasMeterGroups = useSelector(slices.models.selectHasMeterGroups);
 

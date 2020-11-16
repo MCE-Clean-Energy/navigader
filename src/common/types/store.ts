@@ -8,9 +8,40 @@ import {
   RawGHGRate,
   RawMeter,
   RawMeterGroup,
+  RawOriginFile,
+  RawScenario,
+  CAISORate,
+  GHGRate,
+  Meter,
+  OriginFile,
+  Scenario,
+  ObjectWithId,
 } from 'navigader/types';
 
-/** ============================ Slices ==================================== */
+/** ============================ Models slice ============================== */
+// The `Exterior` vs. `Interior` dichotomy distinguishes between model objects internal to the
+// store (i.e. those returned from selectors) and those external to the store (i.e. those provided
+// to the action creators).
+export type ModelClassInterior =
+  | RawCAISORate
+  | DERConfiguration
+  | DERStrategy
+  | RatePlan
+  | RawGHGRate
+  | RawMeter
+  | RawOriginFile
+  | RawScenario;
+
+export type ModelClassExterior =
+  | CAISORate
+  | DERConfiguration
+  | DERStrategy
+  | GHGRate
+  | Meter
+  | OriginFile
+  | RatePlan
+  | Scenario;
+
 export type ModelsSlice = {
   caisoRates: RawCAISORate[];
   derConfigurations: DERConfiguration[];
@@ -22,6 +53,7 @@ export type ModelsSlice = {
   ratePlans: RatePlan[];
 };
 
+/** ============================ UI slice ================================== */
 export type UiSlice = {
   snackbar: {
     duration?: number;
@@ -36,6 +68,8 @@ export type RootState = {
   models: ModelsSlice;
   ui: UiSlice;
 };
+
+export type DataSelector<T extends ObjectWithId> = (state: RootState) => T[];
 
 // Updates the default state type used by `react-redux` so we don't need to manually specify the
 // state type in every `useSelector` call

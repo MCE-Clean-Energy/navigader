@@ -1,4 +1,5 @@
-import _ from 'navigader/util/lodash';
+import _ from 'lodash';
+
 import {
   Frame288Numeric as Frame288NumericInterface,
   Frame288NumericType,

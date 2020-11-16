@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import * as api from 'navigader/api';
-import { useRouter } from 'navigader/routes';
+import { usePushRouter } from 'navigader/routes';
 import { models } from 'navigader/util';
 import { cookieManager } from 'navigader/util/cookies';
 
@@ -9,7 +9,7 @@ import { List } from '../List';
 import { Menu } from '../Menu';
 
 export const AccountMenu: React.FC = () => {
-  const routeTo = useRouter();
+  const routeTo = usePushRouter();
   return (
     <Menu
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}

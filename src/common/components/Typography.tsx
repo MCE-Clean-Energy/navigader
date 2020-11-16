@@ -19,6 +19,7 @@ type TextColor =
   | 'info'
   | 'success';
 
+type LineLimitProps = { className?: string; limit: number };
 export type TypographyProps = React.HTMLAttributes<HTMLSpanElement> & {
   className?: string;
   color?: TextColor;
@@ -61,46 +62,69 @@ const useStyles = makeStylesHook<TypographyProps>(
   'NavigaderTypography'
 );
 
+const useLineLimitStyles = makeStylesHook<LineLimitProps>(
+  () => ({
+    lineLimit: ({ limit }) => ({
+      'overflow': 'hidden',
+      'textOverflow': 'ellipsis',
+      'display': '-webkit-box',
+      // `-webkit-line-clamp` is not supported in IE browsers, effectively making the `LineLimit`
+      // component useless. TODO: set up a fallback for non-compliant browsers.
+      '-webkit-line-clamp': limit,
+      '-webkit-box-orient': 'vertical',
+    }),
+  }),
+  'NavigaderLineLimit'
+);
+
 /** ============================ Components ================================ */
-export const Typography = React.forwardRef<HTMLSpanElement, TypographyProps>((props, ref) => {
-  const {
-    children,
-    className,
-    color = 'initial',
-    component = 'span',
-    emphasis = 'normal',
-    useDiv = false,
-    variant = 'body1',
-    ...rest
-  } = props;
-  const classes = useStyles({ emphasis });
-  const typographyClasses = classNames(className, classes.text, {
-    [classes.info]: color === 'info',
-    [classes.success]: color === 'success',
-    [classes.warning]: color === 'warning',
-  });
+const LineLimit: React.FC<LineLimitProps> = ({ children, className, limit }) => {
+  const classes = useLineLimitStyles({ limit });
+  return <div className={classNames(classes.lineLimit, className)}>{children}</div>;
+};
 
-  // If the component is provided both the `useDiv` and `component` props, we will print a warning
-  if (props.hasOwnProperty('component') && props.hasOwnProperty('useDiv')) {
-    printWarning(
-      '`Typography component` received both `useDiv` and `component` props. At most one prop' +
-        ' should be provided'
+export const Typography = Object.assign(
+  React.forwardRef<HTMLSpanElement, TypographyProps>((props, ref) => {
+    const {
+      children,
+      className,
+      color = 'initial',
+      component = 'span',
+      emphasis = 'normal',
+      useDiv = false,
+      variant = 'body1',
+      ...rest
+    } = props;
+    const classes = useStyles({ emphasis });
+    const typographyClasses = classNames(className, classes.text, {
+      [classes.info]: color === 'info',
+      [classes.success]: color === 'success',
+      [classes.warning]: color === 'warning',
+    });
+
+    // If the component is provided both the `useDiv` and `component` props, we will print a warning
+    if (props.hasOwnProperty('component') && props.hasOwnProperty('useDiv')) {
+      printWarning(
+        '`Typography component` received both `useDiv` and `component` props. At most one prop' +
+          ' should be provided'
+      );
+    }
+
+    return (
+      <MuiTypography
+        className={typographyClasses}
+        color={getColor(color)}
+        component={useDiv ? 'div' : component}
+        ref={ref}
+        variant={variant}
+        {...rest}
+      >
+        {children}
+      </MuiTypography>
     );
-  }
-
-  return (
-    <MuiTypography
-      className={typographyClasses}
-      color={getColor(color)}
-      component={useDiv ? 'div' : component}
-      ref={ref}
-      variant={variant}
-      {...rest}
-    >
-      {children}
-    </MuiTypography>
-  );
-});
+  }),
+  { LineLimit }
+);
 
 /** ============================ Helpers =================================== */
 export function getColor(color?: TextColor): MuiTypographyProps['color'] {

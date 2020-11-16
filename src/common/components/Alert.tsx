@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import * as React from 'react';
 import MuiAlert from '@material-ui/lab/Alert';
 import MuiAlertTitle from '@material-ui/lab/AlertTitle';
@@ -5,7 +6,6 @@ import classNames from 'classnames';
 
 import { makeStylesHook } from 'navigader/styles';
 import { AlertType } from 'navigader/types';
-import _ from 'navigader/util/lodash';
 
 /** ============================ Types ===================================== */
 type AlertProps = React.PropsWithChildren<{

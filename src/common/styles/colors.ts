@@ -1,7 +1,6 @@
+import _ from 'lodash';
 import * as muiColors from '@material-ui/core/colors';
 import { Color as MuiColor } from '@material-ui/core';
-
-import _ from 'navigader/util/lodash';
 
 /** ============================ Colors ==================================== */
 export const primaryColor = '#EC0B88';

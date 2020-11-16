@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -5,18 +6,22 @@ import * as api from 'navigader/api';
 import { routes } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { ColorMap } from 'navigader/styles';
-import { PaginationQueryParams, Scenario, ScenarioReportSummary } from 'navigader/types';
+import {
+  DisabledSelectComponent,
+  PaginationQueryParams,
+  Scenario,
+  ScenarioReportSummary,
+} from 'navigader/types';
 import { formatters, models, omitFalsey, printWarning } from 'navigader/util';
-import _ from 'navigader/util/lodash';
 import { Avatar } from '../Avatar';
+import { StandardDate } from '../Date';
 import { DERIcon } from '../ders';
 import * as Flex from '../Flex';
 import { Link } from '../Link';
 import { MeterGroupChip, StatusIndicator } from '../MeterGroupComponents';
 import { Switch } from '../Switch';
-import { DisabledSelectComponent, PrefetchedTable, Table } from '../Table';
+import { PrefetchedTable, TableFactory } from '../Table';
 import { Tooltip } from '../Tooltip';
-import { Typography } from '../Typography';
 import { ImpactColumnHeader } from './ImpactColumnHeader';
 
 /** ============================ Types ===================================== */
@@ -33,6 +38,7 @@ type ScenariosTableProps = {
 };
 
 /** ============================ Components ================================ */
+const Table = TableFactory<Scenario>();
 const ScenarioStatus: DisabledSelectComponent<Scenario> = ({ datum }) => (
   <StatusIndicator meterGroup={datum} />
 );
@@ -235,9 +241,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                   )}
                 </Table.Cell>
                 <Table.Cell>
-                  <Typography noWrap variant="body2">
-                    {formatters.date.standard(scenario.created_at)}
-                  </Typography>
+                  <StandardDate date={scenario.created_at} />
                 </Table.Cell>
                 <Table.Cell>
                   <MeterGroupChip link meterGroup={scenario.meter_group!} showCount />

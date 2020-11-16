@@ -5,7 +5,7 @@ import { Icon } from './Icon';
 
 /** ============================ Types ===================================== */
 type InfoIconProps = {
-  text: string;
+  text: React.ReactNode;
 };
 
 /** ============================ Components ================================ */

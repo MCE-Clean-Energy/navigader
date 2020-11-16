@@ -1,7 +1,9 @@
 import * as React from 'react';
+import MuiFormControl from '@material-ui/core/FormControl';
+import MuiFormControlLabel from '@material-ui/core/FormControlLabel';
+import MuiFormLabel from '@material-ui/core/FormLabel';
 import MuiRadio from '@material-ui/core/Radio';
 import MuiRadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { Maybe } from 'navigader/types';
 
 /** ============================ Types ===================================== */
@@ -10,16 +12,22 @@ type RadioProps = Omit<React.LabelHTMLAttributes<HTMLLabelElement>, 'onChange'> 
   value: string;
 };
 
-type RadioGroupProps = {
+type RadioGroupProps<T extends string> = React.PropsWithChildren<{
   className?: string;
   name?: string;
-  value: Maybe<string>;
-  onChange: (value: string, event: React.ChangeEvent<HTMLInputElement>) => void;
-};
+  label?: React.ReactNode;
+  onChange: (value: T, event: React.ChangeEvent<HTMLInputElement>) => void;
+  value: Maybe<T>;
+}>;
 
 /** ============================ Components ================================ */
-const RadioGroup: React.FC<RadioGroupProps> = (props) => {
-  return <MuiRadioGroup {...props} onChange={handleChange} />;
+function RadioGroup<T extends string>({ label, onChange, ...rest }: RadioGroupProps<T>) {
+  return (
+    <MuiFormControl component="fieldset">
+      {label && <MuiFormLabel component="legend">{label}</MuiFormLabel>}
+      <MuiRadioGroup {...rest} onChange={handleChange} />
+    </MuiFormControl>
+  );
 
   /** ========================== Callbacks ================================= */
   /**
@@ -30,12 +38,12 @@ const RadioGroup: React.FC<RadioGroupProps> = (props) => {
    * @param {boolean} value: the value of the newly selected radio
    */
   function handleChange(event: React.ChangeEvent<HTMLInputElement>, value: string) {
-    props.onChange(value, event);
+    onChange(value as T, event);
   }
-};
+}
 
 const RadioComponent: React.FC<RadioProps> = (props) => (
-  <FormControlLabel control={<MuiRadio size="small" />} {...props} />
+  <MuiFormControlLabel control={<MuiRadio size="small" />} {...props} />
 );
 
 export const Radio = Object.assign(RadioComponent, { Group: RadioGroup });

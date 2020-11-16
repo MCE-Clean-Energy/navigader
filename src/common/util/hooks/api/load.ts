@@ -1,10 +1,10 @@
+import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as api from 'navigader/api';
 import { slices } from 'navigader/store';
 import { Loader, Maybe, MeterGroup, OriginFile, isOriginFile } from 'navigader/types';
 import { models } from 'navigader/util/data';
-import _ from 'navigader/util/lodash';
 import { omitFalsey } from 'navigader/util/omitFalsey';
 import { DataTypeFilters } from './types';
 import { applyDataFilters, useAsync } from './util';

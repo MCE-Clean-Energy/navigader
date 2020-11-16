@@ -1,9 +1,9 @@
+import _ from 'lodash';
 import * as React from 'react';
 
 import { IntervalDataGraph } from 'navigader/components';
 import { DateTuple, IntervalData, MonthIndex } from 'navigader/types';
 import { useCAISORates, useGhgRates } from 'navigader/util/hooks';
-import _ from 'navigader/util/lodash';
 import { LoadingModal } from './LoadingModal';
 
 /** ============================ Types ====================================== */

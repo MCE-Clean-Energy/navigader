@@ -1,4 +1,4 @@
-import { DERStrategy, GHGRate } from 'navigader/types';
+import { DERStrategy, GHGRate, SolarArrayType } from 'navigader/types';
 
 /**
  * Retrieves and formats the strategy's description. The automated descriptions list their entire
@@ -30,4 +30,13 @@ export function renderGHGRate(rate: GHGRate) {
   const year = regexMatch?.groups?.year;
 
   return year ? `${rate.name} ${year}` : rate.name;
+}
+
+export function renderSolarArrayType(type: SolarArrayType) {
+  switch (type) {
+    case 0:
+      return 'Open Rack';
+    case 1:
+      return 'Roof Mounted';
+  }
 }

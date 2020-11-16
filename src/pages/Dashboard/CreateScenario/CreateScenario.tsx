@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 
 import { Button, Flex, PageHeader, Stepper } from 'navigader/components';
-import { routes, useRouter } from 'navigader/routes';
+import { routes, usePushRouter } from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
 import { hooks } from 'navigader/util';
 import { CreateScenarioState, stepPaths } from './common';
@@ -28,7 +28,7 @@ const useStyles = makeStylesHook(
 
 /** ============================ Components ================================ */
 const CreateScenarioPage: React.FC = () => {
-  const routeTo = useRouter();
+  const routeTo = usePushRouter();
   const location = useLocation();
   const classes = useStyles();
 

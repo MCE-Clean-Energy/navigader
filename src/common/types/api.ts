@@ -67,3 +67,11 @@ export type DataTypeParams = Partial<{
 /** ============================ Request management ======================== */
 // This is an experimental type. It represents a resource that is in the process of being loaded.
 export type Loader<T> = T & { loading: boolean };
+
+/** ============================ Errors ==================================== */
+type NonFieldErrorKey = '__all__';
+type ErrorArray = string[];
+export type ErrorObject<Fields = {}> = Partial<Record<keyof Fields | NonFieldErrorKey, string>>;
+export type ErrorArrayObject<Fields = {}> = Partial<
+  Record<keyof Fields | NonFieldErrorKey, ErrorArray>
+>;

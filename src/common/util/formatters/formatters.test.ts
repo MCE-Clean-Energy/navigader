@@ -76,6 +76,13 @@ describe('formatting methods', () => {
       expect(percentage(0, 0, 2)).toEqual('Infinity');
     });
 
+    it('handles when the numerator or denominator is undefined', () => {
+      expect(percentage(undefined, 5)).toBeNull();
+      expect(percentage(undefined, 0)).toBeNull();
+      expect(percentage(5, undefined)).toBeNull();
+      expect(percentage(0, undefined)).toBeNull();
+    });
+
     it('returns percents properly', () => {
       expect(percentage(0, 1)).toEqual('0%');
       expect(percentage(0, 1, 3)).toEqual('0%');

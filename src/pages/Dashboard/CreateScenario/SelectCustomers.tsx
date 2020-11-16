@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import * as React from 'react';
 
 import {
@@ -12,7 +13,6 @@ import {
 import { makeStylesHook } from 'navigader/styles';
 import { OriginFile, Scenario } from 'navigader/types';
 import { formatters, models } from 'navigader/util';
-import _ from 'navigader/util/lodash';
 import { CreateScenarioScreenProps } from './common';
 
 /** ============================ Types ===================================== */

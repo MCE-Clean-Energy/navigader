@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import {
   DynamicRestParams,
   FilterEqualClause,
@@ -7,7 +9,6 @@ import {
   QueryStringPrimitive,
 } from 'navigader/types';
 import { cookieManager } from './cookies';
-import _ from './lodash';
 import { omitFalsey } from './omitFalsey';
 import { printWarning } from './printWarning';
 

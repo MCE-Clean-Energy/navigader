@@ -1,8 +1,8 @@
-import { useHistory } from 'react-router-dom';
+import _ from 'lodash';
 import * as React from 'react';
+import { useHistory } from 'react-router-dom';
 
 import { OriginFile, RatePlan, Scenario } from 'navigader/types';
-import _ from 'navigader/util/lodash';
 
 /** ============================ Dashboard Routes ========================== */
 const dashboardBase = '/dashboard';
@@ -31,6 +31,15 @@ const load = {
   meterGroup: (id: string) => `/load/group/${id}`,
 };
 
+/** ============================ DER Curation ============================== */
+const dersBase = '/ders';
+const ders = {
+  base: dersBase,
+  batteries: `${dersBase}/batteries`,
+  evse: `${dersBase}/evse`,
+  solar: `${dersBase}/solar`,
+};
+
 /** ============================ Other Routes ============================== */
 const settings = '/settings';
 const login = '/login';
@@ -52,6 +61,7 @@ const registration = {
 /** ============================ Routes Object ============================= */
 export const routes = {
   dashboard,
+  ders,
   load,
   login,
   rates,
@@ -69,61 +79,71 @@ export const routes = {
  * to navigate to another page can call `useRouter`, and then choose where to go from the options
  * provided in the returned object.
  */
-export const useRouter = () => {
-  const history = useHistory();
+export const usePushRouter = routerFactory('push');
+export const useRedirectRouter = routerFactory('replace');
 
-  return {
-    dashboard: {
-      base: () => history.push(routes.dashboard.base),
-      createScenario: {
-        base: () => history.push(routes.dashboard.createScenario.base),
-        review: () => history.push(routes.dashboard.createScenario.review),
-        selectCostFunctions: () =>
-          history.push(routes.dashboard.createScenario.selectCostFunctions),
-        selectCustomers: () => history.push(routes.dashboard.createScenario.selectCustomers),
-        selectDers: () => history.push(routes.dashboard.createScenario.selectDers),
-      },
-    },
+function routerFactory(method: 'push' | 'replace') {
+  return () => {
+    const routerFn = useHistory()[method];
+    return React.useMemo(
+      () => ({
+        dashboard: {
+          base: () => routerFn(routes.dashboard.base),
+          createScenario: {
+            base: () => routerFn(routes.dashboard.createScenario.base),
+            review: () => routerFn(routes.dashboard.createScenario.review),
+            selectCostFunctions: () =>
+              routerFn(routes.dashboard.createScenario.selectCostFunctions),
+            selectCustomers: () => routerFn(routes.dashboard.createScenario.selectCustomers),
+            selectDers: () => routerFn(routes.dashboard.createScenario.selectDers),
+          },
+        },
 
-    login: () => history.push(routes.login),
+        ders: {
+          batteries: () => routerFn(ders.batteries),
+          evse: () => routerFn(ders.evse),
+          solar: () => routerFn(ders.solar),
+        },
 
-    originFile: (originFile?: OriginFile) => {
-      if (!originFile) return;
-      return (event: React.MouseEvent) => {
-        // Stopping propagation prevents other callbacks up the bubble-chain from being triggered.
-        // This is particularly important on the "Uploaded Files" page, where the containing
-        // `Card` has a callback too.
-        event.stopPropagation();
-        history.push(routes.load.meterGroup(originFile.id));
-      };
-    },
+        login: () => routerFn(routes.login),
 
-    rates: {
-      ratePlan: (ratePlan: RatePlan) => () => {
-        history.push(routes.rates.ratePlan(ratePlan.id.toString()));
-      },
-    },
-    registration: {
-      signup: () => history.push(routes.registration.signup),
-      verify: () => history.push(routes.registration.verify),
-    },
-    roadmap: () => history.push(routes.roadmap),
+        originFile: (originFile?: OriginFile) => {
+          if (!originFile) return;
+          return (event: React.MouseEvent) => {
+            // Stopping propagation prevents other callbacks up the bubble-chain from being triggered.
+            // This is particularly important on the "Uploaded Files" page, where the containing
+            // `Card` has a callback too.
+            event.stopPropagation();
+            routerFn(routes.load.meterGroup(originFile.id));
+          };
+        },
 
-    scenario: {
-      details: (scenario: Scenario) => () => history.push(routes.scenario(scenario.id)),
-      compare: (scenarios: Scenario[]) => () => {
-        history.push(routes.scenario.compare(_.map(scenarios, 'id')));
-      },
-    },
+        rates: {
+          ratePlan: (ratePlan: RatePlan) => () => {
+            routerFn(routes.rates.ratePlan(ratePlan.id.toString()));
+          },
+        },
+        registration: {
+          signup: () => routerFn(routes.registration.signup),
+          verify: () => routerFn(routes.registration.verify),
+        },
+        roadmap: () => routerFn(routes.roadmap),
 
-    settings: () => history.push(routes.settings),
-    upload: () => history.push(routes.upload),
+        scenario: {
+          details: (scenario: Scenario) => () => routerFn(routes.scenario(scenario.id)),
+          compare: (scenarios: Scenario[]) => () => {
+            routerFn(routes.scenario.compare(_.map(scenarios, 'id')));
+          },
+        },
 
-    // Special route, allowing components to link to a page using the route string. This should be
-    // used as an option of last resort.
-    page: (route: string) => () => history.push(route),
+        settings: () => routerFn(routes.settings),
+        upload: () => routerFn(routes.upload),
 
-    // Special route, allowing components to go backwards in history
-    previousPage: () => history.goBack(),
+        // Special route, allowing components to link to a page using the route string. This should be
+        // used as an option of last resort.
+        page: (route: string) => () => routerFn(route),
+      }),
+      [routerFn]
+    );
   };
-};
+}

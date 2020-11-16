@@ -15,6 +15,7 @@ export * from './Chip';
 export * from './Collapse';
 export * from './ContactSupport';
 export * from './Container';
+export * from './Date';
 export * from './ders';
 export * from './Dialog';
 export * from './Divider';

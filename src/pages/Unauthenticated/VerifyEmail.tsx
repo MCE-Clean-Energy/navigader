@@ -11,7 +11,7 @@ import {
   TextField,
   Typography,
 } from 'navigader/components';
-import { useRouter } from 'navigader/routes';
+import { usePushRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { useAsync, useQueryParams } from 'navigader/util/hooks';
@@ -52,7 +52,7 @@ const useVerifyEmailStyles = makeStylesHook(
  * querystring.
  */
 const VerifyEmail: React.FC<VerifyEmailProps> = ({ token }) => {
-  const routeTo = useRouter();
+  const routeTo = usePushRouter();
   const classes = useVerifyEmailStyles();
   const [status, setStatus] = React.useState<'success' | 'error' | 'loading'>('loading');
 

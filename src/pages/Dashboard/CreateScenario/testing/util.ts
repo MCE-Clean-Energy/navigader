@@ -1,5 +1,6 @@
+import _ from 'lodash';
+
 import { Loader, OriginFile, Scenario } from 'navigader/types';
-import _ from 'navigader/util/lodash';
 import { CreateScenarioScreenProps, CreateScenarioState } from '../common';
 
 /** ============================ Types ===================================== */

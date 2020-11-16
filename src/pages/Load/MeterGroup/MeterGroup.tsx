@@ -11,10 +11,11 @@ import {
   PrefetchedTable,
   Progress,
   ScenarioChip,
+  StandardDate,
   Table,
   Typography,
 } from 'navigader/components';
-import { routes, useRouter } from 'navigader/routes';
+import { routes, usePushRouter } from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
 import { Frame288DataType, OriginFile } from 'navigader/types';
 import { filterClause, formatters, models } from 'navigader/util';
@@ -51,7 +52,7 @@ const useLinkedScenarioStyles = makeStylesHook(
 
 /** ============================ Components ================================ */
 const LinkedScenariosCard: React.FC<{ originFile: OriginFile }> = ({ originFile }) => {
-  const routeTo = useRouter();
+  const routeTo = usePushRouter();
   const classes = useLinkedScenarioStyles();
   const scenarios = useScenarios({
     filter: {
@@ -116,7 +117,9 @@ const SummaryCard: React.FC<{ originFile: OriginFile }> = ({ originFile }) => {
               <Table.Body>
                 <Table.Row>
                   <Table.Cell>Uploaded</Table.Cell>
-                  <Table.Cell>{formatters.date.standard(originFile.created_at)}</Table.Cell>
+                  <Table.Cell>
+                    <StandardDate date={originFile.created_at} />
+                  </Table.Cell>
                 </Table.Row>
                 <Table.Row>
                   <Table.Cell># Meters</Table.Cell>
@@ -147,7 +150,7 @@ const SummaryCard: React.FC<{ originFile: OriginFile }> = ({ originFile }) => {
 
 export const MeterGroupPage: React.FC = () => {
   const [graphDataType, setGraphDataType] = React.useState<Frame288DataType>('average');
-  const routeTo = useRouter();
+  const routeTo = usePushRouter();
   const { id } = useParams<{ id: string }>();
 
   const { originFile } = useOriginFile(id, {

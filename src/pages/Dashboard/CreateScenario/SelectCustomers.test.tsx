@@ -1,8 +1,8 @@
+import _ from 'lodash';
 import * as React from 'react';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 
 import store, { slices } from 'navigader/store';
-import _ from 'navigader/util/lodash';
 import { asyncForEach, fixtures, renderContextDependentComponent } from 'navigader/util/testing';
 import { SelectCustomers } from './SelectCustomers';
 import { makeDataProps, makeState } from './testing';

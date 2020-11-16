@@ -1,8 +1,8 @@
+import _ from 'lodash';
 import * as React from 'react';
 import { createSelectorCreator, defaultMemoize, ParametricSelector } from 'reselect';
 
-import _ from 'navigader/util/lodash';
-import { RootState } from './types';
+import { RootState } from 'navigader/types';
 
 /**
  * Overrides the default equality function of reselect's `createSelector`. They use reference

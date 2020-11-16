@@ -1,6 +1,7 @@
+import _ from 'lodash';
+
 import { routes } from 'navigader/routes';
 import { OriginFile, Scenario } from 'navigader/types';
-import _ from 'navigader/util/lodash';
 import { DERSelection } from './types';
 
 // Order of steps

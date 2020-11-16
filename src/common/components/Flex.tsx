@@ -1,14 +1,10 @@
+import _ from 'lodash';
 import * as React from 'react';
 import { CreateCSSProperties } from '@material-ui/styles/withStyles';
 import classNames from 'classnames';
 
-import {
-  makeStylesHook,
-  AlignItemsValue,
-  FlexDirection,
-  JustifyContentValue,
-} from 'navigader/styles';
-import _ from 'navigader/util/lodash';
+import { makeStylesHook } from 'navigader/styles';
+import { AlignItemsValue, FlexDirection, JustifyContentValue } from 'navigader/types';
 
 /** ============================ Types ===================================== */
 type FlexItemProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -40,12 +36,7 @@ const useContainerStyles = makeStylesHook<FlexContainerProps>(
   'FlexContainer'
 );
 
-const useItemStyles = makeStylesHook<FlexItemProps>(
-  () => ({
-    flexItem: itemStyles,
-  }),
-  'FlexItem'
-);
+const useItemStyles = makeStylesHook<FlexItemProps>(() => ({ flexItem: itemStyles }), 'FlexItem');
 
 /** ============================ Components ================================ */
 export const Container = React.forwardRef<HTMLDivElement, FlexContainerProps>((props, ref) => {

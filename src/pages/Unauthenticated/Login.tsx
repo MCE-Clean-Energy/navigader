@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import * as api from 'navigader/api';
 import { Button, Link, TextField } from 'navigader/components';
-import { routes, useRouter } from 'navigader/routes';
+import { routes, usePushRouter } from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
 import { UnauthenticatedPage } from './UnauthenticatedPage';
 
@@ -29,7 +29,7 @@ const useStyles = makeStylesHook(
 /** ============================ Components ================================ */
 export const LoginPage: React.FC = () => {
   const classes = useStyles();
-  const routeTo = useRouter();
+  const routeTo = usePushRouter();
 
   // Component state
   const [email, setEmail] = React.useState('');

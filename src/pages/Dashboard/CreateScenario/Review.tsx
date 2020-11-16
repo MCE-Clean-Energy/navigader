@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import * as React from 'react';
 
 import {
@@ -12,7 +13,6 @@ import {
 } from 'navigader/components';
 import { routes } from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
-import _ from 'navigader/util/lodash';
 import { CreateScenarioScreenProps, DerCardReadOnly, validateDerSelections } from './common';
 import { CostFunction, CostFunctions, Maybe } from 'navigader/types';
 import { models } from 'navigader/util';

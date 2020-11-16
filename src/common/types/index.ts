@@ -7,3 +7,4 @@ export * from './der';
 export * from './guards';
 export * from './meter';
 export * from './scenario';
+export * from './store';

@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 
-import { RawScenario, Tuple } from 'navigader/types';
+import { Tuple } from 'navigader/types';
 import { fixtures } from 'navigader/util/testing';
 import {
   parseOriginFile,

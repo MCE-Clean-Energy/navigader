@@ -1,7 +1,7 @@
 import * as React from 'react';
 import MuiMenu from '@material-ui/core/Menu';
 
-import { printWarning, randomString } from 'navigader/util';
+import { hooks, printWarning } from 'navigader/util';
 import { Button } from './Button';
 import { List } from './List';
 import { PopoverOrigin } from './Popover';
@@ -30,7 +30,7 @@ export const Menu: MenuExport = (props) => {
   } = props;
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const menuId = randomString();
+  const menuId = hooks.useRandomString();
 
   // Only one of the `icon` and `label` props should be provided
   const hasBoth = Boolean(label && icon);

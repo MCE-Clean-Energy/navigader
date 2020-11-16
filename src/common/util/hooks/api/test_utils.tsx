@@ -4,6 +4,7 @@ import { EnhancedStore } from '@reduxjs/toolkit';
 import { HookResult, renderHook } from '@testing-library/react-hooks';
 
 import { slices } from 'navigader/store';
+import { ModelClassExterior } from 'navigader/types';
 import { fixtures } from 'navigader/util/testing';
 
 /** ============================ Helpers =================================== */
@@ -18,7 +19,7 @@ import { fixtures } from 'navigader/util/testing';
 export async function testHook<F extends (...args: any[]) => any>(
   store: EnhancedStore,
   hook: F,
-  models?: slices.models.ModelClassExterior[],
+  models?: ModelClassExterior[],
   ...args: Parameters<F>
 ): Promise<HookResult<ReturnType<F>>> {
   // Add models to the store

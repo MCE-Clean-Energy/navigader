@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import * as React from 'react';
 import { DateTime, Duration } from 'luxon';
 import {
@@ -16,7 +17,6 @@ import { ColorMap } from 'navigader/styles';
 import { ChartDatum, DateTuple, IntervalData, MonthIndex, Tuple } from 'navigader/types';
 import { formatters, omitFalsey } from 'navigader/util';
 import { useColorMap } from 'navigader/util/hooks';
-import _ from 'navigader/util/lodash';
 import { NavigaderChart } from './components';
 import { getAxisLabel, VictoryCallbackArg } from './util';
 

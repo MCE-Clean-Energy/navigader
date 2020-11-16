@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
-import { Table } from 'navigader/components';
+import { TableFactory } from 'navigader/components';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
-import { MeterGroup, PaginationQueryParams } from 'navigader/types';
+import { Meter, MeterGroup } from 'navigader/types';
 import { formatters } from 'navigader/util';
 
 /** ============================ Types ===================================== */
@@ -24,26 +23,16 @@ const useStyles = makeStylesHook(
 );
 
 /** ============================ Components ================================ */
+const Table = TableFactory<Meter>();
+
 const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
-
-  const getMeters = React.useCallback(
-    async (state: PaginationQueryParams) => {
-      const response = await api.getMeters({ meterGroupId, ...state });
-
-      // Add the models to the store and yield the pagination results
-      dispatch(slices.models.updateModels(response.data));
-      return response;
-    },
-    [meterGroupId, dispatch]
-  );
 
   // TODO: virtualize the table
   return (
     <Table
       aria-label="meter table"
-      dataFn={getMeters}
+      dataFn={(params) => api.getMeters({ meterGroupId, ...params })}
       dataSelector={slices.models.selectMeters}
       containerClassName={classes.tableContainer}
       raised

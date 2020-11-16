@@ -1,9 +1,9 @@
+import _ from 'lodash';
 import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 import { routes } from 'navigader/routes';
-import _ from 'navigader/util/lodash';
 import {
   Grid,
   PageHeader,

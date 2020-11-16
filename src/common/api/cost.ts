@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import {
   RawCAISORate,
   DataTypeParams,
@@ -15,7 +17,6 @@ import {
   CAISORate,
 } from 'navigader/types';
 import { appendQueryString, omitFalsey, serializers } from 'navigader/util';
-import _ from 'navigader/util/lodash';
 import {
   appendId,
   beoRoute,

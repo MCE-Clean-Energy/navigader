@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import * as React from 'react';
 import {
   VictoryAxis,
@@ -11,7 +12,6 @@ import { useTheme } from '@material-ui/core';
 
 import { ColorMap, primaryColor } from 'navigader/styles';
 import { omitFalsey } from 'navigader/util';
-import _ from 'navigader/util/lodash';
 import { NavigaderChart } from '../components';
 import { VictoryCallbackArg } from '../util';
 import { ScatterConfig, ScatterDatum, ScatterPlotDatumWrapper } from './types';

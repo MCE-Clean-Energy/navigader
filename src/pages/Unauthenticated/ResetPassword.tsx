@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
 import { Alert, Button, TextField, Typography } from 'navigader/components';
-import { useRouter } from 'navigader/routes';
+import { usePushRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { useQueryParams } from 'navigader/util/hooks';
@@ -51,7 +51,7 @@ const useConfirmResetStyles = makeStylesHook(
 const ConfirmReset: React.FC<ConfirmResetProps> = ({ token, uid }) => {
   const classes = useConfirmResetStyles();
   const dispatch = useDispatch();
-  const routeTo = useRouter();
+  const routeTo = usePushRouter();
 
   // Component state
   const [password1, setPassword1] = React.useState('');
@@ -59,8 +59,15 @@ const ConfirmReset: React.FC<ConfirmResetProps> = ({ token, uid }) => {
   const [error, setError] = React.useState<string>();
   return (
     <form onSubmit={confirmReset}>
-      <TextField label="Password" onChange={setPassword1} outlined type="password" />
       <TextField
+        autoComplete="new-password"
+        label="Password"
+        onChange={setPassword1}
+        outlined
+        type="password"
+      />
+      <TextField
+        autoComplete="new-password"
         className={classes.confirmPassword}
         label="Confirm password"
         onChange={setPassword2}

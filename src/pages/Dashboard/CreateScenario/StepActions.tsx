@@ -1,13 +1,13 @@
+import _ from 'lodash';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
 import { Button, Flex } from 'navigader/components';
-import { useRouter } from 'navigader/routes';
+import { usePushRouter } from 'navigader/routes';
 import { setMessage } from 'navigader/store/slices/ui';
 import { OriginFile, Scenario } from 'navigader/types';
 import { omitFalsey, printWarning } from 'navigader/util';
-import _ from 'navigader/util/lodash';
 import {
   CreateScenarioScreenProps,
   stepPaths,
@@ -23,7 +23,7 @@ type StepActionProps = CreateScenarioScreenProps & { activeStep: number };
 export const StepActions: React.FC<StepActionProps> = (props) => {
   const { activeStep, originFiles, scenarios, state } = props;
 
-  const routeTo = useRouter();
+  const routeTo = usePushRouter();
   const dispatch = useDispatch();
   const [createInProcess, setCreateInProcess] = React.useState(false);
   const prevButton = activeStep === 0 ? null : <Button onClick={goBack}>Back</Button>;

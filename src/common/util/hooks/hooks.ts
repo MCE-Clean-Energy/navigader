@@ -1,15 +1,9 @@
-/**
- * Defines custom React hooks for use in the application
- */
+import _ from 'lodash';
 import * as React from 'react';
-import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
-import { RootState } from 'navigader/store';
 import { ColorMap } from 'navigader/styles';
-import { IdType, ObjectWithId } from 'navigader/types';
-import _ from 'navigader/util/lodash';
-import { omitFalsey } from 'navigader/util/omitFalsey';
+import { ObjectWithId, TableInterface } from 'navigader/types';
 
 /** ============================ Hooks ===================================== */
 /**
@@ -24,26 +18,8 @@ export function useQueryParams(params: string[]): Array<string | null> {
   return params.map((param) => urlSearchParams.get(param));
 }
 
-/**
- * Loads table data from the store given a selector function to access the slice where the data
- * is stored and a list of IDs of the data to return. The returned data will be ordered the same
- * as the IDs
- *
- * @param {(state: RootState) => ObjectWithId[]} dataSelector: selector function that retrieves all
- *   data from the store slice
- * @param {IdType[]} ids: ordered array of IDs to filter for
- */
-export function useTableSelector<Datum extends ObjectWithId>(
-  dataSelector: (state: RootState) => Datum[],
-  ids: IdType[] | null
-): Datum[] {
-  const allData = useSelector(dataSelector);
-
-  if (ids === null) return [];
-
-  // TODO: the property shorthand `_.find(allData, { id })` is preferable and should work-- I'm
-  //  confused why it doesn't
-  return omitFalsey(ids.map((id) => _.find(allData, ['id', id])));
+export function useTableRef<T extends ObjectWithId>() {
+  return React.useRef<TableInterface<T>>(null);
 }
 
 /**
@@ -55,4 +31,39 @@ export function useTableSelector<Datum extends ObjectWithId>(
 export function useColorMap(dependencies: any[], initialElements?: any[]) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   return React.useMemo(() => new ColorMap(initialElements), dependencies);
+}
+
+/**
+ * Wrapper around `React.useState` which provides partial state updates. The `useState` React hook
+ * differs from the `React.Component`'s `setState` method in that the latter will merge the state
+ * updates with the current state, while the former replaces the current state entirely. This hook
+ * enables merging state updates with current state, by allowing calls to `setState` to provide
+ * a partial representation of the new state.
+ *
+ * @param {any} initialState: the initial state provided to `React.useState`
+ */
+type PartialSetStateAction<T> = React.SetStateAction<Partial<T>>;
+export type PartialSetStateFn<T> = React.Dispatch<PartialSetStateAction<T>>;
+export function useMergeState<T>(initialState: T): [T, PartialSetStateFn<T>] {
+  const [state, setState] = React.useState<T>(initialState);
+  return [state, updateState];
+
+  function updateState(newState: PartialSetStateAction<T>) {
+    setState((prevState) => ({
+      ...prevState,
+      ...(_.isFunction(newState) ? newState(prevState) : newState),
+    }));
+  }
+}
+
+/**
+ * Returns a memoized random string ~20 characters long.
+ * Taken from https://gist.github.com/6174/6062387
+ */
+export function useRandomString() {
+  return React.useMemo(() => {
+    const firstHalf = Math.random().toString(36).substring(2, 15);
+    const secondHalf = Math.random().toString(36).substring(2, 15);
+    return firstHalf + secondHalf;
+  }, []);
 }

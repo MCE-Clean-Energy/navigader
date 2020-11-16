@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import * as React from 'react';
 
 import {
@@ -12,7 +13,6 @@ import { routes } from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
 import { filterClause } from 'navigader/util';
 import { useColorMap, useQueryParams, useScenarios } from 'navigader/util/hooks';
-import _ from 'navigader/util/lodash';
 import { ScenarioComparisonChart } from './Chart';
 
 /** ============================ Styles ==================================== */

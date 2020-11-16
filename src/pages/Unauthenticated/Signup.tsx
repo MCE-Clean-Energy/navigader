@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
 import { Alert, Button, TextField } from 'navigader/components';
-import { useRouter } from 'navigader/routes';
+import { usePushRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { UnauthenticatedPage } from './UnauthenticatedPage';
@@ -41,7 +41,7 @@ const useEnterEmailStyles = makeStylesHook(
 export const SignupPage: React.FC = () => {
   const classes = useEnterEmailStyles();
   const dispatch = useDispatch();
-  const routeTo = useRouter();
+  const routeTo = usePushRouter();
 
   // Component state
   const [error, setError] = React.useState<string>();

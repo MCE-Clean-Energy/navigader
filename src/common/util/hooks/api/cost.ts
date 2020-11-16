@@ -1,7 +1,7 @@
+import _ from 'lodash';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import _ from 'navigader/util/lodash';
 import * as api from 'navigader/api';
 import { slices } from 'navigader/store';
 import {

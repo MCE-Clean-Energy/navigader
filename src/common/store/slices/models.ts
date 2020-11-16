@@ -1,49 +1,16 @@
+import _ from 'lodash';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import {
-  CAISORate,
-  DERConfiguration,
-  DERStrategy,
-  GHGRate,
   isOriginFile,
   isScenario,
-  Meter,
-  OriginFile,
-  RatePlan,
-  RawCAISORate,
-  RawGHGRate,
-  RawMeter,
-  RawOriginFile,
-  RawScenario,
+  ModelsSlice,
+  ModelClassExterior,
+  ModelClassInterior,
+  RootState,
   Scenario,
 } from 'navigader/types';
 import { serializers } from 'navigader/util';
-import _ from 'navigader/util/lodash';
-import { RootState, ModelsSlice } from '../types';
-
-/** ============================ Types ===================================== */
-// The `Exterior` vs. `Interior` dichotomy distinguishes between model objects internal to the
-// store (i.e. those returned from selectors) and those external to the store (i.e. those provided
-// to the action creators).
-type ModelClassInterior =
-  | RawCAISORate
-  | DERConfiguration
-  | DERStrategy
-  | RatePlan
-  | RawGHGRate
-  | RawMeter
-  | RawOriginFile
-  | RawScenario;
-
-export type ModelClassExterior =
-  | CAISORate
-  | DERConfiguration
-  | DERStrategy
-  | GHGRate
-  | Meter
-  | OriginFile
-  | RatePlan
-  | Scenario;
 
 /** ============================ Actions =================================== */
 /** Payloads */
@@ -165,12 +132,12 @@ function getSliceForModel(
   model: Pick<ModelClassExterior, 'object_type'>
 ): Array<ModelClassInterior> {
   switch (model.object_type) {
-    // case 'EVSEConfiguration':
-    // case 'EVSEStrategy':
     case 'BatteryConfiguration':
+    case 'EVSEConfiguration':
     case 'SolarPVConfiguration':
       return state.derConfigurations;
     case 'BatteryStrategy':
+    case 'EVSEStrategy':
     case 'SolarPVStrategy':
       return state.derStrategies;
     case 'CAISORate':
@@ -195,10 +162,10 @@ function getSliceForModel(
  */
 function prepareModel(model: ModelClassExterior): ModelClassInterior {
   switch (model.object_type) {
-    // case 'EVSEConfiguration':
-    // case 'EVSEStrategy':
     case 'BatteryStrategy':
     case 'BatteryConfiguration':
+    case 'EVSEConfiguration':
+    case 'EVSEStrategy':
     case 'RatePlan':
     case 'SolarPVConfiguration':
     case 'SolarPVStrategy':

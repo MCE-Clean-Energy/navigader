@@ -102,6 +102,7 @@ export const SettingsPage: React.FC = () => {
           <Typography variant="h6">Change Password</Typography>
           <div className={classes.inputsWrapper}>
             <TextField
+              autoComplete="current-password"
               className={classes.textfield}
               error={error === FormError.noOldPassword || error === FormError.oldPasswordInvalid}
               label="Old password"
@@ -113,6 +114,7 @@ export const SettingsPage: React.FC = () => {
             />
 
             <TextField
+              autoComplete="new-password"
               className={classes.textfield}
               error={error === FormError.noNewPassword1 || error === FormError.passwordMismatch}
               label="New password"
@@ -124,6 +126,7 @@ export const SettingsPage: React.FC = () => {
             />
 
             <TextField
+              autoComplete="new-password"
               className={classes.textfield}
               error={error === FormError.noNewPassword2 || error === FormError.passwordMismatch}
               label="Confirm new password"

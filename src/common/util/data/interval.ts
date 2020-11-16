@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { Interval } from 'luxon';
 
 import {
@@ -15,7 +16,6 @@ import {
   NumberTuple,
   RawIntervalData,
 } from 'navigader/types';
-import _ from '../lodash';
 import { parseDate } from '../serializers';
 
 /** ============================ Types ===================================== */

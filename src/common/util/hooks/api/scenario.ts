@@ -1,10 +1,10 @@
+import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as api from 'navigader/api';
 import { slices, useMemoizedSelector } from 'navigader/store';
 import { Loader, Scenario } from 'navigader/types';
 import { models } from 'navigader/util/data';
-import _ from 'navigader/util/lodash';
 import { omitFalsey } from 'navigader/util/omitFalsey';
 import { applyDataFilters, applyDynamicRestFilters, useAsync } from './util';
 

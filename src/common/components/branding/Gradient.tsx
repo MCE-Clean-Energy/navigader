@@ -1,8 +1,8 @@
+import _ from 'lodash';
 import * as React from 'react';
 import classNames from 'classnames';
 
 import { makeStylesHook } from 'navigader/styles';
-import _ from 'navigader/util/lodash';
 
 /** ============================ Types ===================================== */
 type GradientProps = {

@@ -1,6 +1,7 @@
+import _ from 'lodash';
+
 import { Frame288NumericType, MonthIndex } from 'navigader/types';
 import { IntervalData } from 'navigader/util';
-import _ from 'navigader/util/lodash';
 
 /** ============================ Frame 288 ================================= */
 export const frame288: Frame288NumericType = {

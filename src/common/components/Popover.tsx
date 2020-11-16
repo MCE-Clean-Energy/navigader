@@ -4,7 +4,7 @@ import { BaseCSSProperties } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
 
 import { makeStylesHook, Theme } from 'navigader/styles';
-import { randomString } from '../util';
+import { hooks } from 'navigader/util';
 
 /** ============================ Types ===================================== */
 export type PopoverOrigin = {
@@ -53,7 +53,7 @@ export const Popover: React.FC<PopoverProps> = (props) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const classes = useStyles(props);
 
-  const popoverId = randomString();
+  const popoverId = hooks.useRandomString();
   const open = Boolean(anchorEl);
 
   return (

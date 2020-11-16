@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import * as React from 'react';
 
 import { ColorMap } from 'navigader/styles';
@@ -9,7 +10,6 @@ import {
   ScenarioReportSummaryFields,
 } from 'navigader/types';
 import { formatters, omitFalsey } from 'navigader/util';
-import _ from 'navigader/util/lodash';
 import { ScatterPlot } from './ScatterPlot';
 import { getAxisLabel, ScenarioComparisonChartAxes } from './ScenarioComparisonAxes';
 import { DatumCoordinateValue, DatumLabelFunction, ScatterPlotDatumWrapper } from './types';

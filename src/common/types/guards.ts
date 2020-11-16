@@ -1,4 +1,5 @@
-import _ from 'navigader/util/lodash';
+import _ from 'lodash';
+
 import { Falsey, NavigaderObject } from './common';
 import { OriginFile, RawOriginFile } from './meter';
 import { RawScenario, RawScenarioReport, RawScenarioReportSummary, Scenario } from './scenario';

@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import * as React from 'react';
 import MuiFormControl from '@material-ui/core/FormControl';
 import MuiInputLabel from '@material-ui/core/InputLabel';
@@ -8,8 +9,7 @@ import useTheme from '@material-ui/core/styles/useTheme';
 
 import { makeStylesHook } from 'navigader/styles';
 import { Nullable } from 'navigader/types';
-import { omitFalsey, printWarning, randomString } from 'navigader/util';
-import _ from 'navigader/util/lodash';
+import { hooks, omitFalsey, printWarning } from 'navigader/util';
 import { Tooltip } from '../Tooltip';
 
 /** ============================ Types ===================================== */
@@ -43,6 +43,7 @@ type FormattedSection<T> = {
 const useStyles = makeStylesHook(
   () => ({
     formControl: {
+      maxWidth: '100%',
       minWidth: 120,
     },
     menuItem: {
@@ -63,7 +64,7 @@ const useStyles = makeStylesHook(
 /** ============================ Components ================================ */
 export function Select<T>(props: SelectProps<T>) {
   const {
-    id = randomString(),
+    id: idProp,
     label,
     onChange = () => {},
     options,
@@ -76,6 +77,9 @@ export function Select<T>(props: SelectProps<T>) {
   } = props;
   const theme = useTheme();
   const classes = useStyles(theme);
+
+  const randomString = hooks.useRandomString();
+  const id = idProp || randomString;
 
   let inputLabel: React.ReactNode = null;
   if (label) {

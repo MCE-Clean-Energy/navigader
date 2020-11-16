@@ -14,8 +14,8 @@ export function getDERIconName(type: DERType): ValidIcon {
   switch (type) {
     case 'Battery':
       return 'battery';
-    // case 'EVSE':
-    //   return 'ev_station';
+    case 'EVSE':
+      return 'ev_station';
     case 'SolarPV':
       return 'sun';
   }

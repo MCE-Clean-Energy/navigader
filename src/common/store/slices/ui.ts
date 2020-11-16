@@ -1,8 +1,7 @@
+import _ from 'lodash';
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
 
-import { AlertType, Nullable } from 'navigader/types';
-import _ from 'navigader/util/lodash';
-import { RootState, UiSlice } from '../types';
+import { AlertType, Nullable, RootState, UiSlice } from 'navigader/types';
 
 // The default snackbar duration in ms
 const DEFAULT_DURATION = 6000;

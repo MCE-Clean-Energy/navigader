@@ -1,10 +1,14 @@
+import _ from 'lodash';
 import * as React from 'react';
 
 import { DataObject, DynamicRestParams, Maybe } from 'navigader/types';
-import _ from 'navigader/util/lodash';
 import { omitFalsey } from 'navigader/util/omitFalsey';
 import { DataTypeFilters } from './types';
 
+/** ============================ Types ===================================== */
+type AsyncFunction<T> = () => Promise<T>;
+
+/** ============================ Hooks ===================================== */
 /**
  * Hook for calling an asynchronous method
  *
@@ -13,7 +17,7 @@ import { DataTypeFilters } from './types';
  * @param {any[]} dependencies: the dependency array
  */
 export function useAsync<T>(
-  fn: () => Promise<Maybe<T>>,
+  fn: AsyncFunction<Maybe<T>>,
   callback: (response: T) => void,
   dependencies: any[] = []
 ) {
@@ -35,7 +39,9 @@ export function useAsync<T>(
       }
     });
 
-    // This is called when the component unmounts
+    // Cleanup function that will be called on
+    // 1. Unmount
+    // 2. Dependency array change
     return () => {
       shouldUpdate = false;
     };

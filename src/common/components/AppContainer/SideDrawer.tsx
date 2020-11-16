@@ -2,7 +2,7 @@ import * as React from 'react';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import Drawer from '@material-ui/core/Drawer';
 
-import { routes, useRouter } from 'navigader/routes';
+import { routes, usePushRouter } from 'navigader/routes';
 import { makeStylesHook, white } from 'navigader/styles';
 import { Button } from '../Button';
 import { Centered } from '../Centered';
@@ -81,7 +81,7 @@ const useDrawerButtonStyles = makeStylesHook(
 /** ============================ Components ================================ */
 const DrawerButton: React.FC<DrawerButtonProps> = ({ children, linkTo }) => {
   const classes = useDrawerButtonStyles();
-  const routeTo = useRouter();
+  const routeTo = usePushRouter();
   return (
     <ButtonBase classes={{ root: classes.root }} onClick={routeTo.page(linkTo)}>
       <Centered children={children} />
@@ -108,6 +108,7 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ open, closeDrawer }) => 
           <DrawerButton linkTo={routes.load.base}>Load</DrawerButton>
           <DrawerButton linkTo={routes.upload}>Upload</DrawerButton>
           <DrawerButton linkTo={routes.rates.base}>Rate Plans</DrawerButton>
+          <DrawerButton linkTo={routes.ders.base}>DERs</DrawerButton>
         </Flex.Item>
       </Flex.Container>
     </Drawer>

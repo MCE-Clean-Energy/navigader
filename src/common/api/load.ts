@@ -1,3 +1,6 @@
+import _ from 'lodash';
+
+import store, { slices } from 'navigader/store';
 import {
   DataTypeParams,
   DynamicRestParams,
@@ -8,7 +11,6 @@ import {
   RawPaginationSet,
 } from 'navigader/types';
 import { filterClause, serializers } from 'navigader/util';
-import _ from 'navigader/util/lodash';
 import {
   appendId,
   beoRoute,
@@ -68,7 +70,13 @@ export async function getMeters(queryParams: MeterQueryParams) {
   }).then((res) => res.json());
 
   // Parse the meter results
-  return parsePaginationSet(response, ({ meters }) => meters.map(serializers.parseMeter));
+  const paginationSet = parsePaginationSet(response, ({ meters }) =>
+    meters.map(serializers.parseMeter)
+  );
+
+  // Add models to the store and return
+  store.dispatch(slices.models.updateModels(paginationSet.data));
+  return paginationSet;
 }
 
 /**

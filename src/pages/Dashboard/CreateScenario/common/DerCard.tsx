@@ -1,9 +1,9 @@
+import _ from 'lodash';
 import * as React from 'react';
 
 import { Button, Card, CardProps, DERCard, Flex, Select } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
 import { DERConfiguration, DERStrategy, DERType } from 'navigader/types';
-import _ from 'navigader/util/lodash';
 import { ProgramOptions } from './ProgramOptions';
 import { DERSelection } from './types';
 

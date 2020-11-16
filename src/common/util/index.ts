@@ -7,6 +7,5 @@ export * from './data';
 export * from './isProduction';
 export * from './omitFalsey';
 export * from './printWarning';
-export * from './randomString';
 export * from './support';
 export { formatters, hooks, serializers };

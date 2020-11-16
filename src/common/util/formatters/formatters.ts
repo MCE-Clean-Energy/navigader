@@ -1,8 +1,8 @@
+import _ from 'lodash';
 import { DateTime, DateTimeFormatOptions, LocaleOptions } from 'luxon';
 
 import { Maybe, Nullable, Tuple } from 'navigader/types';
 import { clamp, percentOf } from '../data';
-import _ from '../lodash';
 import { parseDate } from '../serializers';
 
 /** ============================ Types ===================================== */
@@ -113,16 +113,18 @@ export function capitalize(str: string) {
 
 /**
  * Provided a numerator and a denominator, returns what percent of the denominator the numerator is.
+ * If either the numerator or denominator is undefined, returns `null`
  *
  *   ex: percentage(0, 5)    ==> 0%
  *   ex: percentage(1, 2)    ==> 50%
  *   ex: percentage(3.5, 2)  ==> 175%
  *
- * @param {number} numerator: the number the percent will be derived for
- * @param {number} denominator: the number the percent will be derived from
+ * @param {number|undefined} numerator: the number the percent will be derived for
+ * @param {number|undefined} denominator: the number the percent will be derived from
  * @param {number} [n = 0]: the number of digits to round to
  */
-export function percentage(numerator: number, denominator: number, n: number = 0) {
+export function percentage(numerator: Maybe<number>, denominator: Maybe<number>, n: number = 0) {
+  if (_.isUndefined(numerator) || _.isUndefined(denominator)) return null;
   const percent = percentOf(numerator, denominator);
   return percent === Infinity ? 'Infinity' : maxDecimals(percent, n) + '%';
 }

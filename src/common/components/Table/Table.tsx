@@ -1,4 +1,7 @@
+import classNames from 'classnames';
+import _ from 'lodash';
 import * as React from 'react';
+import { connect } from 'react-redux';
 import MuiPaper from '@material-ui/core/Paper';
 import MuiTable from '@material-ui/core/Table';
 import MuiTableBody from '@material-ui/core/TableBody';
@@ -8,49 +11,45 @@ import MuiTableHead from '@material-ui/core/TableHead';
 import MuiTableRow from '@material-ui/core/TableRow';
 import MuiTableSortLabel from '@material-ui/core/TableSortLabel';
 import MuiToolbar from '@material-ui/core/Toolbar';
+import { createStyles, Theme, WithStyles, withStyles } from '@material-ui/core/styles';
 
-import { RootState } from 'navigader/store';
 import { makeStylesHook, white } from 'navigader/styles';
 import {
-  IdType,
+  DataSelector,
+  EmptyRowProps,
   ObjectWithId,
-  PaginationFields,
-  PaginationQueryParams,
-  PaginationSet,
   SortDir,
   SortFields,
+  TableInterface,
+  TableProps,
+  TableState,
 } from 'navigader/types';
-import { useAsync, useTableSelector } from 'navigader/util/hooks';
-import _ from 'navigader/util/lodash';
+import { omitFalsey } from 'navigader/util';
+
+import { Button } from '../Button';
 import { Checkbox } from '../Checkbox';
 import * as Flex from '../Flex';
 import { Progress } from '../Progress';
 import { Typography } from '../Typography';
 import { TablePagination } from './Pagination';
-import { DisabledSelectComponent, TableContext } from './util';
+import { TableContext } from './util';
 
 /** ============================ Types ===================================== */
-type SortFieldsShorthand = { dir: SortDir; key: string };
-type EmptyRowProps = React.PropsWithChildren<{
-  colSpan: number;
-}>;
+// Props provided by the `mapStateToProps` function
+type InjectedProps<T extends ObjectWithId> = { data: T[] };
 
-export type TableProps<T extends ObjectWithId> = {
-  children: (data: T[], emptyRow: React.FC<EmptyRowProps>) => React.ReactElement;
-  containerClassName?: string;
-  dataFn: (state: PaginationQueryParams) => Promise<PaginationSet<T>>;
-  dataSelector: (state: RootState) => T[];
-  disableSelect?: (datum: T) => boolean;
-  DisabledSelectComponent?: DisabledSelectComponent<T>;
-  headerActions?: React.ReactNode;
-  hover?: boolean;
-  initialSorting?: SortFieldsShorthand;
-  onSelect?: (selections: T[]) => void;
-  raised?: boolean;
-  size?: 'small' | 'medium';
-  stickyHeader?: boolean;
-  title?: string;
-};
+// Props provided by `withStyles`
+type StyleClasses = WithStyles<typeof styles>;
+
+// Merged props available to the `TableWithData` component
+type ConnectedTableProps<T extends ObjectWithId> = StyleClasses & TableProps<T> & InjectedProps<T>;
+
+// Props that should be provided to the HOC returned from `TableFactory` but which are not used by
+// `TableWithData`
+type DisconnectedTableProps<T extends ObjectWithId> = React.RefAttributes<TableInterface<T>> &
+  TableProps<T> & {
+    dataSelector: DataSelector<T>;
+  };
 
 export type TableCellProps = {
   align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
@@ -79,20 +78,18 @@ type TableRowProps<T extends ObjectWithId> = React.PropsWithChildren<{
   _selected?: boolean;
 }>;
 
-type TableState = PaginationFields & {
-  count: number | null;
-  dataIds: IdType[] | null;
-  loading: boolean;
-  selections: Set<number>;
-  sorting: SortFields;
-};
-
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(
-  (theme) => ({
-    progressBarSpacer: {
-      height: 4,
+const styles = (theme: Theme) =>
+  createStyles({
+    fab: {
+      margin: '-10px -10px 0 0',
+      position: 'absolute',
+      right: 0,
+      top: 0,
     },
+    headerWithFab: { marginRight: 40 },
+    paper: { position: 'relative' },
+    progressBarSpacer: { height: 4 },
     table: {
       '& .disabled-select-component': {
         display: 'flex',
@@ -106,9 +103,7 @@ const useStyles = makeStylesHook(
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(1),
     },
-  }),
-  'NavigaderTable'
-);
+  });
 
 const useTableCellStyles = makeStylesHook(
   () => ({
@@ -120,147 +115,74 @@ const useTableCellStyles = makeStylesHook(
 );
 
 /** ============================ Components ================================ */
-export function Table<T extends ObjectWithId>(props: TableProps<T>) {
-  const {
-    children,
-    containerClassName,
-    dataFn,
-    dataSelector,
-    disableSelect = () => false,
-    DisabledSelectComponent,
-    headerActions,
-    hover = true,
-    initialSorting,
-    onSelect,
-    raised = false,
-    title,
-    ...rest
-  } = props;
-
-  const classes = useStyles();
-
-  // State
-  const [state, setState] = React.useState<TableState>({
-    count: null,
-    dataIds: null,
-    loading: true,
-    page: 0,
-    pageSize: 20,
-    selections: new Set(),
-    sorting: { sortDir: initialSorting?.dir, sortKey: initialSorting?.key },
-  });
-
-  const { count, dataIds, page, pageSize, selections, sorting } = state;
-
-  // Load data
-  const loading = useAsync(
-    () => dataFn({ page, pageSize, ...sorting }),
-    (paginationSet) => {
-      updateState({
-        count: paginationSet.count,
-        dataIds: _.map(paginationSet.data, 'id'),
-      });
-    },
-    [dataFn, page, pageSize, sorting]
-  );
-
-  // Get the data from the store using the IDs
-  const data = useTableSelector(dataSelector, dataIds);
-
-  // Build context for child component tree
-  const selectables = data.filter((d) => !disableSelect(d));
-  const tableContext = {
-    allSelected: selectables.length > 0 && selectables.length === selections.size,
-    data,
-    disableSelect,
-    DisabledSelectComponent,
-    hover,
-    selectable: Boolean(onSelect),
-    selections,
-    setSortState,
-    sortState: sorting,
-    toggleAllSelections,
-    toggleRowSelection,
-  };
-
-  return (
-    <MuiPaper elevation={raised ? 8 : 0}>
-      {title && (
-        <MuiToolbar className={classes.toolbar}>
-          <Typography variant="h6">{title}</Typography>
-          {data && (
-            <Flex.Container alignItems="center">
-              {headerActions}
-              {count !== null && count > 10 && (
-                <TablePagination
-                  count={count}
-                  paginationState={state}
-                  updatePaginationState={updatePaginationState}
-                />
-              )}
-            </Flex.Container>
-          )}
-        </MuiToolbar>
-      )}
-      <MuiTableContainer className={containerClassName}>
-        <MuiTable className={classes.table} {...rest}>
-          <TableContext.Provider value={tableContext}>
-            {children(data || [], EmptyRow)}
-          </TableContext.Provider>
-        </MuiTable>
-      </MuiTableContainer>
-      {loading && <Progress />}
-    </MuiPaper>
-  );
-
-  /** ========================== Callbacks ================================= */
-  function EmptyRow(props: EmptyRowProps) {
-    if (count !== 0) return null;
-    return (
-      <Table.Row>
-        <Table.Cell {...props} />
-      </Table.Row>
-    );
-  }
-
-  /**
-   * Partial version of `setState`. This will also inform the parent of selection changes if the
-   * selection state has indeed changed.
-   *
-   * @param {Partial<TableState>} updates: state updates
-   */
-  function updateState(updates: Partial<TableState>) {
-    setState((prevState) => {
-      const newState = { ...state, ...updates };
-
-      // Update the selections if they've changed
-      if (prevState.selections !== newState.selections) {
-        updateSelections(newState.selections);
-      }
-
-      return newState;
-    });
-  }
-
-  /**
-   * Updates the pagination state, resetting selections
-   *
-   * @param {PaginationFields} newState: the new pagination state
-   */
-  function updatePaginationState(newState: PaginationFields) {
-    updateState({
-      ...newState,
+class TableWithData<T extends ObjectWithId> extends React.Component<
+  ConnectedTableProps<T>,
+  TableState
+> {
+  constructor(props: ConnectedTableProps<T>) {
+    super(props);
+    const { initialSorting } = props;
+    this.state = {
+      loading: false,
+      page: 0,
+      pageSize: 20,
       selections: new Set(),
-    });
+      sorting: { sortDir: initialSorting?.dir, sortKey: initialSorting?.key },
+    };
   }
 
-  /**
-   * Updates the sorting state
-   *
-   * @param {SortFields} newState: the new sort state
-   */
-  function setSortState(newState: SortFields) {
-    updateState({ sorting: newState });
+  componentDidMount() {
+    this.fetch();
+  }
+
+  componentDidUpdate(prevProps: Readonly<TableProps<T>>, prevState: Readonly<TableState>) {
+    // If any of the pagination state fields have changed, re-fetch
+    const { page: pageNew, pageSize: pageSizeNew, sorting: sortingNew } = this.state;
+    const { page: pageOld, pageSize: pageSizeOld, sorting: sortingOld } = prevState;
+    const { sortDir: sortDirNew, sortKey: sortKeyNew } = sortingNew;
+    const { sortDir: sortDirOld, sortKey: sortKeyOld } = sortingOld;
+
+    const allTheSame = _.every(
+      [
+        [pageNew, pageOld],
+        [pageSizeNew, pageSizeOld],
+        [sortDirNew, sortDirOld],
+        [sortKeyNew, sortKeyOld],
+      ].map(([newParam, oldParam]) => _.isEqual(newParam, oldParam))
+    );
+
+    if (!allTheSame) {
+      this.fetch();
+    }
+
+    // If the selections have changed, call the `onSelect` callback
+    const { onSelect = () => {} } = this.props;
+    const { selections: selectionsNew } = this.state;
+    const { selections: selectionsOld } = prevState;
+    if (selectionsNew !== selectionsOld) {
+      const data = this.getData();
+      onSelect([...selectionsNew].map((index) => data[index]));
+    }
+  }
+
+  fetch() {
+    const { page, pageSize, sorting } = this.state;
+    this.setState({ loading: true });
+    this.props
+      .dataFn({ page, pageSize, ...sorting })
+      .then((paginationSet) =>
+        this.setState({
+          count: paginationSet.count,
+          dataIds: _.map(paginationSet.data, 'id'),
+        })
+      )
+      .finally(() => this.setState({ loading: false }));
+  }
+
+  getData() {
+    const { data } = this.props;
+    const { dataIds } = this.state;
+    return dataIds ? omitFalsey(dataIds.map((id) => _.find(data, ['id', id]))) : [];
   }
 
   /**
@@ -269,15 +191,18 @@ export function Table<T extends ObjectWithId>(props: TableProps<T>) {
    * @param {boolean} selectAll: true if the checkbox is now checked (i.e. if all rows ought to
    *   become selected)
    */
-  function toggleAllSelections(selectAll: boolean) {
+  toggleAllSelections(selectAll: boolean) {
+    const { disableSelect = () => false } = this.props;
+    const data = this.getData();
+
     // Can't do anything without data
     if (!data) return;
     if (selectAll) {
       const selectables = data.filter((d) => !disableSelect(d));
       const selectedIndices = selectables.map((d) => data.indexOf(d));
-      updateState({ selections: new Set(selectedIndices) });
+      this.setState({ selections: new Set(selectedIndices) });
     } else {
-      updateState({ selections: new Set() });
+      this.setState({ selections: new Set() });
     }
   }
 
@@ -287,25 +212,118 @@ export function Table<T extends ObjectWithId>(props: TableProps<T>) {
    * @param {number} rowIndex: the index of the row whose selection state is toggling
    * @param {boolean} checked: true if the checkbox is now checked (i.e. if the row is now selected)
    */
-  function toggleRowSelection(rowIndex: number, checked: boolean) {
-    const newSelections = new Set(selections);
+  toggleRowSelection(rowIndex: number, checked: boolean) {
+    const newSelections = new Set(this.state.selections);
 
     if (checked) newSelections.add(rowIndex);
     else newSelections.delete(rowIndex);
 
-    updateState({ selections: newSelections });
+    this.setState({ selections: newSelections });
   }
 
-  /**
-   * Updates the selection state and calls the `onSelect` callback if provided
-   *
-   * @param {Set<number>} indices: the row indices of the now-selected data
-   */
-  function updateSelections(indices: Set<number>) {
-    if (data && onSelect) {
-      // Map the indices to the actual data
-      onSelect([...indices].map((index) => data[index]));
-    }
+  renderContext() {
+    const { count, selections, sorting } = this.state;
+    const {
+      children,
+      disableSelect = () => false,
+      DisabledSelectComponent,
+      hover = true,
+      onSelect,
+    } = this.props;
+
+    const data = this.getData();
+    const selectables = data.filter((d) => !disableSelect(d));
+
+    const tableContext = {
+      allSelected: selectables.length > 0 && selectables.length === selections.size,
+      data,
+      disableSelect,
+      DisabledSelectComponent,
+      hover,
+      selectable: Boolean(onSelect),
+      selections,
+      setSortState: (newState: SortFields) => this.setState({ sorting: newState }),
+      sortState: sorting,
+      toggleAllSelections: this.toggleAllSelections.bind(this),
+      toggleRowSelection: this.toggleRowSelection.bind(this),
+    };
+
+    // Component to render when there is no data
+    const EmptyRow: React.FC<EmptyRowProps> = (props) => {
+      if (count !== 0) return null;
+      return (
+        <TableRow>
+          <TableCell {...props} />
+        </TableRow>
+      );
+    };
+
+    return (
+      <TableContext.Provider value={tableContext}>
+        {children(data || [], EmptyRow)}
+      </TableContext.Provider>
+    );
+  }
+
+  renderFAB() {
+    const { classes, onFabClick } = this.props;
+    if (!onFabClick) return null;
+    return <Button.Fab className={classes.fab} color="primary" name="plus" onClick={onFabClick} />;
+  }
+
+  renderProgressBar() {
+    const { loading } = this.state;
+    return loading ? <Progress /> : <div className={this.props.classes.progressBarSpacer} />;
+  }
+
+  renderToolbar() {
+    const { classes, headerActions, onFabClick, title } = this.props;
+    const { count } = this.state;
+    if (!title) return null;
+
+    const data = this.getData();
+    const headerClassname = classNames({ [classes.headerWithFab]: !!onFabClick });
+
+    return (
+      <MuiToolbar className={classes.toolbar}>
+        <Typography variant="h6">{title}</Typography>
+        {data && (
+          <Flex.Container alignItems="center" className={headerClassname}>
+            {headerActions}
+            {typeof count !== 'undefined' && count > 10 && (
+              <TablePagination
+                count={count}
+                paginationState={this.state}
+                // Reset selections when pagination state changes
+                updatePaginationState={(newState) =>
+                  this.setState({ ...newState, selections: new Set() })
+                }
+              />
+            )}
+          </Flex.Container>
+        )}
+      </MuiToolbar>
+    );
+  }
+
+  render() {
+    const { classes, containerClassName, raised = false, size, stickyHeader } = this.props;
+    const tableProps = {
+      className: classes.table,
+      size,
+      stickyHeader,
+    };
+
+    return (
+      <MuiPaper className={classes.paper} elevation={raised ? 8 : 0}>
+        {this.renderToolbar()}
+        {this.renderFAB()}
+        <MuiTableContainer className={containerClassName}>
+          {this.renderProgressBar()}
+          <MuiTable {...tableProps}>{this.renderContext()}</MuiTable>
+        </MuiTableContainer>
+      </MuiPaper>
+    );
   }
 }
 
@@ -320,7 +338,7 @@ const TableBody: React.FC = (props) => {
       {React.Children.map(props.children, (child) => {
         // If the child is not a valid element or if it isn't a table row component, return
         // unchanged
-        if (!React.isValidElement(child) || child.type !== Table.Row) return child;
+        if (!React.isValidElement(child) || child.type !== TableRow) return child;
 
         // Augment the row index
         const index = rowIndex++;
@@ -374,7 +392,7 @@ function TableRow<T extends ObjectWithId>(props: TableRowProps<T>) {
   if (selectable) {
     // The `onChange` callback depends on the cell's context
     checkboxCell = (
-      <Table.Cell _columnIndex={colIndex++} _isHeaderRow={_isHeaderRow}>
+      <TableCell _columnIndex={colIndex++} _isHeaderRow={_isHeaderRow}>
         {_disableSelect && !_isHeaderRow && DisabledSelectComponent ? (
           <div className="disabled-select-component">
             <DisabledSelectComponent datum={_datum} />
@@ -382,7 +400,7 @@ function TableRow<T extends ObjectWithId>(props: TableRowProps<T>) {
         ) : (
           <Checkbox checked={_selected} disabled={_disableSelect} onChange={_onChange} />
         )}
-      </Table.Cell>
+      </TableCell>
     );
   }
 
@@ -481,12 +499,43 @@ const TableCell: React.FC<TableCellProps> = (props) => {
   }
 };
 
-/** ============================ Exports =================================== */
-Table.Body = TableBody;
-Table.Cell = TableCell;
-Table.Head = TableHead;
-Table.Pagination = TablePagination;
-Table.Row = TableRow;
+/**
+ * This is a verbose way of retaining the `Table` component's generic type parameter while using
+ * `connect`.
+ */
+export function TableFactory<T extends ObjectWithId>() {
+  // Create the `ConnectedTable`. This connects the `TableWithData` component to the redux store and
+  // extracts the data from the store using the component's `dataSelector` prop. From there it's up
+  // to the component to filter that data down to the actual list of data to render, using its state
+  // parameter `dataIds`.
+  //
+  // Additionally, this injects the styles into the component. This mess of types contains multiple
+  // typecasts, and I'm not at all confident in its robustness. Nevertheless it satisfies the
+  // linter, so it satisfies me.
+  const ConnectedTable = withStyles(styles)(
+    connect<InjectedProps<T>, {}, DisconnectedTableProps<T>>(
+      (state, ownProps) => ({ data: ownProps.dataSelector(state) }),
+      null,
+      null,
+      { forwardRef: true }
+    )(TableWithData as React.ComponentType<ConnectedTableProps<T>>)
+  ) as React.ComponentType<DisconnectedTableProps<T>>;
+
+  // Attach the various table components to the `ConnectedTable` for easy access
+  return Object.assign(ConnectedTable, {
+    Body: TableBody,
+    Cell: TableCell,
+    Head: TableHead,
+    Pagination: TablePagination,
+    Row: TableRow,
+  });
+}
+
+/**
+ * Provided as a convenience for components that do not need typechecking, or which only need the
+ * `Table` component to access its sub-components.
+ */
+export const Table = TableFactory<any>();
 
 /** ============================ Constants ================================= */
 const DEFAULT_SORT_DIR = 'asc';

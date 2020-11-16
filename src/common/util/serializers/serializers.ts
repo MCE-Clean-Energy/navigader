@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { DateTime } from 'luxon';
 
 import {
@@ -25,7 +26,6 @@ import {
   ScenarioReportFields,
 } from 'navigader/types';
 import { Frame288Numeric, makeIntervalData, percentOf } from '../data';
-import _ from '../lodash';
 
 /** ============================ Meters ==================================== */
 export function parseMeter(meter: RawMeter): Meter {

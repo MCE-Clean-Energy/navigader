@@ -1,8 +1,8 @@
+import _ from 'lodash';
 import * as React from 'react';
 
-import { ObjectWithId, PaginationQueryParams } from 'navigader/types';
-import _ from 'navigader/util/lodash';
-import { Table, TableProps } from './Table';
+import { ObjectWithId, PaginationQueryParams, TableProps } from 'navigader/types';
+import { Table } from './Table';
 
 /** ============================ Types ===================================== */
 type PrefetchedTableProps<T extends ObjectWithId> = Omit<
@@ -15,10 +15,10 @@ export function PrefetchedTable<T extends ObjectWithId>(props: PrefetchedTablePr
   const { data, ...rest } = props;
   return (
     <Table
-      dataFn={(state) =>
+      dataFn={(queryParams) =>
         Promise.resolve({
           count: data.length,
-          data: getDataPage(data, state),
+          data: getDataPage(data, queryParams),
         })
       }
       dataSelector={() => data}

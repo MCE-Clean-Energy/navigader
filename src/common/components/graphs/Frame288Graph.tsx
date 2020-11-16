@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import * as React from 'react';
 import { VictoryAxis, VictoryLabel, VictoryLine, VictoryVoronoiContainer } from 'victory';
 
@@ -6,7 +7,6 @@ import { Frame288NumericType, MonthIndex, MonthsOption } from 'navigader/types';
 import { formatters } from 'navigader/util';
 import { Frame288Numeric } from 'navigader/util/data';
 import { useColorMap } from 'navigader/util/hooks';
-import _ from 'navigader/util/lodash';
 import { NavigaderChart } from './components';
 import { getAxisLabel, VictoryCallbackArg } from './util';
 

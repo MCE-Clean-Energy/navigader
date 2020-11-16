@@ -1,10 +1,10 @@
+import _ from 'lodash';
 import * as React from 'react';
 
 import * as api from 'navigader/api';
 import { ColorMap } from 'navigader/styles';
 import { Scenario, ScenarioReportFields } from 'navigader/types';
 import { formatters } from 'navigader/util';
-import _ from 'navigader/util/lodash';
 import { Avatar } from '../Avatar';
 import { FileDownload } from '../File';
 import { PrefetchedTable, Table } from '../Table';
@@ -62,11 +62,11 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
               <ImpactColumnHeader
                 column="GHG Impact"
                 info={{
-                  measuresImpact: 'in GHG emissions, calculated using CNS 2022 tables',
+                  measuresImpact: 'in GHG emissions',
                   negativeMeans: 'GHG emissions have gone down',
                   positiveMeans: 'GHG emissions have gone up',
                 }}
-                sortBy="CleanNetShort2022Delta"
+                sortBy="GHGDelta"
                 units={
                   <>
                     tCO<sub>2</sub>
@@ -90,7 +90,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                   negativeMeans: 'CCA procurement expenses have gone down',
                   positiveMeans: 'CCA procurement expenses have gone up',
                 }}
-                sortBy="PRC_LMPDelta"
+                sortBy="ProcurementDelta"
                 units="$"
               />
               <ImpactColumnHeader

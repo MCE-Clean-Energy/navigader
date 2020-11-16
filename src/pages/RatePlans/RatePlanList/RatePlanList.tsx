@@ -2,11 +2,19 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
-import { routes, useRouter } from 'navigader/routes';
-import { Grid, List, Menu, PageHeader, Table, Link, PrefetchedTable } from 'navigader/components';
+import {
+  Grid,
+  Link,
+  List,
+  Menu,
+  PageHeader,
+  PrefetchedTable,
+  StandardDate,
+  Table,
+} from 'navigader/components';
+import { routes, usePushRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
-import { formatters } from 'navigader/util';
-import { CreateRatePlan } from './CreateRatePlan';
+import { CreateRatePlanDialog } from './CreateRatePlanDialog';
 import { makeStylesHook } from 'navigader/styles';
 import { RatePlan } from 'navigader/types';
 import { DeleteDialog } from './DeleteDialog';
@@ -26,9 +34,10 @@ const useStyle = makeStylesHook(
 /** ============================ Components ================================ */
 export const RatePlanList: React.FC = () => {
   const dispatch = useDispatch();
-  const routeTo = useRouter();
+  const routeTo = usePushRouter();
   const classes = useStyle();
   const [deleteRatePlan, setDeleteRatePlan] = React.useState<RatePlan>();
+  const [createDialogOpen, setCreateDialogOpen] = React.useState(false);
 
   const ratePlans = useRatePlans({
     page: 0,
@@ -41,8 +50,15 @@ export const RatePlanList: React.FC = () => {
       <Grid>
         <Grid.Item span={12}>
           {ratePlans && !ratePlans.loading && (
-            <PrefetchedTable aria-label="rate plan table" data={ratePlans} raised stickyHeader>
-              {(ratePlans: RatePlan[]) => (
+            <PrefetchedTable
+              aria-label="rate plan table"
+              data={ratePlans}
+              onFabClick={() => setCreateDialogOpen(true)}
+              raised
+              stickyHeader
+              title="Rate Plans"
+            >
+              {(ratePlans) => (
                 <>
                   <Table.Head>
                     <Table.Row>
@@ -62,7 +78,7 @@ export const RatePlanList: React.FC = () => {
                         </Table.Cell>
                         <Table.Cell>{ratePlan.sector}</Table.Cell>
                         <Table.Cell>
-                          {ratePlan.start_date && formatters.date.standard(ratePlan.start_date)}
+                          <StandardDate date={ratePlan.start_date} />
                         </Table.Cell>
                         <Table.Cell align="right">
                           <Menu
@@ -100,7 +116,10 @@ export const RatePlanList: React.FC = () => {
         </Grid.Item>
         <Grid.Item className={classes.fabGutter} span={12} />
       </Grid>
-      <CreateRatePlan />
+      <CreateRatePlanDialog
+        closeDialog={() => setCreateDialogOpen(false)}
+        open={createDialogOpen}
+      />
       <DeleteDialog
         onClose={() => {
           setDeleteRatePlan(undefined);

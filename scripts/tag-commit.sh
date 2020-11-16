@@ -7,7 +7,7 @@ else
     exit 1
 fi
 
-cur_date=$(date -u +%d.%m.%y-%H:%M);
-export TAG_NAME="deployed-to-$environment""__$cur_date";
+cur_date=$(date -u +%d.%m.%y-%H,%M);
+export TAG_NAME="deployments/$environment/$cur_date";
 git tag -a "$TAG_NAME" -m "This commit has been deployed to the $environment environment";
 git push origin --tags;

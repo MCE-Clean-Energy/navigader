@@ -1,10 +1,9 @@
-import { DeferrableFields } from './api';
 import { NavigaderObject } from './common';
 import { Frame288NumericType, Frame288Type } from './data';
 
 export type DERInfo = { der_configuration: DERConfiguration; der_strategy: DERStrategy };
-export type DERConfiguration = BatteryConfiguration | /* EVSEConfiguration | */ SolarConfiguration;
-export type DERStrategy = BatteryStrategy | /* EVSEStrategy | */ SolarStrategy;
+export type DERConfiguration = BatteryConfiguration | EVSEConfiguration | SolarConfiguration;
+export type DERStrategy = BatteryStrategy | EVSEStrategy | SolarStrategy;
 export type DERType = DERConfiguration['der_type'];
 export type DERStrategyType =
   | 'load_flattening'
@@ -27,68 +26,76 @@ type DERStrategyCommonFields = DERCommonFields & {
 /** ============================ Battery =================================== */
 type BatteryCommonFields = { der_type: 'Battery' };
 export interface BatteryConfiguration
-  extends DeferrableFields<
-    NavigaderObject<'BatteryConfiguration'> & DERCommonFields & BatteryCommonFields,
-    {
-      data: {
-        rating: number;
-        discharge_duration_hours: number;
-        efficiency: number;
-      };
-    }
-  > {}
+  extends NavigaderObject<'BatteryConfiguration'>,
+    DERCommonFields,
+    BatteryCommonFields {
+  data?: {
+    rating: number;
+    discharge_duration_hours: number;
+    efficiency: number;
+  };
+}
 
 type BatteryStrategyFrame288 = Frame288Type<number | 'inf' | '-inf'>;
 export interface BatteryStrategy
-  extends DeferrableFields<
-    NavigaderObject<'BatteryStrategy'> & DERStrategyCommonFields & BatteryCommonFields,
-    {
-      data: {
-        charge_schedule_frame: BatteryStrategyFrame288;
-        discharge_schedule_frame: BatteryStrategyFrame288;
-      };
-    }
-  > {}
+  extends NavigaderObject<'BatteryStrategy'>,
+    DERStrategyCommonFields,
+    BatteryCommonFields {
+  data?: {
+    charge_schedule_frame: BatteryStrategyFrame288;
+    discharge_schedule_frame: BatteryStrategyFrame288;
+  };
+}
 
 /** ============================ EVSE ====================================== */
 type EVSECommonFields = { der_type: 'EVSE' };
 export interface EVSEConfiguration
-  extends DeferrableFields<
-    NavigaderObject<'EVSEConfiguration'> & DERCommonFields & EVSECommonFields,
-    {
-      data: {
-        ev_mpkwh: number;
-        ev_mpg_eq: number;
-        ev_capacity: number;
-        ev_efficiency: number;
-        evse_rating: number;
-        ev_count: number;
-        evse_count: number;
-      };
-    }
-  > {}
+  extends NavigaderObject<'EVSEConfiguration'>,
+    DERCommonFields,
+    EVSECommonFields {
+  data?: {
+    ev_mpkwh: number;
+    ev_mpg_eq: number;
+    ev_capacity: number;
+    ev_efficiency: number;
+    evse_rating: number;
+    ev_count: number;
+    evse_count: number;
+  };
+}
 
 export interface EVSEStrategy
-  extends DeferrableFields<
-    NavigaderObject<'EVSEStrategy'> & DERStrategyCommonFields & EVSECommonFields,
-    {
-      data: {
-        charge_schedule_frame: BatteryStrategyFrame288;
-        drive_schedule_frame: Frame288NumericType;
-      };
-    }
-  > {}
+  extends NavigaderObject<'EVSEStrategy'>,
+    DERStrategyCommonFields,
+    EVSECommonFields {
+  data?: {
+    charge_schedule_frame: BatteryStrategyFrame288;
+    drive_schedule_frame: Frame288NumericType;
+  };
+}
 
 /** ============================ Solar ===================================== */
 type SolarCommonFields = { der_type: 'SolarPV' };
+export type SolarArrayType = 0 | 1;
 export interface SolarConfiguration
-  extends DeferrableFields<
-    NavigaderObject<'SolarPVConfiguration'> & DERCommonFields & SolarCommonFields,
-    { data: {} }
-  > {}
+  extends NavigaderObject<'SolarPVConfiguration'>,
+    DERCommonFields,
+    SolarCommonFields {
+  data?: {
+    address: string;
+    array_type: SolarArrayType;
+    azimuth: number; // 0 <= value < 360
+    losses: number; // -5 <= value < 99
+    system_capacity: number; // 0.05 <= value <= 500000
+    tilt: number; // 0 <= value <= 90
+  };
+}
 
 export interface SolarStrategy
-  extends DeferrableFields<
-    NavigaderObject<'SolarPVStrategy'> & DERStrategyCommonFields & SolarCommonFields,
-    { data: {} }
-  > {}
+  extends NavigaderObject<'SolarPVStrategy'>,
+    DERStrategyCommonFields,
+    SolarCommonFields {
+  data?: {
+    serviceable_load_ratio: number; // 0 < value
+  };
+}

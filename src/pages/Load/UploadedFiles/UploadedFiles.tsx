@@ -9,11 +9,11 @@ import {
   List,
   Menu,
   PageHeader,
+  StandardDate,
   StatusIndicator,
-  Table,
-  Typography,
+  TableFactory,
 } from 'navigader/components';
-import { routes, useRouter } from 'navigader/routes';
+import { routes, usePushRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { OriginFile, PaginationQueryParams, PaginationSet } from 'navigader/types';
@@ -34,8 +34,10 @@ const useStyles = makeStylesHook(
 );
 
 /** ============================ Components ================================ */
+const Table = TableFactory<OriginFile>();
+
 export const UploadedFiles = () => {
-  const routeTo = useRouter();
+  const routeTo = usePushRouter();
   const classes = useStyles();
   const dispatch = useDispatch();
   const [deleteOriginFile, setDeleteOriginFile] = React.useState<OriginFile>();
@@ -48,6 +50,7 @@ export const UploadedFiles = () => {
       })) as PaginationSet<OriginFile>;
 
       // Add the models to the store and yield the pagination results
+      models.polling.addMeterGroups(response.data);
       dispatch(slices.models.updateModels(response.data));
       return response;
     },
@@ -119,9 +122,7 @@ export const UploadedFiles = () => {
                       )}
                     </Table.Cell>
                     <Table.Cell>
-                      <Typography noWrap variant="body2">
-                        {formatters.date.standard(originFile.created_at)}
-                      </Typography>
+                      <StandardDate date={originFile.created_at} />
                     </Table.Cell>
                     <Table.Cell>
                       <StatusIndicator meterGroup={originFile} />

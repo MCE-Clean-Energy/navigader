@@ -1,4 +1,5 @@
-import _ from 'navigader/util/lodash';
+import _ from 'lodash';
+
 import { fixtures } from 'navigader/util/testing';
 import * as meterGroup from './meterGroup';
 

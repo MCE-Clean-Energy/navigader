@@ -7,9 +7,11 @@ import MuiTabs from '@material-ui/core/Tabs';
 import { Card } from './Card';
 
 /** ============================ Types ===================================== */
+type ChangeEvent = React.ChangeEvent<{}>;
 type TabsProps = {
   children: React.ReactElement<TabProps>[];
   initialTab?: string;
+  onChange?: (value: string, event: ChangeEvent) => void;
 };
 
 type TabProps = React.PropsWithChildren<{
@@ -33,7 +35,7 @@ const Tab: React.FC<TabProps> = ({ children, title }) => {
 };
 
 export const Tabs = Object.assign(
-  React.forwardRef<HTMLButtonElement, TabsProps>(({ children, initialTab }, ref) => {
+  React.forwardRef<HTMLButtonElement, TabsProps>(({ children, initialTab, onChange }, ref) => {
     // Iterate over the children and grab the titles
     const titles = React.Children.map(children, (child) => child.props.title);
 
@@ -64,6 +66,7 @@ export const Tabs = Object.assign(
     /** ========================== Callbacks ================================= */
     function handleChange(event: React.ChangeEvent<{}>, newValue: string) {
       setActiveTab(newValue);
+      if (onChange) onChange(newValue, event);
     }
   }),
   {

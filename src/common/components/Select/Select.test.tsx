@@ -1,7 +1,7 @@
+import _ from 'lodash';
 import * as React from 'react';
 import { fireEvent, waitFor } from '@testing-library/react';
 
-import _ from 'navigader/util/lodash';
 import { renderContextDependentComponent } from 'navigader/util/testing';
 import { Select } from './Select';
 

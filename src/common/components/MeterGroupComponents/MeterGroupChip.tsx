@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { useRouter } from 'navigader/routes';
+import { usePushRouter } from 'navigader/routes';
 import { isOriginFile, isScenario, MeterGroup } from 'navigader/types';
 import { formatters, models, printWarning } from 'navigader/util';
 
@@ -18,7 +18,7 @@ type MeterGroupChipProps = Omit<ChipProps, 'label'> & {
 
 /** ============================ Components ================================ */
 export const MeterGroupChip: React.FC<MeterGroupChipProps> = (props) => {
-  const routeTo = useRouter();
+  const routeTo = usePushRouter();
   const {
     color = 'secondary',
     disabled,

@@ -53,8 +53,7 @@ describe('`getRequest` method', () => {
       expect(mockFn).toHaveBeenCalledTimes(1);
 
       const callArgs = mockFn.mock.calls[0];
-      const expectedValue =
-        'myRoute?' + 'filter{meter_group}=123&' + 'filter{scenario.name}=my-scenario';
+      const expectedValue = 'myRoute?filter{meter_group}=123&filter{scenario.name}=my-scenario';
 
       expect(callArgs[0]).toEqual(expectedValue);
     });

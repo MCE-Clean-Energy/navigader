@@ -1,9 +1,9 @@
 import deepEqual from 'fast-deep-equal';
+import _ from 'lodash';
 
 import * as api from 'navigader/api';
 import store, { slices } from 'navigader/store';
 import { IdType, MeterGroup, PaginationQueryParams, Scenario, Without } from 'navigader/types';
-import _ from 'navigader/util/lodash';
 import { filterClause } from '../../api';
 
 /** ============================ Types ===================================== */

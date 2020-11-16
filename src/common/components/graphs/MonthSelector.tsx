@@ -1,7 +1,7 @@
+import _ from 'lodash';
 import * as React from 'react';
 
 import { MonthIndex, MonthsOption } from 'navigader/types';
-import _ from 'navigader/util/lodash';
 import { Toggle } from '../ToggleButton';
 
 /** ============================ Types ===================================== */
