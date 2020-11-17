@@ -137,12 +137,12 @@ function getSliceForModel(
 ): Array<ModelClassInterior> {
   switch (model.object_type) {
     case 'BatteryConfiguration':
-    case 'SolarPVConfiguration':
     case 'EVSEConfiguration':
+    case 'SolarPVConfiguration':
       return state.derConfigurations;
     case 'BatteryStrategy':
-    case 'SolarPVStrategy':
     case 'EVSEStrategy':
+    case 'SolarPVStrategy':
       return state.derStrategies;
     case 'CAISORate':
       return state.caisoRates;
@@ -170,9 +170,9 @@ function prepareModel(model: ModelClassExterior): ModelClassInterior {
   switch (model.object_type) {
     case 'BatteryStrategy':
     case 'BatteryConfiguration':
-    case 'RatePlan':
     case 'EVSEConfiguration':
     case 'EVSEStrategy':
+    case 'RatePlan':
     case 'SolarPVConfiguration':
     case 'SolarPVStrategy':
       return model;
