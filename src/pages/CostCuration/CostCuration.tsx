@@ -1,10 +1,9 @@
 import _ from 'lodash';
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+
 import { usePushRouter } from 'navigader/routes';
-
 import { PageHeader, Tabs } from 'navigader/components';
-
 import { RatePlans } from './RatePlans';
 import { Procurement } from './Procurement';
 import { SystemProfiles } from './SystemProfiles';
