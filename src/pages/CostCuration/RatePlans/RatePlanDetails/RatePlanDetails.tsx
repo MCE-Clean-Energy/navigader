@@ -77,8 +77,8 @@ export const RatePlanDetails: React.FC = () => {
       <Grid.Item span={12}>
         <PageHeader
           breadcrumbs={[
-            ['Rate Plans', routes.rates.base],
-            ['Current Rate Plan', routes.rates.ratePlan(id)],
+            ['Rate Plans', routes.cost.rates.base],
+            ['Current Rate Plan', routes.cost.rates.ratePlan(id)],
           ]}
           title={ratePlan?.name || ''}
         />

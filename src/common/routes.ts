@@ -2,7 +2,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { OriginFile, RatePlan, Scenario } from 'navigader/types';
+import { OriginFile, RatePlan, Scenario, SystemProfile } from 'navigader/types';
 
 /** ============================ Dashboard Routes ========================== */
 const dashboardBase = '/dashboard';
@@ -46,9 +46,24 @@ const login = '/login';
 const resetPassword = '/reset_password';
 const roadmap = '/roadmap';
 const upload = '/upload';
-const rates = {
-  base: '/rates',
-  ratePlan: (id: string) => `/rates/${id}`,
+const costBase = '/cost';
+const ratesBase = `${costBase}/rates`;
+const procurementBase = `${costBase}/procurement`;
+const systemProfilesBase = `${costBase}/system_profiles`;
+const cost = {
+  base: costBase,
+  rates: {
+    base: ratesBase,
+    ratePlan: (id: string) => `${ratesBase}/${id}`,
+  },
+  procurement: {
+    base: procurementBase,
+    load: (id: string) => `${procurementBase}/${id}`,
+  },
+  system_profiles: {
+    base: systemProfilesBase,
+    profile: (id: string) => `${systemProfilesBase}/${id}`,
+  },
 };
 const registration = {
   signup: '/registration/signup',
@@ -64,7 +79,7 @@ export const routes = {
   ders,
   load,
   login,
-  rates,
+  cost,
   registration,
   resetPassword,
   roadmap,
@@ -118,9 +133,21 @@ function routerFactory(method: 'push' | 'replace') {
           };
         },
 
-        rates: {
-          ratePlan: (ratePlan: RatePlan) => () => {
-            routerFn(routes.rates.ratePlan(ratePlan.id.toString()));
+        cost: {
+          rates: {
+            base: () => routerFn(routes.cost.rates.base),
+            ratePlan: (ratePlan: RatePlan) => () => {
+              routerFn(routes.cost.rates.ratePlan(ratePlan.id.toString()));
+            },
+          },
+          procurement: {
+            base: () => routerFn(routes.cost.procurement.base),
+          },
+          system_profiles: {
+            base: () => routerFn(routes.cost.system_profiles.base),
+            profile: (systemProfile: SystemProfile) => () => {
+              routerFn(routes.cost.system_profiles.profile(systemProfile.id.toString()));
+            },
           },
         },
         registration: {

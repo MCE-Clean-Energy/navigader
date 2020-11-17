@@ -30,6 +30,7 @@ const initialState: ModelsSlice = {
   meterGroups: [],
   meters: [],
   ratePlans: [],
+  systemProfiles: [],
 };
 
 /**
@@ -103,6 +104,9 @@ export const selectScenarios = (state: RootState) => {
   return scenarios.map((scenario) => serializers.parseScenario(scenario, state.models.meterGroups));
 };
 
+export const selectSystemProfiles = (state: RootState) =>
+  state.models.systemProfiles.map(serializers.parseSystemProfile);
+
 /** ============================ Reducer methods =========================== */
 /**
  * Updates a model in state if it is already present, or adds it to state if it is not. The model's
@@ -133,25 +137,27 @@ function getSliceForModel(
 ): Array<ModelClassInterior> {
   switch (model.object_type) {
     case 'BatteryConfiguration':
-    case 'EVSEConfiguration':
     case 'SolarPVConfiguration':
+    case 'EVSEConfiguration':
       return state.derConfigurations;
     case 'BatteryStrategy':
-    case 'EVSEStrategy':
     case 'SolarPVStrategy':
+    case 'EVSEStrategy':
       return state.derStrategies;
     case 'CAISORate':
       return state.caisoRates;
     case 'OriginFile':
-    case 'Scenario':
-      return state.meterGroups;
     case 'CustomerMeter':
     case 'ReferenceMeter':
       return state.meters;
     case 'GHGRate':
       return state.ghgRates;
+    case 'Scenario':
+      return state.meterGroups;
     case 'RatePlan':
       return state.ratePlans;
+    case 'SystemProfile':
+      return state.systemProfiles;
   }
 }
 
@@ -164,12 +170,14 @@ function prepareModel(model: ModelClassExterior): ModelClassInterior {
   switch (model.object_type) {
     case 'BatteryStrategy':
     case 'BatteryConfiguration':
+    case 'RatePlan':
     case 'EVSEConfiguration':
     case 'EVSEStrategy':
-    case 'RatePlan':
     case 'SolarPVConfiguration':
     case 'SolarPVStrategy':
       return model;
+    case 'SystemProfile':
+      return serializers.serializeSystemProfile(model);
     case 'CAISORate':
       return serializers.serializeCAISORate(model);
     case 'OriginFile':

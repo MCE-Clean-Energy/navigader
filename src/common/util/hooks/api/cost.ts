@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as api from 'navigader/api';
@@ -24,6 +23,7 @@ type UseCostFunctionsParams = Partial<{
 }>;
 
 type CostFunctionLoaders = { [CF in keyof CostFunctions]: Loader<CostFunctions[CF][]> };
+type SystemProfileFilters = Partial<DataTypeFilters>;
 
 /** ============================ Rate plans ================================ */
 /**
@@ -123,21 +123,42 @@ export function useCAISORates(filters: CAISORateFilters = {}): Loader<CAISORate[
 }
 
 /** ============================ System profiles =========================== */
-export function useSystemProfiles(): Loader<SystemProfile[]> {
-  const [systemProfiles, setSystemProfiles] = React.useState<SystemProfile[]>([]);
+export function useSystemProfiles(filters?: SystemProfileFilters): Loader<SystemProfile[]> {
+  const dispatch = useDispatch();
+  const systemProfiles = useSelector(slices.models.selectSystemProfiles);
 
   const loading = useAsync(
     async () => {
+      if (systemProfiles.length > 1) return;
       return api.getSystemProfiles({
-        include: ['load_serving_entity.*'],
+        ...filters,
         page: 0,
         pageSize: 100,
       });
     },
-    ({ data }) => setSystemProfiles(data)
+    ({ data }) => dispatch(slices.models.updateModels(data))
   );
 
   return Object.assign([...systemProfiles], { loading });
+}
+
+export function useSystemProfile(
+  systemProfileId: SystemProfile['id'],
+  filters?: SystemProfileFilters
+) {
+  const dispatch = useDispatch();
+  const storedSystemProfiles = useSelector(slices.models.selectSystemProfiles);
+  const systemProfile = _.find(storedSystemProfiles, { id: systemProfileId });
+
+  const loading = useAsync(
+    async () => {
+      if (systemProfile) return;
+      return api.getSystemProfile(systemProfileId, { ...filters });
+    },
+    (systemProfile) => dispatch(slices.models.updateModel(systemProfile)),
+    [systemProfileId]
+  );
+  return { loading, systemProfile };
 }
 
 /** ============================ Everything ================================ */
