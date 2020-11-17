@@ -26,17 +26,17 @@ export const SystemProfileDetails: React.FC = () => {
 
   return (
     <Grid>
+      <Grid.Item span={12}>
+        <PageHeader
+          breadcrumbs={[
+            ['System Profiles', routes.cost.system_profiles.base],
+            ['Current System Profile', routes.cost.system_profiles.profile(id)],
+          ]}
+          title={systemProfile?.name || ''}
+        />
+      </Grid.Item>
       {systemProfile && !loading ? (
         <>
-          <Grid.Item span={12}>
-            <PageHeader
-              breadcrumbs={[
-                ['System Profiles', routes.cost.system_profiles.base],
-                ['Current System Profile', routes.cost.system_profiles.profile(id)],
-              ]}
-              title={systemProfile.name}
-            />
-          </Grid.Item>
           <Grid.Item span={12}>
             <Card>
               <Card.Content>
