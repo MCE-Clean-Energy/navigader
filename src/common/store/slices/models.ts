@@ -147,13 +147,13 @@ function getSliceForModel(
     case 'CAISORate':
       return state.caisoRates;
     case 'OriginFile':
+    case 'Scenario':
+      return state.meterGroups;
     case 'CustomerMeter':
     case 'ReferenceMeter':
       return state.meters;
     case 'GHGRate':
       return state.ghgRates;
-    case 'Scenario':
-      return state.meterGroups;
     case 'RatePlan':
       return state.ratePlans;
     case 'SystemProfile':
