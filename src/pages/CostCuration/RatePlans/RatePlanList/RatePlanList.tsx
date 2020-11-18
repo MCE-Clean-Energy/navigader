@@ -2,119 +2,109 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
-import { Grid, Link, List, Menu, PrefetchedTable, StandardDate, Table } from 'navigader/components';
+import { Link, List, Menu, StandardDate, TableFactory } from 'navigader/components';
 import { routes, usePushRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
-import { CreateRatePlan } from './CreateRatePlan';
 import { RatePlan } from 'navigader/types';
+import { hooks } from 'navigader/util';
+
 import { DeleteDialog } from '../../common/DeleteDialog';
-import { useRatePlans } from 'navigader/util/hooks';
+import { CreateRatePlan } from './CreateRatePlan';
 
 /** ============================ Components ================================ */
+const Table = TableFactory<RatePlan>();
 export const RatePlanList: React.FC = () => {
   const dispatch = useDispatch();
   const routeTo = usePushRouter();
-  const [deleteRatePlan, setDeleteRatePlan] = React.useState<RatePlan>();
+  const [ratePlanToDelete, setRatePlanToDelete] = React.useState<RatePlan>();
   const [createDialogOpen, setCreateDialogOpen] = React.useState(false);
-
-  const ratePlans = useRatePlans({
-    page: 0,
-    pageSize: 100,
-  });
+  const tableRef = hooks.useTableRef<RatePlan>();
 
   return (
     <>
-      <Grid>
-        <Grid.Item span={12}>
-          {ratePlans && !ratePlans.loading && (
-            <PrefetchedTable
-              aria-label="rate plan table"
-              data={ratePlans}
-              onFabClick={() => setCreateDialogOpen(true)}
-              raised
-              stickyHeader
-              title="Rate Plans"
-            >
-              {(ratePlans) => (
-                <>
-                  <Table.Head>
-                    <Table.Row>
-                      <Table.Cell>Name</Table.Cell>
-                      <Table.Cell>Sector</Table.Cell>
-                      <Table.Cell>Start Date</Table.Cell>
-                      <Table.Cell align="right">Menu</Table.Cell>
-                    </Table.Row>
-                  </Table.Head>
-                  <Table.Body>
-                    {ratePlans.map((ratePlan) => (
-                      <Table.Row key={ratePlan.id}>
-                        <Table.Cell>
-                          <Link to={routes.cost.rates.ratePlan(ratePlan.id.toString())}>
-                            {ratePlan.name}
-                          </Link>
-                        </Table.Cell>
-                        <Table.Cell>{ratePlan.sector}</Table.Cell>
-                        <Table.Cell>
-                          <StandardDate date={ratePlan.start_date} />
-                        </Table.Cell>
-                        <Table.Cell align="right">
-                          <Menu
-                            anchorOrigin={{
-                              vertical: 'center',
-                              horizontal: 'center',
-                            }}
-                            icon="verticalDots"
-                            transformOrigin={{
-                              vertical: 'top',
-                              horizontal: 'right',
-                            }}
-                          >
-                            <List.Item onClick={routeTo.cost.rates.ratePlan(ratePlan)}>
-                              <List.Item.Icon icon="pencil" />
-                              <List.Item.Text>View/Edit</List.Item.Text>
-                            </List.Item>
-                            <List.Item
-                              onClick={() => {
-                                setDeleteRatePlan(ratePlan);
-                              }}
-                            >
-                              <List.Item.Icon icon="trash" />
-                              <List.Item.Text>Delete</List.Item.Text>
-                            </List.Item>
-                          </Menu>
-                        </Table.Cell>
-                      </Table.Row>
-                    ))}
-                  </Table.Body>
-                </>
-              )}
-            </PrefetchedTable>
-          )}
-        </Grid.Item>
-      </Grid>
-      <CreateRatePlan open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} />
+      <Table
+        aria-label="rate plan table"
+        dataFn={api.getRatePlans}
+        dataSelector={slices.models.selectRatePlans}
+        onFabClick={() => setCreateDialogOpen(true)}
+        raised
+        ref={tableRef}
+        stickyHeader
+        title="Rate Plans"
+      >
+        {(ratePlans) => (
+          <>
+            <Table.Head>
+              <Table.Row>
+                <Table.Cell>Name</Table.Cell>
+                <Table.Cell>Sector</Table.Cell>
+                <Table.Cell>Start Date</Table.Cell>
+                <Table.Cell align="right">Menu</Table.Cell>
+              </Table.Row>
+            </Table.Head>
+            <Table.Body>
+              {ratePlans.map((ratePlan) => (
+                <Table.Row key={ratePlan.id}>
+                  <Table.Cell>
+                    <Link to={routes.cost.rates.ratePlan(ratePlan.id)}>{ratePlan.name}</Link>
+                  </Table.Cell>
+                  <Table.Cell>{ratePlan.sector}</Table.Cell>
+                  <Table.Cell>
+                    <StandardDate date={ratePlan.start_date} />
+                  </Table.Cell>
+                  <Table.Cell align="right">
+                    <Menu
+                      anchorOrigin={{
+                        vertical: 'center',
+                        horizontal: 'center',
+                      }}
+                      icon="verticalDots"
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                      }}
+                    >
+                      <List.Item onClick={routeTo.cost.rates.ratePlan(ratePlan)}>
+                        <List.Item.Icon icon="pencil" />
+                        <List.Item.Text>View</List.Item.Text>
+                      </List.Item>
+                      <List.Item onClick={() => setRatePlanToDelete(ratePlan)}>
+                        <List.Item.Icon icon="trash" />
+                        <List.Item.Text>Delete</List.Item.Text>
+                      </List.Item>
+                    </Menu>
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </>
+        )}
+      </Table>
+
+      <CreateRatePlan
+        open={createDialogOpen}
+        onClose={() => setCreateDialogOpen(false)}
+        tableRef={tableRef}
+      />
       <DeleteDialog
-        onClose={() => {
-          setDeleteRatePlan(undefined);
-        }}
-        onClickDelete={clickDelete}
+        onClose={() => setRatePlanToDelete(undefined)}
+        onClickDelete={deleteRatePlan}
         title="Delete Rate Plan"
         message={
           'This will permanently delete the Rate Plan and all of its rate data. ' +
           'This action cannot be undone.'
         }
-        open={deleteRatePlan !== undefined}
+        open={ratePlanToDelete !== undefined}
       />
     </>
   );
 
   /** ================================ Callbacks =========================== */
-
-  async function clickDelete() {
-    if (deleteRatePlan) {
-      const response = await api.deleteRatePlan(deleteRatePlan.id.toString());
+  async function deleteRatePlan() {
+    if (ratePlanToDelete) {
+      const response = await api.deleteRatePlan(ratePlanToDelete.id.toString());
       if (response.ok) {
-        dispatch(slices.models.removeModel(deleteRatePlan));
+        dispatch(slices.models.removeModel(ratePlanToDelete));
       }
     }
   }

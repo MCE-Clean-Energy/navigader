@@ -1,15 +1,13 @@
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
 import { Dialog, Button, TextField, Select, Grid } from 'navigader/components';
-import { slices } from 'navigader/store';
+import { RatePlan } from 'navigader/types';
 
 import { DialogProps } from '../../common/CreateDialog';
 
 /** ============================ Components ================================ */
-export const CreateRatePlan: React.FC<DialogProps> = ({ open, onClose }) => {
-  const dispatch = useDispatch();
+export const CreateRatePlan: React.FC<DialogProps<RatePlan>> = ({ open, onClose, tableRef }) => {
   const [name, setName] = React.useState('');
   const [sector, setSector] = React.useState('Residential');
 
@@ -42,8 +40,8 @@ export const CreateRatePlan: React.FC<DialogProps> = ({ open, onClose }) => {
 
   /** ========================== Callbacks ================================= */
   async function handleSubmission() {
-    const response = await api.createRatePlan({ name, sector });
-    dispatch(slices.models.updateModel(response));
+    await api.createRatePlan({ name, sector });
+    tableRef.current?.fetch();
     onClose();
   }
 };

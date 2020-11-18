@@ -2,7 +2,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { OriginFile, RatePlan, Scenario, SystemProfile } from 'navigader/types';
+import { IdType, OriginFile, RatePlan, Scenario, SystemProfile } from 'navigader/types';
 
 /** ============================ Dashboard Routes ========================== */
 const dashboardBase = '/dashboard';
@@ -49,15 +49,15 @@ const cost = {
   base: costBase,
   rates: {
     base: ratesBase,
-    ratePlan: (id: string) => `${ratesBase}/${id}`,
+    ratePlan: (id: IdType) => `${ratesBase}/${id}`,
   },
   procurement: {
     base: procurementBase,
-    load: (id: string) => `${procurementBase}/${id}`,
+    load: (id: IdType) => `${procurementBase}/${id}`,
   },
   system_profiles: {
     base: systemProfilesBase,
-    profile: (id: string) => `${systemProfilesBase}/${id}`,
+    profile: (id: IdType) => `${systemProfilesBase}/${id}`,
   },
 };
 
@@ -139,7 +139,7 @@ function routerFactory(method: 'push' | 'replace') {
           rates: {
             base: () => routerFn(routes.cost.rates.base),
             ratePlan: (ratePlan: RatePlan) => () => {
-              routerFn(routes.cost.rates.ratePlan(ratePlan.id.toString()));
+              routerFn(routes.cost.rates.ratePlan(ratePlan.id));
             },
           },
           procurement: {
@@ -148,7 +148,7 @@ function routerFactory(method: 'push' | 'replace') {
           system_profiles: {
             base: () => routerFn(routes.cost.system_profiles.base),
             profile: (systemProfile: SystemProfile) => () => {
-              routerFn(routes.cost.system_profiles.profile(systemProfile.id.toString()));
+              routerFn(routes.cost.system_profiles.profile(systemProfile.id));
             },
           },
         },

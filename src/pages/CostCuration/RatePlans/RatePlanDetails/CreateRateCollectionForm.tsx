@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useParams } from 'react-router-dom';
 
+import { CreateRateCollectionParams } from 'navigader/api';
 import { Button, Card, Grid, Typography, Flex, FileSize } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
 import { formatters } from 'navigader/util';
-import { CreateRateCollectionParams } from 'navigader/api';
 
 /** ============================ Types ===================================== */
 export type FormErrorObject = {

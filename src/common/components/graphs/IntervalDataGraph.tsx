@@ -24,6 +24,7 @@ import { getAxisLabel, VictoryCallbackArg } from './util';
 type IntervalDataGraphProps = {
   animate?: boolean;
   axisLabel?: string;
+  className?: string;
   data: IntervalData | IntervalDataTuple;
   height?: number;
   hideXAxis?: boolean;
@@ -62,6 +63,7 @@ const VictoryZoomVoronoiContainer = createContainer<
 export const IntervalDataGraph: React.FC<IntervalDataGraphProps> = (props) => {
   const {
     axisLabel,
+    className,
     data,
     height = DEFAULT_CHART_HEIGHT,
     hideXAxis,
@@ -91,6 +93,7 @@ export const IntervalDataGraph: React.FC<IntervalDataGraphProps> = (props) => {
           zoomDimension="x"
         />
       }
+      className={className}
       domain={domain}
       height={height}
       padding={{ ...chartMargins, top: 10 }}

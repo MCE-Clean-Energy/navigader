@@ -1,9 +1,10 @@
 import _ from 'lodash';
 import * as React from 'react';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
 
-import { usePushRouter } from 'navigader/routes';
 import { PageHeader, Tabs } from 'navigader/components';
+import { usePushRouter, useRedirectRouter } from 'navigader/routes';
+
 import { RatePlans } from './RatePlans';
 import { Procurement } from './Procurement';
 import { SystemProfiles } from './SystemProfiles';
@@ -21,9 +22,9 @@ const titlesMap = _.invert(tabTitles);
 
 /** ============================ Components ================================ */
 const CostCurationTabs = () => {
-  let routeTo = usePushRouter();
-  let history = useHistory();
-  let match = useRouteMatch<{ type: CostRouteType }>({
+  const redirectTo = useRedirectRouter();
+  const routeTo = usePushRouter();
+  const match = useRouteMatch<{ type: CostRouteType }>({
     path: '/cost/:type',
     strict: true,
     sensitive: false,
@@ -31,9 +32,9 @@ const CostCurationTabs = () => {
 
   React.useEffect(() => {
     if (!match) {
-      routeTo.cost.rates.base();
+      redirectTo.cost.rates.base();
     }
-  }, [match, routeTo]);
+  }, [match, redirectTo]);
 
   // If the route didn't match any of the expected values, don't render anything
   if (!match) return null;
@@ -59,7 +60,7 @@ const CostCurationTabs = () => {
   /** ========================== Callbacks ================================= */
   function handleChange(newTab: string) {
     const route = titlesMap[newTab as CostTabTitle];
-    history.push(`/cost/${route}`);
+    routeTo.cost[route].base();
   }
 };
 

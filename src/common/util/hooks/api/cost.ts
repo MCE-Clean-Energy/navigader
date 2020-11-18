@@ -128,14 +128,12 @@ export function useSystemProfiles(filters?: SystemProfileFilters): Loader<System
   const systemProfiles = useSelector(slices.models.selectSystemProfiles);
 
   const loading = useAsync(
-    async () => {
-      if (systemProfiles.length > 1) return;
-      return api.getSystemProfiles({
+    async () =>
+      api.getSystemProfiles({
         ...filters,
         page: 0,
         pageSize: 100,
-      });
-    },
+      }),
     ({ data }) => dispatch(slices.models.updateModels(data))
   );
 
