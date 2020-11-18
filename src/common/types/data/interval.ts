@@ -40,6 +40,7 @@ export declare class IntervalData {
   get period(): number;
   get timeDomain(): DateTuple;
   get valueDomain(): NumberTuple;
+  get average(): number;
   get values(): number[];
   get years(): number[];
 

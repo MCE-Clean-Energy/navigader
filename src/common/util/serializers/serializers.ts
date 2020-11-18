@@ -24,6 +24,8 @@ import {
   Scenario,
   ScenarioReport,
   ScenarioReportFields,
+  RawSystemProfile,
+  SystemProfile,
 } from 'navigader/types';
 import { Frame288Numeric, makeIntervalData, percentOf } from '../data';
 
@@ -39,6 +41,21 @@ export function serializeMeter(meter: Meter): RawMeter {
   return {
     ...meter,
     data: serializeDataField(meter.data, 'kw', 'index'),
+  };
+}
+
+/** =========================== System Profiles ============================ */
+export function parseSystemProfile(profile: RawSystemProfile): SystemProfile {
+  return {
+    ...profile,
+    data: parseDataField(profile.data, profile.name, 'kw', 'index'),
+  };
+}
+
+export function serializeSystemProfile(profile: SystemProfile): RawSystemProfile {
+  return {
+    ...profile,
+    data: serializeDataField(profile.data, 'kw', 'index'),
   };
 }
 
@@ -353,7 +370,8 @@ function parseDataField<Column extends string, Unit extends string>(
 ): DataTypeMap {
   return {
     ...obj,
-    default: obj.default ? makeIntervalData({ ...obj.default, name }, column, unit) : undefined,
+    default:
+      obj && obj.default ? makeIntervalData({ ...obj.default, name }, column, unit) : undefined,
   };
 }
 

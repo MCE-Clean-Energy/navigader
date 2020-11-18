@@ -37,9 +37,8 @@ export const AppRoutes: React.FC = () => {
               <Route path={routes.scenario.compare()} component={pages.CompareScenariosPage} />
               <Route path={routes.scenario(':id')} component={pages.ScenarioResultsPage} />
               <Route path={routes.roadmap} component={pages.RoadmapPage} />
-              <Route path={routes.rates.base} component={pages.RatePlans} />
               <Route path={routes.ders.base} component={pages.DERCuration} />
-
+              <Route path={routes.cost.base} component={pages.CostCuration} />
               {/** Route of last resort */}
               <Redirect to={routes.dashboard.base} />
             </Switch>

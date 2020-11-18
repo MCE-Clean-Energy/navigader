@@ -91,12 +91,16 @@ export interface GHGRate
 }
 
 /** ============================ System profiles ================================ */
-export interface SystemProfile {
+export interface CommonSystemProfile {
   id: number;
   load_serving_entity?: LoadServingEntity;
   name: string;
   object_type: 'SystemProfile';
+  resource_adequacy_rate: number;
 }
+
+export interface RawSystemProfile extends RawDataObject<'kw'>, CommonSystemProfile {}
+export interface SystemProfile extends DataObject, CommonSystemProfile {}
 
 export type CostFunction = CostFunctions[keyof CostFunctions];
 export type CostFunctions = {

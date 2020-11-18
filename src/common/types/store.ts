@@ -16,6 +16,8 @@ import {
   OriginFile,
   Scenario,
   ObjectWithId,
+  RawSystemProfile,
+  SystemProfile,
 } from 'navigader/types';
 
 /** ============================ Models slice ============================== */
@@ -30,7 +32,8 @@ export type ModelClassInterior =
   | RawGHGRate
   | RawMeter
   | RawOriginFile
-  | RawScenario;
+  | RawScenario
+  | RawSystemProfile;
 
 export type ModelClassExterior =
   | CAISORate
@@ -40,7 +43,8 @@ export type ModelClassExterior =
   | Meter
   | OriginFile
   | RatePlan
-  | Scenario;
+  | Scenario
+  | SystemProfile;
 
 export type ModelsSlice = {
   caisoRates: RawCAISORate[];
@@ -51,6 +55,7 @@ export type ModelsSlice = {
   meterGroups: RawMeterGroup[];
   meters: RawMeter[];
   ratePlans: RatePlan[];
+  systemProfiles: RawSystemProfile[];
 };
 
 /** ============================ UI slice ================================== */

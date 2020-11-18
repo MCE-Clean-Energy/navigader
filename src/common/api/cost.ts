@@ -13,6 +13,7 @@ import {
   RatePlan,
   CostFunctions,
   SystemProfile,
+  RawSystemProfile,
   GHGRate,
   CAISORate,
 } from 'navigader/types';
@@ -71,7 +72,15 @@ export type CreateRateCollectionParams = {
 
 type SystemProfileIncludeFields = 'load_serving_entity.*';
 export type GetSystemProfilesQueryOptions = DynamicRestParams<SystemProfileIncludeFields> &
-  PaginationQueryParams;
+  PaginationQueryParams &
+  DataTypeParams;
+
+export type GetSystemProfileQueryOptions = DynamicRestParams<SystemProfileIncludeFields> &
+  DataTypeParams;
+export type CreateSystemProfileParams = { file: File } & Required<
+  Pick<SystemProfile, 'resource_adequacy_rate' | 'name'>
+>;
+export type CreateSystemProfileResponse = { system_profile: RawSystemProfile };
 
 /** Responses */
 type GetScenariosResponse = { meter_groups?: RawMeterGroup[]; scenarios: RawScenario[] };
@@ -86,7 +95,7 @@ type GetRatePlansResponse = {
 type CreateRatePlanResponse = {
   rate_plan: RawRatePlan;
 };
-type GetSystemProfilesResponse = { system_profiles: SystemProfile[] };
+type GetSystemProfilesResponse = { system_profiles: RawSystemProfile[] };
 
 /** ============================ Scenarios =============================== */
 export async function postScenario(
@@ -274,13 +283,12 @@ export async function deleteRateCollection(id: RateCollection['id']) {
 
 /** ============================ System profiles =========================== */
 export async function getSystemProfiles(params?: GetSystemProfilesQueryOptions) {
-  const response = await getRequest(routes.system_profile, params).then((res) => res.json());
-
+  const response = await getRequest(routes.system_profile(), params).then((res) => res.json());
   return parsePaginationSet<GetSystemProfilesResponse, SystemProfile>(
     response,
     ({ system_profiles }) =>
       system_profiles.map((systemProfile) => ({
-        ...systemProfile,
+        ...serializers.parseSystemProfile(systemProfile),
 
         // This field is included in the `SystemProfile` type but not provided by the backend
         object_type: 'SystemProfile',
@@ -288,12 +296,40 @@ export async function getSystemProfiles(params?: GetSystemProfilesQueryOptions) 
   );
 }
 
+export async function getSystemProfile(
+  id: SystemProfile['id'],
+  params?: GetSystemProfileQueryOptions
+): Promise<SystemProfile> {
+  const response = await getRequest(routes.system_profile(id), params).then((res) => res.json());
+
+  return serializers.parseSystemProfile({
+    ...response.system_profile,
+    object_type: 'SystemProfile',
+  });
+}
+
+export function createSystemProfile(
+  params: CreateSystemProfileParams,
+  callback: (response: XMLHttpRequest) => void
+) {
+  const xhr = makeFormXhrPost(routes.system_profile(), params);
+  xhr.onreadystatechange = () => {
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      callback(xhr);
+    }
+  };
+}
+
+export async function deleteSystemProfile(id: SystemProfile['id']) {
+  return await deleteRequest(routes.system_profile(id));
+}
+
 /** ============================ Helpers =================================== */
 const baseRoute = (rest: string) => beoRoute.v1(`cost/${rest}`);
 const routes = {
   caiso_rate: baseRoute('caiso_rate/'),
   ghg_rate: baseRoute('ghg_rate/'),
-  system_profile: baseRoute('system_profile/'),
+  system_profile: appendId(baseRoute('system_profile')),
   scenarios: Object.assign(appendId(baseRoute('scenario')), {
     download: baseRoute('scenario/download/'),
   }),

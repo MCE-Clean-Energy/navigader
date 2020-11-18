@@ -175,6 +175,14 @@ export class IntervalData implements IntervalDataInterface {
   }
 
   /**
+   * Returns the dataset's value domain
+   */
+  get average(): number {
+    const values = this.values;
+    return values.reduce((a, b) => a + b) / values.length;
+  }
+
+  /**
    * Returns an ordered array of the dataset's values
    */
   get values() {

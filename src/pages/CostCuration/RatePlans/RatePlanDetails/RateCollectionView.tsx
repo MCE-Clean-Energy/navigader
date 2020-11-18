@@ -16,7 +16,7 @@ import {
 import * as api from 'navigader/api';
 import { formatters } from 'navigader/util';
 import { RateCollection, RateBucket, RatePlan } from 'navigader/types/cost';
-import { DeleteDialog } from '../RatePlanList/DeleteDialog';
+import { DeleteDialog } from '../../common/DeleteDialog';
 
 /** ============================ Types ===================================== */
 type RateCollectionViewsProps = {

@@ -30,6 +30,7 @@ const initialState: ModelsSlice = {
   meterGroups: [],
   meters: [],
   ratePlans: [],
+  systemProfiles: [],
 };
 
 /**
@@ -103,6 +104,9 @@ export const selectScenarios = (state: RootState) => {
   return scenarios.map((scenario) => serializers.parseScenario(scenario, state.models.meterGroups));
 };
 
+export const selectSystemProfiles = (state: RootState) =>
+  state.models.systemProfiles.map(serializers.parseSystemProfile);
+
 /** ============================ Reducer methods =========================== */
 /**
  * Updates a model in state if it is already present, or adds it to state if it is not. The model's
@@ -152,6 +156,8 @@ function getSliceForModel(
       return state.ghgRates;
     case 'RatePlan':
       return state.ratePlans;
+    case 'SystemProfile':
+      return state.systemProfiles;
   }
 }
 
@@ -170,6 +176,8 @@ function prepareModel(model: ModelClassExterior): ModelClassInterior {
     case 'SolarPVConfiguration':
     case 'SolarPVStrategy':
       return model;
+    case 'SystemProfile':
+      return serializers.serializeSystemProfile(model);
     case 'CAISORate':
       return serializers.serializeCAISORate(model);
     case 'OriginFile':

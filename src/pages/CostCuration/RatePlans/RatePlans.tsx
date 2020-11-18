@@ -7,7 +7,7 @@ import { RatePlanDetails } from './RatePlanDetails';
 
 export const RatePlans = () => (
   <Switch>
-    <Route path={routes.rates.ratePlan(':id')} component={RatePlanDetails} />
-    <Route exact path={routes.rates.base} component={RatePlanList} />
+    <Route path={routes.cost.rates.ratePlan(':id')} component={RatePlanDetails} />
+    <Route exact path={routes.cost.rates.base} component={RatePlanList} />
   </Switch>
 );
