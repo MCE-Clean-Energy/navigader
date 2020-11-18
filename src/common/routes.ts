@@ -40,12 +40,7 @@ const ders = {
   solar: `${dersBase}/solar`,
 };
 
-/** ============================ Other Routes ============================== */
-const settings = '/settings';
-const login = '/login';
-const resetPassword = '/reset_password';
-const roadmap = '/roadmap';
-const upload = '/upload';
+/** ============================ Cost Functions ============================ */
 const costBase = '/cost';
 const ratesBase = `${costBase}/rates`;
 const procurementBase = `${costBase}/procurement`;
@@ -65,6 +60,13 @@ const cost = {
     profile: (id: string) => `${systemProfilesBase}/${id}`,
   },
 };
+
+/** ============================ Other Routes ============================== */
+const settings = '/settings';
+const login = '/login';
+const resetPassword = '/reset_password';
+const roadmap = '/roadmap';
+const upload = '/upload';
 const registration = {
   signup: '/registration/signup',
 
