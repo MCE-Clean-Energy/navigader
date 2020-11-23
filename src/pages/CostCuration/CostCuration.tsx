@@ -47,9 +47,9 @@ const CostCurationTabs = () => {
       <Tabs.Tab title={tabTitles.rates}>
         <RatePlans />
       </Tabs.Tab>
-      <Tabs.Tab title={tabTitles.procurement}>
-        <Procurement />
-      </Tabs.Tab>
+      {/*<Tabs.Tab title={tabTitles.procurement}>*/}
+      {/*  <Procurement />*/}
+      {/*</Tabs.Tab>*/}
       <Tabs.Tab title={tabTitles.system_profiles}>
         <SystemProfiles />
       </Tabs.Tab>
