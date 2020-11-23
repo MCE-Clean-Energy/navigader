@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { DateTime, Duration, Interval } from 'luxon';
 
 import { fixtures } from 'navigader/util/testing';
 import * as meterGroup from './meterGroup';
@@ -32,6 +33,87 @@ describe('Meter utility methods', () => {
           expect(isSufficientlyIngested).toBeFalsy();
         }
       });
+    });
+  });
+
+  describe('`spansMoreThanAYear` method', () => {
+    it('returns `false` if no meter group is provided', () => {
+      expect(meterGroup.spansMoreThanAYear(undefined)).toBeFalsy();
+    });
+
+    it('returns `false` if the meter group does not have a date range', () => {
+      expect(
+        meterGroup.spansMoreThanAYear(fixtures.makeOriginFile({ date_range: null }))
+      ).toBeFalsy();
+    });
+
+    it('returns `false` if the meter group has a date range less than 366 days', () => {
+      const startDate = DateTime.fromISO('2020-01-01T00:00:00');
+
+      for (let i = 1; i <= 366; i++) {
+        expect(
+          meterGroup.spansMoreThanAYear(
+            fixtures.makeOriginFile({
+              date_range: [
+                startDate.toJSDate(),
+                startDate.plus(Duration.fromObject({ days: i })).toJSDate(),
+              ],
+            })
+          )
+        ).toBeFalsy();
+      }
+    });
+
+    it('returns `true` if the meter group has a date range greater than 366 days', () => {
+      const startDate = DateTime.fromISO('2020-01-01T00:00:00');
+      expect(
+        meterGroup.spansMoreThanAYear(
+          fixtures.makeOriginFile({
+            date_range: [
+              startDate.toJSDate(),
+              startDate.plus(Duration.fromObject({ days: 367 })).toJSDate(),
+            ],
+          })
+        )
+      ).toBeTruthy();
+    });
+  });
+
+  describe('`getDateRangeInterval` method', () => {
+    it('returns `null` when no meter group is provided', () => {
+      expect(meterGroup.getDateRangeInterval(undefined)).toBeNull();
+    });
+
+    it('returns `null` when the meter group has no date range', () => {
+      expect(
+        meterGroup.getDateRangeInterval(fixtures.makeOriginFile({ date_range: null }))
+      ).toBeNull();
+    });
+
+    it('returns an interval when no unit is passed', () => {
+      const originFile = fixtures.makeOriginFile({
+        date_range: [
+          DateTime.fromISO('2020-01-01T00:00:00').toJSDate(),
+          DateTime.fromISO('2020-01-02T00:00:00').toJSDate(),
+        ],
+      });
+
+      const interval = meterGroup.getDateRangeInterval(originFile);
+      expect(interval).toBeInstanceOf(Interval);
+      expect(interval?.length('days')).toEqual(1);
+    });
+
+    it('returns a number when a unit is passed', () => {
+      const originFile = fixtures.makeOriginFile({
+        date_range: [
+          DateTime.fromISO('2020-01-01T00:00:00').toJSDate(),
+          DateTime.fromISO('2021-01-01T00:00:00').toJSDate(),
+        ],
+      });
+
+      expect(meterGroup.getDateRangeInterval(originFile, 'days')).toEqual(366);
+      expect(meterGroup.getDateRangeInterval(originFile, 'months')).toEqual(12);
+      expect(meterGroup.getDateRangeInterval(originFile, 'years')).toEqual(1);
     });
   });
 });

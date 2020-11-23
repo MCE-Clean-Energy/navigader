@@ -77,37 +77,47 @@ const SelectOriginFileChip: React.FC<SelectOriginFileChipProps> = (props) => {
   const classes = useCustomerChipStyles();
   const { meter_count } = originFile;
   const { expected_meter_count } = originFile.metadata;
-  const isIngested = models.meterGroup.isSufficientlyIngested(originFile);
-  const icon = isIngested ? (selected ? 'checkMark' : 'plus') : undefined;
+  const intervalTooLong = models.meterGroup.spansMoreThanAYear(originFile);
+  const ingested = models.meterGroup.isSufficientlyIngested(originFile);
+  const icon = ingested ? (selected ? 'checkMark' : 'plus') : undefined;
 
   return (
     <MeterGroupChip
       className={classes.meterGroupChip}
       color={selected ? 'primary' : 'secondary'}
-      disabled={!isIngested}
+      disabled={!ingested || intervalTooLong}
       icon={icon}
       meterGroup={originFile}
       onClick={onClick}
-      showCount={isIngested}
+      showCount={ingested}
       tooltipText={getTooltipText()}
     />
   );
 
   /** ========================== Helpers =================================== */
   function getTooltipText() {
-    if (isIngested) return;
+    if (!ingested) {
+      // If the meter group can not yet be run in a scenario, render a tooltip explaining why
+      const percentComplete =
+        expected_meter_count === null
+          ? '0%'
+          : formatters.percentage(meter_count, expected_meter_count);
 
-    // If the meter group can not yet be run in a scenario, render a tooltip explaining why
-    const percentComplete =
-      expected_meter_count === null
-        ? '0%'
-        : formatters.percentage(meter_count, expected_meter_count);
-
-    return `
-      This file has successfully uploaded but is still being processed. It is currently
-      ${percentComplete} complete. You can run a scenario with this file once it has
-      finished processing.
-    `;
+      return `
+        This file has successfully uploaded but is still being processed. It is currently
+        ${percentComplete} complete. You can run a scenario with this file once it has
+        finished processing.
+      `;
+    } else if (intervalTooLong) {
+      // The non-null assertions (!'s) here are acceptable because `intervalTooLong` can't be truthy
+      // if the date range couldn't be ascertained
+      const numDays = Math.floor(models.meterGroup.getDateRangeInterval(originFile, 'days')!);
+      const dateRange = formatters.date.range(originFile.date_range!, formatters.date.standard);
+      return `
+        This file spans more than a year. Scenarios can only be run on files that span 366 days or
+        less. This file contains data from ${dateRange}, a period of ${numDays} days.
+      `;
+    }
   }
 };
 

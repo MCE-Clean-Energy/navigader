@@ -2,10 +2,8 @@ import _ from 'lodash';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
-import * as api from 'navigader/api';
 import { Button, Dialog, Grid, Progress } from 'navigader/components';
-import { slices } from 'navigader/store';
-import { ErrorArrayObject, EVSEConfiguration } from 'navigader/types';
+import { EVSEConfiguration } from 'navigader/types';
 import { hooks, omitFalsey } from 'navigader/util';
 
 import {

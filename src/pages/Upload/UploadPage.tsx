@@ -76,7 +76,10 @@ const useUploadCardStyles = makeStylesHook(
 const useFileFormatAlertStyles = makeStylesHook(
   (theme) => ({
     bulletList: {
-      margin: `${theme.spacing(1)}px 0`,
+      'margin': `${theme.spacing(1)}px 0`,
+      '& li': {
+        lineHeight: 1.75,
+      },
     },
   }),
   'FileFormatAlert'
@@ -172,25 +175,44 @@ const FileComponent: React.FC<FileCardProps> = ({ file, progress, startUpload, s
 const FileFormatAlert: React.FC = () => {
   const classes = useFileFormatAlertStyles();
   const expectedColumns = [
-    ['SA_ID', 'The ID of the customer'],
+    [
+      'SA_ID',
+      <span>
+        The ID of the customer. Can also be <Typography.Code>SA</Typography.Code>
+      </span>,
+    ],
     ['UOM', 'Unit Of Measure. This specifies the units of the load data. Should be "KW" or "KWH"'],
     ['DATE', "The date of each row's data"],
-    ['DIR', 'The direction of electricity flow. Should be "F" (for forward) or "R" (for reverse)'],
+    ['DIR', 'The direction of electricity flow. Should be "D" (for direct) or "R" (for reverse)'],
     ['RS', "The customer's rate schedule"],
     ['Interval columns', 'See above'],
   ];
 
   return (
     <Alert outlined title="File Criteria" type="info">
-      NavigaDER expects customer data to be provided in a CSV file. Each row should represent the
-      customer's load over the course of a single day. The following columns are expected:
+      <Typography paragraph variant="body2">
+        NavigaDER expects customer data to be provided in a CSV file. Each row should represent the
+        customer's load over the course of a single day. The following columns are expected:
+      </Typography>
+
       <ul className={classes.bulletList}>
         {expectedColumns.map(([column, explainer], i) => (
           <li key={i}>
-            <b>{column}</b>: {explainer}.
+            <Typography.Code>{column}</Typography.Code>: {explainer}.
           </li>
         ))}
       </ul>
+
+      <Typography paragraph variant="body2">
+        Other columns may be included in the file and will be ignored.
+      </Typography>
+
+      <Typography paragraph variant="body2">
+        Additionally, customer data <strong>should not exceed 366 days</strong>. If the earliest
+        date in the <Typography.Code>DATE</Typography.Code> column and the latest date in the{' '}
+        <Typography.Code>DATE</Typography.Code> column are separated by more than 366 days, the file
+        will not be available for running simulations.
+      </Typography>
     </Alert>
   );
 };
@@ -229,7 +251,11 @@ const UploadCard: React.FC<UploadCardProps> = ({ minutes }) => {
         </Card.ActionArea>
 
         <Card.Actions>
-          <Button.Text color="primary" onClick={downloadExample} size="small">
+          <Button color="primary" icon="upload" onClick={openFileSelector} size="small">
+            Upload File
+          </Button>
+
+          <Button.Text color="primary" icon="download" onClick={downloadExample} size="small">
             Download Example
           </Button.Text>
         </Card.Actions>

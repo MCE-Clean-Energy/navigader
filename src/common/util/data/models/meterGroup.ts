@@ -1,5 +1,19 @@
-import { isOriginFile, isScenario, OriginFile } from 'navigader/types';
+import { DurationUnit, Interval } from 'luxon';
 
+import {
+  AbstractMeterGroup,
+  isOriginFile,
+  isScenario,
+  Maybe,
+  Nullable,
+  OriginFile,
+} from 'navigader/types';
+
+/** ============================ Constants ================================= */
+const MAX_METER_GROUP_TIMESPAN_DAYS = 366;
+const MIN_INGESTION_PERCENTAGE = 95;
+
+/** ============================ Methods =================================== */
 /**
  * Returns a display name for the given meter group
  *
@@ -21,11 +35,46 @@ export function getDisplayName(meterGroup: any) {
  *
  * @param {OriginFile} originFile: the meter group we want to run a scenario with
  */
-export function isSufficientlyIngested(originFile: OriginFile | undefined) {
+export function isSufficientlyIngested(originFile: Maybe<OriginFile>) {
   if (!originFile) return false;
 
   // If origin files have sufficiently finished ingesting, they are selectable. We don't
   // require 100% completion in case a few meters fail to ingest.
-  const sufficientlyFinishedPercent = 95;
-  return originFile.progress.percent_complete >= sufficientlyFinishedPercent;
+  return originFile.progress.percent_complete >= MIN_INGESTION_PERCENTAGE;
+}
+
+/**
+ * Determines if a meter group is too long to run a simulation with. The modeling currently
+ * constrains a meter group to be not more than 366 days. If the meter group's date range is longer
+ * than that, returns `true`. Otherwise, even if no meter group is provided or it has no date range,
+ * returns `false`.
+ *
+ * @param {AbstractMeterGroup} meterGroup: the meter group to check
+ */
+export function spansMoreThanAYear(meterGroup: Maybe<AbstractMeterGroup>) {
+  const interval = getDateRangeInterval(meterGroup, 'days');
+
+  // Returns `true` if the interval could be determined and is too long
+  return interval !== null && interval > MAX_METER_GROUP_TIMESPAN_DAYS;
+}
+
+/**
+ * Returns a luxon `Interval` object representing the meter group's timespan. If the date range
+ * is not available, return `null`. If a second parameter, `unit`, is provided, returns the length
+ * of the interval in the given unit
+ *
+ * @param {AbstractMeterGroup} meterGroup: the meter group to return the interval of
+ * @param {DurationUnit} unit: the unit in which to return the interval length. If not provided,
+ *   the interval itself is returned
+ */
+export function getDateRangeInterval(
+  meterGroup: Maybe<AbstractMeterGroup>,
+  unit: DurationUnit
+): Nullable<number>;
+export function getDateRangeInterval(meterGroup: Maybe<AbstractMeterGroup>): Nullable<Interval>;
+export function getDateRangeInterval(meterGroup: Maybe<AbstractMeterGroup>, unit?: DurationUnit) {
+  if (!meterGroup || !meterGroup.date_range) return null;
+  const [start, endLimit] = meterGroup.date_range;
+  const interval = Interval.fromDateTimes(start, endLimit);
+  return unit ? interval.length(unit) : interval;
 }

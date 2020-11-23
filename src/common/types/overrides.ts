@@ -19,9 +19,16 @@ type FlexArgs = Partial<{
   align: AlignItemsValue;
 }>;
 
+type BorderArgs = Partial<{
+  width: number;
+  color: string;
+  radius: number;
+}>;
+
 declare module '@material-ui/core/styles/createMixins' {
   type TransitionBounds = [any, any];
   interface Mixins {
+    border: (args: BorderArgs) => CreateCSSProperties;
     flex: (args: FlexArgs) => CreateCSSProperties;
 
     transition: (

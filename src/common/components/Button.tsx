@@ -13,15 +13,19 @@ type ButtonProps = React.HTMLAttributes<HTMLButtonElement> & {
   disabled?: boolean;
   icon?: ValidIcon;
   size?: 'small' | 'large';
+
+  // This prop is meant primarily for the `Button.Text` component's consumption. Components that do
+  // not wish to be "contained" should use `Button.Text`.
+  _variant?: 'contained' | 'text';
 } & Pick<BaseButtonProps, 'type'>;
 
 type TextButtonProps = Omit<ButtonProps, 'type'>;
 type FabProps = TextButtonProps & IconProps;
 
 /** ============================ Components ================================ */
-const Text: React.FC<TextButtonProps> = (props) => <MuiButton {...props} />;
+const Text: React.FC<TextButtonProps> = (props) => <Button {...props} _variant="text" />;
 const Fab: React.FC<FabProps> = ({ name, ...rest }) => {
-  const fabProps = _.omit(rest, 'children');
+  const fabProps = _.omit(rest, 'children', 'variant');
   return (
     <MuiFab {...fabProps}>
       <Icon name={name} />
@@ -30,7 +34,10 @@ const Fab: React.FC<FabProps> = ({ name, ...rest }) => {
 };
 
 export const Button = Object.assign(
-  React.forwardRef<HTMLButtonElement, ButtonProps>(({ icon, ...rest }, ref) => {
+  React.forwardRef<HTMLButtonElement, ButtonProps>(function NavigaderButton(
+    { icon, _variant, ...rest },
+    ref
+  ) {
     const noChildren = React.Children.count(rest.children) === 0;
 
     // Render an icon-button if there's an icon but no children
@@ -46,7 +53,7 @@ export const Button = Object.assign(
       <MuiButton
         ref={ref}
         startIcon={icon ? <Icon name={icon} /> : null}
-        variant="contained"
+        variant={_variant || 'contained'}
         {...rest}
       />
     );

@@ -26,6 +26,7 @@ export type TypographyProps = React.HTMLAttributes<HTMLSpanElement> & {
   component?: React.ElementType;
   emphasis?: Emphasis;
   noWrap?: boolean;
+  paragraph?: boolean;
   useDiv?: boolean;
   variant?: MuiTypographyProps['variant'];
 };
@@ -62,6 +63,17 @@ const useStyles = makeStylesHook<TypographyProps>(
   'NavigaderTypography'
 );
 
+const useCodeStyles = makeStylesHook(
+  (theme) => ({
+    code: {
+      ...theme.mixins.border({ color: theme.palette.grey[400], radius: 3 }),
+      backgroundColor: theme.palette.grey[200],
+      padding: '1px 2px',
+    },
+  }),
+  'NavigaderCode'
+);
+
 const useLineLimitStyles = makeStylesHook<LineLimitProps>(
   () => ({
     lineLimit: ({ limit }) => ({
@@ -78,6 +90,7 @@ const useLineLimitStyles = makeStylesHook<LineLimitProps>(
 );
 
 /** ============================ Components ================================ */
+const Code: React.FC = (props) => <code className={useCodeStyles().code} {...props} />;
 const LineLimit: React.FC<LineLimitProps> = ({ children, className, limit }) => {
   const classes = useLineLimitStyles({ limit });
   return <div className={classNames(classes.lineLimit, className)}>{children}</div>;
@@ -91,6 +104,7 @@ export const Typography = Object.assign(
       color = 'initial',
       component = 'span',
       emphasis = 'normal',
+      paragraph,
       useDiv = false,
       variant = 'body1',
       ...rest
@@ -114,7 +128,8 @@ export const Typography = Object.assign(
       <MuiTypography
         className={typographyClasses}
         color={getColor(color)}
-        component={useDiv ? 'div' : component}
+        component={useDiv || paragraph ? 'div' : component}
+        paragraph={paragraph}
         ref={ref}
         variant={variant}
         {...rest}
@@ -123,7 +138,7 @@ export const Typography = Object.assign(
       </MuiTypography>
     );
   }),
-  { LineLimit }
+  { Code, LineLimit }
 );
 
 /** ============================ Helpers =================================== */

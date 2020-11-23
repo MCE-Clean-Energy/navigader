@@ -6,6 +6,12 @@ import { primaryColor, secondaryColor } from './colors';
 /** ============================ Theme ===================================== */
 export const theme = createMuiTheme({
   mixins: {
+    border: ({ color, radius = 0, width = 1 }) => ({
+      borderWidth: width,
+      borderStyle: 'solid',
+      borderColor: color,
+      borderRadius: radius,
+    }),
     flex: ({ direction, wrap, justify, align }) => ({
       alignItems: align,
       display: 'flex',
