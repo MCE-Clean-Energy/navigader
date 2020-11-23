@@ -52,7 +52,7 @@ export type Scenario = AbstractMeterGroup &
 
 /** ============================ Report ==================================== */
 export type ProcurementReport = { [key in ProcurementKeys]?: number };
-type ProcurementKeys = 'ProcurementDelta' | 'ProcurementPostDER' | 'ProcurementPreDER';
+type ProcurementKeys = 'ProcurementCostDelta' | 'ProcurementCostPostDER' | 'ProcurementCostPreDER';
 
 type UsageReport = {
   UsagePreDER: number;

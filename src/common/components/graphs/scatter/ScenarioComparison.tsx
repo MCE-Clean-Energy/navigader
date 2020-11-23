@@ -80,7 +80,7 @@ class DatumWrapper<Datum extends ScenarioReportSummaryFields = ScenarioReportSum
       case 'RA':
         return [datum.RADelta, dollarFormatter];
       case 'Procurement':
-        return [datum.ProcurementDelta, dollarFormatter];
+        return [datum.ProcurementCostDelta, dollarFormatter];
       case 'Revenue':
         return [datum.BillRevenueDelta, dollarFormatter];
       case 'Expense':

@@ -155,7 +155,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                   {formatters.commas(formatters.maxDecimals(simulation.RADelta, 2)) ?? '-'}
                 </Table.Cell>
                 <Table.Cell align="right">
-                  {formatters.dollars(simulation.ProcurementDelta) ?? '-'}
+                  {formatters.dollars(simulation.ProcurementCostDelta) ?? '-'}
                 </Table.Cell>
                 <Table.Cell align="right">
                   {formatters.dollars(simulation.BillRevenueDelta) ?? '-'}

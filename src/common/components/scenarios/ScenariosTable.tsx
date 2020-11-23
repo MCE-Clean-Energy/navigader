@@ -279,7 +279,8 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                   ) ?? '-'}
                 </Table.Cell>
                 <Table.Cell align="right">
-                  {formatters.dollars(getField(scenario, 'ProcurementDelta', innerAveraged)) ?? '-'}
+                  {formatters.dollars(getField(scenario, 'ProcurementCostDelta', innerAveraged)) ??
+                    '-'}
                 </Table.Cell>
                 <Table.Cell align="right">
                   {formatters.dollars(getField(scenario, 'BillRevenueDelta', innerAveraged)) ?? '-'}

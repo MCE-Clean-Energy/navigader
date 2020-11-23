@@ -62,7 +62,7 @@ export const DerSelectionCard: React.FC<DerSelectionCardProps> = (props) => {
             className={classes.typeSelect}
             label="DER Type"
             onChange={updateType}
-            options={['Battery', /* 'EVSE', */ 'SolarPV']}
+            options={['Battery', 'EVSE', 'SolarPV']}
             renderOption={renderDEROption}
             value={props.der.type}
           />
@@ -80,8 +80,8 @@ export const DerSelectionCard: React.FC<DerSelectionCardProps> = (props) => {
   /** ========================== Callbacks ================================= */
   function renderDEROption(option: DERType) {
     switch (option) {
-      // case 'EVSE':
-      //   return 'EV Supply Equipment';
+      case 'EVSE':
+        return 'EV Supply Equipment';
       case 'SolarPV':
         return 'Solar';
       default:
