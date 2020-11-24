@@ -30,9 +30,9 @@ export const EVSEConfigurationsTable: React.FC = () => {
       configurationData={(configuration) => (
         <>
           <Table.Cell align="right">{configuration.data!.ev_count}</Table.Cell>
-          <Table.Cell align="right">{configuration.data!.ev_efficiency * 100}%</Table.Cell>
-          <Table.Cell align="right">{configuration.data!.ev_capacity}</Table.Cell>
           <Table.Cell align="right">{configuration.data!.ev_mpkwh}</Table.Cell>
+          <Table.Cell align="right">{configuration.data!.ev_capacity}</Table.Cell>
+          <Table.Cell align="right">{configuration.data!.ev_efficiency * 100}%</Table.Cell>
           <Table.Cell align="right">{configuration.data!.ev_mpg_eq}</Table.Cell>
           <Table.Cell align="right">{configuration.data!.evse_count}</Table.Cell>
           <Table.Cell align="right">{configuration.data!.evse_rating}</Table.Cell>
