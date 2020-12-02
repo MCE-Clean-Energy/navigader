@@ -17,6 +17,7 @@ import {
   RawSystemProfile,
   GHGRate,
   CAISORate,
+  IdType,
 } from 'navigader/types';
 import { appendQueryString, omitFalsey, serializers } from 'navigader/util';
 import {
@@ -80,6 +81,7 @@ export type CreateSystemProfileParams = { file: File } & Pick<
   SystemProfile,
   'resource_adequacy_rate' | 'name'
 >;
+export type CreateCAISORateParams = { file: File } & Pick<CAISORate, 'name' | 'year'>;
 
 /** Responses */
 type GetScenariosResponse = { meter_groups?: RawMeterGroup[]; scenarios: RawScenario[] };
@@ -198,12 +200,35 @@ export async function getGhgRates(options?: GetGHGRatesQueryOptions) {
 
 /** ============================ Procurement =============================== */
 export async function getCAISORates(options?: GetCAISORatesQueryOptions) {
-  const response = await getRequest(routes.caiso_rate, options).then((res) => res.json());
+  const response = await getRequest(routes.caiso_rate(), options).then((res) => res.json());
 
   // Parse the GHG rate results into full-fledged `NavigaderObjects`
   return parsePaginationSet<GetCAISORatesResponse, CAISORate>(response, ({ caiso_rates }) =>
     caiso_rates.map(serializers.parseCAISORate)
   );
+}
+
+export async function getCAISORate(id: IdType, options?: GetCAISORatesQueryOptions) {
+  const response = await getRequest(routes.caiso_rate(id), options).then((res) => res.json());
+
+  // Parse the GHG rate result into a full-fledged `NavigaderObject`
+  return serializers.parseCAISORate({ ...response.caiso_rate, object_type: 'CAISORate' });
+}
+
+export function createCAISORate(
+  params: CreateCAISORateParams,
+  callback: (response: XMLHttpRequest) => void
+) {
+  const xhr = makeFormXhrPost(routes.caiso_rate(), params);
+  xhr.onreadystatechange = () => {
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      callback(xhr);
+    }
+  };
+}
+
+export async function deleteCAISORate(id: IdType) {
+  return await deleteRequest(routes.caiso_rate(id));
 }
 
 /** ============================ Rate plans ================================ */
@@ -334,7 +359,7 @@ export async function deleteSystemProfile(id: SystemProfile['id']) {
 /** ============================ Helpers =================================== */
 const baseRoute = (rest: string) => beoRoute.v1(`cost/${rest}`);
 const routes = {
-  caiso_rate: baseRoute('caiso_rate/'),
+  caiso_rate: appendId(baseRoute('caiso_rate')),
   ghg_rate: baseRoute('ghg_rate/'),
   system_profile: appendId(baseRoute('system_profile')),
   scenarios: Object.assign(appendId(baseRoute('scenario')), {

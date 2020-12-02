@@ -7,6 +7,7 @@ import {
   CAISORate,
   CostFunctions,
   GHGRate,
+  IdType,
   Loader,
   RatePlan,
   SystemProfile,
@@ -120,6 +121,32 @@ export function useCAISORates(filters: CAISORateFilters = {}): Loader<CAISORate[
   );
 
   return Object.assign([...caisoRates], { loading });
+}
+
+export function useCAISORate(caisoRateId: IdType, filters: CAISORateFilters = {}) {
+  const dispatch = useDispatch();
+
+  // Check the store for CAISO rates that match the provided filters
+  const storedCAISORates = useSelector(slices.models.selectCAISORates);
+  const caisoRate = _.find(storedCAISORates, { id: caisoRateId });
+
+  const loading = useAsync(
+    async () => {
+      // If we've already loaded the rates, we don't need to do so again
+      if (caisoRate) return;
+      return api.getCAISORate(caisoRateId, {
+        ...omitFalsey({
+          data_types: filters.data_types,
+          period: filters.period,
+        }),
+        page: 0,
+        pageSize: 100,
+      });
+    },
+    (data) => dispatch(slices.models.updateModel(data))
+  );
+
+  return Object.assign({ caisoRate, loading });
 }
 
 /** ============================ System profiles =========================== */

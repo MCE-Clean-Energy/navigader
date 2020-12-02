@@ -2,7 +2,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { IdType, OriginFile, RatePlan, Scenario, SystemProfile } from 'navigader/types';
+import { IdType, CAISORate, OriginFile, RatePlan, Scenario, SystemProfile } from 'navigader/types';
 
 /** ============================ Dashboard Routes ========================== */
 const dashboardBase = '/dashboard';
@@ -53,7 +53,7 @@ const cost = {
   },
   procurement: {
     base: procurementBase,
-    load: (id: IdType) => `${procurementBase}/${id}`,
+    caisoRate: (id: IdType) => `${procurementBase}/${id}`,
   },
   system_profiles: {
     base: systemProfilesBase,
@@ -144,6 +144,9 @@ function routerFactory(method: 'push' | 'replace') {
           },
           procurement: {
             base: () => routerFn(routes.cost.procurement.base),
+            caisoRate: (caisoRate: CAISORate) => () => {
+              routerFn(routes.cost.procurement.caisoRate(caisoRate.id));
+            },
           },
           system_profiles: {
             base: () => routerFn(routes.cost.system_profiles.base),
