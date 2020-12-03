@@ -109,6 +109,14 @@ export const RatePlanDetails: React.FC = () => {
       );
 
       setSelectedCollection(collections[0]);
+      dispatch(slices.ui.setMessage({ msg: 'Rate data deleted.', type: 'success' }));
+    } else if (response.status === 403) {
+      dispatch(
+        slices.ui.setMessage({
+          msg: 'You do not have permission to delete this rate data!',
+          type: 'error',
+        })
+      );
     }
   }
 };

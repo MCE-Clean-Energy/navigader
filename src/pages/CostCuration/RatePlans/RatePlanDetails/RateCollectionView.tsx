@@ -181,7 +181,7 @@ export const RateCollectionView: React.FC<RateCollectionViewsProps> = ({
       <DeleteDialog
         onClose={() => setDeleteDialogOpen(false)}
         onClickDelete={() => onDelete(rateCollection.id)}
-        title="Delete Rate Plan"
+        title="Delete Rate Data"
         message="This will permanently delete the Rate Data and cannot be undone."
         open={deleteDialogOpen}
       />

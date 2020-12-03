@@ -65,7 +65,7 @@ export const RatePlanList: React.FC = () => {
                       }}
                     >
                       <List.Item onClick={routeTo.cost.rates.ratePlan(ratePlan)}>
-                        <List.Item.Icon icon="pencil" />
+                        <List.Item.Icon icon="launch" />
                         <List.Item.Text>View</List.Item.Text>
                       </List.Item>
                       <List.Item onClick={() => setRatePlanToDelete(ratePlan)}>
@@ -105,6 +105,14 @@ export const RatePlanList: React.FC = () => {
       const response = await api.deleteRatePlan(ratePlanToDelete.id.toString());
       if (response.ok) {
         dispatch(slices.models.removeModel(ratePlanToDelete));
+        dispatch(slices.ui.setMessage({ msg: 'Rate plan deleted.', type: 'success' }));
+      } else if (response.status === 403) {
+        dispatch(
+          slices.ui.setMessage({
+            msg: 'You do not have permission to delete this rate plan!',
+            type: 'error',
+          })
+        );
       }
     }
   }

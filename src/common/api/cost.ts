@@ -202,10 +202,15 @@ export async function getGhgRates(options?: GetGHGRatesQueryOptions) {
 export async function getCAISORates(options?: GetCAISORatesQueryOptions) {
   const response = await getRequest(routes.caiso_rate(), options).then((res) => res.json());
 
-  // Parse the GHG rate results into full-fledged `NavigaderObjects`
-  return parsePaginationSet<GetCAISORatesResponse, CAISORate>(response, ({ caiso_rates }) =>
-    caiso_rates.map(serializers.parseCAISORate)
+  // Parse the CAISO rate results into full-fledged `NavigaderObjects`
+  const paginationSet = parsePaginationSet<GetCAISORatesResponse, CAISORate>(
+    response,
+    ({ caiso_rates }) => caiso_rates.map(serializers.parseCAISORate)
   );
+
+  // Add models to the store and return
+  store.dispatch(slices.models.updateModels(paginationSet.data));
+  return paginationSet;
 }
 
 export async function getCAISORate(id: IdType, options?: GetCAISORatesQueryOptions) {
@@ -292,7 +297,6 @@ export async function deleteRatePlan(id: string) {
 }
 
 /** ============================= Rate Collections ========================= */
-
 export function createRateCollection(
   params: CreateRateCollectionParams,
   callback: (response: XMLHttpRequest) => void

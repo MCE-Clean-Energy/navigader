@@ -126,7 +126,14 @@ export const SystemProfileList = () => {
       const response = await api.deleteSystemProfile(systemProfileToDelete.id);
       if (response.ok) {
         dispatch(slices.models.removeModel(systemProfileToDelete));
-        setSystemProfileToDelete(undefined);
+        dispatch(slices.ui.setMessage({ msg: 'System profile deleted.', type: 'success' }));
+      } else if (response.status === 403) {
+        dispatch(
+          slices.ui.setMessage({
+            msg: 'You do not have permission to delete this system profile!',
+            type: 'error',
+          })
+        );
       }
     }
   }
