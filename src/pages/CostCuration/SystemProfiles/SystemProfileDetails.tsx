@@ -48,9 +48,11 @@ export const SystemProfileDetails: React.FC = () => {
             </Grid.Item>
             <Grid.Item span={12}>
               <IntervalDataGraph
+                axisLabel="System Load"
                 className={classes.chart}
                 data={systemProfile.data.default}
                 month={selectedMonth}
+                units="kW"
               />
             </Grid.Item>
           </Grid>

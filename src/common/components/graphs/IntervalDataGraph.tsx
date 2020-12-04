@@ -232,12 +232,6 @@ function useData(data: IntervalData[], month: MonthIndex, timeDomain?: DateTuple
     [Infinity, -Infinity]
   );
 
-  return {
-    areaData,
-    domain: {
-      x: monthData[0].timeDomain,
-      y: valueDomain,
-    },
-    visibleData,
-  };
+  const domain = { x: monthData[0].timeDomain, y: valueDomain };
+  return { areaData, domain, visibleData };
 }

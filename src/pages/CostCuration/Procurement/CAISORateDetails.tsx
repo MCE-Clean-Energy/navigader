@@ -40,9 +40,11 @@ export const CAISORateDetails: React.FC = () => {
             </Grid.Item>
             <Grid.Item span={12}>
               <IntervalDataGraph
+                axisLabel="Procurement Cost"
                 className={classes.chart}
                 data={caisoRate.data.default}
                 month={selectedMonth}
+                units="$"
               />
             </Grid.Item>
           </Grid>
