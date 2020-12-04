@@ -1,8 +1,10 @@
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
-import { CreateRateCollectionParams } from 'navigader/api';
+import * as api from 'navigader/api';
 import { Button, Card, Grid, Typography, Flex, FileSize } from 'navigader/components';
+import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { formatters } from 'navigader/util';
 
@@ -17,7 +19,7 @@ export type ErrorDetailProps = {
 
 export type CreateRateCollectionFormProps = {
   open: boolean;
-  onSubmit: (params: CreateRateCollectionParams) => void;
+  onSubmit: (params: api.CreateRateCollectionParams) => void;
   errors: FormErrorObject | undefined;
 };
 
@@ -64,6 +66,7 @@ export const CreateRateCollectionForm: React.FC<CreateRateCollectionFormProps> =
   onSubmit,
   errors,
 }) => {
+  const dispatch = useDispatch();
   const classes = useCreateRateCollectionStyles();
   const fileUpload = React.useRef<HTMLInputElement>(null);
   const { id } = useParams<{ id: string }>();
@@ -78,6 +81,9 @@ export const CreateRateCollectionForm: React.FC<CreateRateCollectionFormProps> =
               <Button color="secondary" onClick={openFileSelector}>
                 Select Rate File
               </Button>
+            </Grid.Item>
+            <Grid.Item span={12}>
+              <Button onClick={downloadExample}>Download Example</Button>
             </Grid.Item>
             <Grid.Item span={12}>
               {file && (
@@ -123,12 +129,23 @@ export const CreateRateCollectionForm: React.FC<CreateRateCollectionFormProps> =
   );
 
   /** ============================== Callbacks =============================== */
-
   function openFileSelector() {
     fileUpload.current?.click();
   }
 
   function onFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     setFile(event.target?.files?.item(0) || null);
+  }
+
+  function downloadExample() {
+    const csvName = `example_rate_collection.csv`;
+    api.util.downloadFile('/downloads/rate_plan/' + csvName, csvName).catch(() =>
+      dispatch(
+        slices.ui.setMessage({
+          msg: 'Something went wrong.',
+          type: 'error',
+        })
+      )
+    );
   }
 };
