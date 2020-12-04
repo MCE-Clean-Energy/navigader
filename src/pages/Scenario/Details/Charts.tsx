@@ -23,7 +23,7 @@ export const GHGCharts: React.FC<ChartProps> = (props) => {
     ghgRates &&
     _.find(
       ghgRates,
-      (rate) => rate.name === 'Clean Net Short' && rate.effective.includes('2022')
+      (rate) => rate.name.includes('Clean Net Short') && rate.effective.includes('2022')
     )?.data?.rename('Clean Net Short 2022');
 
   return (
