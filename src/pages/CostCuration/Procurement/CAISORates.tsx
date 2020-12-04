@@ -31,6 +31,7 @@ export const CAISORateList = () => {
             dataSelector={slices.models.selectCAISORates}
             onFabClick={() => setCreateDialogOpen(true)}
             raised
+            ref={tableRef}
             stickyHeader
             title="Procurement Rates"
           >
