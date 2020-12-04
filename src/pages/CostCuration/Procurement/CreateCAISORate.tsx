@@ -136,7 +136,7 @@ export const CreateCAISORate: React.FC<DialogProps<CAISORate>> = ({ open, onClos
 
   function downloadExample(minutes: 15 | 60) {
     const csvName = `example_procurement_rate_${minutes}_min.csv`;
-    api.util.downloadFile('/downloads/' + csvName, csvName).catch(() =>
+    api.util.downloadFile('/downloads/procurement/' + csvName, csvName).catch(() =>
       dispatch(
         slices.ui.setMessage({
           msg: 'Something went wrong.',

@@ -140,7 +140,7 @@ export const CreateSystemProfile: React.FC<DialogProps<SystemProfile>> = ({
 
   function downloadExample(minutes: 15 | 60) {
     const csvName = `example_system_profile_${minutes}_min.csv`;
-    api.util.downloadFile('/downloads/' + csvName, csvName).catch(() =>
+    api.util.downloadFile('/downloads/system_profile/' + csvName, csvName).catch(() =>
       dispatch(
         slices.ui.setMessage({
           msg: 'Something went wrong.',
