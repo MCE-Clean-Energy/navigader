@@ -2,7 +2,17 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
-import { Dialog, Button, Grid, Flex, Typography, FileSize, TextField } from 'navigader/components';
+import {
+  Dialog,
+  Button,
+  Grid,
+  Flex,
+  Menu,
+  Typography,
+  FileSize,
+  TextField,
+  List,
+} from 'navigader/components';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { Nullable, SystemProfile } from 'navigader/types';
@@ -39,10 +49,24 @@ export const CreateSystemProfile: React.FC<DialogProps<SystemProfile>> = ({
       <Dialog.Title>Create System Profile</Dialog.Title>
       <Dialog.Content>
         <Grid>
-          <Grid.Item span={12}>
+          <Grid.Item span={6}>
             <Button color="secondary" onClick={openFileSelector}>
               Select File
             </Button>
+          </Grid.Item>
+          <Grid.Item span={6}>
+            <Menu
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+              label="Download Example"
+              transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+            >
+              <List.Item onClick={() => downloadExample(15)}>
+                <List.Item.Text>15 Minute Example</List.Item.Text>
+              </List.Item>
+              <List.Item onClick={() => downloadExample(60)}>
+                <List.Item.Text>60 Minute Example</List.Item.Text>
+              </List.Item>
+            </Menu>
           </Grid.Item>
 
           {file && (
@@ -112,5 +136,17 @@ export const CreateSystemProfile: React.FC<DialogProps<SystemProfile>> = ({
     const file = event.target?.files?.item(0) || null;
     setFile(file);
     updateName(file?.name.split('.csv')[0] || '');
+  }
+
+  function downloadExample(minutes: 15 | 60) {
+    const csvName = `example_system_profile_${minutes}_min.csv`;
+    api.util.downloadFile('/downloads/' + csvName, csvName).catch(() =>
+      dispatch(
+        slices.ui.setMessage({
+          msg: 'Something went wrong.',
+          type: 'error',
+        })
+      )
+    );
   }
 };
