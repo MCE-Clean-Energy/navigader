@@ -31,13 +31,13 @@ export const EVSEConfigurationDialog: React.FC<EVSEConfigurationDialogProps> = (
   const initialState: EVSEConfigurationDialogState = {
     creating: false,
     errors: {},
-    ev_capacity: undefined,
+    ev_capacity: 50,
     ev_count: undefined,
-    ev_efficiency: undefined,
-    ev_mpg_eq: undefined,
-    ev_mpkwh: undefined,
+    ev_efficiency: 90,
+    ev_mpkwh: 3.5,
     evse_count: undefined,
     evse_rating: undefined,
+    evse_utilization: 80,
     name: undefined,
   };
 
@@ -82,21 +82,26 @@ export const EVSEConfigurationDialog: React.FC<EVSEConfigurationDialogProps> = (
             </Grid.Item>
 
             <Grid.Item span={6}>
-              <RangeField
-                range="(0, Infinity)"
-                field="ev_mpg_eq"
-                label={{ text: 'MPGe', units: 'mpg' }}
-              />
-            </Grid.Item>
-            <Grid.Item span={6}>
               <IntegerField range="(0, Infinity)" field="evse_count" label="Number of EVSEs" />
             </Grid.Item>
-
             <Grid.Item span={6}>
               <RangeField
                 range="(0, Infinity)"
                 field="evse_rating"
                 label={{ text: 'EVSE Rating', units: 'kW' }}
+              />
+            </Grid.Item>
+
+            <Grid.Item span={6}>
+              <RangeField
+                range="(0, 100]"
+                field="evse_utilization"
+                infoText={`
+                  Level 1 chargers use 120 Volts AC, 1.9 kW maximum power. Level 2 chargers use 
+                  208 - 240 Volts AC, and can deliver up to 19.2 kW, however most residential Level 
+                  2 equipment operate at lower power, delivering about 7.2kW.
+                `}
+                label="EVSE Utilization"
               />
             </Grid.Item>
           </Grid>
@@ -138,7 +143,6 @@ export const EVSEConfigurationDialog: React.FC<EVSEConfigurationDialogProps> = (
           state,
           'ev_capacity',
           'ev_count',
-          'ev_mpg_eq',
           'ev_mpkwh',
           'evse_count',
           'evse_rating',
@@ -146,6 +150,7 @@ export const EVSEConfigurationDialog: React.FC<EVSEConfigurationDialogProps> = (
         ),
         der_type: 'EVSE',
         ev_efficiency: state.ev_efficiency / 100,
+        evse_utilization: state.evse_utilization / 100,
       },
       setState,
       dispatch
@@ -166,10 +171,10 @@ export const EVSEConfigurationDialog: React.FC<EVSEConfigurationDialogProps> = (
       'ev_capacity',
       'ev_count',
       'ev_efficiency',
-      'ev_mpg_eq',
       'ev_mpkwh',
       'evse_count',
       'evse_rating',
+      'evse_utilization',
       'name',
     ];
 

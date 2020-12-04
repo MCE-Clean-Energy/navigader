@@ -24,8 +24,8 @@ type EVSEStrategyFields = {
   charge_off_nem: boolean;
   description: string;
   distance: number;
-  drive_home_hour: number;
-  drive_in_hour: number;
+  start_charge_hour: number;
+  end_charge_hour: number;
   name: string;
 };
 
@@ -43,8 +43,8 @@ export const EVSEStrategyDialog: React.FC<EVSEStrategyDialogProps> = (props) => 
     creating: false,
     description: undefined,
     distance: undefined,
-    drive_home_hour: undefined,
-    drive_in_hour: undefined,
+    start_charge_hour: 21,
+    end_charge_hour: 8,
     errors: {},
   };
 
@@ -78,16 +78,17 @@ export const EVSEStrategyDialog: React.FC<EVSEStrategyDialogProps> = (props) => 
             </Grid.Item>
 
             <Grid.Item span={12}>
-              Driving hours represent the hour of the day the drivers commute to and from work. They
-              are numerical representations of the 24-hour clock: 0 to 11 means 12am to 11am, while
-              12 to 23 means 12pm to 11pm.
+              Charging hours represent the hours of the day in which the EVs are allowed to charge.
+              They are numerical representations of the 24-hour clock: 0 to 11 means 12am to 11am,
+              while 12 to 23 means 12pm to 11pm. Note that an ending hour of 8am means that charging
+              will cease at the beginning of the 8:00 hour.
             </Grid.Item>
 
             <Grid.Item span={6}>
-              <IntegerField range="[0, 23]" field="drive_in_hour" label="Drive to Work Hour" />
+              <IntegerField range="[0, 23]" field="start_charge_hour" label="Charge Start Hour" />
             </Grid.Item>
             <Grid.Item span={6}>
-              <IntegerField range="[0, 23]" field="drive_home_hour" label="Drive Home Hour" />
+              <IntegerField range="[0, 23]" field="end_charge_hour" label="Charge End Hour" />
             </Grid.Item>
 
             <Grid.Item span={12}>
@@ -148,8 +149,8 @@ export const EVSEStrategyDialog: React.FC<EVSEStrategyDialogProps> = (props) => 
   function getEmptyFields(state: EVSEStrategyDialogState) {
     const requiredFields: Array<keyof EVSEStrategyDialogState> = [
       'charge_off_nem',
-      'drive_home_hour',
-      'drive_in_hour',
+      'start_charge_hour',
+      'end_charge_hour',
       'name',
     ];
 

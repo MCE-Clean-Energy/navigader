@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import * as api from 'navigader/api';
-import { InfoIcon, Table } from 'navigader/components';
+import { Table } from 'navigader/components';
 
 import { ConfigurationsTable } from '../common';
 import { EVSEConfigurationDialog } from './ConfigurationDialog';
@@ -20,11 +20,9 @@ export const EVSEConfigurationsTable: React.FC = () => {
           <Table.Cell align="right">EV Efficiency (miles/kWh)</Table.Cell>
           <Table.Cell align="right">EV Battery Capacity (kWh)</Table.Cell>
           <Table.Cell align="right">EV Battery Efficiency</Table.Cell>
-          <Table.Cell align="right">
-            MPGe <InfoIcon text="Miles per gallon gasoline equivalent (mpg)" />
-          </Table.Cell>
           <Table.Cell align="right"># EVSEs</Table.Cell>
           <Table.Cell align="right">EVSE Rating (kW)</Table.Cell>
+          <Table.Cell align="right">EVSE Utilization</Table.Cell>
         </>
       }
       configurationData={(configuration) => (
@@ -33,9 +31,9 @@ export const EVSEConfigurationsTable: React.FC = () => {
           <Table.Cell align="right">{configuration.data!.ev_mpkwh}</Table.Cell>
           <Table.Cell align="right">{configuration.data!.ev_capacity}</Table.Cell>
           <Table.Cell align="right">{configuration.data!.ev_efficiency * 100}%</Table.Cell>
-          <Table.Cell align="right">{configuration.data!.ev_mpg_eq}</Table.Cell>
           <Table.Cell align="right">{configuration.data!.evse_count}</Table.Cell>
           <Table.Cell align="right">{configuration.data!.evse_rating}</Table.Cell>
+          <Table.Cell align="right">{configuration.data!.evse_utilization * 100}%</Table.Cell>
         </>
       )}
     />
