@@ -1,1 +1,1 @@
-export * from './Procurement';
+export * from './CAISORates';

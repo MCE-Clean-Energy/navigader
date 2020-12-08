@@ -10,7 +10,7 @@ import {
 } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
 import { DateTuple, MonthIndex, Scenario } from 'navigader/types';
-import { useMeterGroup } from 'navigader/util/hooks';
+import { hooks } from 'navigader/util';
 import { ChartControls, ChartView, TimeDomainOption } from './ChartControls';
 import { GHGCharts, ProcurementCharts } from './Charts';
 import { LoadingModal } from './LoadingModal';
@@ -60,7 +60,7 @@ const IntervalChart: React.FC<ScenarioProp> = ({ scenario }) => {
   const [timeDomain, setTimeDomain] = React.useState<DateTuple>();
 
   const simulationData = scenario.data.default;
-  const { loading, meterGroup } = useMeterGroup(meter_group!.id, {
+  const { loading, meterGroup } = hooks.useMeterGroup(meter_group!.id, {
     data_types: 'default',
     period: 60,
   });

@@ -23,7 +23,7 @@ export const GHGCharts: React.FC<ChartProps> = (props) => {
     ghgRates &&
     _.find(
       ghgRates,
-      (rate) => rate.name === 'Clean Net Short' && rate.effective.includes('2022')
+      (rate) => rate.name.includes('Clean Net Short') && rate.effective.includes('2022')
     )?.data?.rename('Clean Net Short 2022');
 
   return (
@@ -58,8 +58,6 @@ export const GHGCharts: React.FC<ChartProps> = (props) => {
 
 export const ProcurementCharts: React.FC<ChartProps> = (props) => {
   const { meterGroupData, scenarioData, selectedMonth, timeDomain, updateTimeDomain } = props;
-
-  // TODO: support scenarios with multiple years of data
   const year = scenarioData?.years[0];
   const caisoRate = useCAISORates({
     year,
@@ -120,7 +118,6 @@ function scaleInvertedData(interval: IntervalData, units: string) {
   const max = interval.valueDomain[1];
   const magnitude = Math.abs(Math.log10(max));
   const [scale, wattage] = magnitude >= 6 ? [1e6, 'GW'] : magnitude >= 3 ? [1e3, 'MW'] : [1, 'kW'];
-
   return {
     data: interval.multiply(scale),
     units: `${units}/${wattage}`,

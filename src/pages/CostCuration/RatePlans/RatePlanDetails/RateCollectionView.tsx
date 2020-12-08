@@ -1,4 +1,6 @@
 import * as React from 'react';
+
+import * as api from 'navigader/api';
 import {
   Card,
   Icon,
@@ -13,9 +15,9 @@ import {
   Menu,
   List,
 } from 'navigader/components';
-import * as api from 'navigader/api';
+import { RateCollection, RateBucket, RatePlan } from 'navigader/types';
 import { formatters } from 'navigader/util';
-import { RateCollection, RateBucket, RatePlan } from 'navigader/types/cost';
+
 import { DeleteDialog } from '../../common/DeleteDialog';
 
 /** ============================ Types ===================================== */
@@ -65,7 +67,7 @@ export const RateCollectionView: React.FC<RateCollectionViewsProps> = ({
         <Flex.Container>
           <Flex.Item grow>
             <Typography useDiv variant="h6">
-              {'Rate Data for ' + formatters.date.standard(rateCollection.effective_date)}
+              Rate Data for {formatters.date.standard(rateCollection.effective_date)}
             </Typography>
           </Flex.Item>
           <Flex.Item>
@@ -80,25 +82,18 @@ export const RateCollectionView: React.FC<RateCollectionViewsProps> = ({
                 horizontal: 'right',
               }}
             >
-              <List.Item
-                onClick={() => {
-                  api.downloadRateCollectionData(rateCollection.id);
-                }}
-              >
+              <List.Item onClick={() => api.downloadRateCollectionData(rateCollection.id)}>
                 <List.Item.Icon icon="download" />
                 <List.Item.Text>Download CSV</List.Item.Text>
               </List.Item>
-              <List.Item
-                onClick={() => {
-                  setDeleteDialogOpen(true);
-                }}
-              >
+              <List.Item onClick={() => setDeleteDialogOpen(true)}>
                 <List.Item.Icon icon="trash" />
                 <List.Item.Text>Delete</List.Item.Text>
               </List.Item>
             </Menu>
           </Flex.Item>
         </Flex.Container>
+
         {rateCollection ? (
           <PrefetchedTable data={[]} hover={false} size="small">
             {() => (
@@ -182,15 +177,12 @@ export const RateCollectionView: React.FC<RateCollectionViewsProps> = ({
           </Fade>
         )}
       </Card>
+
       <DeleteDialog
-        onClose={() => {
-          setDeleteDialogOpen(false);
-        }}
-        onClickDelete={() => {
-          onDelete(rateCollection.id);
-        }}
-        title="Delete Rate Plan"
-        message={'This will permanently delete the Rate Data and cannot be undone.'}
+        onClose={() => setDeleteDialogOpen(false)}
+        onClickDelete={() => onDelete(rateCollection.id)}
+        title="Delete Rate Data"
+        message="This will permanently delete the Rate Data and cannot be undone."
         open={deleteDialogOpen}
       />
     </>

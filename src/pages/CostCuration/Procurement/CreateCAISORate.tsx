@@ -7,46 +7,42 @@ import {
   Button,
   Grid,
   Flex,
-  Menu,
   Typography,
   FileSize,
   TextField,
+  Menu,
   List,
 } from 'navigader/components';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
-import { Nullable, SystemProfile } from 'navigader/types';
+import { CAISORate, Nullable } from 'navigader/types';
 import { formatters } from 'navigader/util';
 
 import { DialogProps } from '../common/CreateDialog';
 
 /** ============================ Styles ==================================== */
-const useCreateSystemProfileStyles = makeStylesHook(
+const useCreateCAISORateStyles = makeStylesHook(
   () => ({
     fileUpload: { display: 'none' },
     submitButton: { float: 'right' },
   }),
-  'CreateSystemProfile'
+  'CreateCAISORate'
 );
 
 /** ============================ Components ================================ */
-export const CreateSystemProfile: React.FC<DialogProps<SystemProfile>> = ({
-  open,
-  onClose,
-  tableRef,
-}) => {
+export const CreateCAISORate: React.FC<DialogProps<CAISORate>> = ({ open, onClose, tableRef }) => {
   const dispatch = useDispatch();
-  const classes = useCreateSystemProfileStyles();
+  const classes = useCreateCAISORateStyles();
   const fileUpload = React.useRef<HTMLInputElement>(null);
 
   // State
   const [name, updateName] = React.useState('');
-  const [raRate, updateRaRate] = React.useState(6);
   const [file, setFile] = React.useState<Nullable<File>>(null);
+  const [year, updateYear] = React.useState(new Date().getFullYear());
 
   return (
     <Dialog fullWidth open={open} onClose={onClose}>
-      <Dialog.Title>Create System Profile</Dialog.Title>
+      <Dialog.Title>Create Procurement Rate</Dialog.Title>
       <Dialog.Content>
         <Grid>
           <Grid.Item span={6}>
@@ -89,10 +85,10 @@ export const CreateSystemProfile: React.FC<DialogProps<SystemProfile>> = ({
           <Grid.Item span={12}>
             <TextField
               type="number"
-              id="resource_adequacy_rate"
-              label="Resource Adequacy Rate"
-              onChange={(num) => updateRaRate(parseFloat(num))}
-              value={raRate.toString()}
+              id="year"
+              label="Year"
+              onChange={(num) => updateYear(parseInt(num))}
+              value={year.toString()}
             />
           </Grid.Item>
         </Grid>
@@ -118,7 +114,7 @@ export const CreateSystemProfile: React.FC<DialogProps<SystemProfile>> = ({
   function onSubmit() {
     if (!file) return;
 
-    api.createSystemProfile({ name, resource_adequacy_rate: raRate, file }, (xhr) => {
+    api.createCAISORate({ name, year, file }, (xhr) => {
       if (xhr.status === 201) {
         tableRef.current?.fetch();
         onClose();
@@ -139,8 +135,8 @@ export const CreateSystemProfile: React.FC<DialogProps<SystemProfile>> = ({
   }
 
   function downloadExample(minutes: 15 | 60) {
-    const csvName = `example_system_profile_${minutes}_min.csv`;
-    api.util.downloadFile('/downloads/system_profile/' + csvName, csvName).catch(() =>
+    const csvName = `example_procurement_rate_${minutes}_min.csv`;
+    api.util.downloadFile('/downloads/procurement/' + csvName, csvName).catch(() =>
       dispatch(
         slices.ui.setMessage({
           msg: 'Something went wrong.',

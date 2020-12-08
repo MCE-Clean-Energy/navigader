@@ -2,7 +2,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { OriginFile, RatePlan, Scenario, SystemProfile } from 'navigader/types';
+import { IdType, CAISORate, OriginFile, RatePlan, Scenario, SystemProfile } from 'navigader/types';
 
 /** ============================ Dashboard Routes ========================== */
 const dashboardBase = '/dashboard';
@@ -40,12 +40,7 @@ const ders = {
   solar: `${dersBase}/solar`,
 };
 
-/** ============================ Other Routes ============================== */
-const settings = '/settings';
-const login = '/login';
-const resetPassword = '/reset_password';
-const roadmap = '/roadmap';
-const upload = '/upload';
+/** ============================ Cost Functions ============================ */
 const costBase = '/cost';
 const ratesBase = `${costBase}/rates`;
 const procurementBase = `${costBase}/procurement`;
@@ -54,17 +49,24 @@ const cost = {
   base: costBase,
   rates: {
     base: ratesBase,
-    ratePlan: (id: string) => `${ratesBase}/${id}`,
+    ratePlan: (id: IdType) => `${ratesBase}/${id}`,
   },
   procurement: {
     base: procurementBase,
-    load: (id: string) => `${procurementBase}/${id}`,
+    caisoRate: (id: IdType) => `${procurementBase}/${id}`,
   },
   system_profiles: {
     base: systemProfilesBase,
-    profile: (id: string) => `${systemProfilesBase}/${id}`,
+    profile: (id: IdType) => `${systemProfilesBase}/${id}`,
   },
 };
+
+/** ============================ Other Routes ============================== */
+const settings = '/settings';
+const login = '/login';
+const resetPassword = '/reset_password';
+const roadmap = '/roadmap';
+const upload = '/upload';
 const registration = {
   signup: '/registration/signup',
 
@@ -137,16 +139,19 @@ function routerFactory(method: 'push' | 'replace') {
           rates: {
             base: () => routerFn(routes.cost.rates.base),
             ratePlan: (ratePlan: RatePlan) => () => {
-              routerFn(routes.cost.rates.ratePlan(ratePlan.id.toString()));
+              routerFn(routes.cost.rates.ratePlan(ratePlan.id));
             },
           },
           procurement: {
             base: () => routerFn(routes.cost.procurement.base),
+            caisoRate: (caisoRate: CAISORate) => () => {
+              routerFn(routes.cost.procurement.caisoRate(caisoRate.id));
+            },
           },
           system_profiles: {
             base: () => routerFn(routes.cost.system_profiles.base),
             profile: (systemProfile: SystemProfile) => () => {
-              routerFn(routes.cost.system_profiles.profile(systemProfile.id.toString()));
+              routerFn(routes.cost.system_profiles.profile(systemProfile.id));
             },
           },
         },

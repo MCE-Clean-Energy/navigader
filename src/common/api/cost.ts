@@ -1,5 +1,6 @@
 import _ from 'lodash';
 
+import store, { slices } from 'navigader/store';
 import {
   RawCAISORate,
   DataTypeParams,
@@ -16,6 +17,7 @@ import {
   RawSystemProfile,
   GHGRate,
   CAISORate,
+  IdType,
 } from 'navigader/types';
 import { appendQueryString, omitFalsey, serializers } from 'navigader/util';
 import {
@@ -71,16 +73,15 @@ export type CreateRateCollectionParams = {
 };
 
 type SystemProfileIncludeFields = 'load_serving_entity.*';
-export type GetSystemProfilesQueryOptions = DynamicRestParams<SystemProfileIncludeFields> &
-  PaginationQueryParams &
-  DataTypeParams;
-
+export type GetSystemProfilesQueryOptions = GetSystemProfileQueryOptions & PaginationQueryParams;
 export type GetSystemProfileQueryOptions = DynamicRestParams<SystemProfileIncludeFields> &
   DataTypeParams;
-export type CreateSystemProfileParams = { file: File } & Required<
-  Pick<SystemProfile, 'resource_adequacy_rate' | 'name'>
+
+export type CreateSystemProfileParams = { file: File } & Pick<
+  SystemProfile,
+  'resource_adequacy_rate' | 'name'
 >;
-export type CreateSystemProfileResponse = { system_profile: RawSystemProfile };
+export type CreateCAISORateParams = { file: File } & Pick<CAISORate, 'name' | 'year'>;
 
 /** Responses */
 type GetScenariosResponse = { meter_groups?: RawMeterGroup[]; scenarios: RawScenario[] };
@@ -88,13 +89,9 @@ type GetScenarioResponse = { meter_groups?: RawMeterGroup[]; scenario: RawScenar
 type GetGHGRatesResponse = { ghg_rates: RawGHGRate[] };
 type GetCAISORatesResponse = { caiso_rates: RawCAISORate[] };
 type RawRatePlan = Omit<RatePlan, 'rate_collections'> & { rate_collections?: number[] };
-type GetRatePlansResponse = {
-  rate_collections?: RateCollection[];
-  rate_plans: RawRatePlan[];
-};
-type CreateRatePlanResponse = {
-  rate_plan: RawRatePlan;
-};
+type GetRatePlanResponse = { rate_collections?: RateCollection[]; rate_plan: RawRatePlan };
+type GetRatePlansResponse = { rate_collections?: RateCollection[]; rate_plans: RawRatePlan[] };
+type CreateRatePlanResponse = { rate_plan: RawRatePlan };
 type GetSystemProfilesResponse = { system_profiles: RawSystemProfile[] };
 
 /** ============================ Scenarios =============================== */
@@ -203,12 +200,40 @@ export async function getGhgRates(options?: GetGHGRatesQueryOptions) {
 
 /** ============================ Procurement =============================== */
 export async function getCAISORates(options?: GetCAISORatesQueryOptions) {
-  const response = await getRequest(routes.caiso_rate, options).then((res) => res.json());
+  const response = await getRequest(routes.caiso_rate(), options).then((res) => res.json());
 
-  // Parse the GHG rate results into full-fledged `NavigaderObjects`
-  return parsePaginationSet<GetCAISORatesResponse, CAISORate>(response, ({ caiso_rates }) =>
-    caiso_rates.map(serializers.parseCAISORate)
+  // Parse the CAISO rate results into full-fledged `NavigaderObjects`
+  const paginationSet = parsePaginationSet<GetCAISORatesResponse, CAISORate>(
+    response,
+    ({ caiso_rates }) => caiso_rates.map(serializers.parseCAISORate)
   );
+
+  // Add models to the store and return
+  store.dispatch(slices.models.updateModels(paginationSet.data));
+  return paginationSet;
+}
+
+export async function getCAISORate(id: IdType, options?: GetCAISORatesQueryOptions) {
+  const response = await getRequest(routes.caiso_rate(id), options).then((res) => res.json());
+
+  // Parse the GHG rate result into a full-fledged `NavigaderObject`
+  return serializers.parseCAISORate({ ...response.caiso_rate, object_type: 'CAISORate' });
+}
+
+export function createCAISORate(
+  params: CreateCAISORateParams,
+  callback: (response: XMLHttpRequest) => void
+) {
+  const xhr = makeFormXhrPost(routes.caiso_rate(), params);
+  xhr.onreadystatechange = () => {
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      callback(xhr);
+    }
+  };
+}
+
+export async function deleteCAISORate(id: IdType) {
+  return await deleteRequest(routes.caiso_rate(id));
 }
 
 /** ============================ Rate plans ================================ */
@@ -217,13 +242,13 @@ export async function getRatePlans(params?: GetRatePlansQueryOptions) {
 
   // Parse the rate plan results into full-fledged `NavigaderObjects`, nesting the rate collections
   // under the plan
-  return parsePaginationSet<GetRatePlansResponse, RatePlan>(
+  const paginationSet = parsePaginationSet<GetRatePlansResponse, RatePlan>(
     response,
     ({ rate_collections, rate_plans }) =>
-      rate_plans.map((plan) => ({
-        ...plan,
+      rate_plans.map((ratePlan) => ({
+        ...ratePlan,
         rate_collections: omitFalsey(
-          (plan.rate_collections || []).map((collectionId) =>
+          (ratePlan.rate_collections || []).map((collectionId) =>
             _.find(rate_collections, { id: collectionId })
           )
         ),
@@ -232,16 +257,24 @@ export async function getRatePlans(params?: GetRatePlansQueryOptions) {
         object_type: 'RatePlan',
       }))
   );
+
+  // Add models to the store and return
+  store.dispatch(slices.models.updateModels(paginationSet.data));
+  return paginationSet;
 }
 
 export async function getRatePlan(
   id: RatePlan['id'],
   params?: DynamicRestParams<RatePlanIncludeFields>
 ): Promise<RatePlan> {
-  const response = await getRequest(routes.rate_plans(id), params).then((res) => res.json());
+  const response: GetRatePlanResponse = await getRequest(
+    routes.rate_plans(id),
+    params
+  ).then((res) => res.json());
+
   return {
     ...response.rate_plan,
-    rate_collections: omitFalsey(response.rate_collections || undefined),
+    rate_collections: omitFalsey(response.rate_collections || []),
     object_type: 'RatePlan',
   };
 }
@@ -264,7 +297,6 @@ export async function deleteRatePlan(id: string) {
 }
 
 /** ============================= Rate Collections ========================= */
-
 export function createRateCollection(
   params: CreateRateCollectionParams,
   callback: (response: XMLHttpRequest) => void
@@ -284,7 +316,7 @@ export async function deleteRateCollection(id: RateCollection['id']) {
 /** ============================ System profiles =========================== */
 export async function getSystemProfiles(params?: GetSystemProfilesQueryOptions) {
   const response = await getRequest(routes.system_profile(), params).then((res) => res.json());
-  return parsePaginationSet<GetSystemProfilesResponse, SystemProfile>(
+  const paginationSet = parsePaginationSet<GetSystemProfilesResponse, SystemProfile>(
     response,
     ({ system_profiles }) =>
       system_profiles.map((systemProfile) => ({
@@ -294,6 +326,10 @@ export async function getSystemProfiles(params?: GetSystemProfilesQueryOptions) 
         object_type: 'SystemProfile',
       }))
   );
+
+  // Add models to the store and return
+  store.dispatch(slices.models.updateModels(paginationSet.data));
+  return paginationSet;
 }
 
 export async function getSystemProfile(
@@ -327,7 +363,7 @@ export async function deleteSystemProfile(id: SystemProfile['id']) {
 /** ============================ Helpers =================================== */
 const baseRoute = (rest: string) => beoRoute.v1(`cost/${rest}`);
 const routes = {
-  caiso_rate: baseRoute('caiso_rate/'),
+  caiso_rate: appendId(baseRoute('caiso_rate')),
   ghg_rate: baseRoute('ghg_rate/'),
   system_profile: appendId(baseRoute('system_profile')),
   scenarios: Object.assign(appendId(baseRoute('scenario')), {
