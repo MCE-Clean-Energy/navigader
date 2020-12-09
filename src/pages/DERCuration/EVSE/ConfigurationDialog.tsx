@@ -13,7 +13,6 @@ import {
   DialogState,
   IntegerField,
   NameField,
-  PercentageField,
   RangeField,
 } from '../common';
 
@@ -31,9 +30,7 @@ export const EVSEConfigurationDialog: React.FC<EVSEConfigurationDialogProps> = (
   const initialState: EVSEConfigurationDialogState = {
     creating: false,
     errors: {},
-    ev_capacity: 50,
     ev_count: undefined,
-    ev_efficiency: 90,
     ev_mpkwh: 3.5,
     evse_count: undefined,
     evse_rating: undefined,
@@ -63,21 +60,6 @@ export const EVSEConfigurationDialog: React.FC<EVSEConfigurationDialogProps> = (
                 range="(0, Infinity)"
                 field="ev_mpkwh"
                 label={{ text: 'EV Efficiency', units: 'miles/kWh' }}
-              />
-            </Grid.Item>
-
-            <Grid.Item span={6}>
-              <RangeField
-                range="(0, Infinity)"
-                field="ev_capacity"
-                label={{ text: 'EV Battery Capacity', units: 'kWh' }}
-              />
-            </Grid.Item>
-            <Grid.Item span={6}>
-              <PercentageField
-                range="(0, 100]"
-                field="ev_efficiency"
-                label="EV Battery Efficiency"
               />
             </Grid.Item>
 
@@ -139,17 +121,8 @@ export const EVSEConfigurationDialog: React.FC<EVSEConfigurationDialogProps> = (
     // Attempt to create the configuration
     const success = await createDERConfiguration(
       {
-        ..._.pick(
-          state,
-          'ev_capacity',
-          'ev_count',
-          'ev_mpkwh',
-          'evse_count',
-          'evse_rating',
-          'name'
-        ),
+        ..._.pick(state, 'ev_count', 'ev_mpkwh', 'evse_count', 'evse_rating', 'name'),
         der_type: 'EVSE',
-        ev_efficiency: state.ev_efficiency / 100,
         evse_utilization: state.evse_utilization / 100,
       },
       setState,
@@ -168,9 +141,7 @@ export const EVSEConfigurationDialog: React.FC<EVSEConfigurationDialogProps> = (
   /** ========================== Helpers =================================== */
   function getEmptyFields(state: EVSEConfigurationDialogState) {
     const requiredFields: Array<keyof EVSEConfigurationDialogState> = [
-      'ev_capacity',
       'ev_count',
-      'ev_efficiency',
       'ev_mpkwh',
       'evse_count',
       'evse_rating',

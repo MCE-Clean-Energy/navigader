@@ -55,8 +55,6 @@ export interface EVSEConfiguration
     EVSECommonFields {
   data?: {
     ev_mpkwh: number;
-    ev_capacity: number;
-    ev_efficiency: number;
     ev_count: number;
     evse_count: number;
     evse_rating: number;
