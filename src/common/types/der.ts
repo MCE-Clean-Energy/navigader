@@ -83,8 +83,6 @@ export interface SolarConfiguration
     address: string;
     array_type: SolarArrayType;
     azimuth: number; // 0 <= value < 360
-    losses: number; // -5 <= value < 99
-    system_capacity: number; // 0.05 <= value <= 500000
     tilt: number; // 0 <= value <= 90
   };
 }

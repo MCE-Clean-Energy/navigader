@@ -21,8 +21,6 @@ export const SolarConfigurationsTable: React.FC = () => {
           <Table.Cell align="right">Array Type</Table.Cell>
           <Table.Cell align="right">Azimuth</Table.Cell>
           <Table.Cell align="right">Tilt</Table.Cell>
-          <Table.Cell align="right">Losses</Table.Cell>
-          <Table.Cell align="right">System Capacity (kW)</Table.Cell>
         </>
       }
       configurationData={(configuration) => (
@@ -33,8 +31,6 @@ export const SolarConfigurationsTable: React.FC = () => {
           </Table.Cell>
           <Table.Cell align="right">{configuration.data!.azimuth}&deg;</Table.Cell>
           <Table.Cell align="right">{configuration.data!.tilt}&deg;</Table.Cell>
-          <Table.Cell align="right">{configuration.data!.losses}%</Table.Cell>
-          <Table.Cell align="right">{configuration.data!.system_capacity}</Table.Cell>
         </>
       )}
     />

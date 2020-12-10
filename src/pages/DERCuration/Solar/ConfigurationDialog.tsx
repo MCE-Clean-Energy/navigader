@@ -34,10 +34,8 @@ export const SolarConfigurationDialog: React.FC<SolarConfigurationDialogProps> =
     array_type: 1,
     azimuth: 180,
     creating: false,
-    losses: undefined,
     errors: {},
     name: undefined,
-    system_capacity: undefined,
     tilt: 7,
   };
 
@@ -73,17 +71,6 @@ export const SolarConfigurationDialog: React.FC<SolarConfigurationDialogProps> =
                 range="[0, 360)"
                 field="azimuth"
                 label={{ text: 'Azimuth Angle', units: 'degrees' }}
-              />
-            </Grid.Item>
-            <Grid.Item span={6}>
-              <PercentageField field="losses" label="Losses" range="[-5, 99)" />
-            </Grid.Item>
-
-            <Grid.Item span={6}>
-              <RangeField
-                range="[0.05, 500000]"
-                field="system_capacity"
-                label={{ text: 'Nameplate Capacity', units: 'kW' }}
               />
             </Grid.Item>
             <Grid.Item span={6}>
@@ -134,16 +121,7 @@ export const SolarConfigurationDialog: React.FC<SolarConfigurationDialogProps> =
     // Attempt to create the configuration
     const success = await createDERConfiguration(
       {
-        ..._.pick(
-          state,
-          'address',
-          'array_type',
-          'azimuth',
-          'losses',
-          'name',
-          'system_capacity',
-          'tilt'
-        ),
+        ..._.pick(state, 'address', 'array_type', 'azimuth', 'name', 'tilt'),
         der_type: 'SolarPV',
       },
       setState,
@@ -164,9 +142,7 @@ export const SolarConfigurationDialog: React.FC<SolarConfigurationDialogProps> =
     const requiredFields: Array<keyof SolarConfigurationDialogState> = [
       'address',
       'azimuth',
-      'losses',
       'name',
-      'system_capacity',
       'tilt',
     ];
 
