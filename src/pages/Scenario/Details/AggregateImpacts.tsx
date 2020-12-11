@@ -2,6 +2,7 @@ import * as React from 'react';
 import { DateTime, Duration } from 'luxon';
 
 import {
+  Alert,
   Card,
   IntervalDataGraph,
   IntervalDataTuple,
@@ -21,6 +22,13 @@ type ScenarioProp = {
 };
 
 /** ============================ Styles ==================================== */
+const useNoDataAlertStyles = makeStylesHook(
+  (theme) => ({
+    alert: { marginTop: theme.spacing(1.5) },
+  }),
+  'NoDataAlert'
+);
+
 const useIntervalChartStyles = makeStylesHook(
   (theme) => ({
     headingSpacer: {
@@ -49,6 +57,14 @@ const useStyles = makeStylesHook(
 );
 
 /** ============================ Components ================================ */
+const NoDataAlert: React.FC<{ cost_fn_type: string }> = ({ cost_fn_type }) => {
+  const classes = useNoDataAlertStyles();
+  return (
+    <Alert className={classes.alert} type="warning">
+      No {cost_fn_type} was selected for this scenario.
+    </Alert>
+  );
+};
 const IntervalChart: React.FC<ScenarioProp> = ({ scenario }) => {
   const { meter_group } = scenario;
   const classes = useIntervalChartStyles();
@@ -95,24 +111,34 @@ const IntervalChart: React.FC<ScenarioProp> = ({ scenario }) => {
                 ])}
               />
             )}
-            {chartView === 'ghg' && (
-              <GHGCharts
-                meterGroupData={meterGroupData}
-                scenarioData={simulationData}
-                selectedMonth={selectedMonth}
-                timeDomain={timeDomain}
-                updateTimeDomain={setTimeDomain}
-              />
-            )}
-            {chartView === 'procurement' && (
-              <ProcurementCharts
-                meterGroupData={meterGroupData}
-                scenarioData={simulationData}
-                selectedMonth={selectedMonth}
-                timeDomain={timeDomain}
-                updateTimeDomain={setTimeDomain}
-              />
-            )}
+            {chartView === 'ghg' ? (
+              scenario.cost_functions.ghg_rate ? (
+                <GHGCharts
+                  cost_function={scenario.cost_functions.ghg_rate}
+                  meterGroupData={meterGroupData}
+                  scenarioData={simulationData}
+                  selectedMonth={selectedMonth}
+                  timeDomain={timeDomain}
+                  updateTimeDomain={setTimeDomain}
+                />
+              ) : (
+                <NoDataAlert cost_fn_type="GHG rate" />
+              )
+            ) : null}
+            {chartView === 'procurement' ? (
+              scenario.cost_functions.procurement_rate ? (
+                <ProcurementCharts
+                  cost_function={scenario.cost_functions.procurement_rate}
+                  meterGroupData={meterGroupData}
+                  scenarioData={simulationData}
+                  selectedMonth={selectedMonth}
+                  timeDomain={timeDomain}
+                  updateTimeDomain={setTimeDomain}
+                />
+              ) : (
+                <NoDataAlert cost_fn_type="procurement rate" />
+              )
+            ) : null}
           </>
         )}
       </Card>

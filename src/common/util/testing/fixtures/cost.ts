@@ -63,5 +63,4 @@ export const caisoRate: RawCAISORate = {
       ],
     },
   },
-  year: 2018,
 };

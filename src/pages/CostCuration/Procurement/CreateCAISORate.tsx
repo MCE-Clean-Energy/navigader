@@ -13,6 +13,7 @@ import {
   Menu,
   List,
 } from 'navigader/components';
+import { usePushRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { CAISORate, Nullable } from 'navigader/types';
@@ -30,15 +31,15 @@ const useCreateCAISORateStyles = makeStylesHook(
 );
 
 /** ============================ Components ================================ */
-export const CreateCAISORate: React.FC<DialogProps<CAISORate>> = ({ open, onClose, tableRef }) => {
+export const CreateCAISORate: React.FC<DialogProps> = ({ open, onClose }) => {
   const dispatch = useDispatch();
+  const routeTo = usePushRouter();
   const classes = useCreateCAISORateStyles();
   const fileUpload = React.useRef<HTMLInputElement>(null);
 
   // State
   const [name, updateName] = React.useState('');
   const [file, setFile] = React.useState<Nullable<File>>(null);
-  const [year, updateYear] = React.useState(new Date().getFullYear());
 
   return (
     <Dialog fullWidth open={open} onClose={onClose}>
@@ -53,14 +54,14 @@ export const CreateCAISORate: React.FC<DialogProps<CAISORate>> = ({ open, onClos
           <Grid.Item span={6}>
             <Menu
               anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-              label="Download Example"
+              label="Download Template"
               transformOrigin={{ vertical: 'top', horizontal: 'left' }}
             >
-              <List.Item onClick={() => downloadExample(15)}>
-                <List.Item.Text>15 Minute Example</List.Item.Text>
+              <List.Item onClick={() => downloadTemplate(15)}>
+                <List.Item.Text>15 Minute Template</List.Item.Text>
               </List.Item>
-              <List.Item onClick={() => downloadExample(60)}>
-                <List.Item.Text>60 Minute Example</List.Item.Text>
+              <List.Item onClick={() => downloadTemplate(60)}>
+                <List.Item.Text>60 Minute Template</List.Item.Text>
               </List.Item>
             </Menu>
           </Grid.Item>
@@ -82,15 +83,6 @@ export const CreateCAISORate: React.FC<DialogProps<CAISORate>> = ({ open, onClos
           <Grid.Item span={12}>
             <TextField id="name" label="Name" onChange={updateName} value={name} />
           </Grid.Item>
-          <Grid.Item span={12}>
-            <TextField
-              type="number"
-              id="year"
-              label="Year"
-              onChange={(num) => updateYear(parseInt(num))}
-              value={year.toString()}
-            />
-          </Grid.Item>
         </Grid>
 
         <input
@@ -111,17 +103,19 @@ export const CreateCAISORate: React.FC<DialogProps<CAISORate>> = ({ open, onClos
   );
 
   /** ============================== Callbacks =============================== */
-  function onSubmit() {
+  async function onSubmit() {
     if (!file) return;
 
-    api.createCAISORate({ name, year, file }, (xhr) => {
-      if (xhr.status === 201) {
-        tableRef.current?.fetch();
-        onClose();
-      } else {
-        dispatch(slices.ui.setMessage({ msg: 'Something went wrong', type: 'error' }));
-      }
-    });
+    const response = await api.createCAISORate({ name, file });
+    if (!response.ok) {
+      dispatch(slices.ui.setMessage({ msg: 'Something went wrong', type: 'error' }));
+      return;
+    }
+
+    // Navigate to the details page
+    onClose();
+    const caisoRate: CAISORate = (await response.json()).caiso_rate;
+    routeTo.cost.procurement.caisoRate(caisoRate)();
   }
 
   function openFileSelector() {
@@ -134,8 +128,8 @@ export const CreateCAISORate: React.FC<DialogProps<CAISORate>> = ({ open, onClos
     updateName(file?.name.split('.csv')[0] || '');
   }
 
-  function downloadExample(minutes: 15 | 60) {
-    const csvName = `example_procurement_rate_${minutes}_min.csv`;
+  function downloadTemplate(minutes: 15 | 60) {
+    const csvName = `procurement_rate_${minutes}_min_template.csv`;
     api.util.downloadFile('/downloads/procurement/' + csvName, csvName).catch(() =>
       dispatch(
         slices.ui.setMessage({

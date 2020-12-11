@@ -1,4 +1,5 @@
 import { NavigaderObject, Nullable, ProgressFields, RawPandasFrame } from './common';
+import { CostFunction } from './cost';
 import { DERInfo } from './der';
 import { AbstractMeterGroup, OriginFile, AbstractRawMeterGroup, RawOriginFile } from './meter';
 
@@ -24,8 +25,11 @@ type ScenarioMetadata = {
   is_complete: boolean;
 };
 
+type CostFunctionKeys = 'ghg_rate' | 'procurement_rate' | 'rate_plan' | 'system_profile';
+type CostFunctionShort = Pick<CostFunction, 'id' | 'name'>;
 export type RawScenario = AbstractRawMeterGroup &
   NavigaderObject<'Scenario'> & {
+    cost_functions: Record<CostFunctionKeys, Nullable<CostFunctionShort>>;
     der_simulation_count: number;
     expected_der_simulation_count: number;
     metadata: ScenarioMetadata;

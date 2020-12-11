@@ -26,6 +26,7 @@ import {
   deleteRequest,
   downloadFile,
   getRequest,
+  makeFormPost,
   makeFormXhrPost,
   parsePaginationSet,
   patchRequest,
@@ -52,16 +53,15 @@ export type ScenarioDynamicRestParams = DynamicRestParams<
   'ders' | 'meter_group' | 'meter_group.*' | 'report' | 'report_summary'
 >;
 
-type GetGHGRatesQueryOptions = PaginationQueryParams &
-  DynamicRestParams &
+type GetGHGRatesQueryOptions = GetGHGRateQueryOptions & PaginationQueryParams;
+type GetGHGRateQueryOptions = DynamicRestParams &
   (
     | { data_format: '288' }
     | { data_format: 'interval'; period: '1H' | '15M'; start: string; end_limit: string }
   );
 
-export type GetCAISORatesQueryOptions = PaginationQueryParams &
-  DynamicRestParams &
-  DataTypeParams & { year?: number };
+type GetCAISORateQueryOptions = DynamicRestParams & DataTypeParams;
+export type GetCAISORatesQueryOptions = GetCAISORateQueryOptions & PaginationQueryParams;
 
 type RatePlanIncludeFields = 'rate_collections.*';
 export type GetRatePlanQueryOptions = DynamicRestParams<RatePlanIncludeFields>;
@@ -81,11 +81,12 @@ export type CreateSystemProfileParams = { file: File } & Pick<
   SystemProfile,
   'resource_adequacy_rate' | 'name'
 >;
-export type CreateCAISORateParams = { file: File } & Pick<CAISORate, 'name' | 'year'>;
+export type CreateCAISORateParams = { file: File } & Pick<CAISORate, 'name'>;
 
 /** Responses */
 type GetScenariosResponse = { meter_groups?: RawMeterGroup[]; scenarios: RawScenario[] };
 type GetScenarioResponse = { meter_groups?: RawMeterGroup[]; scenario: RawScenario };
+type GetGHGRateResponse = { ghg_rate: RawGHGRate };
 type GetGHGRatesResponse = { ghg_rates: RawGHGRate[] };
 type GetCAISORatesResponse = { caiso_rates: RawCAISORate[] };
 type RawRatePlan = Omit<RatePlan, 'rate_collections'> & { rate_collections?: number[] };
@@ -190,12 +191,30 @@ export function downloadRateCollectionData(id: RatePlan['id'], onProgress?: Prog
 
 /** ============================ GHG ======================================= */
 export async function getGhgRates(options?: GetGHGRatesQueryOptions) {
-  const response = await getRequest(routes.ghg_rate, options).then((res) => res.json());
+  const response = await getRequest(routes.ghg_rate(), options).then((res) => res.json());
 
   // Parse the GHG rate results into full-fledged `NavigaderObjects`
-  return parsePaginationSet<GetGHGRatesResponse, GHGRate>(response, ({ ghg_rates }) =>
-    ghg_rates.map(serializers.parseGHGRate)
+  const paginationSet = parsePaginationSet<GetGHGRatesResponse, GHGRate>(
+    response,
+    ({ ghg_rates }) => ghg_rates.map(serializers.parseGHGRate)
   );
+
+  // Add models to the store and return
+  store.dispatch(slices.models.updateModels(paginationSet.data));
+  return paginationSet;
+}
+
+export async function getGhgRate(id: GHGRate['id'], options?: GetGHGRateQueryOptions) {
+  const response: GetGHGRateResponse = await getRequest(routes.ghg_rate(id), options).then((res) =>
+    res.json()
+  );
+
+  // Parse the GHG rate into a full-fledged `NavigaderObject`
+  const ghgRate = serializers.parseGHGRate(response.ghg_rate);
+
+  // Add model to the store and return
+  store.dispatch(slices.models.updateModel(ghgRate));
+  return ghgRate;
 }
 
 /** ============================ Procurement =============================== */
@@ -216,20 +235,12 @@ export async function getCAISORates(options?: GetCAISORatesQueryOptions) {
 export async function getCAISORate(id: IdType, options?: GetCAISORatesQueryOptions) {
   const response = await getRequest(routes.caiso_rate(id), options).then((res) => res.json());
 
-  // Parse the GHG rate result into a full-fledged `NavigaderObject`
+  // Parse the CAISO rate result into a full-fledged `NavigaderObject`
   return serializers.parseCAISORate({ ...response.caiso_rate, object_type: 'CAISORate' });
 }
 
-export function createCAISORate(
-  params: CreateCAISORateParams,
-  callback: (response: XMLHttpRequest) => void
-) {
-  const xhr = makeFormXhrPost(routes.caiso_rate(), params);
-  xhr.onreadystatechange = () => {
-    if (xhr.readyState === XMLHttpRequest.DONE) {
-      callback(xhr);
-    }
-  };
+export function createCAISORate(params: CreateCAISORateParams) {
+  return makeFormPost(routes.caiso_rate(), params);
 }
 
 export async function deleteCAISORate(id: IdType) {
@@ -344,16 +355,8 @@ export async function getSystemProfile(
   });
 }
 
-export function createSystemProfile(
-  params: CreateSystemProfileParams,
-  callback: (response: XMLHttpRequest) => void
-) {
-  const xhr = makeFormXhrPost(routes.system_profile(), params);
-  xhr.onreadystatechange = () => {
-    if (xhr.readyState === XMLHttpRequest.DONE) {
-      callback(xhr);
-    }
-  };
+export function createSystemProfile(params: CreateSystemProfileParams) {
+  return makeFormPost(routes.system_profile(), params);
 }
 
 export async function deleteSystemProfile(id: SystemProfile['id']) {
@@ -364,7 +367,7 @@ export async function deleteSystemProfile(id: SystemProfile['id']) {
 const baseRoute = (rest: string) => beoRoute.v1(`cost/${rest}`);
 const routes = {
   caiso_rate: appendId(baseRoute('caiso_rate')),
-  ghg_rate: baseRoute('ghg_rate/'),
+  ghg_rate: appendId(baseRoute('ghg_rate')),
   system_profile: appendId(baseRoute('system_profile')),
   scenarios: Object.assign(appendId(baseRoute('scenario')), {
     download: baseRoute('scenario/download/'),

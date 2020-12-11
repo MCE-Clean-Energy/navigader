@@ -18,9 +18,9 @@ export type ErrorDetailProps = {
 };
 
 export type CreateRateCollectionFormProps = {
-  open: boolean;
-  onSubmit: (params: api.CreateRateCollectionParams) => void;
   errors: FormErrorObject | undefined;
+  onSubmit: (params: api.CreateRateCollectionParams) => void;
+  open: boolean;
 };
 
 /** ============================ Styles ==================================== */
@@ -61,16 +61,13 @@ const ErrorDetails: React.FC<ErrorDetailProps> = (params) => {
   );
 };
 
-export const CreateRateCollectionForm: React.FC<CreateRateCollectionFormProps> = ({
-  open,
-  onSubmit,
-  errors,
-}) => {
+export const CreateRateCollectionForm: React.FC<CreateRateCollectionFormProps> = (props) => {
+  const { open, onSubmit, errors } = props;
   const dispatch = useDispatch();
   const classes = useCreateRateCollectionStyles();
   const fileUpload = React.useRef<HTMLInputElement>(null);
   const { id } = useParams<{ id: string }>();
-  let [file, setFile] = React.useState<File | null>(null);
+  const [file, setFile] = React.useState<File | null>(null);
 
   return (
     <>
@@ -83,7 +80,7 @@ export const CreateRateCollectionForm: React.FC<CreateRateCollectionFormProps> =
               </Button>
             </Grid.Item>
             <Grid.Item span={12}>
-              <Button onClick={downloadExample}>Download Example</Button>
+              <Button onClick={downloadTemplate}>Download Template</Button>
             </Grid.Item>
             <Grid.Item span={12}>
               {file && (
@@ -137,8 +134,8 @@ export const CreateRateCollectionForm: React.FC<CreateRateCollectionFormProps> =
     setFile(event.target?.files?.item(0) || null);
   }
 
-  function downloadExample() {
-    const csvName = `example_rate_collection.csv`;
+  function downloadTemplate() {
+    const csvName = `rate_collection_template.csv`;
     api.util.downloadFile('/downloads/rate_plan/' + csvName, csvName).catch(() =>
       dispatch(
         slices.ui.setMessage({

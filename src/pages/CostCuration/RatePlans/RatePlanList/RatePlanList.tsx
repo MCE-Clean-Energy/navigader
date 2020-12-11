@@ -6,7 +6,6 @@ import { Link, List, Menu, StandardDate, TableFactory } from 'navigader/componen
 import { routes, usePushRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { RatePlan } from 'navigader/types';
-import { hooks } from 'navigader/util';
 
 import { DeleteDialog } from '../../common/DeleteDialog';
 import { CreateRatePlan } from './CreateRatePlan';
@@ -18,7 +17,6 @@ export const RatePlanList: React.FC = () => {
   const routeTo = usePushRouter();
   const [ratePlanToDelete, setRatePlanToDelete] = React.useState<RatePlan>();
   const [createDialogOpen, setCreateDialogOpen] = React.useState(false);
-  const tableRef = hooks.useTableRef<RatePlan>();
 
   return (
     <>
@@ -28,7 +26,6 @@ export const RatePlanList: React.FC = () => {
         dataSelector={slices.models.selectRatePlans}
         onFabClick={() => setCreateDialogOpen(true)}
         raised
-        ref={tableRef}
         stickyHeader
         title="Rate Plans"
       >
@@ -81,11 +78,7 @@ export const RatePlanList: React.FC = () => {
         )}
       </Table>
 
-      <CreateRatePlan
-        open={createDialogOpen}
-        onClose={() => setCreateDialogOpen(false)}
-        tableRef={tableRef}
-      />
+      <CreateRatePlan open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} />
       <DeleteDialog
         onClose={() => setRatePlanToDelete(undefined)}
         onClickDelete={deleteRatePlan}

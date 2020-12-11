@@ -13,12 +13,12 @@ type AsyncFunction<T> = () => Promise<T>;
  * Hook for calling an asynchronous method
  *
  * @param {function} fn: the asynchronous function to call
- * @param {function} callback: a callback to execute once the function has completed
+ * @param {function} [callback]: a callback to execute once the function has completed
  * @param {any[]} dependencies: the dependency array
  */
 export function useAsync<T>(
   fn: AsyncFunction<Maybe<T>>,
-  callback: (response: T) => void,
+  callback?: (response: T) => void,
   dependencies: any[] = []
 ) {
   const [loading, setLoading] = React.useState(false);
@@ -34,7 +34,7 @@ export function useAsync<T>(
     fn().then((res) => {
       // If the component has not unmounted, reset the loading state and trigger the callback
       if (shouldUpdate) {
-        res && callback(res);
+        res && callback && callback(res);
         setLoading(false);
       }
     });

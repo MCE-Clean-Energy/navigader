@@ -165,6 +165,7 @@ export function parseScenario(
   const reportSummary = parseReportSummary(rawScenario.report_summary);
   const unchangedFields = _.pick(
     rawScenario,
+    'cost_functions',
     'der_simulation_count',
     'der_simulations',
     'expected_der_simulation_count',
@@ -248,6 +249,7 @@ function serializeReportSummary(summary: Scenario['report_summary']) {
 export function serializeScenario(scenario: Scenario): RawScenario {
   const unchangedFields = _.pick(
     scenario,
+    'cost_functions',
     'der_simulation_count',
     'der_simulations',
     'expected_der_simulation_count',

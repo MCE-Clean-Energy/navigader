@@ -7,7 +7,7 @@ import { Link, List, Menu, TableFactory } from 'navigader/components';
 import { routes, usePushRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { SystemProfile } from 'navigader/types';
-import { formatters, hooks } from 'navigader/util';
+import { formatters } from 'navigader/util';
 
 import { DeleteDialog } from '../common/DeleteDialog';
 import { CreateSystemProfile } from './CreateSystemProfile';
@@ -18,7 +18,6 @@ const Table = TableFactory<SystemProfile>();
 export const SystemProfileList = () => {
   const routeTo = usePushRouter();
   const dispatch = useDispatch();
-  const tableRef = hooks.useTableRef<SystemProfile>();
 
   // State
   const [systemProfileToDelete, setSystemProfileToDelete] = React.useState<SystemProfile>();
@@ -32,7 +31,6 @@ export const SystemProfileList = () => {
         dataSelector={slices.models.selectSystemProfiles}
         onFabClick={() => setCreateDialogOpen(true)}
         raised
-        ref={tableRef}
         stickyHeader
         title="System Profiles"
       >
@@ -105,11 +103,7 @@ export const SystemProfileList = () => {
         )}
       </Table>
 
-      <CreateSystemProfile
-        open={createDialogOpen}
-        onClose={() => setCreateDialogOpen(false)}
-        tableRef={tableRef}
-      />
+      <CreateSystemProfile open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} />
       <DeleteDialog
         onClose={() => setSystemProfileToDelete(undefined)}
         onClickDelete={deleteSystemProfile}

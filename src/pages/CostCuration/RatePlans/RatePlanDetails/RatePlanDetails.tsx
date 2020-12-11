@@ -22,10 +22,11 @@ export const RatePlanDetails: React.FC = () => {
   const [errors, setErrors] = React.useState<FormErrorObject>();
   const { loading, ratePlan } = hooks.useRatePlan(+id, { include: 'rate_collections.*' });
 
-  const collections = _.sortBy(ratePlan?.rate_collections, 'effective_date').reverse();
   const [selectedCollection, setSelectedCollection] = React.useState<RateCollection>();
+  const collections = _.sortBy(ratePlan?.rate_collections, 'effective_date').reverse();
 
   React.useEffect(() => {
+    if (collections.length === 0) setCreateFormOpen(true);
     setSelectedCollection((curr) => (curr && collections.includes(curr) ? curr : collections[0]));
   }, [collections]);
 
@@ -39,10 +40,12 @@ export const RatePlanDetails: React.FC = () => {
             <Typography variant="h5">Rate Changes</Typography>
           </Flex.Item>
           <Flex.Item>
-            <Button
-              onClick={() => setCreateFormOpen((o) => !o)}
-              icon={createFormOpen ? 'close' : 'plus'}
-            />
+            {collections.length > 0 && (
+              <Button
+                onClick={() => setCreateFormOpen((o) => !o)}
+                icon={createFormOpen ? 'close' : 'plus'}
+              />
+            )}
           </Flex.Item>
         </Flex.Container>
         <CreateRateCollectionForm

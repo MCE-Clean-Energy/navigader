@@ -1,7 +1,4 @@
-import { ObjectWithId, TableRef } from 'navigader/types';
-
-export type DialogProps<T extends ObjectWithId> = {
+export type DialogProps = {
   open: boolean;
   onClose: () => void;
-  tableRef: TableRef<T>;
 };

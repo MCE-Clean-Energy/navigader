@@ -7,7 +7,7 @@ import { routes, usePushRouter } from 'navigader/routes';
 import { Grid, Link, Menu, List, TableFactory } from 'navigader/components';
 import { CAISORate } from 'navigader/types';
 import { slices } from 'navigader/store';
-import { formatters, hooks } from 'navigader/util';
+import { formatters } from 'navigader/util';
 import { CAISORateDetails } from './CAISORateDetails';
 import { CreateCAISORate } from './CreateCAISORate';
 import { DeleteDialog } from '../common/DeleteDialog';
@@ -19,7 +19,6 @@ export const CAISORateList = () => {
   const routeTo = usePushRouter();
   const [createDialogOpen, setCreateDialogOpen] = React.useState(false);
   const [caisoRateToDelete, setCaisoRateToDelete] = React.useState<CAISORate>();
-  const tableRef = hooks.useTableRef<CAISORate>();
 
   return (
     <>
@@ -31,7 +30,6 @@ export const CAISORateList = () => {
             dataSelector={slices.models.selectCAISORates}
             onFabClick={() => setCreateDialogOpen(true)}
             raised
-            ref={tableRef}
             stickyHeader
             title="Procurement Rates"
           >
@@ -71,7 +69,7 @@ export const CAISORateList = () => {
                             formatters.maxDecimals(caisoRate.data.default.average, 2)
                           )}
                       </Table.Cell>
-                      <Table.Cell>{caisoRate.year}</Table.Cell>
+                      <Table.Cell>{caisoRate.data.default?.years.join(', ')}</Table.Cell>
                       <Table.Cell align="right">
                         <Menu
                           anchorOrigin={{
@@ -106,11 +104,7 @@ export const CAISORateList = () => {
           </Table>
         </Grid.Item>
       </Grid>
-      <CreateCAISORate
-        open={createDialogOpen}
-        onClose={() => setCreateDialogOpen(false)}
-        tableRef={tableRef}
-      />
+      <CreateCAISORate open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} />
       <DeleteDialog
         onClose={() => setCaisoRateToDelete(undefined)}
         onClickDelete={deleteCAISORate}

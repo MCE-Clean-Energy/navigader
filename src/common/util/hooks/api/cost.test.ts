@@ -32,7 +32,6 @@ describe('Cost hooks', () => {
     });
 
     it('uses the API if there are no rates in the store which match the filters', async () => {
-      const rateDifferentYear = { ...fixtures.caisoRate, id: 2, name: 'PRC_LMP 2019', year: 2019 };
       const rateNoData = { ...fixtures.caisoRate, id: 3, data: {} };
       const rateDifferentPeriod = {
         ...fixtures.caisoRate,
@@ -46,8 +45,8 @@ describe('Cost hooks', () => {
       };
 
       // Request rate from 2018 with 1-hour period data
-      const rates = [rateDifferentYear, rateNoData, rateDifferentPeriod];
-      const rateFilters = { year: 2018, data: 'default', period: 60 };
+      const rates = [rateNoData, rateDifferentPeriod];
+      const rateFilters = { data: 'default', period: 60 };
       const result = await testHook(
         store,
         useCAISORates,
@@ -61,7 +60,7 @@ describe('Cost hooks', () => {
 
     it('skips the API if rate matching the filters is in the store', async () => {
       // Request rate from 2018 with 1-hour period data
-      const rateFilters = { year: 2018, data: 'default', period: 60 };
+      const rateFilters = { data: 'default', period: 60 };
       const caisoRate = serializers.parseCAISORate(fixtures.caisoRate);
       const result = await testHook(store, useCAISORates, [caisoRate], rateFilters);
 

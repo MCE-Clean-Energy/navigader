@@ -7,7 +7,6 @@ import {
   CAISORate,
   CostFunctions,
   GHGRate,
-  IdType,
   Loader,
   RatePlan,
   SystemProfile,
@@ -17,14 +16,12 @@ import { DataTypeFilters } from './types';
 import { applyDataFilters, useAsync } from './util';
 
 /** ============================ Types ===================================== */
-type CAISORateFilters = DataTypeFilters & { year?: number };
 type UseCostFunctionsParams = Partial<{
   ratePlans: Partial<api.GetRatePlansQueryOptions>;
-  caisoRates: Partial<CAISORateFilters>;
+  caisoRates: DataTypeFilters;
 }>;
 
 type CostFunctionLoaders = { [CF in keyof CostFunctions]: Loader<CostFunctions[CF][]> };
-type SystemProfileFilters = Partial<DataTypeFilters>;
 
 /** ============================ Rate plans ================================ */
 /**
@@ -32,17 +29,8 @@ type SystemProfileFilters = Partial<DataTypeFilters>;
  * store
  */
 export function useRatePlans(params?: api.GetRatePlansQueryOptions): Loader<RatePlan[]> {
-  const dispatch = useDispatch();
   const ratePlans = useSelector(slices.models.selectRatePlans);
-
-  const loading = useAsync(
-    async () => {
-      // Even if we already have some ratePlans, we can't know that we have all of them
-      return api.getRatePlans(params);
-    },
-    ({ data }) => dispatch(slices.models.updateModels(data))
-  );
-
+  const loading = useAsync(async () => api.getRatePlans(params));
   return Object.assign([...ratePlans], { loading });
 }
 
@@ -89,20 +77,37 @@ export function useGhgRates(): Loader<GHGRate[]> {
   return Object.assign([...ghgRates], { loading });
 }
 
+/**
+ * Loads a single GHG rate if they haven't been loaded already. Once loaded they will be added to
+ * the store
+ */
+export function useGhgRate(id: GHGRate['id']) {
+  const ghgRates = useSelector(slices.models.selectGHGRates);
+  const ghgRate = _.find(ghgRates, { id });
+
+  useAsync(async () => {
+    // If we've already loaded the rate, we don't need to do so again
+    if (ghgRate) return;
+    return api.getGhgRate(id, {
+      data_format: '288',
+      include: ['data'],
+    });
+  });
+
+  return ghgRate;
+}
+
 /** ============================ CAISO Rates =============================== */
 /**
  * Loads the CAISO rates if they haven't been loaded already. Once loaded they will be added to
  * the store
  */
-export function useCAISORates(filters: CAISORateFilters = {}): Loader<CAISORate[]> {
+export function useCAISORates(filters: DataTypeFilters = {}): Loader<CAISORate[]> {
   const dispatch = useDispatch();
 
   // Check the store for CAISO rates that match the provided filters
   const storedCAISORates = useSelector(slices.models.selectCAISORates);
-  const caisoRates = storedCAISORates.filter((caisoRate) => {
-    if (filters.year && caisoRate.year !== filters.year) return false;
-    return applyDataFilters(caisoRate, filters);
-  });
+  const caisoRates = storedCAISORates.filter((caisoRate) => applyDataFilters(caisoRate, filters));
 
   const loading = useAsync(
     async () => {
@@ -123,7 +128,7 @@ export function useCAISORates(filters: CAISORateFilters = {}): Loader<CAISORate[
   return Object.assign([...caisoRates], { loading });
 }
 
-export function useCAISORate(caisoRateId: IdType, filters: CAISORateFilters = {}) {
+export function useCAISORate(caisoRateId: CAISORate['id'], filters: DataTypeFilters = {}) {
   const dispatch = useDispatch();
 
   // Check the store for CAISO rates that match the provided filters
@@ -150,7 +155,7 @@ export function useCAISORate(caisoRateId: IdType, filters: CAISORateFilters = {}
 }
 
 /** ============================ System profiles =========================== */
-export function useSystemProfiles(filters?: SystemProfileFilters): Loader<SystemProfile[]> {
+export function useSystemProfiles(filters?: DataTypeFilters): Loader<SystemProfile[]> {
   const dispatch = useDispatch();
   const systemProfiles = useSelector(slices.models.selectSystemProfiles);
 
@@ -167,10 +172,7 @@ export function useSystemProfiles(filters?: SystemProfileFilters): Loader<System
   return Object.assign([...systemProfiles], { loading });
 }
 
-export function useSystemProfile(
-  systemProfileId: SystemProfile['id'],
-  filters?: SystemProfileFilters
-) {
+export function useSystemProfile(systemProfileId: SystemProfile['id'], filters?: DataTypeFilters) {
   const dispatch = useDispatch();
   const storedSystemProfiles = useSelector(slices.models.selectSystemProfiles);
   const systemProfile = _.find(storedSystemProfiles, { id: systemProfileId });

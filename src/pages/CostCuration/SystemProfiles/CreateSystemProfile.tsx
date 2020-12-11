@@ -13,6 +13,7 @@ import {
   TextField,
   List,
 } from 'navigader/components';
+import { usePushRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { Nullable, SystemProfile } from 'navigader/types';
@@ -30,12 +31,9 @@ const useCreateSystemProfileStyles = makeStylesHook(
 );
 
 /** ============================ Components ================================ */
-export const CreateSystemProfile: React.FC<DialogProps<SystemProfile>> = ({
-  open,
-  onClose,
-  tableRef,
-}) => {
+export const CreateSystemProfile: React.FC<DialogProps> = ({ open, onClose }) => {
   const dispatch = useDispatch();
+  const routeTo = usePushRouter();
   const classes = useCreateSystemProfileStyles();
   const fileUpload = React.useRef<HTMLInputElement>(null);
 
@@ -57,14 +55,14 @@ export const CreateSystemProfile: React.FC<DialogProps<SystemProfile>> = ({
           <Grid.Item span={6}>
             <Menu
               anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-              label="Download Example"
+              label="Download Template"
               transformOrigin={{ vertical: 'top', horizontal: 'left' }}
             >
-              <List.Item onClick={() => downloadExample(15)}>
-                <List.Item.Text>15 Minute Example</List.Item.Text>
+              <List.Item onClick={() => downloadTemplate(15)}>
+                <List.Item.Text>15 Minute Template</List.Item.Text>
               </List.Item>
-              <List.Item onClick={() => downloadExample(60)}>
-                <List.Item.Text>60 Minute Example</List.Item.Text>
+              <List.Item onClick={() => downloadTemplate(60)}>
+                <List.Item.Text>60 Minute Template</List.Item.Text>
               </List.Item>
             </Menu>
           </Grid.Item>
@@ -115,17 +113,19 @@ export const CreateSystemProfile: React.FC<DialogProps<SystemProfile>> = ({
   );
 
   /** ============================== Callbacks =============================== */
-  function onSubmit() {
+  async function onSubmit() {
     if (!file) return;
 
-    api.createSystemProfile({ name, resource_adequacy_rate: raRate, file }, (xhr) => {
-      if (xhr.status === 201) {
-        tableRef.current?.fetch();
-        onClose();
-      } else {
-        dispatch(slices.ui.setMessage({ msg: 'Something went wrong', type: 'error' }));
-      }
-    });
+    const response = await api.createSystemProfile({ name, resource_adequacy_rate: raRate, file });
+    if (!response.ok) {
+      dispatch(slices.ui.setMessage({ msg: 'Something went wrong', type: 'error' }));
+      return;
+    }
+
+    // Navigate to the details page
+    onClose();
+    const systemProfile: SystemProfile = (await response.json()).system_profile;
+    routeTo.cost.system_profiles.profile(systemProfile)();
   }
 
   function openFileSelector() {
@@ -138,8 +138,8 @@ export const CreateSystemProfile: React.FC<DialogProps<SystemProfile>> = ({
     updateName(file?.name.split('.csv')[0] || '');
   }
 
-  function downloadExample(minutes: 15 | 60) {
-    const csvName = `example_system_profile_${minutes}_min.csv`;
+  function downloadTemplate(minutes: 15 | 60) {
+    const csvName = `system_profile_${minutes}_min_template.csv`;
     api.util.downloadFile('/downloads/system_profile/' + csvName, csvName).catch(() =>
       dispatch(
         slices.ui.setMessage({

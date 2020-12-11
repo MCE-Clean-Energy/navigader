@@ -10,8 +10,6 @@ type CAISORateCommon = {
   filters: CAISORateFilters;
   id: number;
   name: string;
-  year: number;
-
   object_type: 'CAISORate';
 };
 

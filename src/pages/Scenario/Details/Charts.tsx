@@ -1,13 +1,13 @@
-import _ from 'lodash';
 import * as React from 'react';
 
 import { IntervalDataGraph } from 'navigader/components';
-import { DateTuple, IntervalData, MonthIndex } from 'navigader/types';
-import { useCAISORates, useGhgRates } from 'navigader/util/hooks';
+import { CostFunction, DateTuple, IntervalData, MonthIndex } from 'navigader/types';
+import { hooks } from 'navigader/util';
 import { LoadingModal } from './LoadingModal';
 
 /** ============================ Types ====================================== */
 type ChartProps = {
+  cost_function: Pick<CostFunction, 'id' | 'name'>;
   meterGroupData: IntervalData;
   scenarioData: IntervalData;
   selectedMonth: MonthIndex;
@@ -17,25 +17,26 @@ type ChartProps = {
 
 /** ============================ Components ================================ */
 export const GHGCharts: React.FC<ChartProps> = (props) => {
-  const { meterGroupData, scenarioData, selectedMonth, timeDomain, updateTimeDomain } = props;
-  const ghgRates = useGhgRates();
-  const cns2022 =
-    ghgRates &&
-    _.find(
-      ghgRates,
-      (rate) => rate.name.includes('Clean Net Short') && rate.effective.includes('2022')
-    )?.data?.rename('Clean Net Short 2022');
+  const {
+    cost_function,
+    meterGroupData,
+    scenarioData,
+    selectedMonth,
+    timeDomain,
+    updateTimeDomain,
+  } = props;
 
+  const rateData = hooks.useGhgRate(cost_function.id)?.data;
   return (
     <>
-      <LoadingModal loading={!cns2022} />
-      {cns2022 && (
+      <LoadingModal loading={!rateData} />
+      {rateData && (
         <>
           <IntervalDataGraph
             axisLabel="GHG Emissions"
             data={[
-              meterGroupData.multiply288(cns2022).rename('Initial GHG emissions'),
-              scenarioData.multiply288(cns2022).rename('Simulated GHG emissions'),
+              meterGroupData.multiply288(rateData).rename('Initial GHG emissions'),
+              scenarioData.multiply288(rateData).rename('Simulated GHG emissions'),
             ]}
             month={selectedMonth}
             timeDomain={timeDomain}
@@ -48,7 +49,7 @@ export const GHGCharts: React.FC<ChartProps> = (props) => {
             month={selectedMonth}
             timeDomain={timeDomain}
             onTimeDomainChange={updateTimeDomain}
-            {...scaleInvertedData(meterGroupData.align288(cns2022), 'tCO2')}
+            {...scaleInvertedData(meterGroupData.align288(rateData), 'tCO2')}
           />
         </>
       )}
@@ -57,13 +58,18 @@ export const GHGCharts: React.FC<ChartProps> = (props) => {
 };
 
 export const ProcurementCharts: React.FC<ChartProps> = (props) => {
-  const { meterGroupData, scenarioData, selectedMonth, timeDomain, updateTimeDomain } = props;
-  const year = scenarioData?.years[0];
-  const caisoRate = useCAISORates({
-    year,
+  const {
+    cost_function,
+    meterGroupData,
+    scenarioData,
+    selectedMonth,
+    timeDomain,
+    updateTimeDomain,
+  } = props;
+  const caisoRate = hooks.useCAISORate(cost_function?.id, {
     data_types: 'default',
     period: 60,
-  })[0];
+  });
 
   const initialProcurement = React.useMemo(
     () =>

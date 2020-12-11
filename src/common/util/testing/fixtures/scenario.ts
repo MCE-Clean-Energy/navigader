@@ -15,6 +15,12 @@ export function makeScenario(scenarioProps?: Partial<Scenario>): Scenario {
 const defaultRawScenario: RawScenario = {
   id: '9071c48a-d5d3-48d0-83da-c06863e8682a',
   name: 'Default Scenario',
+  cost_functions: {
+    ghg_rate: null,
+    procurement_rate: null,
+    rate_plan: null,
+    system_profile: null,
+  },
   created_at: '2020-03-26T00:13:25.451606',
   object_type: 'Scenario',
   data: {},
@@ -61,6 +67,12 @@ const defaultRawScenario: RawScenario = {
 const defaultScenario: Scenario = {
   id: '9071c48a-d5d3-48d0-83da-c06863e8682a',
   name: 'Default Scenario',
+  cost_functions: {
+    ghg_rate: null,
+    procurement_rate: null,
+    rate_plan: null,
+    system_profile: null,
+  },
   created_at: '2020-03-26T00:13:25.451606',
   object_type: 'Scenario',
   data: {},

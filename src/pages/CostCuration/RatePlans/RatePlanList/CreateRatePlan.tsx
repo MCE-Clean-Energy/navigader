@@ -2,12 +2,13 @@ import * as React from 'react';
 
 import * as api from 'navigader/api';
 import { Dialog, Button, TextField, Select, Grid } from 'navigader/components';
-import { RatePlan } from 'navigader/types';
+import { usePushRouter } from 'navigader/routes';
 
 import { DialogProps } from '../../common/CreateDialog';
 
 /** ============================ Components ================================ */
-export const CreateRatePlan: React.FC<DialogProps<RatePlan>> = ({ open, onClose, tableRef }) => {
+export const CreateRatePlan: React.FC<DialogProps> = ({ open, onClose }) => {
+  const routeTo = usePushRouter();
   const [name, setName] = React.useState('');
   const [sector, setSector] = React.useState('Residential');
 
@@ -40,8 +41,10 @@ export const CreateRatePlan: React.FC<DialogProps<RatePlan>> = ({ open, onClose,
 
   /** ========================== Callbacks ================================= */
   async function handleSubmission() {
-    await api.createRatePlan({ name, sector });
-    tableRef.current?.fetch();
+    const ratePlan = await api.createRatePlan({ name, sector });
+
+    // Navigate to the details page
     onClose();
+    routeTo.cost.rates.ratePlan(ratePlan)();
   }
 };
