@@ -2,19 +2,24 @@ import { DateTime } from 'luxon';
 import * as React from 'react';
 import { useParams } from 'react-router-dom';
 
+import * as api from 'navigader/api';
 import {
   Grid,
   Typography,
   IntervalDataGraph,
   MonthSelectorExclusive,
   Centered,
+  Button,
 } from 'navigader/components';
 import { hooks } from 'navigader/util';
-import { MonthIndex } from 'navigader/types';
+import { CAISORate, MonthIndex } from 'navigader/types';
 import { makeStylesHook } from 'navigader/styles';
 
 /** ============================ Styles ===================================== */
-const useStyles = makeStylesHook(() => ({ chart: { padding: '1rem' } }), 'CAISORateDetails');
+const useStyles = makeStylesHook(
+  () => ({ chart: { padding: '1rem' }, download_btn: { float: 'right' } }),
+  'CAISORateDetails'
+);
 
 /** ============================ Components ================================ */
 export const CAISORateDetails: React.FC = () => {
@@ -27,8 +32,18 @@ export const CAISORateDetails: React.FC = () => {
 
   return (
     <Grid>
-      <Grid.Item span={12}>
+      <Grid.Item span={6}>
         <Typography variant="h6">{caisoRate?.name || ''}</Typography>
+      </Grid.Item>
+      <Grid.Item span={6}>
+        <Button
+          icon="download"
+          color="primary"
+          className={classes.download_btn}
+          onClick={() => clickDownload(caisoRate)}
+        >
+          Download
+        </Button>
       </Grid.Item>
       <Grid.Item span={12}>
         {caisoRate && !loading && (
@@ -52,4 +67,9 @@ export const CAISORateDetails: React.FC = () => {
       </Grid.Item>
     </Grid>
   );
+
+  /* =============================== Callbacks ==============================*/
+  async function clickDownload(caisoRate: CAISORate) {
+    api.downloadCAISORate(caisoRate.id);
+  }
 };
