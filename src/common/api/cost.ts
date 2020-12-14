@@ -184,11 +184,6 @@ export async function downloadCustomerData(ids: string[], onProgress?: ProgressC
   return downloadFile(url, 'scenario-customer-data.csv', onProgress);
 }
 
-export function downloadRateCollectionData(id: RatePlan['id'], onProgress?: ProgressCallback) {
-  const url = routes.rate_collections.download(id);
-  return downloadFile(url, 'rate-collection-data.csv', onProgress);
-}
-
 /** ============================ GHG ======================================= */
 export async function getGhgRates(options?: GetGHGRatesQueryOptions) {
   const response = await getRequest(routes.ghg_rate(), options).then((res) => res.json());
@@ -245,6 +240,11 @@ export function createCAISORate(params: CreateCAISORateParams) {
 
 export async function deleteCAISORate(id: IdType) {
   return await deleteRequest(routes.caiso_rate(id));
+}
+
+export function downloadCAISORate(id: IdType, onProgress?: ProgressCallback) {
+  const url = routes.caiso_rate.download(id);
+  return downloadFile(url, 'caiso-rate-data.csv', onProgress);
 }
 
 /** ============================ Rate plans ================================ */
@@ -324,6 +324,11 @@ export async function deleteRateCollection(id: RateCollection['id']) {
   return await deleteRequest(routes.rate_collections(id));
 }
 
+export function downloadRateCollectionData(id: RatePlan['id'], onProgress?: ProgressCallback) {
+  const url = routes.rate_collections.download(id);
+  return downloadFile(url, 'rate-collection-data.csv', onProgress);
+}
+
 /** ============================ System profiles =========================== */
 export async function getSystemProfiles(params?: GetSystemProfilesQueryOptions) {
   const response = await getRequest(routes.system_profile(), params).then((res) => res.json());
@@ -363,17 +368,26 @@ export async function deleteSystemProfile(id: SystemProfile['id']) {
   return await deleteRequest(routes.system_profile(id));
 }
 
+export function downloadSystemProfile(id: IdType, onProgress?: ProgressCallback) {
+  const url = routes.system_profile.download(id);
+  return downloadFile(url, 'system-profile-data.csv', onProgress);
+}
+
 /** ============================ Helpers =================================== */
 const baseRoute = (rest: string) => beoRoute.v1(`cost/${rest}`);
 const routes = {
-  caiso_rate: appendId(baseRoute('caiso_rate')),
+  caiso_rate: Object.assign(appendId(baseRoute('caiso_rate')), {
+    download: (id: IdType) => routes.caiso_rate(id) + 'download/',
+  }),
   ghg_rate: appendId(baseRoute('ghg_rate')),
-  system_profile: appendId(baseRoute('system_profile')),
+  system_profile: Object.assign(appendId(baseRoute('system_profile')), {
+    download: (id: IdType) => routes.system_profile(id) + 'download/',
+  }),
   scenarios: Object.assign(appendId(baseRoute('scenario')), {
     download: baseRoute('scenario/download/'),
   }),
   rate_plans: appendId(baseRoute('rate_plan')),
   rate_collections: Object.assign(appendId(baseRoute('rate_collection')), {
-    download: (id: RatePlan['id']) => routes.rate_collections(id) + 'download/',
+    download: (id: IdType) => routes.rate_collections(id) + 'download/',
   }),
 };

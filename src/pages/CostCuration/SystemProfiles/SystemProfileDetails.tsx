@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import * as React from 'react';
 import { useParams } from 'react-router-dom';
 
+import * as api from 'navigader/api';
 import {
   Grid,
   Typography,
@@ -9,13 +10,17 @@ import {
   Progress,
   MonthSelectorExclusive,
   Centered,
+  Button,
 } from 'navigader/components';
 import { formatters, hooks } from 'navigader/util';
-import { MonthIndex } from 'navigader/types';
+import { MonthIndex, SystemProfile } from 'navigader/types';
 import { makeStylesHook } from 'navigader/styles';
 
 /** ============================ Styles ===================================== */
-const useStyles = makeStylesHook(() => ({ chart: { padding: '1rem' } }), 'SystemProfileDetails');
+const useStyles = makeStylesHook(
+  () => ({ chart: { padding: '1rem' }, download_btn: { float: 'right' } }),
+  'SystemProfileDetails'
+);
 
 /** ============================ Components ================================ */
 export const SystemProfileDetails: React.FC = () => {
@@ -30,8 +35,18 @@ export const SystemProfileDetails: React.FC = () => {
 
   return (
     <Grid>
-      <Grid.Item span={12}>
+      <Grid.Item span={6}>
         <Typography variant="h6">{systemProfile?.name || ''}</Typography>
+      </Grid.Item>
+      <Grid.Item span={6}>
+        <Button
+          icon="download"
+          color="primary"
+          className={classes.download_btn}
+          onClick={() => clickDownload(systemProfile)}
+        >
+          Download
+        </Button>
       </Grid.Item>
       <Grid.Item span={12}>
         {systemProfile.data && systemProfile.data.default && (
@@ -60,4 +75,9 @@ export const SystemProfileDetails: React.FC = () => {
       </Grid.Item>
     </Grid>
   );
+
+  /* =============================== Callbacks ==============================*/
+  async function clickDownload(systemProfile: SystemProfile) {
+    api.downloadSystemProfile(systemProfile.id);
+  }
 };
