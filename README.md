@@ -4,17 +4,21 @@ The front-end of the BEO project.
 
 ## Set Up
 
+Installing the application requires Node.js version 14. We strongly recommend using a Node version
+manager like [nvm](https://github.com/nvm-sh/nvm) or [n](https://github.com/tj/n) to install Node.js
+and npm. Instructions for doing so can be found [here](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm#using-a-node-version-manager-to-install-nodejs-and-npm).
+
 Clone the repository and install dependencies:
 
 ```bash
 git clone https://github.com/TerraVerdeRenewablePartners/navigader
 cd navigader
-npm run install
+npm install
 ```
 
 Building the application requires a `.env` file to specify certain environment variables:
 
-- `REACT_APP_ENV`: a simple representation of the current environment. Typicall `prod` or
+- `REACT_APP_ENV`: a simple representation of the current environment. Typically `prod` or
   `staging` or `local`
 - `REACT_APP_BEO_URI`: the URI of the `beo_datastore` backend that will be serving data to the
   front end. This should omit a trailing `/`.
@@ -26,17 +30,24 @@ REACT_APP_ENV=local
 REACT_APP_BEO_URI=http://localhost:8000
 ```
 
+You can confirm if the installation worked successfully by running `npm start`. This will launch the
+WebPack server and serve the NavigaDER front end (by default on port 3000). If you encounter an
+error, please confirm that your Node version is correct and that there were no warnings/errors in
+the install process.
+
 ## Deployment
 
-There are scripts contained in the `/scripts` directory for handling deployment to various
+There is a script contained in the `/scripts` directory for handling deployment to various
 environments. You will need the AWS CLI, which entails [installing](http://docs.aws.amazon.com/cli/latest/userguide/installing.html)
 the CLI, creating a user in AWS with the proper security credentials for writing to the bucket, and
 configuring the CLI with `aws configure`.
 
-Once set up with the CLI, you can deploy by simply calling the proper script:
+Once set up with the CLI, you can deploy by calling the script with one of three environment labels:
 
 ```bash
-./scripts/deploy-staging.sh
+./scripts/deploy.sh dev         # deploys to the development environment
+./scripts/deploy.sh staging     # deploys to the staging environment
+./scripts/deploy.sh prod        # deploys to the production environment
 ```
 
 ## Available Scripts
