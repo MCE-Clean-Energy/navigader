@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
 
 import * as api from 'navigader/api';
-import { Dialog, Link, List, Menu, TableFactory } from 'navigader/components';
+import { Dialog, Link, List, Menu, StandardDate, TableFactory } from 'navigader/components';
 import { routes, usePushRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { SystemProfile } from 'navigader/types';
@@ -37,7 +37,8 @@ export const SystemProfileList = () => {
           <>
             <Table.Head>
               <Table.Row>
-                <Table.Cell>Name</Table.Cell>
+                <Table.Cell sortBy="name">Name</Table.Cell>
+                <Table.Cell sortBy="created_at">Created</Table.Cell>
                 <Table.Cell>RA Rate</Table.Cell>
                 <Table.Cell>Min kW</Table.Cell>
                 <Table.Cell>Max kW</Table.Cell>
@@ -53,6 +54,9 @@ export const SystemProfileList = () => {
                     <Link to={routes.cost.system_profiles.profile(systemProfile.id)}>
                       {systemProfile.name}
                     </Link>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <StandardDate date={systemProfile.created_at} />
                   </Table.Cell>
                   <Table.Cell>
                     {formatters.dollars(systemProfile.resource_adequacy_rate)}/kW

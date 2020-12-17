@@ -3,6 +3,7 @@ import { RawCAISORate } from '../../../types';
 export const caisoRate: RawCAISORate = {
   id: 1,
   name: 'PRC_LMP 2018',
+  created_at: '2020-01-01',
   object_type: 'CAISORate',
   filters: {
     DATA_ITEM: 'LMP_PRC',

@@ -10,6 +10,7 @@ type CAISORateCommon = {
   filters: CAISORateFilters;
   id: number;
   name: string;
+  created_at: string;
   object_type: 'CAISORate';
 };
 
@@ -65,6 +66,7 @@ export interface RatePlan {
   id: number;
   load_serving_entity: LoadServingEntity;
   name: string;
+  created_at: string;
   object_type: 'RatePlan';
   rate_collections?: RateCollection[];
   sector?: string;
@@ -93,6 +95,7 @@ export interface CommonSystemProfile {
   id: number;
   load_serving_entity?: LoadServingEntity;
   name: string;
+  created_at: string;
   object_type: 'SystemProfile';
   resource_adequacy_rate: number;
 }

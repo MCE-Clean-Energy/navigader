@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
 import { routes, usePushRouter } from 'navigader/routes';
-import { Dialog, Grid, Link, Menu, List, TableFactory } from 'navigader/components';
+import { Dialog, Grid, Link, Menu, List, TableFactory, StandardDate } from 'navigader/components';
 import { CAISORate } from 'navigader/types';
 import { slices } from 'navigader/store';
 import { formatters } from 'navigader/util';
@@ -36,7 +36,8 @@ export const CAISORateList = () => {
               <>
                 <Table.Head>
                   <Table.Row>
-                    <Table.Cell>Name</Table.Cell>
+                    <Table.Cell sortBy="name">Name</Table.Cell>
+                    <Table.Cell sortBy="created_at">Created</Table.Cell>
                     <Table.Cell>Min $/kWh</Table.Cell>
                     <Table.Cell>Max $/kWh</Table.Cell>
                     <Table.Cell>Average $/kWh</Table.Cell>
@@ -51,6 +52,9 @@ export const CAISORateList = () => {
                         <Link to={routes.cost.procurement.caisoRate(caisoRate.id)}>
                           {caisoRate.name}
                         </Link>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <StandardDate date={caisoRate.created_at} />
                       </Table.Cell>
                       <Table.Cell>
                         {formatters.commas(
