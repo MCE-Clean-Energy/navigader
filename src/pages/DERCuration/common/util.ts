@@ -9,6 +9,7 @@ import {
   DERStrategy,
   ErrorArrayObject,
   ErrorObject,
+  IdType,
   Maybe,
   TableRef,
 } from 'navigader/types';
@@ -122,4 +123,62 @@ export function createDERStrategy(
   dispatch: Dispatch<any>
 ) {
   return createDER(api.createDERStrategy, params, setState, dispatch);
+}
+
+/**
+ * Attempts to delete a DER configuration/strategy, removing the new object from the store if
+ * successful. If the request fails outright, opens the snackbar with an error message. If the
+ * request succeeds, opens the snackbar with a success message. Returns `true` if the DER object was
+ * successfully deleted, `false` otherwise.
+ *
+ * @param {Function} deleteFn: the API method to call with the parameters
+ * @param {DERConfiguration | DERStrategy} object: the object to be deleted
+ * @param {Dispatch} dispatch: the redux dispatch function (required for adding to the store/opening
+ *   the snackbar)
+ */
+async function deleteDER(
+  deleteFn: (objectId: IdType) => Promise<Response>,
+  object: DERConfiguration | DERStrategy,
+  dispatch: Dispatch<any>
+): Promise<boolean> {
+  let response: Response;
+  try {
+    response = await deleteFn(object.id);
+  } catch (e) {
+    // If something goes wrong, print a warning and open a snackbar.
+    printWarning(e);
+
+    dispatch(
+      slices.ui.setMessage({
+        msg: 'Something went wrong. Please try again or contact support.',
+        type: 'error',
+      })
+    );
+    return false;
+  }
+
+  // If the request succeeded, remove the DER object from the store and print a snackbar success
+  // message.
+  if (response.ok) {
+    dispatch(slices.models.removeModel(object));
+    dispatch(slices.ui.setMessage({ type: 'success', msg: 'DER successfully deleted' }));
+    return true;
+  }
+
+  // Otherwise if the response returned a 403 (HTTP Forbidden), print a snackbar error message
+  const errorMsg =
+    response.status === 403
+      ? 'You do not have permission to delete this DER object!'
+      : 'Something went wrong. Please try again or contact support.';
+
+  dispatch(slices.ui.setMessage({ msg: errorMsg, type: 'error' }));
+  return false;
+}
+
+export function deleteDERConfiguration(object: DERConfiguration, dispatch: Dispatch<any>) {
+  return deleteDER(api.deleteDERConfiguration, object, dispatch);
+}
+
+export function deleteDERStrategy(object: DERStrategy, dispatch: Dispatch<any>) {
+  return deleteDER(api.deleteDERStrategy, object, dispatch);
 }

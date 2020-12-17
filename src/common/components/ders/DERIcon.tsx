@@ -18,5 +18,7 @@ export function getDERIconName(type: DERType): ValidIcon {
       return 'ev_station';
     case 'SolarPV':
       return 'sun';
+    case 'FuelSwitching':
+      return 'fuel_switching';
   }
 }

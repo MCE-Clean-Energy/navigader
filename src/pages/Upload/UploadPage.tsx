@@ -186,6 +186,14 @@ const FileFormatAlert: React.FC = () => {
     ['DIR', 'The direction of electricity flow. Should be "D" (for direct) or "R" (for reverse)'],
     ['RS', "The customer's rate schedule"],
     ['Interval columns', 'See above'],
+    [
+      'therms',
+      `
+        (optional) The customer's daily gas usage in therms. If this column is provided, therm 
+        usage data should be provided only on rows where DIR is "D", not when it is "R". It is
+        perfectly acceptable if therm usage data is only available for some but not all days
+      `.trim(),
+    ],
   ];
 
   return (
@@ -234,7 +242,7 @@ const UploadCard: React.FC<UploadCardProps> = ({ minutes }) => {
         <Card.ActionArea onClick={openFileSelector}>
           <Card.Media
             className={classes.image}
-            image={`/${fileName}.png`}
+            image={`/img/${fileName}.png`}
             title={`Example ${minutes}-minute load data`}
           />
 
@@ -285,7 +293,7 @@ const UploadCard: React.FC<UploadCardProps> = ({ minutes }) => {
   /** ========================== Callbacks ================================= */
   function downloadExample() {
     const csvName = fileName + '.csv';
-    api.util.downloadFile('/' + csvName, csvName).catch(() =>
+    api.util.downloadFile(`/downloads/load_data/${csvName}`, csvName).catch(() =>
       dispatch(
         slices.ui.setMessage({
           msg: 'Something went wrong.',

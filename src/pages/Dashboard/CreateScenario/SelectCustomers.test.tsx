@@ -62,19 +62,13 @@ describe('"Select Customers" page', () => {
 
     // Check the number of meter group chips
     const meterGroupChips = await screen.findAllByTestId('meter-group-chip');
-    expect(meterGroupChips.length).toEqual(2);
+    expect(meterGroupChips.length).toEqual(4);
 
-    // Should have the names of the meter groups
+    // Should have the names of the meter groups and scenarios
     expect(meterGroupChips[0].textContent).toEqual(originFile1.name);
     expect(meterGroupChips[1].textContent).toEqual(originFile2.name);
-
-    // Check the number of scenario chips
-    const scenarioChips = await screen.findAllByTestId('scenario-chip');
-    expect(scenarioChips.length).toEqual(2);
-
-    // Should have the names of the scenarios
-    expect(scenarioChips[0].textContent).toEqual(scenario1.name);
-    expect(scenarioChips[1].textContent).toEqual(scenario2.name);
+    expect(meterGroupChips[2].textContent).toEqual(scenario1.name);
+    expect(meterGroupChips[3].textContent).toEqual(scenario2.name);
   });
 
   it('Selecting a meter group/scenario triggers callback', async () => {
@@ -103,13 +97,11 @@ describe('"Select Customers" page', () => {
     });
 
     // Click some scenarios
-    const scenarioChips = await screen.findAllByTestId('scenario-chip');
-
-    fireEvent.click(scenarioChips[0]);
+    fireEvent.click(meterGroupChips[2]);
     expect(updateStateMock).toHaveBeenCalledTimes(3);
     expect(updateStateMock.mock.calls[2][0]).toMatchObject({ scenarioSelections: [scenario1.id] });
 
-    fireEvent.click(scenarioChips[1]);
+    fireEvent.click(meterGroupChips[3]);
     expect(updateStateMock).toHaveBeenCalledTimes(4);
     expect(updateStateMock.mock.calls[3][0]).toMatchObject({ scenarioSelections: [scenario2.id] });
   });

@@ -37,7 +37,7 @@ const ScenarioContext: React.FC<{ scenario: Scenario }> = ({ scenario }) => {
         )}
       </Flex.Item>
       <Flex.Item className={classes.meterGroup}>
-        <MeterGroupChip link meterGroup={scenario?.meter_group} showCount />
+        <MeterGroupChip link meterGroup={scenario?.meter_group} />
       </Flex.Item>
     </Flex.Container>
   );

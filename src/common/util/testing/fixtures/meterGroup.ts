@@ -328,6 +328,7 @@ export const meterData = {
 };
 
 const defaultMeterGroup: OriginFile = {
+  has_gas: false,
   id: '35b9919c-b7f9-4d28-8cf0-ac61bb9036d2',
   created_at: '2020-02-12T20:05:05.695388',
   object_type: 'OriginFile',
@@ -352,6 +353,7 @@ const defaultMeterGroup: OriginFile = {
 };
 
 const defaultRawMeterGroup: RawOriginFile = {
+  has_gas: false,
   id: '35b9919c-b7f9-4d28-8cf0-ac61bb9036d2',
   created_at: '2020-02-12T20:05:05.695388',
   object_type: 'OriginFile',

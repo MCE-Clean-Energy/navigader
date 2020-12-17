@@ -2,8 +2,12 @@ import { NavigaderObject } from './common';
 import { Frame288NumericType, Frame288Type } from './data';
 
 export type DERInfo = { der_configuration: DERConfiguration; der_strategy: DERStrategy };
-export type DERConfiguration = BatteryConfiguration | EVSEConfiguration | SolarConfiguration;
-export type DERStrategy = BatteryStrategy | EVSEStrategy | SolarStrategy;
+export type DERConfiguration =
+  | BatteryConfiguration
+  | EVSEConfiguration
+  | SolarConfiguration
+  | FuelSwitchingConfiguration;
+export type DERStrategy = BatteryStrategy | EVSEStrategy | SolarStrategy | FuelSwitchingStrategy;
 export type DERType = DERConfiguration['der_type'];
 export type DERStrategyType =
   | 'load_flattening'
@@ -94,4 +98,23 @@ export interface SolarStrategy
   data?: {
     serviceable_load_ratio: number; // 0 < value
   };
+}
+
+/** ============================ Fuel Switching ============================ */
+type FuelSwitchingCommonFields = { der_type: 'FuelSwitching' };
+export interface FuelSwitchingConfiguration
+  extends NavigaderObject<'FuelSwitchingConfiguration'>,
+    DERCommonFields,
+    FuelSwitchingCommonFields {
+  data?: {
+    water_heating: boolean;
+    space_heating: boolean;
+  };
+}
+
+export interface FuelSwitchingStrategy
+  extends NavigaderObject<'FuelSwitchingStrategy'>,
+    DERStrategyCommonFields,
+    FuelSwitchingCommonFields {
+  data?: {};
 }

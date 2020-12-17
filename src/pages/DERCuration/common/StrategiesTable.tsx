@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
-import { Button, StandardDate, TableFactory, Typography } from 'navigader/components';
+import { Button, Dialog, StandardDate, TableFactory, Typography } from 'navigader/components';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { DataSelector, DERStrategy, TableProps } from 'navigader/types';
 import { hooks } from 'navigader/util';
 
-import { DialogProps } from './util';
+import { deleteDERStrategy, DialogProps } from './util';
 
 /** ============================ Types ===================================== */
 type StrategiesTableProps<T extends DERStrategy> = Pick<TableProps<T>, 'dataFn'> & {
@@ -19,17 +19,19 @@ type StrategiesTableProps<T extends DERStrategy> = Pick<TableProps<T>, 'dataFn'>
 
 /** ============================ Styles ==================================== */
 const useStyles = makeStylesHook<{ width: number }>(
-  () => ({ description: ({ width }) => ({ width: width * 0.75 }) }),
+  () => ({ description: ({ width }) => ({ maxWidth: width }) }),
   'StrategiesTable'
 );
 
 /** ============================ Components ================================ */
+const { Delete: DeleteDialog } = Dialog;
 export function StrategiesTable<T extends DERStrategy>(props: StrategiesTableProps<T>) {
   const { dataFn, strategyData, strategyHeaders, Dialog, width } = props;
   const dispatch = useDispatch();
   const classes = useStyles({ width });
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const tableRef = hooks.useTableRef<T>();
+  const [strategyToDelete, setStrategyToDelete] = React.useState<DERStrategy>();
 
   // Memoize the table component so we're not rendering a different component with every render
   const Table = React.useMemo(() => TableFactory<T>(), []);
@@ -63,11 +65,12 @@ export function StrategiesTable<T extends DERStrategy>(props: StrategiesTablePro
                 <Table.Cell sortBy="created_at">Created</Table.Cell>
                 {strategyHeaders}
                 <Table.Cell>Description</Table.Cell>
+                <Table.Cell>Delete</Table.Cell>
               </Table.Row>
             </Table.Head>
             <Table.Body>
               {/** Only renders if there's no data */}
-              <EmptyRow colSpan={10}>
+              <EmptyRow colSpan={8}>
                 None created.{' '}
                 <Button.Text
                   color="primary"
@@ -91,6 +94,9 @@ export function StrategiesTable<T extends DERStrategy>(props: StrategiesTablePro
                       {strategy.description || '-'}
                     </Typography.LineLimit>
                   </Table.Cell>
+                  <Table.Cell>
+                    <Button icon="trash" onClick={() => onDelete(strategy)} />
+                  </Table.Cell>
                 </Table.Row>
               ))}
             </Table.Body>
@@ -99,6 +105,24 @@ export function StrategiesTable<T extends DERStrategy>(props: StrategiesTablePro
       </Table>
 
       <Dialog closeDialog={() => setDialogOpen(false)} open={dialogOpen} tableRef={tableRef} />
+      <DeleteDialog
+        onClose={() => setStrategyToDelete(undefined)}
+        onClickDelete={deleteStrategy}
+        title={`Delete ${strategyToDelete?.name}`}
+        message="This will permanently delete the object and cannot be undone."
+        open={strategyToDelete !== undefined}
+      />
     </>
   );
+  /** ========================== Callbacks ================================= */
+  function onDelete(strategy: DERStrategy) {
+    setStrategyToDelete(strategy);
+  }
+
+  async function deleteStrategy() {
+    if (strategyToDelete) {
+      const success = await deleteDERStrategy(strategyToDelete, dispatch);
+      if (success) setStrategyToDelete(undefined);
+    }
+  }
 }

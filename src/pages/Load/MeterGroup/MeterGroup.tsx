@@ -7,18 +7,16 @@ import {
   Flex,
   Grid,
   Link,
+  MeterGroupChip,
   PageHeader,
-  PrefetchedTable,
   Progress,
-  ScenarioChip,
-  StandardDate,
-  Table,
+  SummaryTable,
   Typography,
 } from 'navigader/components';
 import { routes, usePushRouter } from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
 import { Frame288DataType, OriginFile } from 'navigader/types';
-import { filterClause, formatters, models } from 'navigader/util';
+import { filterClause, models } from 'navigader/util';
 import { useOriginFile, useScenarios } from 'navigader/util/hooks';
 import { LoadGraph } from './LoadGraph';
 import MetersTable from './MetersTable';
@@ -83,12 +81,12 @@ const LinkedScenariosCard: React.FC<{ originFile: OriginFile }> = ({ originFile 
         ) : (
           <Flex.Container className={classes.chipContainer} wrap>
             {scenarios.map((s) => (
-              <ScenarioChip
+              <MeterGroupChip
                 className={classes.chip}
                 disabled={!s.progress.is_complete}
                 key={s.id}
                 onClick={routeTo.scenario.details(s)}
-                scenario={s}
+                meterGroup={s}
               />
             ))}
           </Flex.Container>
@@ -100,50 +98,12 @@ const LinkedScenariosCard: React.FC<{ originFile: OriginFile }> = ({ originFile 
 
 const SummaryCard: React.FC<{ originFile: OriginFile }> = ({ originFile }) => {
   const classes = useStyles();
-  const { max_monthly_demand, date_range, total_kwh } = originFile;
-  const dateRange =
-    date_range === null ? null : formatters.date.range(date_range, formatters.date.standard);
-
   return (
     <Card raised>
       <Typography className={classes.graphTitle} useDiv variant="h6">
         Summary
       </Typography>
-
-      <div>
-        <PrefetchedTable data={[]} hover={false} size="small">
-          {() => (
-            <>
-              <Table.Body>
-                <Table.Row>
-                  <Table.Cell>Uploaded</Table.Cell>
-                  <Table.Cell>
-                    <StandardDate date={originFile.created_at} />
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row>
-                  <Table.Cell># Meters</Table.Cell>
-                  <Table.Cell>{originFile.meter_count}</Table.Cell>
-                </Table.Row>
-                <Table.Row>
-                  <Table.Cell>Date range</Table.Cell>
-                  <Table.Cell>{dateRange ?? '-'}</Table.Cell>
-                </Table.Row>
-                <Table.Row>
-                  <Table.Cell>Total kWh</Table.Cell>
-                  <Table.Cell>{formatters.commas(formatters.maxDecimals(total_kwh, 2))}</Table.Cell>
-                </Table.Row>
-                <Table.Row>
-                  <Table.Cell>Max monthly demand</Table.Cell>
-                  <Table.Cell>
-                    {formatters.commas(formatters.maxDecimals(max_monthly_demand, 2))} kW
-                  </Table.Cell>
-                </Table.Row>
-              </Table.Body>
-            </>
-          )}
-        </PrefetchedTable>
-      </div>
+      <SummaryTable originFile={originFile} />
     </Card>
   );
 };
@@ -155,6 +115,7 @@ export const MeterGroupPage: React.FC = () => {
 
   const { originFile } = useOriginFile(id, {
     data_types: ['average', 'maximum', 'minimum'],
+    include: 'total_therms',
   });
 
   return (
@@ -199,7 +160,7 @@ export const MeterGroupPage: React.FC = () => {
           </Grid.Item>
 
           <Grid.Item span={12}>
-            <MetersTable meterGroupId={originFile.id} />
+            <MetersTable originFile={originFile} />
           </Grid.Item>
         </Grid>
       ) : (

@@ -8,14 +8,16 @@ import { usePushRouter, useRedirectRouter } from 'navigader/routes';
 import { Batteries } from './Batteries';
 import { EVSE } from './EVSE';
 import { Solar } from './Solar';
+import { FuelSwitching } from './FuelSwitching';
 
 /** ============================ Types ===================================== */
-type DERRouteType = 'batteries' | 'evse' | 'solar';
-type DERTabTitle = 'Batteries' | 'EVSE' | 'Solar PV';
+type DERRouteType = 'batteries' | 'evse' | 'solar' | 'fuel_switching';
+type DERTabTitle = 'Batteries' | 'EVSE' | 'Solar PV' | 'Fuel Switching';
 const tabTitles: Record<DERRouteType, DERTabTitle> = {
   batteries: 'Batteries',
   evse: 'EVSE',
   solar: 'Solar PV',
+  fuel_switching: 'Fuel Switching',
 };
 
 const titlesMap = _.invert(tabTitles);
@@ -56,6 +58,10 @@ const DERCurationTabs = () => {
 
       <Tabs.Tab title={tabTitles.solar}>
         <Solar />
+      </Tabs.Tab>
+
+      <Tabs.Tab title={tabTitles.fuel_switching}>
+        <FuelSwitching />
       </Tabs.Tab>
     </Tabs>
   );

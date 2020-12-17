@@ -3,13 +3,12 @@ import { useDispatch } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
 
 import * as api from 'navigader/api';
-import { Link, List, Menu, TableFactory } from 'navigader/components';
+import { Dialog, Link, List, Menu, TableFactory } from 'navigader/components';
 import { routes, usePushRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { SystemProfile } from 'navigader/types';
 import { formatters } from 'navigader/util';
 
-import { DeleteDialog } from '../common/DeleteDialog';
 import { CreateSystemProfile } from './CreateSystemProfile';
 import { SystemProfileDetails } from './SystemProfileDetails';
 
@@ -104,7 +103,7 @@ export const SystemProfileList = () => {
       </Table>
 
       <CreateSystemProfile open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} />
-      <DeleteDialog
+      <Dialog.Delete
         onClose={() => setSystemProfileToDelete(undefined)}
         onClickDelete={deleteSystemProfile}
         title="Delete System Profile"

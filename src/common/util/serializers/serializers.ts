@@ -122,7 +122,13 @@ export function parseOriginFile(rawOriginFile: RawOriginFile): OriginFile {
       ? 0
       : percentOf(rawOriginFile.meter_count, rawOriginFile.metadata.expected_meter_count);
 
-  const unchangedFields = _.pick(rawOriginFile, 'metadata', 'object_type');
+  const unchangedFields = _.pick(
+    rawOriginFile,
+    'has_gas',
+    'metadata',
+    'object_type',
+    'total_therms'
+  );
 
   return {
     ...parseAbstractMeterGroup(rawOriginFile),
@@ -135,8 +141,7 @@ export function parseOriginFile(rawOriginFile: RawOriginFile): OriginFile {
 }
 
 export function serializeOriginFile(originFile: OriginFile): RawOriginFile {
-  const unchangedFields = _.pick(originFile, 'metadata', 'object_type');
-
+  const unchangedFields = _.pick(originFile, 'has_gas', 'metadata', 'object_type', 'total_therms');
   return {
     // Serialize the fields inherited from `MeterGroup`
     ...serializeMeterGroup(originFile),

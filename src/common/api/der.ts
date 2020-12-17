@@ -12,8 +12,17 @@ import {
   RawPaginationSet,
   SolarConfiguration,
   SolarStrategy,
+  FuelSwitchingStrategy,
+  IdType,
 } from 'navigader/types';
-import { appendId, beoRoute, getRequest, parsePaginationSet, postRequest } from './util';
+import {
+  appendId,
+  beoRoute,
+  deleteRequest,
+  getRequest,
+  parsePaginationSet,
+  postRequest,
+} from './util';
 
 /** ============================ Types ===================================== */
 export type DERQueryParams = PaginationQueryParams &
@@ -47,11 +56,15 @@ type CreateBatteryStrategyParams = CreateDERCommonParams<BatteryStrategy> & {
 type CreateSolarStrategyParams = CreateDERCommonParams<SolarStrategy> & {
   serviceable_load_ratio: number;
 };
+type CreateFuelSwitchingStrategyParams = CreateDERCommonParams<FuelSwitchingStrategy> & {
+  file: File;
+};
 type CreateEVSEStrategyParams = CreateDERCommonParams<EVSEStrategy>;
 export type CreateDERStrategyParams =
   | CreateBatteryStrategyParams
   | CreateEVSEStrategyParams
-  | CreateSolarStrategyParams;
+  | CreateSolarStrategyParams
+  | CreateFuelSwitchingStrategyParams;
 
 /** ============================ API Methods =============================== */
 export async function createDERConfiguration(params: CreateDERConfigurationParams) {
@@ -60,6 +73,14 @@ export async function createDERConfiguration(params: CreateDERConfigurationParam
 
 export async function createDERStrategy(params: CreateDERStrategyParams) {
   return await postRequest(routes.strategy(), params);
+}
+
+export async function deleteDERConfiguration(objectId: IdType) {
+  return await deleteRequest(routes.configuration(objectId));
+}
+
+export async function deleteDERStrategy(objectId: IdType) {
+  return await deleteRequest(routes.strategy(objectId));
 }
 
 export async function getDerConfigurations<T extends DERConfiguration>(

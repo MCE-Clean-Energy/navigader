@@ -244,7 +244,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                   <StandardDate date={scenario.created_at} />
                 </Table.Cell>
                 <Table.Cell>
-                  <MeterGroupChip link meterGroup={scenario.meter_group!} showCount />
+                  <MeterGroupChip link meterGroup={scenario.meter_group} />
                 </Table.Cell>
                 <Table.Cell>
                   {scenario.der && (

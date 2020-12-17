@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import { QueryParams } from 'navigader/types';
 import { appendQueryString, getRequestHeaders } from 'navigader/util';
 
@@ -66,7 +68,11 @@ export function getRequest(route: string, queryParams?: QueryParams) {
 }
 
 export function postRequest(route: string, body: object = {}) {
-  return makeJsonRequest('POST', route, JSON.stringify(body));
+  if (containsFile(body)) {
+    return makeFormPost(route, body);
+  } else {
+    return makeJsonRequest('POST', route, JSON.stringify(body));
+  }
 }
 
 export function patchRequest(route: string, body: object) {
@@ -86,4 +92,14 @@ function objToFormData(formFields: object) {
     formData.append(fieldName, value);
   });
   return formData;
+}
+
+/**
+ * Returns `true` if any value of the `params` object is a `File` instance. This is for use with
+ * POST requests.
+ *
+ * @param {object} params: the body of the POST request
+ */
+function containsFile(params: Record<string, any>) {
+  return _.some(params, (field) => field instanceof File);
 }

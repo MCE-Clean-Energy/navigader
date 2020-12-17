@@ -18,14 +18,12 @@ import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { OriginFile, PaginationQueryParams, PaginationSet } from 'navigader/types';
 import { formatters, models } from 'navigader/util';
+
 import { DeleteDialog } from './DeleteDialog';
 
 /** ============================ Styles ==================================== */
 const useStyles = makeStylesHook(
   (theme) => ({
-    pageContent: {
-      marginTop: theme.spacing(1),
-    },
     uploadButton: {
       marginRight: theme.spacing(2),
     },
@@ -72,97 +70,96 @@ export const UploadedFiles = () => {
         }
         title="Uploaded Files"
       />
-      <div className={classes.pageContent}>
-        <Table
-          aria-label="meter table"
-          dataFn={getOriginFiles}
-          dataSelector={slices.models.selectOriginFiles}
-          initialSorting={{
-            dir: 'desc',
-            key: 'created_at',
-          }}
-          raised
-          stickyHeader
-          title="Uploads"
-        >
-          {(originFiles, EmptyRow) => (
-            <>
-              <Table.Head>
-                <Table.Row>
-                  <Table.Cell sortBy="name">Name</Table.Cell>
-                  <Table.Cell sortBy="created_at" sortDir="desc">
-                    Uploaded
-                  </Table.Cell>
-                  <Table.Cell>Status</Table.Cell>
-                  <Table.Cell align="right">Meter Count</Table.Cell>
-                  <Table.Cell align="right" sortBy="max_monthly_demand" sortDir="desc">
-                    Maximum Monthly Demand (kW)
-                  </Table.Cell>
-                  <Table.Cell align="right" sortBy="total_kwh" sortDir="desc">
-                    Total kWh
-                  </Table.Cell>
-                  <Table.Cell align="right">Menu</Table.Cell>
-                </Table.Row>
-              </Table.Head>
-              <Table.Body>
-                {/** Only renders if there's no data */}
-                <EmptyRow colSpan={10}>
-                  <span>No customer data has been uploaded.</span>
-                  &nbsp;
-                  <Link to={routes.upload}>Visit the upload page?</Link>
-                </EmptyRow>
 
-                {originFiles.map((originFile) => (
-                  <Table.Row key={originFile.id}>
-                    <Table.Cell>
-                      {models.meterGroup.isSufficientlyIngested(originFile) ? (
-                        <Link to={routes.load.meterGroup(originFile.id)}>{originFile.name}</Link>
-                      ) : (
-                        originFile.name
-                      )}
-                    </Table.Cell>
-                    <Table.Cell>
-                      <StandardDate date={originFile.created_at} />
-                    </Table.Cell>
-                    <Table.Cell>
-                      <StatusIndicator meterGroup={originFile} />
-                    </Table.Cell>
-                    <Table.Cell align="right">{originFile.meter_count}</Table.Cell>
-                    <Table.Cell align="right">
-                      {formatters.commas(formatters.maxDecimals(originFile.max_monthly_demand, 2))}
-                    </Table.Cell>
-                    <Table.Cell align="right">
-                      {formatters.commas(formatters.maxDecimals(originFile.total_kwh, 2))}
-                    </Table.Cell>
-                    <Table.Cell align="right">
-                      <Menu
-                        anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
-                        icon="verticalDots"
-                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      <Table
+        aria-label="meter table"
+        dataFn={getOriginFiles}
+        dataSelector={slices.models.selectOriginFiles}
+        initialSorting={{
+          dir: 'desc',
+          key: 'created_at',
+        }}
+        raised
+        stickyHeader
+        title="Uploads"
+      >
+        {(originFiles, EmptyRow) => (
+          <>
+            <Table.Head>
+              <Table.Row>
+                <Table.Cell sortBy="name">Name</Table.Cell>
+                <Table.Cell sortBy="created_at" sortDir="desc">
+                  Uploaded
+                </Table.Cell>
+                <Table.Cell>Status</Table.Cell>
+                <Table.Cell align="right">Meter Count</Table.Cell>
+                <Table.Cell align="right" sortBy="max_monthly_demand" sortDir="desc">
+                  Maximum Monthly Demand (kW)
+                </Table.Cell>
+                <Table.Cell align="right" sortBy="total_kwh" sortDir="desc">
+                  Total kWh
+                </Table.Cell>
+                <Table.Cell align="right">Menu</Table.Cell>
+              </Table.Row>
+            </Table.Head>
+            <Table.Body>
+              {/** Only renders if there's no data */}
+              <EmptyRow colSpan={10}>
+                <span>No customer data has been uploaded.</span>
+                &nbsp;
+                <Link to={routes.upload}>Visit the upload page?</Link>
+              </EmptyRow>
+
+              {originFiles.map((originFile) => (
+                <Table.Row key={originFile.id}>
+                  <Table.Cell>
+                    {models.meterGroup.isSufficientlyIngested(originFile) ? (
+                      <Link to={routes.load.meterGroup(originFile.id)}>{originFile.name}</Link>
+                    ) : (
+                      originFile.name
+                    )}
+                  </Table.Cell>
+                  <Table.Cell>
+                    <StandardDate date={originFile.created_at} />
+                  </Table.Cell>
+                  <Table.Cell>
+                    <StatusIndicator meterGroup={originFile} />
+                  </Table.Cell>
+                  <Table.Cell align="right">{originFile.meter_count}</Table.Cell>
+                  <Table.Cell align="right">
+                    {formatters.commas(formatters.maxDecimals(originFile.max_monthly_demand, 2))}
+                  </Table.Cell>
+                  <Table.Cell align="right">
+                    {formatters.commas(formatters.maxDecimals(originFile.total_kwh, 2))}
+                  </Table.Cell>
+                  <Table.Cell align="right">
+                    <Menu
+                      anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
+                      icon="verticalDots"
+                      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    >
+                      <List.Item
+                        disabled={!models.meterGroup.isSufficientlyIngested(originFile)}
+                        onClick={routeTo.originFile(originFile)}
                       >
-                        <List.Item
-                          disabled={!models.meterGroup.isSufficientlyIngested(originFile)}
-                          onClick={routeTo.originFile(originFile)}
-                        >
-                          <List.Item.Icon icon="launch" />
-                          <List.Item.Text>View</List.Item.Text>
-                        </List.Item>
+                        <List.Item.Icon icon="launch" />
+                        <List.Item.Text>View</List.Item.Text>
+                      </List.Item>
 
-                        <Divider />
+                      <Divider />
 
-                        <List.Item onClick={() => openDeleteDialog(originFile)}>
-                          <List.Item.Icon icon="trash" />
-                          <List.Item.Text>Delete</List.Item.Text>
-                        </List.Item>
-                      </Menu>
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </>
-          )}
-        </Table>
-      </div>
+                      <List.Item onClick={() => openDeleteDialog(originFile)}>
+                        <List.Item.Icon icon="trash" />
+                        <List.Item.Text>Delete</List.Item.Text>
+                      </List.Item>
+                    </Menu>
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </>
+        )}
+      </Table>
 
       {deleteOriginFile && (
         <DeleteDialog

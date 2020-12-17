@@ -8,6 +8,7 @@ type MeterAggregateMetrics = {
 };
 
 type MeterCommon = MeterAggregateMetrics & {
+  has_gas: boolean;
   id: string;
   metadata: {
     sa_id: number;
@@ -16,6 +17,7 @@ type MeterCommon = MeterAggregateMetrics & {
   };
   meter_groups: AbstractMeterGroup['id'][];
   object_type: 'CustomerMeter' | 'ReferenceMeter';
+  total_therms: number;
 };
 
 export type RawMeter = MeterCommon & RawDataObject<'kw'>;
@@ -36,10 +38,12 @@ export type AbstractMeterGroup = Omit<AbstractRawMeterGroup, 'data' | 'date_rang
 
 /** ============================ Origin File Types ========================= */
 type OriginFileFields = NavigaderObject<'OriginFile'> & {
+  has_gas: boolean;
   metadata: {
     expected_meter_count: Nullable<number>;
     filename: string;
   };
+  total_therms?: number;
 };
 
 export type RawOriginFile = AbstractRawMeterGroup & OriginFileFields;

@@ -4,13 +4,12 @@ import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
 import { routes, usePushRouter } from 'navigader/routes';
-import { Grid, Link, Menu, List, TableFactory } from 'navigader/components';
+import { Dialog, Grid, Link, Menu, List, TableFactory } from 'navigader/components';
 import { CAISORate } from 'navigader/types';
 import { slices } from 'navigader/store';
 import { formatters } from 'navigader/util';
 import { CAISORateDetails } from './CAISORateDetails';
 import { CreateCAISORate } from './CreateCAISORate';
-import { DeleteDialog } from '../common/DeleteDialog';
 
 /** ============================ Components ================================ */
 const Table = TableFactory<CAISORate>();
@@ -105,7 +104,7 @@ export const CAISORateList = () => {
         </Grid.Item>
       </Grid>
       <CreateCAISORate open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} />
-      <DeleteDialog
+      <Dialog.Delete
         onClose={() => setCaisoRateToDelete(undefined)}
         onClickDelete={deleteCAISORate}
         title="Delete Procurement Rate"

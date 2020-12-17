@@ -1,43 +1,129 @@
 import * as React from 'react';
 
 import { usePushRouter } from 'navigader/routes';
-import { isOriginFile, isScenario, MeterGroup } from 'navigader/types';
+import { makeStylesHook } from 'navigader/styles';
+import { isOriginFile, isScenario, Maybe, MeterGroup, OriginFile, Scenario } from 'navigader/types';
 import { formatters, models, printWarning } from 'navigader/util';
 
+import { Alert } from '../Alert';
 import { Chip, ChipProps } from '../Chip';
-import { ScenarioChip } from '../scenarios';
-import { Tooltip } from '../Tooltip';
+import { getDERIconName } from '../ders';
+import { Grid } from '../Grid';
+import { ValidIcon } from '../Icon';
+import { Popover } from '../Popover';
+import { Typography } from '../Typography';
+import { SummaryTable } from './SummaryTable';
 
 /** ============================ Types ===================================== */
 type MeterGroupChipProps = Omit<ChipProps, 'label'> & {
   link?: boolean;
   meterGroup?: MeterGroup;
-  showCount?: boolean;
-  tooltipText?: React.ReactNode;
+  info?: React.ReactNode;
 };
 
+type DetailsBoxProps = { info?: React.ReactNode; meterGroup: MeterGroup };
+type ScenarioDetailsProps = { info: React.ReactNode; scenario: Scenario };
+type OriginFileDetailsProps = { info: React.ReactNode; originFile: OriginFile };
+type DERSectionProps = { field: string; value: string };
+
+/** ============================ Styles ==================================== */
+const useStyles = makeStylesHook(
+  () => ({
+    hover: {
+      maxWidth: 500,
+      padding: 0,
+    },
+  }),
+  'MeterGroupChip'
+);
+
+const useDetailsBoxStyles = makeStylesHook(
+  (theme) => ({
+    meterGroup: {
+      borderBottom: `1px solid ${theme.palette.divider}`,
+      padding: theme.spacing(1, 2),
+    },
+  }),
+  'DetailsBox'
+);
+
+const useDERSectionStyles = makeStylesHook(
+  (theme) => ({
+    gridRow: {
+      padding: `${theme.spacing(1, 2)} !important`,
+    },
+  }),
+  'DERSection'
+);
+
 /** ============================ Components ================================ */
+const DERSection: React.FC<DERSectionProps> = ({ field, value }) => {
+  const classes = useDERSectionStyles();
+  return (
+    <>
+      <Grid.Item className={classes.gridRow} span={3}>
+        <Typography emphasis="bold" useDiv variant="body2">
+          {field}
+        </Typography>
+      </Grid.Item>
+
+      <Grid.Item className={classes.gridRow} span={9}>
+        <Typography useDiv variant="body2">
+          {value}
+        </Typography>
+      </Grid.Item>
+    </>
+  );
+};
+
+const ScenarioDetails: React.FC<ScenarioDetailsProps> = ({ info, scenario }) => {
+  const { der, meter_count, meter_group } = scenario;
+  const classes = useDetailsBoxStyles();
+
+  return (
+    <>
+      <div className={classes.meterGroup}>
+        <Typography emphasis="bold" variant="body2">
+          {meter_group?.name} ({meter_count} {formatters.pluralize('meter', meter_count)})
+        </Typography>
+      </div>
+
+      {der && (
+        <Grid noMargin>
+          <DERSection field="DER Type" value={der.der_strategy.der_type} />
+          <DERSection field="Configuration" value={der.der_configuration.name} />
+          <DERSection field="Strategy" value={der.der_strategy.name} />
+        </Grid>
+      )}
+
+      {info && <Alert type="info">{info}</Alert>}
+    </>
+  );
+};
+
+const OriginFileDetails: React.FC<OriginFileDetailsProps> = ({ info, originFile }) => (
+  <>
+    <SummaryTable originFile={originFile} />
+    {info && <Alert type="info">{info}</Alert>}
+  </>
+);
+
+const DetailsBox: React.FC<DetailsBoxProps> = ({ info, meterGroup }) => {
+  if (isScenario(meterGroup)) {
+    return <ScenarioDetails info={info} scenario={meterGroup} />;
+  } else if (isOriginFile(meterGroup)) {
+    return <OriginFileDetails info={info} originFile={meterGroup} />;
+  } else {
+    return null;
+  }
+};
+
 export const MeterGroupChip: React.FC<MeterGroupChipProps> = (props) => {
+  const { color = 'secondary', disabled, icon, link = false, meterGroup, info, ...rest } = props;
   const routeTo = usePushRouter();
-  const {
-    color = 'secondary',
-    disabled,
-    icon,
-    link = false,
-    meterGroup,
-    showCount = false,
-    tooltipText,
-    ...rest
-  } = props;
+  const classes = useStyles();
 
   // Validate props
-  if (tooltipText && showCount) {
-    printWarning(`
-      \`MeterGroupChip\` component received both \`showCount\` and \`tooltipText\` props. At most
-      one should be provided.
-    `);
-  }
-
   if (link && props.onClick) {
     printWarning(`
       \`MeterGroupChip\` component received both \`link\` and \`onClick\` props. At most one should
@@ -48,35 +134,23 @@ export const MeterGroupChip: React.FC<MeterGroupChipProps> = (props) => {
   const onClick = props.onClick || getLinkCb();
 
   if (!meterGroup) return null;
-  if (isScenario(meterGroup)) {
-    return (
-      <ScenarioChip
-        color={color}
-        disabled={disabled}
-        icon={icon}
-        onClick={onClick}
-        scenario={meterGroup}
-        tooltipText={tooltipText}
-      />
-    );
-  }
-
-  const numMeterText = showCount
-    ? `${meterGroup.meter_count} ${formatters.pluralize('meter', meterGroup.meter_count)}`
-    : undefined;
-
   return (
-    <Tooltip title={tooltipText || numMeterText}>
+    <Popover
+      anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+      transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      className={classes.hover}
+      HoverComponent={<DetailsBox info={info} meterGroup={meterGroup} />}
+    >
       <Chip
         color={disabled ? 'default' : color}
         data-testid="meter-group-chip"
         disabled={disabled}
-        icon={icon}
+        icon={getIcon()}
         label={models.meterGroup.getDisplayName(meterGroup)}
         onClick={onClick}
         {...rest}
       />
-    </Tooltip>
+    </Popover>
   );
 
   /** ============================ Helpers ================================= */
@@ -96,6 +170,17 @@ export const MeterGroupChip: React.FC<MeterGroupChipProps> = (props) => {
 
     if (isScenario(meterGroup)) {
       return meterGroup.progress.is_complete ? routeTo.scenario.details(meterGroup) : undefined;
+    }
+  }
+
+  function getIcon(): Maybe<ValidIcon> {
+    if (icon) {
+      return icon;
+    } else if (isScenario(meterGroup) && meterGroup.der) {
+      const { der_type } = meterGroup.der.der_configuration;
+      return getDERIconName(der_type);
+    } else if (isOriginFile(meterGroup) && meterGroup.has_gas) {
+      return 'flame';
     }
   }
 };

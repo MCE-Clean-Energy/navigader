@@ -4,12 +4,12 @@ import * as api from 'navigader/api';
 import { TableFactory } from 'navigader/components';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
-import { Meter, MeterGroup } from 'navigader/types';
+import { Meter, OriginFile } from 'navigader/types';
 import { formatters } from 'navigader/util';
 
 /** ============================ Types ===================================== */
 type MetersTableProps = {
-  meterGroupId: MeterGroup['id'];
+  originFile: OriginFile;
 };
 
 /** ============================ Styles ==================================== */
@@ -25,14 +25,14 @@ const useStyles = makeStylesHook(
 /** ============================ Components ================================ */
 const Table = TableFactory<Meter>();
 
-const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
+const MetersTable: React.FC<MetersTableProps> = ({ originFile }) => {
   const classes = useStyles();
 
   // TODO: virtualize the table
   return (
     <Table
       aria-label="meter table"
-      dataFn={(params) => api.getMeters({ meterGroupId, ...params })}
+      dataFn={(params) => api.getMeters({ meterGroupId: originFile.id, ...params })}
       dataSelector={slices.models.selectMeters}
       containerClassName={classes.tableContainer}
       raised
@@ -47,6 +47,7 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
               <Table.Cell>Rate Plan</Table.Cell>
               <Table.Cell align="right">Maximum Monthly Demand (kW)</Table.Cell>
               <Table.Cell align="right">Total kWh</Table.Cell>
+              {originFile.has_gas && <Table.Cell align="right">Total Therms</Table.Cell>}
             </Table.Row>
           </Table.Head>
           <Table.Body>
@@ -60,6 +61,11 @@ const MetersTable: React.FC<MetersTableProps> = ({ meterGroupId }) => {
                 <Table.Cell align="right">
                   {formatters.commas(formatters.maxDecimals(meter.total_kwh, 2))}
                 </Table.Cell>
+                {originFile.has_gas && (
+                  <Table.Cell align="right">
+                    {formatters.commas(formatters.maxDecimals(meter.total_therms, 2)) ?? '-'}
+                  </Table.Cell>
+                )}
               </Table.Row>
             ))}
           </Table.Body>

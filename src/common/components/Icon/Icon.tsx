@@ -21,9 +21,15 @@ import UploadIcon from '@material-ui/icons/CloudUpload';
 import WbSunny from '@material-ui/icons/WbSunny';
 
 import { MaterialColor, materialColors } from 'navigader/styles';
+import FlameIcon from './FlameIcon';
+import FuelSwitchingIcon from './FuelSwitchingIcon';
+
+/** ============================ Constants ================================= */
+const DEFAULT_VIEW_BOX = '0 0 24 24';
 
 /** ============================ Types ===================================== */
 type IconColor = 'inherit' | 'primary' | 'secondary' | 'action' | 'disabled' | 'error';
+type SvgIconWithViewBox = typeof SvgIcon & { viewBox?: string };
 
 export type ValidIcon =
   | 'account'
@@ -36,6 +42,8 @@ export type ValidIcon =
   | 'download'
   | 'ev_station'
   | 'feedback'
+  | 'flame'
+  | 'fuel_switching'
   | 'info'
   | 'launch'
   | 'menu'
@@ -63,6 +71,7 @@ export const Icon: React.ComponentType<IconProps> = React.forwardRef<SVGSVGEleme
     const sizeProps = {
       fontSize: typeof size === 'string' ? size : undefined,
       style: typeof size === 'number' ? { fontSize: size } : undefined,
+      viewBox: IconComponent.viewBox || DEFAULT_VIEW_BOX,
     };
 
     return <IconComponent ref={ref} {...colorProps} {...sizeProps} {...rest} />;
@@ -73,7 +82,7 @@ export const Icon: React.ComponentType<IconProps> = React.forwardRef<SVGSVGEleme
 /**
  * Maps a valid icon name to the corresponding icon component
  */
-const iconMap: Record<ValidIcon, typeof SvgIcon> = {
+const iconMap: Record<ValidIcon, SvgIconWithViewBox> = {
   account: AccountIcon,
   back: ArrowBack,
   battery: BatteryChargingFull,
@@ -84,6 +93,8 @@ const iconMap: Record<ValidIcon, typeof SvgIcon> = {
   download: SystemUpdateAltIcon,
   ev_station: EvStation,
   feedback: FeedbackIcon,
+  flame: FlameIcon,
+  fuel_switching: FuelSwitchingIcon,
   info: InfoIcon,
   launch: LaunchIcon,
   menu: MenuIcon,

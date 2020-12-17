@@ -13,7 +13,6 @@ import {
   DialogState,
   NameField,
   NonFieldError,
-  PercentageField,
   RangeField,
   TextField,
 } from '../common';

@@ -53,6 +53,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jest-environment-jsdom-sixteen",
+    "test-circle-ci": "react-scripts test --env=jest-environment-jsdom-sixteen --maxWorkers=2",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

@@ -2,12 +2,12 @@ import _ from 'lodash';
 import * as React from 'react';
 
 import {
+  Alert,
   Card,
   Flex,
   Grid,
   MeterGroupChip,
   Progress,
-  ScenarioChip,
   Typography,
 } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
@@ -38,6 +38,11 @@ const useStyles = makeStylesHook(
       textAlign: 'right',
     },
   }),
+  'SelectMeterGroups'
+);
+
+const useSelectCustomerStyles = makeStylesHook(
+  (theme) => ({ alertWarning: { marginTop: theme.spacing(1) } }),
   'SelectCustomers'
 );
 
@@ -79,18 +84,15 @@ const SelectOriginFileChip: React.FC<SelectOriginFileChipProps> = (props) => {
   const { expected_meter_count } = originFile.metadata;
   const intervalTooLong = models.meterGroup.spansMoreThanAYear(originFile);
   const ingested = models.meterGroup.isSufficientlyIngested(originFile);
-  const icon = ingested ? (selected ? 'checkMark' : 'plus') : undefined;
 
   return (
     <MeterGroupChip
       className={classes.meterGroupChip}
       color={selected ? 'primary' : 'secondary'}
       disabled={!ingested || intervalTooLong}
-      icon={icon}
       meterGroup={originFile}
       onClick={onClick}
-      showCount={ingested}
-      tooltipText={getTooltipText()}
+      info={getTooltipText()}
     />
   );
 
@@ -167,13 +169,13 @@ const SelectScenarioChip: React.FC<SelectScenarioChipProps> = ({ scenario, onCli
   const { is_complete, percent_complete } = scenario.progress;
 
   return (
-    <ScenarioChip
+    <MeterGroupChip
       className={classes.meterGroupChip}
       color={selected ? 'primary' : 'secondary'}
       disabled={!is_complete}
       onClick={onClick}
-      scenario={scenario}
-      tooltipText={getTooltipText()}
+      meterGroup={scenario}
+      info={getTooltipText()}
     />
   );
 
@@ -244,15 +246,30 @@ const Scenarios: React.FC<CreateScenarioScreenProps> = (props) => {
 };
 
 export const SelectCustomers: React.FC<CreateScenarioScreenProps> = (props) => {
+  const classes = useSelectCustomerStyles();
   return (
-    <Grid>
-      <Grid.Item span={6}>
-        <MeterGroups {...props} />
-      </Grid.Item>
+    <Card raised>
+      <Grid>
+        <Grid.Item span={12}>
+          <Alert type="info">
+            Scenarios can be run on uploaded customer segments, or on top of other scenarios.
+            "Stacked" scenarios can be used to simulate programs of multiple DERs with the same
+            customer segment. You must choose at least one customer segment below, and up to as many
+            as you like. Each segment will be run in its own scenario.
+          </Alert>
+          <Alert className={classes.alertWarning} type="warning">
+            All customer segments <i>must</i> have the same calendar year or the scenarios will not
+            be able to run properly.
+          </Alert>
+        </Grid.Item>
 
-      <Grid.Item span={6}>
-        <Scenarios {...props} />
-      </Grid.Item>
-    </Grid>
+        <Grid.Item span={6}>
+          <MeterGroups {...props} />
+        </Grid.Item>
+        <Grid.Item span={6}>
+          <Scenarios {...props} />
+        </Grid.Item>
+      </Grid>
+    </Card>
   );
 };

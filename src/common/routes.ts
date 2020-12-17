@@ -38,6 +38,7 @@ const ders = {
   batteries: `${dersBase}/batteries`,
   evse: `${dersBase}/evse`,
   solar: `${dersBase}/solar`,
+  fuel_switching: `${dersBase}/fuel_switching`,
 };
 
 /** ============================ Cost Functions ============================ */
@@ -120,6 +121,7 @@ function routerFactory(method: 'push' | 'replace') {
           batteries: () => routerFn(ders.batteries),
           evse: () => routerFn(ders.evse),
           solar: () => routerFn(ders.solar),
+          fuel_switching: () => routerFn(ders.fuel_switching),
         },
 
         login: () => routerFn(routes.login),

@@ -7,7 +7,6 @@ import {
   Grid,
   Link,
   MeterGroupChip,
-  ScenarioChip,
   TextField,
   Typography,
 } from 'navigader/components';
@@ -61,15 +60,14 @@ const SelectedCustomers: React.FC<CreateScenarioScreenProps> = (props) => {
                 icon="checkMark"
                 key={meterGroupId}
                 meterGroup={_.find(originFiles, { id: meterGroupId })}
-                showCount
               />
             ))}
 
             {state.scenarioSelections.map((scenarioId) => (
-              <ScenarioChip
+              <MeterGroupChip
                 color="primary"
                 key={scenarioId}
-                scenario={_.find(scenarios, { id: scenarioId })!}
+                meterGroup={_.find(scenarios, { id: scenarioId })!}
               />
             ))}
           </Flex.Container>

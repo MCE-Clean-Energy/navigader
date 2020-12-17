@@ -2,12 +2,11 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
-import { Link, List, Menu, StandardDate, TableFactory } from 'navigader/components';
+import { Dialog, Link, List, Menu, StandardDate, TableFactory } from 'navigader/components';
 import { routes, usePushRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { RatePlan } from 'navigader/types';
 
-import { DeleteDialog } from '../../common/DeleteDialog';
 import { CreateRatePlan } from './CreateRatePlan';
 
 /** ============================ Components ================================ */
@@ -79,7 +78,7 @@ export const RatePlanList: React.FC = () => {
       </Table>
 
       <CreateRatePlan open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} />
-      <DeleteDialog
+      <Dialog.Delete
         onClose={() => setRatePlanToDelete(undefined)}
         onClickDelete={deleteRatePlan}
         title="Delete Rate Plan"

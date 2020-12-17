@@ -139,10 +139,12 @@ function getSliceForModel(
     case 'BatteryConfiguration':
     case 'EVSEConfiguration':
     case 'SolarPVConfiguration':
+    case 'FuelSwitchingConfiguration':
       return state.derConfigurations;
     case 'BatteryStrategy':
     case 'EVSEStrategy':
     case 'SolarPVStrategy':
+    case 'FuelSwitchingStrategy':
       return state.derStrategies;
     case 'CAISORate':
       return state.caisoRates;
@@ -175,6 +177,8 @@ function prepareModel(model: ModelClassExterior): ModelClassInterior {
     case 'RatePlan':
     case 'SolarPVConfiguration':
     case 'SolarPVStrategy':
+    case 'FuelSwitchingConfiguration':
+    case 'FuelSwitchingStrategy':
       return model;
     case 'SystemProfile':
       return serializers.serializeSystemProfile(model);

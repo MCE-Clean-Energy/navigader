@@ -28,7 +28,7 @@ type MeterQueryParams = PaginationQueryParams &
   };
 
 export type MeterGroupsQueryParams = MeterGroupQueryParams & PaginationQueryParams;
-type MeterGroupQueryParams = DynamicRestParams<'meters'> &
+export type MeterGroupQueryParams = DynamicRestParams<'total_therms'> &
   DataTypeParams & { object_type?: MeterGroup['object_type'] };
 
 /** Responses */

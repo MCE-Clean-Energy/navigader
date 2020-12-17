@@ -3,22 +3,21 @@ import * as React from 'react';
 import * as api from 'navigader/api';
 import {
   Card,
-  Icon,
+  Dialog,
   Fade,
+  Flex,
+  Grid,
+  Icon,
   Link,
+  List,
+  Menu,
+  PrefetchedTable,
   Progress,
   Table,
-  PrefetchedTable,
   Typography,
-  Grid,
-  Flex,
-  Menu,
-  List,
 } from 'navigader/components';
 import { RateCollection, RateBucket, RatePlan } from 'navigader/types';
 import { formatters } from 'navigader/util';
-
-import { DeleteDialog } from '../../common/DeleteDialog';
 
 /** ============================ Types ===================================== */
 type RateCollectionViewsProps = {
@@ -178,7 +177,7 @@ export const RateCollectionView: React.FC<RateCollectionViewsProps> = ({
         )}
       </Card>
 
-      <DeleteDialog
+      <Dialog.Delete
         onClose={() => setDeleteDialogOpen(false)}
         onClickDelete={() => onDelete(rateCollection.id)}
         title="Delete Rate Data"
