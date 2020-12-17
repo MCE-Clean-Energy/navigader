@@ -28,6 +28,7 @@ export const SystemProfileList = () => {
         aria-label="system profile table"
         dataFn={(params) => api.getSystemProfiles({ ...params, data_types: 'default' })}
         dataSelector={slices.models.selectSystemProfiles}
+        initialSorting={{ dir: 'desc', key: 'created_at' }}
         onFabClick={() => setCreateDialogOpen(true)}
         raised
         stickyHeader

@@ -23,6 +23,7 @@ export const RatePlanList: React.FC = () => {
         aria-label="rate plan table"
         dataFn={api.getRatePlans}
         dataSelector={slices.models.selectRatePlans}
+        initialSorting={{ dir: 'desc', key: 'created_at' }}
         onFabClick={() => setCreateDialogOpen(true)}
         raised
         stickyHeader

@@ -27,6 +27,7 @@ export const CAISORateList = () => {
             aria-label="Procurement rates table"
             dataFn={(params) => api.getCAISORates({ ...params, data_types: 'default' })}
             dataSelector={slices.models.selectCAISORates}
+            initialSorting={{ dir: 'desc', key: 'created_at' }}
             onFabClick={() => setCreateDialogOpen(true)}
             raised
             stickyHeader
