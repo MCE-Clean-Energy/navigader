@@ -12,9 +12,9 @@ import {
 } from 'navigader/components';
 import { routes } from 'navigader/routes';
 import { makeStylesHook } from 'navigader/styles';
-import { CreateScenarioScreenProps, DerCardReadOnly, validateDerSelections } from './common';
 import { CostFunction, CostFunctions, Maybe } from 'navigader/types';
-import { models } from 'navigader/util';
+
+import { CreateScenarioScreenProps, DerCardReadOnly, validateDerSelections } from './common';
 
 /** ============================ Types ===================================== */
 type CostFunctionSectionProps = CreateScenarioScreenProps & { functionClass: keyof CostFunctions };
@@ -132,7 +132,7 @@ const CostFunctionSection: React.FC<CostFunctionSectionProps> = (props) => {
 
       <Grid.Item span={7}>
         <Typography useDiv variant="body2">
-          {renderCostFunction(selection)}
+          {selection.name}
         </Typography>
       </Grid.Item>
     </>
@@ -149,17 +149,6 @@ const CostFunctionSection: React.FC<CostFunctionSectionProps> = (props) => {
         return 'Rate Plan';
       case 'systemProfile':
         return 'Resource Adequacy Cost';
-    }
-  }
-
-  function renderCostFunction(selection: CostFunction) {
-    switch (selection.object_type) {
-      case 'CAISORate':
-      case 'RatePlan':
-      case 'SystemProfile':
-        return selection.name;
-      case 'GHGRate':
-        return models.der.renderGHGRate(selection);
     }
   }
 };

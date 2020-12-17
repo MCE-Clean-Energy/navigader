@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Card, Grid, List, Radio, Typography } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
 import { CAISORate, GHGRate, Loader, Maybe, RatePlan, SystemProfile } from 'navigader/types';
-import { models } from 'navigader/util';
+
 import { CreateScenarioScreenProps, CreateScenarioState } from './common';
 
 /** ============================ Types ===================================== */
@@ -13,7 +13,6 @@ type CostFunctionCardProps<T extends CostFunction> = {
   onChange: (id: string) => void;
   title: string;
   value: Maybe<number>;
-  renderer?: (costFunction: T) => React.ReactNode;
 };
 
 /** ============================ Styles ==================================== */
@@ -32,7 +31,7 @@ const useStyles = makeStylesHook(
 
 /** ============================ Components ================================ */
 function CostFunctionCard<T extends CostFunction>(props: CostFunctionCardProps<T>) {
-  const { costFunctions, onChange, renderer = (cf) => cf.name, title, value } = props;
+  const { costFunctions, onChange, title, value } = props;
   const classes = useStyles();
   return (
     <Card padding={0} raised>
@@ -48,7 +47,7 @@ function CostFunctionCard<T extends CostFunction>(props: CostFunctionCardProps<T
           {costFunctions.map((costFunction) => (
             <List.Item button={false} key={costFunction.id}>
               <Radio
-                label={<Typography variant="body2">{renderer(costFunction)}</Typography>}
+                label={<Typography variant="body2">{costFunction.name}</Typography>}
                 value={costFunction.id.toString()}
               />
             </List.Item>
@@ -68,7 +67,6 @@ export const SelectCostFunctions: React.FC<CreateScenarioScreenProps> = (props) 
           title="GHG Rates"
           costFunctions={costFunctions.ghgRate}
           onChange={makeOnChangeCallback('ghgRate')}
-          renderer={models.der.renderGHGRate}
           value={state.costFunctionSelections.ghgRate}
         />
       </Grid.Item>

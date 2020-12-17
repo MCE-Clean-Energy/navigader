@@ -45,7 +45,7 @@ const defaultRawScenario: RawScenario = {
         description: '',
         id: 'b6e80862-1483-4648-9a0a-5b9830db6715',
         name:
-          'Minimize Clean Net Short 2030 - charge threshold: None kw, discharge threshold: 0 kw (level: 8)',
+          'Minimize Clean System Power 2030 - charge threshold: None kw, discharge threshold: 0 kw (level: 8)',
         object_type: 'BatteryStrategy',
         objective: 'reduce_ghg',
       },
@@ -96,7 +96,7 @@ const defaultScenario: Scenario = {
       description: '',
       id: 'b6e80862-1483-4648-9a0a-5b9830db6715',
       name:
-        'Minimize Clean Net Short 2030 - charge threshold: None kw, discharge threshold: 0 kw (level: 8)',
+        'Minimize Clean System Power 2030 - charge threshold: None kw, discharge threshold: 0 kw (level: 8)',
       object_type: 'BatteryStrategy',
       objective: 'reduce_ghg',
     },
