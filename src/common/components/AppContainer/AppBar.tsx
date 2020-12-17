@@ -4,7 +4,6 @@ import MuiToolbar from '@material-ui/core/Toolbar';
 import classNames from 'classnames';
 
 import navigaderImage from 'navigader/images/navigader.png';
-import { usePushRouter } from 'navigader/routes';
 import { makeStylesHook, white } from 'navigader/styles';
 import { Gradient } from '../branding';
 import { Button } from '../Button';
@@ -75,7 +74,6 @@ const useStyles = makeStylesHook(
 /** ============================ Components ================================ */
 export const AppBar: React.FC<AppBarProps> = ({ drawerOpen, openDrawer }) => {
   const classes = useStyles();
-  const routeTo = usePushRouter();
 
   return (
     <MuiAppBar
@@ -100,7 +98,6 @@ export const AppBar: React.FC<AppBarProps> = ({ drawerOpen, openDrawer }) => {
 
               <Flex.Item>
                 <Flex.Container alignItems="center" className={classes.rightSide}>
-                  <Button.Text onClick={routeTo.roadmap}>Roadmap</Button.Text>
                   <Feedback />
                   <AccountMenu />
                 </Flex.Container>

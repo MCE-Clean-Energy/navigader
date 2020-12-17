@@ -66,7 +66,6 @@ const cost = {
 const settings = '/settings';
 const login = '/login';
 const resetPassword = '/reset_password';
-const roadmap = '/roadmap';
 const upload = '/upload';
 const registration = {
   signup: '/registration/signup',
@@ -85,7 +84,6 @@ export const routes = {
   cost,
   registration,
   resetPassword,
-  roadmap,
   scenario,
   settings,
   upload,
@@ -161,7 +159,6 @@ function routerFactory(method: 'push' | 'replace') {
           signup: () => routerFn(routes.registration.signup),
           verify: () => routerFn(routes.registration.verify),
         },
-        roadmap: () => routerFn(routes.roadmap),
 
         scenario: {
           details: (scenario: Scenario) => () => routerFn(routes.scenario(scenario.id)),
