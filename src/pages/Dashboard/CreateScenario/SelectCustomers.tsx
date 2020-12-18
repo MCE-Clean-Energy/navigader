@@ -82,14 +82,14 @@ const SelectOriginFileChip: React.FC<SelectOriginFileChipProps> = (props) => {
   const classes = useCustomerChipStyles();
   const { meter_count } = originFile;
   const { expected_meter_count } = originFile.metadata;
-  const intervalTooLong = models.meterGroup.spansMoreThanAYear(originFile);
+  const spansMultipleYears = models.meterGroup.spansMultipleYears(originFile);
   const ingested = models.meterGroup.isSufficientlyIngested(originFile);
 
   return (
     <MeterGroupChip
       className={classes.meterGroupChip}
       color={selected ? 'primary' : 'secondary'}
-      disabled={!ingested || intervalTooLong}
+      disabled={!ingested || spansMultipleYears}
       meterGroup={originFile}
       onClick={onClick}
       info={getTooltipText()}
@@ -110,14 +110,13 @@ const SelectOriginFileChip: React.FC<SelectOriginFileChipProps> = (props) => {
         ${percentComplete} complete. You can run a scenario with this file once it has
         finished processing.
       `;
-    } else if (intervalTooLong) {
-      // The non-null assertions (!'s) here are acceptable because `intervalTooLong` can't be truthy
-      // if the date range couldn't be ascertained
-      const numDays = Math.floor(models.meterGroup.getDateRangeInterval(originFile, 'days')!);
+    } else if (spansMultipleYears) {
+      // The non-null assertions (!'s) here are acceptable because `spansMultipleYears` can't be
+      // truthy if the date range couldn't be ascertained
       const dateRange = formatters.date.range(originFile.date_range!, formatters.date.standard);
       return `
-        This file spans more than a year. Scenarios can only be run on files that span 366 days or
-        less. This file contains data from ${dateRange}, a period of ${numDays} days.
+        This file contains data from multiple calendar years. Scenarios can only be run on files
+        from the same year. This file contains data from ${dateRange}.
       `;
     }
   }

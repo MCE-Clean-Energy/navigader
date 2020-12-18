@@ -150,6 +150,13 @@ const DashboardTable: React.FC = () => {
 
             <Divider />
 
+            <List.Item onClick={() => api.downloadCustomerData([scenario.id])}>
+              <List.Item.Icon icon="download" />
+              <List.Item.Text>Download Results</List.Item.Text>
+            </List.Item>
+
+            <Divider />
+
             <List.Item onClick={() => openDeleteScenarioDialog(scenario)}>
               <List.Item.Icon icon="trash" />
               <List.Item.Text>Delete</List.Item.Text>

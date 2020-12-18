@@ -216,9 +216,10 @@ const FileFormatAlert: React.FC = () => {
       </Typography>
 
       <Typography paragraph variant="body2">
-        Additionally, customer data <strong>should not exceed 366 days</strong>. If the earliest
-        date in the <Typography.Code>DATE</Typography.Code> column and the latest date in the{' '}
-        <Typography.Code>DATE</Typography.Code> column are separated by more than 366 days, the file
+        Additionally, all customer data within the same upload file{' '}
+        <strong>must be confined to the same calendar year</strong>. If the earliest date in the{' '}
+        <Typography.Code>DATE</Typography.Code> column and the latest date in the{' '}
+        <Typography.Code>DATE</Typography.Code> column are in different calendar years, the file
         will not be available for running simulations.
       </Typography>
     </Alert>

@@ -36,23 +36,23 @@ describe('Meter utility methods', () => {
     });
   });
 
-  describe('`spansMoreThanAYear` method', () => {
+  describe('`spansMultipleYears` method', () => {
     it('returns `false` if no meter group is provided', () => {
-      expect(meterGroup.spansMoreThanAYear(undefined)).toBeFalsy();
+      expect(meterGroup.spansMultipleYears(undefined)).toBeFalsy();
     });
 
     it('returns `false` if the meter group does not have a date range', () => {
       expect(
-        meterGroup.spansMoreThanAYear(fixtures.makeOriginFile({ date_range: null }))
+        meterGroup.spansMultipleYears(fixtures.makeOriginFile({ date_range: null }))
       ).toBeFalsy();
     });
 
-    it('returns `false` if the meter group has a date range less than 366 days', () => {
+    it('returns `false` if the meter group data occurs in the same calendar year', () => {
       const startDate = DateTime.fromISO('2020-01-01T00:00:00');
 
       for (let i = 1; i <= 366; i++) {
         expect(
-          meterGroup.spansMoreThanAYear(
+          meterGroup.spansMultipleYears(
             fixtures.makeOriginFile({
               date_range: [
                 startDate.toJSDate(),
@@ -67,11 +67,25 @@ describe('Meter utility methods', () => {
     it('returns `true` if the meter group has a date range greater than 366 days', () => {
       const startDate = DateTime.fromISO('2020-01-01T00:00:00');
       expect(
-        meterGroup.spansMoreThanAYear(
+        meterGroup.spansMultipleYears(
           fixtures.makeOriginFile({
             date_range: [
               startDate.toJSDate(),
               startDate.plus(Duration.fromObject({ days: 367 })).toJSDate(),
+            ],
+          })
+        )
+      ).toBeTruthy();
+    });
+
+    it('returns `true` if the meter group is less than 366 days long but crosses years', () => {
+      const startDate = DateTime.fromISO('2020-12-25T00:00:00');
+      expect(
+        meterGroup.spansMultipleYears(
+          fixtures.makeOriginFile({
+            date_range: [
+              startDate.toJSDate(),
+              startDate.plus(Duration.fromObject({ days: 20 })).toJSDate(),
             ],
           })
         )

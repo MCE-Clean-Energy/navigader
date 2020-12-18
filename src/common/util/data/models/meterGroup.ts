@@ -10,7 +10,6 @@ import {
 } from 'navigader/types';
 
 /** ============================ Constants ================================= */
-const MAX_METER_GROUP_TIMESPAN_DAYS = 366;
 const MIN_INGESTION_PERCENTAGE = 95;
 
 /** ============================ Methods =================================== */
@@ -44,18 +43,16 @@ export function isSufficientlyIngested(originFile: Maybe<OriginFile>) {
 }
 
 /**
- * Determines if a meter group is too long to run a simulation with. The modeling currently
- * constrains a meter group to be not more than 366 days. If the meter group's date range is longer
- * than that, returns `true`. Otherwise, even if no meter group is provided or it has no date range,
+ * Determines if a meter group's dataframe spans multiple years, even if only partially. This is
+ * a constraint imposed by the modeling. If the meter group's date range crosses multiple years,
+ * returns `true`. Otherwise, even if no meter group is provided or it has no date range,
  * returns `false`.
  *
  * @param {AbstractMeterGroup} meterGroup: the meter group to check
  */
-export function spansMoreThanAYear(meterGroup: Maybe<AbstractMeterGroup>) {
-  const interval = getDateRangeInterval(meterGroup, 'days');
-
-  // Returns `true` if the interval could be determined and is too long
-  return interval !== null && interval > MAX_METER_GROUP_TIMESPAN_DAYS;
+export function spansMultipleYears(meterGroup: Maybe<AbstractMeterGroup>) {
+  const interval = getDateRangeInterval(meterGroup);
+  return interval !== null && !interval.hasSame('year');
 }
 
 /**
