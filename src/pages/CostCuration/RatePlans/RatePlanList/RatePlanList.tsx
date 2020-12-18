@@ -23,6 +23,7 @@ export const RatePlanList: React.FC = () => {
         aria-label="rate plan table"
         dataFn={api.getRatePlans}
         dataSelector={slices.models.selectRatePlans}
+        initialSorting={{ dir: 'desc', key: 'created_at' }}
         onFabClick={() => setCreateDialogOpen(true)}
         raised
         stickyHeader
@@ -32,8 +33,9 @@ export const RatePlanList: React.FC = () => {
           <>
             <Table.Head>
               <Table.Row>
-                <Table.Cell>Name</Table.Cell>
-                <Table.Cell>Sector</Table.Cell>
+                <Table.Cell sortBy="name">Name</Table.Cell>
+                <Table.Cell sortBy="created_at">Created</Table.Cell>
+                <Table.Cell sortBy="sector">Sector</Table.Cell>
                 <Table.Cell>Start Date</Table.Cell>
                 <Table.Cell align="right">Menu</Table.Cell>
               </Table.Row>
@@ -43,6 +45,9 @@ export const RatePlanList: React.FC = () => {
                 <Table.Row key={ratePlan.id}>
                   <Table.Cell>
                     <Link to={routes.cost.rates.ratePlan(ratePlan.id)}>{ratePlan.name}</Link>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <StandardDate date={ratePlan.created_at} />
                   </Table.Cell>
                   <Table.Cell>{ratePlan.sector}</Table.Cell>
                   <Table.Cell>
