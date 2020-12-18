@@ -117,10 +117,19 @@ const CostFunctionSection: React.FC<CostFunctionSectionProps> = (props) => {
   const selectionId = state.costFunctionSelections[functionClass];
   if (_.isUndefined(selectionId)) return null;
 
-  // If for whatever reason the cost function can't be found, render nothing
-  const allFunctionsOfClass = costFunctions[functionClass];
-  const selection = _.find(allFunctionsOfClass, ['id', selectionId]) as Maybe<CostFunction>;
-  if (!selection) return null;
+  // Get the cost function's name in an IIFE
+  const costFnName = (() => {
+    if (selectionId === 'auto') {
+      return 'Automatically assigned';
+    } else {
+      const allFunctionsOfClass = costFunctions[functionClass];
+      const selection = _.find(allFunctionsOfClass, ['id', selectionId]) as Maybe<CostFunction>;
+      return selection?.name;
+    }
+  })();
+
+  // If for whatever reason the cost function couldn't be found, render nothing
+  if (_.isUndefined(costFnName)) return null;
 
   return (
     <>
@@ -132,7 +141,7 @@ const CostFunctionSection: React.FC<CostFunctionSectionProps> = (props) => {
 
       <Grid.Item span={7}>
         <Typography useDiv variant="body2">
-          {selection.name}
+          {costFnName}
         </Typography>
       </Grid.Item>
     </>

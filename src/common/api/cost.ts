@@ -12,7 +12,6 @@ import {
   RawMeterGroup,
   RateCollection,
   RatePlan,
-  CostFunctions,
   SystemProfile,
   RawSystemProfile,
   GHGRate,
@@ -40,11 +39,12 @@ type DerSelection = {
   strategyId: string;
 };
 
-export type CostFunctionSelections = Partial<
-  {
-    [CF in keyof CostFunctions]: CostFunctions[CF]['id'];
-  }
->;
+export type CostFunctionSelections = Partial<{
+  ratePlan: RatePlan['id'] | 'auto';
+  ghgRate: GHGRate['id'];
+  caisoRate: CAISORate['id'];
+  systemProfile: SystemProfile['id'];
+}>;
 
 /** Query params */
 export type GetScenarioQueryParams = ScenarioDynamicRestParams & DataTypeParams;

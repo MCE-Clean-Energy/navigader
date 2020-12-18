@@ -9,10 +9,11 @@ import { CreateScenarioScreenProps, CreateScenarioState } from './common';
 /** ============================ Types ===================================== */
 type CostFunction = GHGRate | RatePlan | CAISORate | SystemProfile;
 type CostFunctionCardProps<T extends CostFunction> = {
+  allowAutoAssignment?: boolean;
   costFunctions: Loader<T[]>;
   onChange: (id: string) => void;
   title: string;
-  value: Maybe<number>;
+  value: Maybe<number | 'auto'>;
 };
 
 /** ============================ Styles ==================================== */
@@ -31,7 +32,7 @@ const useStyles = makeStylesHook(
 
 /** ============================ Components ================================ */
 function CostFunctionCard<T extends CostFunction>(props: CostFunctionCardProps<T>) {
-  const { costFunctions, onChange, title, value } = props;
+  const { allowAutoAssignment, costFunctions, onChange, title, value } = props;
   const classes = useStyles();
   return (
     <Card padding={0} raised>
@@ -44,6 +45,14 @@ function CostFunctionCard<T extends CostFunction>(props: CostFunctionCardProps<T
         value={value?.toString() || ''}
       >
         <List dense>
+          {allowAutoAssignment && (
+            <List.Item button={false}>
+              <Radio
+                label={<Typography variant="body2">Assign automatically</Typography>}
+                value="auto"
+              />
+            </List.Item>
+          )}
           {costFunctions.map((costFunction) => (
             <List.Item button={false} key={costFunction.id}>
               <Radio
@@ -83,6 +92,7 @@ export const SelectCostFunctions: React.FC<CreateScenarioScreenProps> = (props) 
       <Grid.Item span={3}>
         <CostFunctionCard
           title="Rate Plans"
+          allowAutoAssignment
           costFunctions={costFunctions.ratePlan}
           onChange={makeOnChangeCallback('ratePlan')}
           value={state.costFunctionSelections.ratePlan}
@@ -105,7 +115,7 @@ export const SelectCostFunctions: React.FC<CreateScenarioScreenProps> = (props) 
       updateState({
         costFunctionSelections: {
           ...state.costFunctionSelections,
-          [key]: +value,
+          [key]: value === 'auto' ? value : +value,
         },
       });
     };

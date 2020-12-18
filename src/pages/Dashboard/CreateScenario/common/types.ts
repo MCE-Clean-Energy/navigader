@@ -1,3 +1,4 @@
+import * as api from 'navigader/api';
 import {
   CostFunctions,
   DERConfiguration,
@@ -15,14 +16,8 @@ export type DERSelection = {
   type: DERType;
 };
 
-export type CostFunctionSelections = Partial<
-  {
-    [CF in keyof CostFunctions]: CostFunctions[CF]['id'];
-  }
->;
-
 export type CreateScenarioState = {
-  costFunctionSelections: CostFunctionSelections;
+  costFunctionSelections: api.CostFunctionSelections;
   derSelections: Partial<DERSelection>[];
   originFileSelections: OriginFile['id'][];
   name: Nullable<string>;
