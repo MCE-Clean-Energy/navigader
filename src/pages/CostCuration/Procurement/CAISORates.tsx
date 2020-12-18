@@ -140,6 +140,9 @@ export const CAISORateList = () => {
             type: 'error',
           })
         );
+      } else {
+        const errorMsg = await response.json();
+        dispatch(slices.ui.setMessage({ msg: errorMsg, type: 'error' }));
       }
     }
   }

@@ -122,6 +122,9 @@ export const RatePlanList: React.FC = () => {
             type: 'error',
           })
         );
+      } else {
+        const errorMsg = await response.json();
+        dispatch(slices.ui.setMessage({ msg: errorMsg, type: 'error' }));
       }
     }
   }
