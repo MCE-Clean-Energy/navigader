@@ -47,8 +47,9 @@ export const DeleteDialog: React.FC<DeleteDialogProps> = (props) => {
       dispatch(slices.ui.setMessage({ msg: 'Upload deleted.', type: 'success' }));
     } else {
       // Undo optimistic update
+      const errorMsg = await response.json();
       dispatch(slices.models.updateModel(originFile));
-      dispatch(slices.ui.setMessage({ msg: 'Delete failed! Please try again.', type: 'error' }));
+      dispatch(slices.ui.setMessage({ msg: errorMsg, type: 'error' }));
     }
   }
 };
