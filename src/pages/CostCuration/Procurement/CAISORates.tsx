@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
 import { routes, usePushRouter } from 'navigader/routes';
-import { Dialog, Grid, Link, Menu, List, TableFactory, StandardDate } from 'navigader/components';
+import { Dialog, Link, Menu, List, TableFactory, StandardDate, Button } from 'navigader/components';
 import { CAISORate } from 'navigader/types';
 import { slices } from 'navigader/store';
 import { formatters } from 'navigader/util';
@@ -21,93 +21,100 @@ export const CAISORateList = () => {
 
   return (
     <>
-      <Grid>
-        <Grid.Item span={12}>
-          <Table
-            aria-label="Procurement rates table"
-            dataFn={(params) => api.getCAISORates({ ...params, data_types: 'default' })}
-            dataSelector={slices.models.selectCAISORates}
-            initialSorting={{ dir: 'desc', key: 'created_at' }}
-            onFabClick={() => setCreateDialogOpen(true)}
-            raised
-            stickyHeader
-            title="Procurement Rates"
-          >
-            {(caisoRates) => (
-              <>
-                <Table.Head>
-                  <Table.Row>
-                    <Table.Cell sortBy="name">Name</Table.Cell>
-                    <Table.Cell sortBy="created_at">Created</Table.Cell>
-                    <Table.Cell>Min $/kWh</Table.Cell>
-                    <Table.Cell>Max $/kWh</Table.Cell>
-                    <Table.Cell>Average $/kWh</Table.Cell>
-                    <Table.Cell>Year</Table.Cell>
-                    <Table.Cell align="right">Menu</Table.Cell>
-                  </Table.Row>
-                </Table.Head>
-                <Table.Body>
-                  {caisoRates.map((caisoRate) => (
-                    <Table.Row key={caisoRate.id}>
-                      <Table.Cell>
-                        <Link to={routes.cost.procurement.caisoRate(caisoRate.id)}>
-                          {caisoRate.name}
-                        </Link>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <StandardDate date={caisoRate.created_at} />
-                      </Table.Cell>
-                      <Table.Cell>
-                        {formatters.commas(
-                          formatters.maxDecimals(caisoRate.data.default?.valueDomain[0], 2)
-                        )}
-                      </Table.Cell>
-                      <Table.Cell>
-                        {formatters.commas(
-                          formatters.maxDecimals(caisoRate.data.default?.valueDomain[1], 2)
-                        )}
-                      </Table.Cell>
-                      <Table.Cell>
-                        {caisoRate.data.default &&
-                          formatters.commas(
-                            formatters.maxDecimals(caisoRate.data.default.average, 2)
-                          )}
-                      </Table.Cell>
-                      <Table.Cell>{caisoRate.data.default?.years.join(', ')}</Table.Cell>
-                      <Table.Cell align="right">
-                        <Menu
-                          anchorOrigin={{
-                            vertical: 'center',
-                            horizontal: 'center',
-                          }}
-                          icon="verticalDots"
-                          transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                          }}
-                        >
-                          <List.Item onClick={routeTo.cost.procurement.caisoRate(caisoRate)}>
-                            <List.Item.Icon icon="launch" />
-                            <List.Item.Text>View</List.Item.Text>
-                          </List.Item>
-                          <List.Item
-                            onClick={() => {
-                              setCaisoRateToDelete(caisoRate);
-                            }}
-                          >
-                            <List.Item.Icon icon="trash" />
-                            <List.Item.Text>Delete</List.Item.Text>
-                          </List.Item>
-                        </Menu>
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
-                </Table.Body>
-              </>
-            )}
-          </Table>
-        </Grid.Item>
-      </Grid>
+      <Table
+        aria-label="Procurement rates table"
+        dataFn={(params) => api.getCAISORates({ ...params, data_types: 'default' })}
+        dataSelector={slices.models.selectCAISORates}
+        initialSorting={{ dir: 'desc', key: 'created_at' }}
+        onFabClick={() => setCreateDialogOpen(true)}
+        raised
+        title="Procurement Rates"
+      >
+        {(caisoRates, EmptyRow) => (
+          <>
+            <Table.Head>
+              <Table.Row>
+                <Table.Cell sortBy="name">Name</Table.Cell>
+                <Table.Cell sortBy="created_at">Created</Table.Cell>
+                <Table.Cell>Min $/kWh</Table.Cell>
+                <Table.Cell>Max $/kWh</Table.Cell>
+                <Table.Cell>Average $/kWh</Table.Cell>
+                <Table.Cell>Year</Table.Cell>
+                <Table.Cell align="right">Menu</Table.Cell>
+              </Table.Row>
+            </Table.Head>
+            <Table.Body>
+              {/** Only renders if there's no data */}
+              <EmptyRow>
+                None created.
+                <Button.Text
+                  color="primary"
+                  icon="plus"
+                  onClick={() => setCreateDialogOpen(true)}
+                  size="small"
+                >
+                  Upload procurement rate
+                </Button.Text>
+              </EmptyRow>
+
+              {caisoRates.map((caisoRate) => (
+                <Table.Row key={caisoRate.id}>
+                  <Table.Cell>
+                    <Link to={routes.cost.procurement.caisoRate(caisoRate.id)}>
+                      {caisoRate.name}
+                    </Link>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <StandardDate date={caisoRate.created_at} />
+                  </Table.Cell>
+                  <Table.Cell>
+                    {formatters.commas(
+                      formatters.maxDecimals(caisoRate.data.default?.valueDomain[0], 2)
+                    )}
+                  </Table.Cell>
+                  <Table.Cell>
+                    {formatters.commas(
+                      formatters.maxDecimals(caisoRate.data.default?.valueDomain[1], 2)
+                    )}
+                  </Table.Cell>
+                  <Table.Cell>
+                    {caisoRate.data.default &&
+                      formatters.commas(formatters.maxDecimals(caisoRate.data.default.average, 2))}
+                  </Table.Cell>
+                  <Table.Cell>{caisoRate.data.default?.years.join(', ')}</Table.Cell>
+                  <Table.Cell align="right">
+                    <Menu
+                      anchorOrigin={{
+                        vertical: 'center',
+                        horizontal: 'center',
+                      }}
+                      icon="verticalDots"
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                      }}
+                    >
+                      <List.Item onClick={routeTo.cost.procurement.caisoRate(caisoRate)}>
+                        <List.Item.Icon icon="launch" />
+                        <List.Item.Text>View</List.Item.Text>
+                      </List.Item>
+                      <List.Item
+                        onClick={() => {
+                          setCaisoRateToDelete(caisoRate);
+                        }}
+                      >
+                        <List.Item.Icon icon="trash" />
+                        <List.Item.Text>Delete</List.Item.Text>
+                      </List.Item>
+                    </Menu>
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </>
+        )}
+      </Table>
+
       <CreateCAISORate open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} />
       <Dialog.Delete
         onClose={() => setCaisoRateToDelete(undefined)}

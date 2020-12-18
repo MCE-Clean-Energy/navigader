@@ -19,9 +19,8 @@ export type JustifyContentValue =
 
 /** ============================ Table ===================================== */
 // Props
-export type EmptyRowProps = React.PropsWithChildren<{ colSpan: number }>;
 export type TableProps<T extends ObjectWithId> = {
-  children: (data: T[], emptyRow: React.FC<EmptyRowProps>) => React.ReactElement;
+  children: (data: T[], emptyRow: React.FC) => React.ReactElement;
   containerClassName?: string;
   dataFn: (params: PaginationQueryParams) => Promise<PaginationSet<T>>;
   disableSelect?: (datum: T) => boolean;
@@ -33,7 +32,6 @@ export type TableProps<T extends ObjectWithId> = {
   onSelect?: (selections: T[]) => void;
   raised?: boolean;
   size?: 'small' | 'medium';
-  stickyHeader?: boolean;
   title?: string;
 };
 

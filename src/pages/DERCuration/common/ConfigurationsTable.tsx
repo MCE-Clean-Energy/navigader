@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
-import { Button, Dialog, StandardDate, TableFactory } from 'navigader/components';
+import { Button, ContactSupport, Dialog, StandardDate, TableFactory } from 'navigader/components';
 import { slices } from 'navigader/store';
 import { DataSelector, DERConfiguration, TableProps } from 'navigader/types';
 import { hooks } from 'navigader/util';
@@ -53,7 +53,6 @@ export function ConfigurationsTable<T extends DERConfiguration>({
         onFabClick={canEdit ? () => setDialogOpen(true) : undefined}
         raised
         ref={tableRef}
-        stickyHeader
         title="Configurations"
       >
         {(configurations, EmptyRow) => (
@@ -68,9 +67,9 @@ export function ConfigurationsTable<T extends DERConfiguration>({
             </Table.Head>
             <Table.Body>
               {/** Only renders if there's no data */}
-              <EmptyRow colSpan={10}>
+              <EmptyRow>
                 None created.{' '}
-                {canEdit && (
+                {canEdit ? (
                   <Button.Text
                     color="primary"
                     icon="plus"
@@ -79,6 +78,10 @@ export function ConfigurationsTable<T extends DERConfiguration>({
                   >
                     Create configuration
                   </Button.Text>
+                ) : (
+                  <span>
+                    To create one, please <ContactSupport />.
+                  </span>
                 )}
               </EmptyRow>
 

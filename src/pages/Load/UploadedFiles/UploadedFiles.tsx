@@ -80,7 +80,6 @@ export const UploadedFiles = () => {
           key: 'created_at',
         }}
         raised
-        stickyHeader
         title="Uploads"
       >
         {(originFiles, EmptyRow) => (
@@ -104,7 +103,7 @@ export const UploadedFiles = () => {
             </Table.Head>
             <Table.Body>
               {/** Only renders if there's no data */}
-              <EmptyRow colSpan={10}>
+              <EmptyRow>
                 <span>No customer data has been uploaded.</span>
                 &nbsp;
                 <Link to={routes.upload}>Visit the upload page?</Link>

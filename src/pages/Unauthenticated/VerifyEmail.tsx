@@ -81,7 +81,7 @@ const VerifyEmail: React.FC<VerifyEmailProps> = ({ token }) => {
     case 'error':
       return (
         <Alert type="error">
-          Something went wrong verifying your account. Please <ContactSupport />
+          Something went wrong verifying your account. Please <ContactSupport />.
         </Alert>
       );
   }

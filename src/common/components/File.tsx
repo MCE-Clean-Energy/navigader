@@ -34,7 +34,7 @@ export const FileDownload: React.FC<FileDownloadProps> = ({ downloadFn }) => {
         return [
           'error',
           <Typography>
-            Download failed! Please try again or <ContactSupport />
+            Download failed! Please try again or <ContactSupport />.
           </Typography>,
         ];
       case 'success':

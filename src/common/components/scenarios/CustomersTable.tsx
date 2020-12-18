@@ -38,7 +38,6 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
         key: 'UsageDelta',
       }}
       raised
-      stickyHeader
       title="Customers"
     >
       {(simulations) => (

@@ -126,7 +126,6 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
       }}
       onSelect={onSelect}
       raised
-      stickyHeader
       title={title}
     >
       {(scenarios: Scenario[], EmptyRow: React.ElementType) => (

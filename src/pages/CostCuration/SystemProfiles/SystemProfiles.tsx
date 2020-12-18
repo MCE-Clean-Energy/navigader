@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
 
 import * as api from 'navigader/api';
-import { Dialog, Link, List, Menu, StandardDate, TableFactory } from 'navigader/components';
+import { Button, Dialog, Link, List, Menu, StandardDate, TableFactory } from 'navigader/components';
 import { routes, usePushRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { SystemProfile } from 'navigader/types';
@@ -31,10 +31,9 @@ export const SystemProfileList = () => {
         initialSorting={{ dir: 'desc', key: 'created_at' }}
         onFabClick={() => setCreateDialogOpen(true)}
         raised
-        stickyHeader
         title="System Profiles"
       >
-        {(systemProfiles) => (
+        {(systemProfiles, EmptyRow) => (
           <>
             <Table.Head>
               <Table.Row>
@@ -49,6 +48,19 @@ export const SystemProfileList = () => {
               </Table.Row>
             </Table.Head>
             <Table.Body>
+              {/** Only renders if there's no data */}
+              <EmptyRow>
+                None created.
+                <Button.Text
+                  color="primary"
+                  icon="plus"
+                  onClick={() => setCreateDialogOpen(true)}
+                  size="small"
+                >
+                  Upload system profile
+                </Button.Text>
+              </EmptyRow>
+
               {systemProfiles.map((systemProfile) => (
                 <Table.Row key={systemProfile.id}>
                   <Table.Cell>

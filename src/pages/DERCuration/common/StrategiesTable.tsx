@@ -54,7 +54,6 @@ export function StrategiesTable<T extends DERStrategy>(props: StrategiesTablePro
         onFabClick={() => setDialogOpen(true)}
         raised
         ref={tableRef}
-        stickyHeader
         title="Strategies"
       >
         {(strategies, EmptyRow) => (
@@ -70,7 +69,7 @@ export function StrategiesTable<T extends DERStrategy>(props: StrategiesTablePro
             </Table.Head>
             <Table.Body>
               {/** Only renders if there's no data */}
-              <EmptyRow colSpan={8}>
+              <EmptyRow>
                 None created.{' '}
                 <Button.Text
                   color="primary"

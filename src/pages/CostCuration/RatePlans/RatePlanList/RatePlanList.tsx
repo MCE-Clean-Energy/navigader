@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
 import * as api from 'navigader/api';
-import { Dialog, Link, List, Menu, StandardDate, TableFactory } from 'navigader/components';
+import { Button, Dialog, Link, List, Menu, StandardDate, TableFactory } from 'navigader/components';
 import { routes, usePushRouter } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { RatePlan } from 'navigader/types';
@@ -26,10 +26,9 @@ export const RatePlanList: React.FC = () => {
         initialSorting={{ dir: 'desc', key: 'created_at' }}
         onFabClick={() => setCreateDialogOpen(true)}
         raised
-        stickyHeader
         title="Rate Plans"
       >
-        {(ratePlans) => (
+        {(ratePlans, EmptyRow) => (
           <>
             <Table.Head>
               <Table.Row>
@@ -41,6 +40,19 @@ export const RatePlanList: React.FC = () => {
               </Table.Row>
             </Table.Head>
             <Table.Body>
+              {/** Only renders if there's no data */}
+              <EmptyRow>
+                None created.
+                <Button.Text
+                  color="primary"
+                  icon="plus"
+                  onClick={() => setCreateDialogOpen(true)}
+                  size="small"
+                >
+                  Create rate plan
+                </Button.Text>
+              </EmptyRow>
+
               {ratePlans.map((ratePlan) => (
                 <Table.Row key={ratePlan.id}>
                   <Table.Cell>

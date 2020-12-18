@@ -13,10 +13,8 @@ import MuiTableSortLabel from '@material-ui/core/TableSortLabel';
 import MuiToolbar from '@material-ui/core/Toolbar';
 import { createStyles, Theme, WithStyles, withStyles } from '@material-ui/core/styles';
 
-import { makeStylesHook, white } from 'navigader/styles';
 import {
   DataSelector,
-  EmptyRowProps,
   ObjectWithId,
   SortDir,
   SortFields,
@@ -105,22 +103,18 @@ const styles = (theme: Theme) =>
     },
   });
 
-const useTableCellStyles = makeStylesHook(
-  () => ({
-    stickyHeader: {
-      backgroundColor: white,
-    },
-  }),
-  'NavigaderTableCell'
-);
-
 /** ============================ Components ================================ */
 class TableWithData<T extends ObjectWithId> extends React.Component<
   ConnectedTableProps<T>,
   TableState
 > {
+  tableRef: React.RefObject<HTMLTableElement>;
+
   constructor(props: ConnectedTableProps<T>) {
     super(props);
+
+    // Make a ref to refer to the table DOM node
+    this.tableRef = React.createRef();
     const { initialSorting } = props;
     this.state = {
       loading: false,
@@ -249,11 +243,18 @@ class TableWithData<T extends ObjectWithId> extends React.Component<
     };
 
     // Component to render when there is no data
-    const EmptyRow: React.FC<EmptyRowProps> = (props) => {
+    const EmptyRow: React.FC = ({ children }) => {
       if (count !== 0) return null;
+
+      // Calculate the number of columns in the table
+      const cellProps = {
+        children,
+        colSpan: this.tableRef.current?.tHead?.getElementsByTagName('th').length,
+      };
+
       return (
         <TableRow>
-          <TableCell {...props} />
+          <TableCell {...cellProps} />
         </TableRow>
       );
     };
@@ -307,12 +308,8 @@ class TableWithData<T extends ObjectWithId> extends React.Component<
   }
 
   render() {
-    const { classes, containerClassName, raised = false, size, stickyHeader } = this.props;
-    const tableProps = {
-      className: classes.table,
-      size,
-      stickyHeader,
-    };
+    const { classes, containerClassName, raised = false, size } = this.props;
+    const tableProps = { className: classes.table, ref: this.tableRef, size };
 
     return (
       <MuiPaper className={classes.paper} elevation={raised ? 8 : 0}>
@@ -384,12 +381,12 @@ function TableRow<T extends ObjectWithId>(props: TableRowProps<T>) {
     _onChange,
     _selected,
   } = props;
-  const { DisabledSelectComponent, hover, selectable } = React.useContext(TableContext);
+  const { data, DisabledSelectComponent, hover, selectable } = React.useContext(TableContext);
 
   // If the row is selectable, add in a checkbox to the front of the row
   let checkboxCell = null;
   let colIndex = 0;
-  if (selectable) {
+  if (selectable && data.length > 0) {
     // The `onChange` callback depends on the cell's context
     checkboxCell = (
       <TableCell _columnIndex={colIndex++} _isHeaderRow={_isHeaderRow}>
@@ -425,8 +422,7 @@ function TableRow<T extends ObjectWithId>(props: TableRowProps<T>) {
 const TableCell: React.FC<TableCellProps> = (props) => {
   const { children, sortBy, sortDir, _columnIndex, _isHeaderRow, ...rest } = props;
   const { setSortState, sortState } = React.useContext(TableContext);
-  const classes = useTableCellStyles();
-  const tableCellProps = { classes, ...rest };
+  const tableCellProps = { ...rest };
 
   // For accessibility, a table's first column is set to be a <th> element, with a scope of "row",
   // and table header elements are given a scope of "col". This enables screen readers to identify a
