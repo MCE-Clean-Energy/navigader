@@ -34,6 +34,9 @@ const ToggleButton: React.ComponentType<ToggleButtonProps> = React.forwardRef<
   ToggleButtonProps
 >((props, ref) => <MuiToggleButton ref={ref} {...props} />);
 
+ToggleButtonGroup.displayName = 'NavigaderToggleButtonGroup';
+ToggleButton.displayName = 'NavigaderToggleButton';
+
 export const Toggle = {
   Button: ToggleButton,
   Group: ToggleButtonGroup,

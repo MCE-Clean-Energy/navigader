@@ -75,6 +75,9 @@ const ListItemAvatar = React.forwardRef<HTMLDivElement, ListItemAvatarProps>((pr
   );
 });
 
+ListItemIcon.displayName = 'NavigaderListItemIcon';
+ListItemAvatar.displayName = 'NavigaderListItemAvatar';
+
 const ListItemText: React.FC = ({ children }) => <MuiListItemText primary={children} />;
 
 const ListItem = Object.assign(
@@ -103,6 +106,7 @@ const ListItem = Object.assign(
     }
   }),
   {
+    displayName: 'NavigaderListItem',
     Avatar: ListItemAvatar,
     Icon: ListItemIcon,
     Text: ListItemText,
@@ -112,6 +116,7 @@ const ListItem = Object.assign(
 export const List = Object.assign(
   React.forwardRef<HTMLUListElement, ListProps>((props, ref) => <MuiList ref={ref} {...props} />),
   {
+    displayName: 'NavigaderList',
     Item: ListItem,
   }
 );

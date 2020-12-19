@@ -138,7 +138,7 @@ export const Typography = Object.assign(
       </MuiTypography>
     );
   }),
-  { Code, LineLimit }
+  { displayName: 'NavigaderTypography', Code, LineLimit }
 );
 
 /** ============================ Helpers =================================== */

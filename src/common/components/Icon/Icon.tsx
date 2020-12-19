@@ -62,7 +62,7 @@ export type IconProps = {
 
 /** ============================ Components ================================ */
 export const Icon: React.ComponentType<IconProps> = React.forwardRef<SVGSVGElement, IconProps>(
-  function Icon({ color, name, size, ...rest }, ref) {
+  function NavigaderIcon({ color, name, size, ...rest }, ref) {
     const IconComponent = iconMap[name];
     const colorProps = isMaterialColor(color)
       ? { htmlColor: materialColors[color][500] }

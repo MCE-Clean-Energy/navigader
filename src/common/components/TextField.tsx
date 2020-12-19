@@ -60,7 +60,7 @@ const useStyles = makeStylesHook(
 const Adornment: React.FC<AdornmentProps> = (props) => <MuiInputAdornment {...props} />;
 
 export const TextField = Object.assign(
-  React.forwardRef<HTMLInputElement, TextFieldProps>(function TextField(props, ref) {
+  React.forwardRef<HTMLInputElement, TextFieldProps>((props, ref) => {
     const {
       autoComplete: autoCompleteProp,
       className,
@@ -118,10 +118,7 @@ export const TextField = Object.assign(
   }),
   {
     Adornment,
+    displayName: 'NavigaderTextField',
+    defaultProps: { color: 'primary', outlined: false },
   }
 );
-
-TextField.defaultProps = {
-  color: 'primary',
-  outlined: false,
-};

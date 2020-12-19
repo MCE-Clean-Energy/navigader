@@ -30,3 +30,5 @@ export const Switch: React.ComponentType<SwitchProps> = React.forwardRef(
     );
   }
 );
+
+Switch.displayName = 'NavigaderSwitch';

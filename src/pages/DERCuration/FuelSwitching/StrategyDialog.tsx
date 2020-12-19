@@ -67,13 +67,9 @@ export const FuelSwitchingStrategyDialog: React.FC<FuelSwitchingStrategyDialogPr
       <Dialog.Content>
         <Alert className={classes.alert} type="info">
           To create a Fuel Switching strategy, please download an{' '}
-          <Link.NewTab to={OPEN_EI_COVER_PAGE} useAnchor>
-            Hourly Load Profile
-          </Link.NewTab>{' '}
-          from OpenEI and upload it to NavigaDER. Files are available to browse{' '}
-          <Link.NewTab to={OPEN_EI_DATASET} useAnchor>
-            here.
-          </Link.NewTab>
+          <Link.NewTab to={OPEN_EI_COVER_PAGE}>Hourly Load Profile</Link.NewTab> from OpenEI and
+          upload it to NavigaDER. Files are available to browse{' '}
+          <Link.NewTab to={OPEN_EI_DATASET}>here.</Link.NewTab>
         </Alert>
         <DialogContext.Provider value={{ setState, state }}>
           <Grid>

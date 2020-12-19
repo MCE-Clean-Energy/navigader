@@ -18,7 +18,7 @@ export const EVSEConfigurationsTable: React.FC = () => {
         <>
           <Table.Cell align="right"># EVs</Table.Cell>
           <Table.Cell align="right">EV Efficiency (miles/kWh)</Table.Cell>
-          <Table.Cell align="right"># EVSEs</Table.Cell>
+          <Table.Cell align="right"># Ports</Table.Cell>
           <Table.Cell align="right">EVSE Rating (kW)</Table.Cell>
           <Table.Cell align="right">EVSE Utilization</Table.Cell>
         </>

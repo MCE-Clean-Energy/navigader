@@ -5,3 +5,5 @@ import MuiDivider from '@material-ui/core/Divider';
 export const Divider = React.forwardRef<HTMLHRElement>((props, ref) => (
   <MuiDivider ref={ref} {...props} />
 ));
+
+Divider.displayName = 'NavigaderDivider';

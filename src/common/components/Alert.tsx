@@ -44,3 +44,5 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>((props, ref) =
     </MuiAlert>
   );
 });
+
+Alert.displayName = 'NavigaderAlert';

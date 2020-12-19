@@ -61,9 +61,14 @@ export const EVSEStrategyDialog: React.FC<EVSEStrategyDialogProps> = (props) => 
             <Grid.Item span={12}>
               <NameField />
             </Grid.Item>
+
             <Grid.Item span={6}>
               <BooleanField
                 field="charge_off_nem"
+                infoText={`
+                  If using NEM exports, be sure that the charging window overlaps with peak solar
+                  production!
+                `}
                 label="Charging Source"
                 options={{ n: 'Grid', y: 'NEM' }}
               />
@@ -72,8 +77,8 @@ export const EVSEStrategyDialog: React.FC<EVSEStrategyDialogProps> = (props) => 
               <RangeField
                 range="(0, Infinity)"
                 field="distance"
-                infoText="Represents the number of miles the drivers commute one-way"
-                label="Distance"
+                infoText="Represents the number of miles the EVs drive each day"
+                label="Daily Miles Traveled"
               />
             </Grid.Item>
 

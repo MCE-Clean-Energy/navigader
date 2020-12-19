@@ -34,10 +34,7 @@ const Fab: React.FC<FabProps> = ({ name, ...rest }) => {
 };
 
 export const Button = Object.assign(
-  React.forwardRef<HTMLButtonElement, ButtonProps>(function NavigaderButton(
-    { icon, _variant, ...rest },
-    ref
-  ) {
+  React.forwardRef<HTMLButtonElement, ButtonProps>(({ icon, _variant, ...rest }, ref) => {
     const noChildren = React.Children.count(rest.children) === 0;
 
     // Render an icon-button if there's an icon but no children
@@ -59,6 +56,7 @@ export const Button = Object.assign(
     );
   }),
   {
+    displayName: 'NavigaderButton',
     Fab,
     Text,
   }

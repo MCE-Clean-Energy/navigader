@@ -2,7 +2,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
-import { Button, Dialog, Grid, Progress } from 'navigader/components';
+import { Button, Dialog, Grid, Link, Progress } from 'navigader/components';
 import { EVSEConfiguration } from 'navigader/types';
 import { hooks, omitFalsey } from 'navigader/util';
 
@@ -13,6 +13,7 @@ import {
   DialogState,
   IntegerField,
   NameField,
+  PercentageField,
   RangeField,
 } from '../common';
 
@@ -31,7 +32,7 @@ export const EVSEConfigurationDialog: React.FC<EVSEConfigurationDialogProps> = (
     creating: false,
     errors: {},
     ev_count: undefined,
-    ev_mpkwh: 3.5,
+    ev_mpkwh: 3.3,
     evse_count: undefined,
     evse_rating: undefined,
     evse_utilization: 80,
@@ -59,30 +60,52 @@ export const EVSEConfigurationDialog: React.FC<EVSEConfigurationDialogProps> = (
               <RangeField
                 range="(0, Infinity)"
                 field="ev_mpkwh"
+                infoText={
+                  <div>
+                    Number of miles EV can travel on a single kWh of charge. Various sources
+                    estimate the average EV's kWh/mile value to be between 2.9 and 3.5.
+                    <Link.SourceList
+                      color="secondary"
+                      sources={[
+                        'https://www.greencarreports.com/news/1082737_electric-car-efficiency-forget-mpge-it-should-be-miles-kwh',
+                        'https://afdc.energy.gov/fuels/electricity_charging_home.html',
+                        'https://www.vivintsolar.com/blog/how-much-does-it-cost-to-charge-an-electric-car',
+                      ]}
+                    />{' '}
+                    For a break down of efficiency by car type, see{' '}
+                    <Link.NewTab
+                      color="secondary"
+                      to="https://www.corporatemonkeycpa.com/2017/12/09/how-to-calculate-your-ev-cost-per-mile/?cn-reloaded=1"
+                    >
+                      this article.
+                    </Link.NewTab>
+                  </div>
+                }
                 label={{ text: 'EV Efficiency', units: 'miles/kWh' }}
               />
             </Grid.Item>
 
             <Grid.Item span={6}>
-              <IntegerField range="(0, Infinity)" field="evse_count" label="Number of EVSEs" />
+              <IntegerField range="(0, Infinity)" field="evse_count" label="Number of Ports" />
             </Grid.Item>
             <Grid.Item span={6}>
               <RangeField
                 range="(0, Infinity)"
                 field="evse_rating"
-                label={{ text: 'EVSE Rating', units: 'kW' }}
-              />
-            </Grid.Item>
-
-            <Grid.Item span={6}>
-              <RangeField
-                range="(0, 100]"
-                field="evse_utilization"
                 infoText={`
                   Level 1 chargers use 120 Volts AC, 1.9 kW maximum power. Level 2 chargers use 
                   208 - 240 Volts AC, and can deliver up to 19.2 kW, however most residential Level 
                   2 equipment operate at lower power, delivering about 7.2kW.
                 `}
+                label={{ text: 'EVSE Rating', units: 'kW' }}
+              />
+            </Grid.Item>
+
+            <Grid.Item span={6}>
+              <PercentageField
+                range="(0, 100]"
+                infoText="Studies consistently point to 80% of EV charging at residences."
+                field="evse_utilization"
                 label="EVSE Utilization"
               />
             </Grid.Item>

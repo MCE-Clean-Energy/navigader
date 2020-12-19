@@ -44,3 +44,5 @@ export const Avatar: React.ComponentType<AvatarProps> = React.forwardRef(
     );
   }
 );
+
+Avatar.displayName = 'NavigaderAvatar';

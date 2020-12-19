@@ -35,6 +35,7 @@ export const Card = Object.assign(
     return <MuiCard variant={variant} className={classes} {...rest} ref={ref} />;
   }),
   {
+    displayName: 'NavigaderCard',
     ActionArea: MuiCardActionArea,
     Actions: MuiCardActions,
     Content: MuiCardContent,

@@ -70,6 +70,7 @@ export const Tabs = Object.assign(
     }
   }),
   {
+    displayName: 'NavigaderTabs',
     Tab,
   }
 );

@@ -118,7 +118,7 @@ export const RateCollectionView: React.FC<RateCollectionViewsProps> = ({
                 <Table.Row>
                   <Table.Cell>Source Reference</Table.Cell>
                   <Table.Cell>
-                    <Link.NewTab to={rateCollection.utility_url} useAnchor>
+                    <Link.NewTab to={rateCollection.utility_url}>
                       {formatters.truncateAtLength(rateCollection.utility_url, 50)}
                     </Link.NewTab>
                   </Table.Cell>

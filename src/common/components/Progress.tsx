@@ -72,3 +72,5 @@ export const Progress: React.ComponentType<ProgressProps> = React.forwardRef(
     return <LinearProgress {...progressProps} ref={ref} />;
   }
 );
+
+Progress.displayName = 'NavigaderProgress';

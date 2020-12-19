@@ -53,3 +53,5 @@ export const Chip = React.forwardRef<HTMLDivElement, ChipProps>((props, ref) => 
 
   return <MuiChip {...chipProps} />;
 });
+
+Chip.displayName = 'NavigaderChip';
