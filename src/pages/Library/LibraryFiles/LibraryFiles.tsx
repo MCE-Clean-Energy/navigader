@@ -34,7 +34,7 @@ const useStyles = makeStylesHook(
 /** ============================ Components ================================ */
 const Table = TableFactory<OriginFile>();
 
-export const UploadedFiles = () => {
+export const LibraryFiles = () => {
   const routeTo = usePushRouter();
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -68,7 +68,7 @@ export const UploadedFiles = () => {
             </Button>
           </>
         }
-        title="Uploaded Files"
+        title="Customer Data Library"
       />
 
       <Table
@@ -80,7 +80,6 @@ export const UploadedFiles = () => {
           key: 'created_at',
         }}
         raised
-        title="Uploads"
       >
         {(originFiles, EmptyRow) => (
           <>
@@ -113,7 +112,7 @@ export const UploadedFiles = () => {
                 <Table.Row key={originFile.id}>
                   <Table.Cell>
                     {models.meterGroup.isSufficientlyIngested(originFile) ? (
-                      <Link to={routes.load.meterGroup(originFile.id)}>{originFile.name}</Link>
+                      <Link to={routes.library.meterGroup(originFile.id)}>{originFile.name}</Link>
                     ) : (
                       originFile.name
                     )}

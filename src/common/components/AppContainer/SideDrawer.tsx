@@ -105,7 +105,7 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ open, closeDrawer }) => 
       <Flex.Container alignItems="stretch" className={classes.flexContainer} direction="column">
         <Flex.Item grow>
           <DrawerButton linkTo={routes.dashboard.base}>Dashboard</DrawerButton>
-          <DrawerButton linkTo={routes.load.base}>Load</DrawerButton>
+          <DrawerButton linkTo={routes.library.base}>Library</DrawerButton>
           <DrawerButton linkTo={routes.upload}>Upload</DrawerButton>
           <DrawerButton linkTo={routes.cost.base}>Cost</DrawerButton>
           <DrawerButton linkTo={routes.ders.base}>DERs</DrawerButton>

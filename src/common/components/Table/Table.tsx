@@ -16,6 +16,7 @@ import { createStyles, Theme, WithStyles, withStyles } from '@material-ui/core/s
 import {
   DataSelector,
   ObjectWithId,
+  PageSizeOption,
   SortDir,
   SortFields,
   TableInterface,
@@ -108,6 +109,7 @@ class TableWithData<T extends ObjectWithId> extends React.Component<
   ConnectedTableProps<T>,
   TableState
 > {
+  static defaultPageSize: PageSizeOption = 20;
   tableRef: React.RefObject<HTMLTableElement>;
 
   constructor(props: ConnectedTableProps<T>) {
@@ -119,7 +121,7 @@ class TableWithData<T extends ObjectWithId> extends React.Component<
     this.state = {
       loading: false,
       page: 0,
-      pageSize: 20,
+      pageSize: TableWithData.defaultPageSize,
       selections: new Set(),
       sorting: { sortDir: initialSorting?.dir, sortKey: initialSorting?.key },
     };
@@ -157,6 +159,15 @@ class TableWithData<T extends ObjectWithId> extends React.Component<
       const data = this.getData();
       onSelect([...selectionsNew].map((index) => data[index]));
     }
+  }
+
+  /**
+   * Returns true if the table's data can fit on a single page of default size. If there's no data,
+   * that counts as a single page.
+   */
+  get isSinglePage() {
+    const { count } = this.state;
+    return _.isUndefined(count) || count <= TableWithData.defaultPageSize;
   }
 
   fetch() {
@@ -247,14 +258,10 @@ class TableWithData<T extends ObjectWithId> extends React.Component<
       if (count !== 0) return null;
 
       // Calculate the number of columns in the table
-      const cellProps = {
-        children,
-        colSpan: this.tableRef.current?.tHead?.getElementsByTagName('th').length,
-      };
-
+      const colSpan = this.tableRef.current?.tHead?.getElementsByTagName('th').length;
       return (
         <TableRow>
-          <TableCell {...cellProps} />
+          <TableCell colSpan={colSpan}>{children}</TableCell>
         </TableRow>
       );
     };
@@ -280,20 +287,22 @@ class TableWithData<T extends ObjectWithId> extends React.Component<
   renderToolbar() {
     const { classes, headerActions, onFabClick, title } = this.props;
     const { count } = this.state;
-    if (!title) return null;
+
+    // If there's no title, a single page of data and no header actions, hide the toolbar
+    if (!title && this.isSinglePage && !headerActions) return null;
 
     const data = this.getData();
     const headerClassname = classNames({ [classes.headerWithFab]: !!onFabClick });
 
     return (
-      <MuiToolbar className={classes.toolbar}>
+      <MuiToolbar className={classes.toolbar} data-testid="table-toolbar">
         <Typography variant="h6">{title}</Typography>
         {data && (
           <Flex.Container alignItems="center" className={headerClassname}>
             {headerActions}
-            {typeof count !== 'undefined' && count > 10 && (
+            {!this.isSinglePage && (
               <TablePagination
-                count={count}
+                count={count!}
                 paginationState={this.state}
                 // Reset selections when pagination state changes
                 updatePaginationState={(newState) =>

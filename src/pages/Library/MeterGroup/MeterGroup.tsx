@@ -129,11 +129,8 @@ export const MeterGroupPage: React.FC = () => {
           ) : null
         }
         breadcrumbs={[
-          ['Customer Groups', routes.load.base],
-          [
-            models.meterGroup.getDisplayName(originFile) || 'Customer Group',
-            routes.dashboard.createScenario.review,
-          ],
+          ['Library', routes.library.base],
+          models.meterGroup.getDisplayName(originFile) || 'Customer Data',
         ]}
         title={models.meterGroup.getDisplayName(originFile)}
       />

@@ -1,6 +1,6 @@
 export * from './Dashboard';
 export * from './DERCuration';
-export * from './Load';
+export * from './Library';
 export * from './Scenario';
 export * from './Settings';
 export * from './Unauthenticated';

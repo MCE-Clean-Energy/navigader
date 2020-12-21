@@ -28,7 +28,7 @@ describe('Meter Group Page', () => {
 
   describe('Header', () => {
     it('Meter group name is rendered', async () => {
-      const { findByTestId } = renderAppRoute('/load/group/2');
+      const { findByTestId } = renderAppRoute('/library/group/2');
       expect((await findByTestId('page-header')).textContent).toEqual(groupName);
     });
   });

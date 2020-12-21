@@ -143,8 +143,8 @@ const FileComponent: React.FC<FileCardProps> = ({ file, progress, startUpload, s
           {status === 'success' && (
             <Alert title="Success!" type="success">
               <Typography variant="body2">
-                The upload was successful. Check it out on the{' '}
-                <Link to={routes.load.base}>Load page</Link>.
+                The upload was successful. Check it out in the{' '}
+                <Link to={routes.library.base}>Library</Link>.
               </Typography>
             </Alert>
           )}

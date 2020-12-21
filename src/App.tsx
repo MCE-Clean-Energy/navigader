@@ -31,7 +31,7 @@ export const AppRoutes: React.FC = () => {
           <AppContainer>
             <Switch>
               <Route path={routes.settings} component={pages.SettingsPage} />
-              <Route path={routes.load.base} component={pages.LoadPage} />
+              <Route path={routes.library.base} component={pages.Library} />
               <Route path={routes.upload} component={pages.UploadPage} />
               <Route path={routes.dashboard.base} component={pages.DashboardPage} />
               <Route path={routes.scenario.compare()} component={pages.CompareScenariosPage} />

@@ -23,7 +23,7 @@ describe('Back button', () => {
 
   it('Clicking the back button returns you to the previous page', async () => {
     const { findByText, getByRole } = renderAppRoute(
-      [routes.load.base, routes.load.meterGroup(meterGroup.id)],
+      [routes.library.base, routes.library.meterGroup(meterGroup.id)],
       1
     );
 
@@ -32,6 +32,6 @@ describe('Back button', () => {
     fireEvent.click(getByRole('back-button'));
 
     // check that the page header changed to the prior page
-    expect(await findByText('Uploaded Files')).toBeInTheDocument();
+    expect(await findByText('Customer Data Library')).toBeInTheDocument();
   });
 });

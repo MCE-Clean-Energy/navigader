@@ -26,9 +26,10 @@ scenario.compare = (ids?: string[]) => {
   return `/scenario/compare/${qs}`;
 };
 
-const load = {
-  base: '/load',
-  meterGroup: (id: string) => `/load/group/${id}`,
+const libraryBase = '/library';
+const library = {
+  base: libraryBase,
+  meterGroup: (id: string) => `${libraryBase}/group/${id}`,
 };
 
 /** ============================ DER Curation ============================== */
@@ -79,7 +80,7 @@ const registration = {
 export const routes = {
   dashboard,
   ders,
-  load,
+  library,
   login,
   cost,
   registration,
@@ -131,7 +132,7 @@ function routerFactory(method: 'push' | 'replace') {
             // This is particularly important on the "Uploaded Files" page, where the containing
             // `Card` has a callback too.
             event.stopPropagation();
-            routerFn(routes.load.meterGroup(originFile.id));
+            routerFn(routes.library.meterGroup(originFile.id));
           };
         },
 
