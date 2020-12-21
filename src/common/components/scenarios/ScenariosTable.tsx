@@ -199,7 +199,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 column="Expenses Impact"
                 info={{
                   measuresImpact:
-                    'to overall expenses. Calculated as procurement expenses plus $6/kW for RA ' +
+                    'to overall expenses. Calculated as procurement expenses plus $/kW RA' +
                     'impacts',
                   negativeMeans: 'overall expenses have gone down',
                   positiveMeans: 'overall expenses have gone up',
