@@ -1,13 +1,14 @@
+import _ from 'lodash';
 import * as React from 'react';
 
 import { makeStylesHook } from 'navigader/styles';
+import { AlertType } from 'navigader/types';
+
+import { Alert } from './Alert';
 import { Popover } from './Popover';
-import { Typography } from './Typography';
 
 /** ============================ Types ===================================== */
-type HoverTextProps = {
-  HoverComponent: React.ReactNode;
-};
+type HoverTextProps = { text?: string; type?: AlertType };
 
 /** ============================ Styles ==================================== */
 const useStyles = makeStylesHook(
@@ -26,11 +27,21 @@ const useStyles = makeStylesHook(
 
 /** ============================ Components ================================ */
 export const HoverText: React.FC<HoverTextProps> = (props) => {
-  const { children, ...rest } = props;
+  const { children, text, type } = props;
   const classes = useStyles();
+
+  // If no hover text was provided, just render the children unmodified
+  if (!text) return <span>{children}</span>;
+
+  // Wrap the text in an Alert if a `type` prop was given
+  const [TextWrapper, padding] = _.isUndefined(type)
+    ? [<div />, undefined]
+    : [<Alert type={type} />, 0];
+
+  // Otherwise wrap the children within a Popover and render them with some textDecoration
   return (
-    <Popover {...rest}>
-      <Typography className={classes.hoverText}>{props.children}</Typography>
+    <Popover HoverComponent={React.cloneElement(TextWrapper, { children: text })} padding={padding}>
+      <span className={classes.hoverText}>{children}</span>
     </Popover>
   );
 };

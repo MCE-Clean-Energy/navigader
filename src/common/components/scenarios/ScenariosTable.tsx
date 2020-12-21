@@ -22,7 +22,7 @@ import { MeterGroupChip, StatusIndicator } from '../MeterGroupComponents';
 import { Switch } from '../Switch';
 import { PrefetchedTable, TableFactory } from '../Table';
 import { Tooltip } from '../Tooltip';
-import { ImpactColumnHeader } from './ImpactColumnHeader';
+import { ImpactColumn } from './ImpactColumn';
 
 /** ============================ Types ===================================== */
 type ScenariosTableProps = {
@@ -140,7 +140,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
               <Table.Cell sortBy="meter_group.name">Customer Segment</Table.Cell>
               <Table.Cell sortBy="der_configuration.name">DER</Table.Cell>
               <Table.Cell sortBy="der_strategy.name">Program Strategy</Table.Cell>
-              <ImpactColumnHeader
+              <ImpactColumn.Header
                 averaged={innerAveraged}
                 column="Usage Impact"
                 info={{
@@ -150,7 +150,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 }}
                 units="kWh"
               />
-              <ImpactColumnHeader
+              <ImpactColumn.Header
                 averaged={innerAveraged}
                 column="GHG Impact"
                 info={{
@@ -164,7 +164,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                   </>
                 }
               />
-              <ImpactColumnHeader
+              <ImpactColumn.Header
                 averaged={innerAveraged}
                 column="RA Impact"
                 info={{
@@ -174,7 +174,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 }}
                 units="kW"
               />
-              <ImpactColumnHeader
+              <ImpactColumn.Header
                 averaged={innerAveraged}
                 column="Procurement Cost"
                 info={{
@@ -184,7 +184,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 }}
                 units="$"
               />
-              <ImpactColumnHeader
+              <ImpactColumn.Header
                 averaged={innerAveraged}
                 column="Revenue Impact"
                 info={{
@@ -194,7 +194,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 }}
                 units="$"
               />
-              <ImpactColumnHeader
+              <ImpactColumn.Header
                 averaged={innerAveraged}
                 column="Expenses Impact"
                 info={{
@@ -206,7 +206,7 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 }}
                 units="$"
               />
-              <ImpactColumnHeader
+              <ImpactColumn.Header
                 averaged={innerAveraged}
                 column="Profits Impact"
                 info={{
@@ -267,23 +267,30 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                     formatters.maxDecimals(getField(scenario, 'UsageDelta', innerAveraged), 2)
                   ) ?? '-'}
                 </Table.Cell>
-                <Table.Cell align="right">
-                  {formatters.commas(
-                    formatters.maxDecimals(getField(scenario, 'GHGDelta', innerAveraged), 2)
-                  ) ?? '-'}
-                </Table.Cell>
-                <Table.Cell align="right">
-                  {formatters.commas(
-                    formatters.maxDecimals(getField(scenario, 'RADelta', innerAveraged), 2)
-                  ) ?? '-'}
-                </Table.Cell>
-                <Table.Cell align="right">
-                  {formatters.dollars(getField(scenario, 'ProcurementCostDelta', innerAveraged)) ??
-                    '-'}
-                </Table.Cell>
-                <Table.Cell align="right">
-                  {formatters.dollars(getField(scenario, 'BillRevenueDelta', innerAveraged)) ?? '-'}
-                </Table.Cell>
+                <ImpactColumn
+                  costCalculation={getField(scenario, 'GHGDelta', innerAveraged)}
+                  costFn={scenario.cost_functions.ghg_rate}
+                >
+                  {(n) => formatters.commas(formatters.maxDecimals(n, 2)) ?? '-'}
+                </ImpactColumn>
+                <ImpactColumn
+                  costCalculation={getField(scenario, 'RADelta', innerAveraged)}
+                  costFn={scenario.cost_functions.system_profile}
+                >
+                  {(n) => formatters.commas(formatters.maxDecimals(n, 2)) ?? '-'}
+                </ImpactColumn>
+                <ImpactColumn
+                  costCalculation={getField(scenario, 'ProcurementCostDelta', innerAveraged)}
+                  costFn={scenario.cost_functions.procurement_rate}
+                >
+                  {(n) => formatters.dollars(n) ?? '-'}
+                </ImpactColumn>
+                <ImpactColumn
+                  costCalculation={getField(scenario, 'BillRevenueDelta', innerAveraged)}
+                  costFn={scenario.cost_functions.rate_plan}
+                >
+                  {(n) => formatters.dollars(n) ?? '-'}
+                </ImpactColumn>
                 <Table.Cell align="right">
                   {formatters.dollars(getField(scenario, 'ExpenseDelta', innerAveraged)) ?? '-'}
                 </Table.Cell>

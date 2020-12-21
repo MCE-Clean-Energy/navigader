@@ -1,7 +1,8 @@
+import classNames from 'classnames';
+import _ from 'lodash';
 import * as React from 'react';
 import MuiPopover from '@material-ui/core/Popover';
 import { BaseCSSProperties } from '@material-ui/core/styles/withStyles';
-import classNames from 'classnames';
 
 import { makeStylesHook, Theme } from 'navigader/styles';
 import { hooks } from 'navigader/util';
@@ -16,15 +17,16 @@ type PopoverProps = {
   anchorOrigin?: PopoverOrigin;
   className?: string;
   HoverComponent: React.ReactNode;
+  padding?: number | string;
   transformOrigin?: PopoverOrigin;
 };
 
 /** ============================ Styles ==================================== */
 const useStyles = makeStylesHook<PopoverProps>(
   (theme) => ({
-    hoverContainer: {
-      padding: theme.spacing(2),
-    },
+    hoverContainer: ({ padding }) => ({
+      padding: _.isUndefined(padding) ? theme.spacing(2) : padding,
+    }),
     paper: (props) => ({ ...getPaperStyle(props, theme) }),
     popover: {
       pointerEvents: 'none',

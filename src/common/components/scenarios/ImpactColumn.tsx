@@ -1,13 +1,22 @@
 import * as React from 'react';
 
 import { makeStylesHook } from 'navigader/styles';
+import { AlertType, CostFunctionShort, Maybe, Nullable } from 'navigader/types';
 import { omitFalsey } from 'navigader/util';
+
 import * as Flex from '../Flex';
+import { HoverText } from '../HoverText';
 import { InfoIcon } from '../Icon';
 import { Table, TableCellProps } from '../Table';
 import { Typography } from '../Typography';
 
 /** ============================ Types ===================================== */
+type ImpactColumnProps = React.PropsWithChildren<{
+  children: (n: Maybe<number>) => React.ReactNode;
+  costFn: Nullable<CostFunctionShort>;
+  costCalculation: Maybe<number>;
+}>;
+
 type ImpactColumnHeaderProps = TableCellProps & {
   averaged?: boolean;
   column: string;
@@ -34,7 +43,7 @@ const useImpactColumnHeaderStyles = makeStylesHook(
 );
 
 /** ============================ Components ================================ */
-export const ImpactColumnHeader: React.FC<ImpactColumnHeaderProps> = (props) => {
+const ImpactColumnHeader: React.FC<ImpactColumnHeaderProps> = (props) => {
   const { averaged = false, column, info, units, ...rest } = props;
   const classes = useImpactColumnHeaderStyles();
   const infoString = omitFalsey([
@@ -57,3 +66,26 @@ export const ImpactColumnHeader: React.FC<ImpactColumnHeaderProps> = (props) => 
     </Table.Cell>
   );
 };
+
+export const ImpactColumn = Object.assign(
+  function ImpactColumn(props: ImpactColumnProps) {
+    const { children, costCalculation, costFn } = props;
+
+    // Determine the text to show in the popover. If there's a cost calculation but no cost
+    // function, that implies the cost function was deleted.
+    const [hoverText, alertType] = (() => {
+      if (costCalculation === undefined) return [undefined, undefined];
+      if (costFn) return [`Calculated with ${costFn.name}`, undefined];
+      return ['Cost function has been deleted', 'warning'];
+    })() as [Maybe<string>, Maybe<AlertType>];
+
+    return (
+      <Table.Cell align="right">
+        <HoverText text={hoverText} type={alertType}>
+          {children(costCalculation)}
+        </HoverText>
+      </Table.Cell>
+    );
+  },
+  { Header: ImpactColumnHeader }
+);

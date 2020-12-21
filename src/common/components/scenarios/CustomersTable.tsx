@@ -9,7 +9,7 @@ import { Avatar } from '../Avatar';
 import { FileDownload } from '../File';
 import { PrefetchedTable, Table } from '../Table';
 import { Tooltip } from '../Tooltip';
-import { ImpactColumnHeader } from './ImpactColumnHeader';
+import { ImpactColumn } from './ImpactColumn';
 
 /** ============================ Types ===================================== */
 type CustomersTableProps = {
@@ -47,7 +47,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
               {colorMap && <Table.Cell />}
               <Table.Cell sortBy="SA_ID">SA ID</Table.Cell>
               <Table.Cell>Rate Plan</Table.Cell>
-              <ImpactColumnHeader
+              <ImpactColumn.Header
                 column="Usage Impact"
                 info={{
                   measuresImpact: 'in customer electricity usage',
@@ -58,7 +58,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                 sortDir="desc"
                 units="kWh"
               />
-              <ImpactColumnHeader
+              <ImpactColumn.Header
                 column="GHG Impact"
                 info={{
                   measuresImpact: 'in GHG emissions',
@@ -72,7 +72,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                   </>
                 }
               />
-              <ImpactColumnHeader
+              <ImpactColumn.Header
                 column="RA Impact"
                 info={{
                   measuresImpact: 'to resource adequacy requirements',
@@ -82,7 +82,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                 sortBy="RADelta"
                 units="kW"
               />
-              <ImpactColumnHeader
+              <ImpactColumn.Header
                 column="Procurement Cost"
                 info={{
                   measuresImpact: 'to expenses incurred procuring electricity',
@@ -92,7 +92,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                 sortBy="ProcurementDelta"
                 units="$"
               />
-              <ImpactColumnHeader
+              <ImpactColumn.Header
                 column="Revenue Impact"
                 info={{
                   measuresImpact: "to CCA's electricity sales",
@@ -102,7 +102,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                 sortBy="BillRevenueDelta"
                 units="$"
               />
-              <ImpactColumnHeader
+              <ImpactColumn.Header
                 column="Expenses Impact"
                 info={{
                   measuresImpact:
@@ -114,7 +114,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = (props) => {
                 sortBy="ExpenseDelta"
                 units="$"
               />
-              <ImpactColumnHeader
+              <ImpactColumn.Header
                 column="Profits Impact"
                 info={{
                   measuresImpact: 'to overall profits. Calculated as revenues minus expenses',

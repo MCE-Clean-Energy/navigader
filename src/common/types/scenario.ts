@@ -26,7 +26,7 @@ type ScenarioMetadata = {
 };
 
 type CostFunctionKeys = 'ghg_rate' | 'procurement_rate' | 'rate_plan' | 'system_profile';
-type CostFunctionShort = Pick<CostFunction, 'id' | 'name'>;
+export type CostFunctionShort = Pick<CostFunction, 'id' | 'name'>;
 export type RawScenario = AbstractRawMeterGroup &
   NavigaderObject<'Scenario'> & {
     cost_functions: Record<CostFunctionKeys, Nullable<CostFunctionShort>>;
