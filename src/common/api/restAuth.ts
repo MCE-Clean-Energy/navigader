@@ -1,4 +1,4 @@
-import { cookieManager } from 'navigader/util/cookies';
+import { cookieManager } from 'navigader/util';
 import { beoRoute, postRequest } from './util';
 
 /** ============================ Types ===================================== */

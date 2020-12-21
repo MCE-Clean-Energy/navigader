@@ -1,9 +1,8 @@
 import * as React from 'react';
 
 import * as api from 'navigader/api';
-import { usePushRouter } from 'navigader/routes';
-import { models } from 'navigader/util';
-import { cookieManager } from 'navigader/util/cookies';
+import { routes, usePushRouter } from 'navigader/routes';
+import { cookieManager, models } from 'navigader/util';
 
 import { List } from '../List';
 import { Menu } from '../Menu';
@@ -30,6 +29,10 @@ export const AccountMenu: React.FC = () => {
     cookieManager.remove.authToken();
     models.polling.reset();
     api.logout().catch();
-    routeTo.login();
+
+    // Use the Location API to navigate to the login screen instead of React Router so that page
+    // state is reset. Using a redirect (as React Router does) would maintain the contents/history
+    // of the redux store and leak data outside the user's session.
+    window.location.href = routes.login;
   }
 };
