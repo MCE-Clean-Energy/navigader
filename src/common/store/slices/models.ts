@@ -86,7 +86,8 @@ export const selectMeterGroups = (state: RootState) =>
   state.models.meterGroups.map(serializers.parseMeterGroup);
 export const selectMeters = (state: RootState) => state.models.meters.map(serializers.parseMeter);
 export const selectHasMeterGroups = (state: RootState) => state.models.hasMeterGroups;
-export const selectRatePlans = (state: RootState) => state.models.ratePlans;
+export const selectRatePlans = (state: RootState) =>
+  state.models.ratePlans.map(serializers.parseRatePlan);
 
 export const selectOriginFiles = (state: RootState) => {
   const originFiles = _.filter(state.models.meterGroups, isOriginFile);
@@ -174,12 +175,13 @@ function prepareModel(model: ModelClassExterior): ModelClassInterior {
     case 'BatteryConfiguration':
     case 'EVSEConfiguration':
     case 'EVSEStrategy':
-    case 'RatePlan':
     case 'SolarPVConfiguration':
     case 'SolarPVStrategy':
     case 'FuelSwitchingConfiguration':
     case 'FuelSwitchingStrategy':
       return model;
+    case 'RatePlan':
+      return serializers.serializeRatePlan(model);
     case 'SystemProfile':
       return serializers.serializeSystemProfile(model);
     case 'CAISORate':

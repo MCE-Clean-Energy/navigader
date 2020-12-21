@@ -1,7 +1,9 @@
 import { Frame288Numeric } from './frame288';
-import { DateTuple, Maybe, MonthIndex, NumberTuple } from '../common';
+import { DateTuple, Maybe, MonthIndex, Nullable, NumberTuple, Tuple } from '../common';
 
 /** ============================ Types ===================================== */
+export type RawDateRange = { date_range: Tuple<string> };
+export type DateRange = { date_range: Nullable<Tuple<Date>> };
 export type BasicIntervalDatum = { timestring: string; value: number };
 export type BasicIntervalData = BasicIntervalDatum[];
 export type ChartDatum = { name: string; timestamp: Date; value: number };

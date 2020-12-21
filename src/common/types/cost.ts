@@ -1,5 +1,14 @@
+import { DateTime } from 'luxon';
+
 import { NavigaderObject, Nullable, StateChoice } from './common';
-import { DataObject, Frame288Numeric, Frame288NumericType, RawDataObject } from './data';
+import {
+  DataObject,
+  DateRange,
+  Frame288Numeric,
+  Frame288NumericType,
+  RawDataObject,
+  RawDateRange,
+} from './data';
 
 /** ============================ CAISO Rates =============================== */
 type CAISORateFilters = Partial<{
@@ -14,8 +23,11 @@ type CAISORateCommon = {
   object_type: 'CAISORate';
 };
 
-export interface RawCAISORate extends CAISORateCommon, RawDataObject<'$/kwh', 'start'> {}
-export interface CAISORate extends CAISORateCommon, DataObject {}
+export interface CAISORate extends CAISORateCommon, DataObject, DateRange {}
+export interface RawCAISORate
+  extends CAISORateCommon,
+    RawDataObject<'$/kwh', 'start'>,
+    RawDateRange {}
 
 /** ============================ Rate Plans ================================ */
 export type LoadServingEntity = {
@@ -59,7 +71,7 @@ export type RateCollection = {
   rate_data: RateData;
 };
 
-export interface RatePlan {
+type RatePlanCommon = {
   demand_max: Nullable<number>;
   demand_min: Nullable<number>;
   description: Nullable<string>;
@@ -70,7 +82,14 @@ export interface RatePlan {
   object_type: 'RatePlan';
   rate_collections?: RateCollection[];
   sector?: string;
-  start_date?: string;
+};
+
+export interface RawRatePlan extends RatePlanCommon {
+  start_date: Nullable<string>;
+}
+
+export interface RatePlan extends RatePlanCommon {
+  start_date: Nullable<DateTime>;
 }
 
 /** ============================ GHG Rates ================================ */
@@ -86,22 +105,23 @@ export type RawGHGRate = {
 
 export interface GHGRate
   extends Omit<NavigaderObject<'GHGRate'>, 'created_at' | 'id'>,
-    Omit<RawGHGRate, 'data'> {
+    Omit<RawGHGRate, 'data' | 'effective'> {
   data?: Frame288Numeric;
+  effective: Date;
 }
 
 /** ============================ System profiles ================================ */
-export interface CommonSystemProfile {
+type CommonSystemProfile = {
   id: number;
   load_serving_entity?: LoadServingEntity;
   name: string;
   created_at: string;
   object_type: 'SystemProfile';
   resource_adequacy_rate: number;
-}
+};
 
-export interface RawSystemProfile extends RawDataObject<'kw'>, CommonSystemProfile {}
-export interface SystemProfile extends DataObject, CommonSystemProfile {}
+export interface RawSystemProfile extends RawDataObject<'kw'>, CommonSystemProfile, RawDateRange {}
+export interface SystemProfile extends DataObject, CommonSystemProfile, DateRange {}
 
 export type CostFunction = CostFunctions[keyof CostFunctions];
 export type CostFunctions = {

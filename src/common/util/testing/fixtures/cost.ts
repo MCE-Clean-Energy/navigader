@@ -5,6 +5,7 @@ export const caisoRate: RawCAISORate = {
   name: 'PRC_LMP 2018',
   created_at: '2020-01-01',
   object_type: 'CAISORate',
+  date_range: ['2019-01-01T00:00:00', '2020-01-01T00:00:00'],
   filters: {
     DATA_ITEM: 'LMP_PRC',
   },

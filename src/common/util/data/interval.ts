@@ -1,9 +1,10 @@
 import _ from 'lodash';
-import { Interval } from 'luxon';
+import { DateTime, DurationUnit, Interval } from 'luxon';
 
 import {
   BasicIntervalData,
   BasicIntervalDatum,
+  DateRange,
   DateTuple,
   Frame288Numeric,
   IntervalDataArray,
@@ -13,6 +14,7 @@ import {
   isTruthy,
   Maybe,
   MonthIndex,
+  Nullable,
   NumberTuple,
   RawIntervalData,
 } from 'navigader/types';
@@ -137,6 +139,38 @@ export class IntervalData implements IntervalDataInterface {
       [column]: _.map(this.data, 'timestring'),
       [unit]: _.map(this.data, 'value'),
     } as RawIntervalData<Unit, Column>;
+  }
+
+  /** ========================== Static methods ============================ */
+  /**
+   * Creates an `IntervalData` object given an object of the form:
+   *
+   *   {
+   *     [timeKey]: timestamp[]
+   *     [valueKey]: number[]
+   *     name: string
+   *   }
+   *
+   * The `timeKey` and `valueKey` keys can be any string, and must be provided as parameters
+   *
+   * @param {IntervalDataObject} object: the object of the form given above
+   * @param {string} timeKey: the key under which the timestamps are provided
+   * @param {string} valueKey: the key under which the interval data are provided
+   */
+  static fromObject<TimeKey extends string, ValueKey extends string>(
+    object: IntervalDataObject<TimeKey, ValueKey>,
+    timeKey: TimeKey,
+    valueKey: ValueKey
+  ) {
+    const timestamps = object[timeKey];
+    const values = object[valueKey];
+    return new IntervalData(
+      _.range(timestamps.length).map((index) => ({
+        timestring: timestamps[index],
+        value: values[index],
+      })),
+      object.name
+    );
   }
 
   /** ========================== Getters =================================== */
@@ -430,32 +464,68 @@ export class IntervalData implements IntervalDataInterface {
 
 /** ============================ Helpers =================================== */
 /**
- * Creates an `IntervalData` object given an object of the form:
+ * Returns the start date from a DateRange object. If no object is provided or if it has no date
+ * range, returns `null`.
  *
- *   {
- *     [timeKey]: timestamp[]
- *     [valueKey]: number[]
- *     name: string
- *   }
+ * TODO: this would be totally unnecessary if DateRange was defined using DateTime objects
  *
- * The `timeKey` and `valueKey` keys can be any string, and must be provided as parameters
- *
- * @param {IntervalDataObject} object: the object of the form given above
- * @param {string} timeKey: the key under which the timestamps are provided
- * @param {string} valueKey: the key under which the interval data are provided
+ * @param {DateRange} obj: the date range object
  */
-export function makeIntervalData<TimeKey extends string, ValueKey extends string>(
-  object: IntervalDataObject<TimeKey, ValueKey>,
-  timeKey: TimeKey,
-  valueKey: ValueKey
-) {
-  const timestamps = object[timeKey];
-  const values = object[valueKey];
-  return new IntervalData(
-    _.range(timestamps.length).map((index) => ({
-      timestring: timestamps[index],
-      value: values[index],
-    })),
-    object.name
-  );
+function getStartDate(obj: Maybe<DateRange>): Nullable<DateTime> {
+  if (!obj || !obj.date_range) return null;
+  const [start] = obj.date_range;
+  return DateTime.fromJSDate(start);
 }
+
+/**
+ * Returns `true` if the DateRange object's starting year is the same as the provided DateTime
+ * object's. If no DateTime is provided, returns `true`. If a DateTime is provided but no object
+ * is provided, or if the object has no date range, returns `false`.
+ *
+ * @param {DateRange} obj: the date range object to check
+ * @param {DateTime} dateTime: the luxon DateTime object to compare with
+ */
+function hasYear(obj: Maybe<DateRange>, dateTime: Nullable<DateTime>): boolean {
+  if (_.isNull(dateTime)) return true;
+
+  const startDate = getStartDate(obj);
+  if (_.isNull(startDate)) return false;
+  return startDate.year === dateTime.year;
+}
+
+/**
+ * Determines if a DateRange objects spans multiple years, even if only partially. If the date range
+ * crosses multiple years, returns `true`. Otherwise, even if no object is provided or it has no
+ * date range, returns `false`.
+ *
+ * @param {DateRange} obj: the date range object to check
+ */
+function spansMultipleYears(obj: Maybe<DateRange>) {
+  const interval = getDateRangeInterval(obj);
+  return interval !== null && !interval.hasSame('year');
+}
+
+/**
+ * Returns a luxon `Interval` object representing a DateRange object's timespan. If the date range
+ * is not available, return `null`. If a second parameter, `unit`, is provided, returns the length
+ * of the interval in the given unit
+ *
+ * @param {DateRange} obj: the date range object to return the interval of
+ * @param {DurationUnit} [unit]: the unit in which to return the interval length. If not provided,
+ *   the interval itself is returned
+ */
+function getDateRangeInterval(obj: Maybe<DateRange>, unit: DurationUnit): Nullable<number>;
+function getDateRangeInterval(obj: Maybe<DateRange>): Nullable<Interval>;
+function getDateRangeInterval(obj: Maybe<DateRange>, unit?: DurationUnit) {
+  if (!obj || !obj.date_range) return null;
+  const [start, endLimit] = obj.date_range;
+  const interval = Interval.fromDateTimes(start, endLimit);
+  return unit ? interval.length(unit) : interval;
+}
+
+export const interval = {
+  getDateRangeInterval,
+  getStartDate,
+  hasYear,
+  spansMultipleYears,
+};

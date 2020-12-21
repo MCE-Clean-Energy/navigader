@@ -1,10 +1,14 @@
+import { DateTime, Duration, DurationObject, Interval } from 'luxon';
+
+import { DateRange } from 'navigader/types';
 import { Frame288Numeric } from 'navigader/util';
 import { fixtures } from 'navigader/util/testing';
-import { makeIntervalData } from './interval';
+
+import { IntervalData, interval } from './interval';
 
 describe('`IntervalData` class', () => {
   /** ========================== Test fixtures ============================= */
-  const kwInterval = makeIntervalData(
+  const kwInterval = IntervalData.fromObject(
     {
       times: ['2020-06-02T18:00:00', '2020-06-02T18:15:00', '2020-06-02T18:30:00'],
       kw: [1, 2, 3],
@@ -308,6 +312,128 @@ describe('`IntervalData` class', () => {
       const renamed = hourInterval.rename('60-minute interval');
       expect(renamed.name).toEqual('60-minute interval');
       expect(renamed).toStrictEqual(hourInterval);
+    });
+  });
+
+  describe('helper methods', () => {
+    const nullDateRange = { date_range: null };
+    function makeDateRangeWithDuration(
+      duration: DurationObject,
+      startISO: string = '2020-01-01T00:00:00'
+    ) {
+      const startDate = DateTime.fromISO(startISO);
+      return {
+        date_range: [
+          startDate.toJSDate(),
+          startDate.plus(Duration.fromObject(duration)).toJSDate(),
+        ],
+      } as DateRange;
+    }
+
+    describe('`spansMultipleYears` method', () => {
+      it('returns `false` if no object is provided', () => {
+        expect(interval.spansMultipleYears(undefined)).toBeFalsy();
+      });
+
+      it('returns `false` if the object does not have a date range', () => {
+        expect(interval.spansMultipleYears(nullDateRange)).toBeFalsy();
+      });
+
+      it('returns `false` if the date range starts and ends in the same calendar year', () => {
+        for (let i = 1; i <= 366; i++) {
+          const result = interval.spansMultipleYears(makeDateRangeWithDuration({ days: i }));
+          expect(result).toBeFalsy();
+        }
+      });
+
+      it('returns `true` if the object has a date range greater than 366 days', () => {
+        const result = interval.spansMultipleYears(makeDateRangeWithDuration({ days: 367 }));
+        expect(result).toBeTruthy();
+      });
+
+      it('returns `true` if the range is less than 366 days long but crosses years', () => {
+        const result = interval.spansMultipleYears(
+          makeDateRangeWithDuration({ days: 20 }, '2020-12-25T00:00:00')
+        );
+        expect(result).toBeTruthy();
+      });
+    });
+
+    describe('`getStartingYear` method', () => {
+      it('returns `null` if no object is provided', () => {
+        expect(interval.getStartDate(undefined)).toBeNull();
+      });
+
+      it('returns `false` if the object does not have a date range', () => {
+        expect(interval.getStartDate(nullDateRange)).toBeNull();
+      });
+
+      it("returns the year of the range's starting date", () => {
+        const result = interval.getStartDate(makeDateRangeWithDuration({ days: 367 }));
+        expect(result!.year).toEqual(2020);
+        expect(result!.month).toEqual(1);
+        expect(result!.day).toEqual(1);
+      });
+    });
+
+    describe('`hasYear` method', () => {
+      const dateTime2019 = DateTime.fromObject({ year: 2019 });
+      const dateTime2020 = DateTime.fromObject({ year: 2020 });
+
+      it('returns `true` if the year is null', () => {
+        expect(interval.hasYear(undefined, null)).toBeTruthy();
+        expect(interval.hasYear(nullDateRange, null)).toBeTruthy();
+      });
+
+      it('returns `false` if no object is provided', () => {
+        expect(interval.hasYear(undefined, dateTime2020)).toBeFalsy();
+      });
+
+      it('returns `false` if the object does not have a date range', () => {
+        expect(interval.hasYear(nullDateRange, dateTime2020)).toBeFalsy();
+      });
+
+      it('returns `false` if the object has a different year', () => {
+        expect(
+          interval.hasYear(
+            makeDateRangeWithDuration({ days: 367 }, '2018-01-01T00:00:00'),
+            dateTime2019
+          )
+        ).toBeFalsy();
+      });
+
+      it('returns `true` if the object has the given year', () => {
+        expect(
+          interval.hasYear(
+            makeDateRangeWithDuration({ days: 367 }, '2020-01-01T00:00:00'),
+            dateTime2020
+          )
+        ).toBeTruthy();
+      });
+    });
+
+    describe('`getDateRangeInterval` method', () => {
+      it('returns `null` when no object is provided', () => {
+        expect(interval.getDateRangeInterval(undefined)).toBeNull();
+      });
+
+      it('returns `null` when the object has no date range', () => {
+        expect(interval.getDateRangeInterval(nullDateRange)).toBeNull();
+      });
+
+      it('returns an interval when no unit is passed', () => {
+        const rangeObject = makeDateRangeWithDuration({ days: 1 });
+        const dateRange = interval.getDateRangeInterval(rangeObject);
+        expect(dateRange).toBeInstanceOf(Interval);
+        expect(dateRange?.length('days')).toEqual(1);
+      });
+
+      it('returns a number when a unit is passed', () => {
+        const rangeObject = makeDateRangeWithDuration({ years: 1 });
+        expect(interval.getDateRangeInterval(rangeObject, 'days')).toEqual(366);
+        expect(interval.getDateRangeInterval(rangeObject, 'months')).toEqual(12);
+        expect(interval.getDateRangeInterval(rangeObject, 'years')).toEqual(1);
+      });
     });
   });
 });

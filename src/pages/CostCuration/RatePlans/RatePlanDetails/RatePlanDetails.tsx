@@ -26,9 +26,10 @@ export const RatePlanDetails: React.FC = () => {
   const collections = _.sortBy(ratePlan?.rate_collections, 'effective_date').reverse();
 
   React.useEffect(() => {
-    if (collections.length === 0) setCreateFormOpen(true);
+    const loadedCollections = ratePlan?.rate_collections;
+    if (loadedCollections && loadedCollections.length === 0) setCreateFormOpen(true);
     setSelectedCollection((curr) => (curr && collections.includes(curr) ? curr : collections[0]));
-  }, [collections]);
+  }, [collections, ratePlan]);
 
   if (loading) return <Progress />;
 

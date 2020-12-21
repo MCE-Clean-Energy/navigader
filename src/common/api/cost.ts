@@ -1,24 +1,23 @@
-import _ from 'lodash';
-
 import store, { slices } from 'navigader/store';
 import {
-  RawCAISORate,
+  CAISORate,
   DataTypeParams,
   DynamicRestParams,
+  GHGRate,
+  IdType,
   PaginationQueryParams,
-  RawGHGRate,
-  RawScenario,
-  Scenario,
-  RawMeterGroup,
   RateCollection,
   RatePlan,
-  SystemProfile,
+  RawCAISORate,
+  RawGHGRate,
+  RawMeterGroup,
+  RawRatePlan,
+  RawScenario,
   RawSystemProfile,
-  GHGRate,
-  CAISORate,
-  IdType,
+  Scenario,
+  SystemProfile,
 } from 'navigader/types';
-import { appendQueryString, omitFalsey, serializers } from 'navigader/util';
+import { appendQueryString, serializers } from 'navigader/util';
 import {
   appendId,
   beoRoute,
@@ -89,9 +88,8 @@ type GetScenarioResponse = { meter_groups?: RawMeterGroup[]; scenario: RawScenar
 type GetGHGRateResponse = { ghg_rate: RawGHGRate };
 type GetGHGRatesResponse = { ghg_rates: RawGHGRate[] };
 type GetCAISORatesResponse = { caiso_rates: RawCAISORate[] };
-type RawRatePlan = Omit<RatePlan, 'rate_collections'> & { rate_collections?: number[] };
-type GetRatePlanResponse = { rate_collections?: RateCollection[]; rate_plan: RawRatePlan };
-type GetRatePlansResponse = { rate_collections?: RateCollection[]; rate_plans: RawRatePlan[] };
+type GetRatePlanResponse = { rate_plan: RawRatePlan };
+type GetRatePlansResponse = { rate_plans: RawRatePlan[] };
 type CreateRatePlanResponse = { rate_plan: RawRatePlan };
 type GetSystemProfilesResponse = { system_profiles: RawSystemProfile[] };
 
@@ -255,18 +253,7 @@ export async function getRatePlans(params?: GetRatePlansQueryOptions) {
   // under the plan
   const paginationSet = parsePaginationSet<GetRatePlansResponse, RatePlan>(
     response,
-    ({ rate_collections, rate_plans }) =>
-      rate_plans.map((ratePlan) => ({
-        ...ratePlan,
-        rate_collections: omitFalsey(
-          (ratePlan.rate_collections || []).map((collectionId) =>
-            _.find(rate_collections, { id: collectionId })
-          )
-        ),
-
-        // This field is included in the `RatePlan` type but not provided by the backend
-        object_type: 'RatePlan',
-      }))
+    ({ rate_plans }) => rate_plans.map(serializers.parseRatePlan)
   );
 
   // Add models to the store and return
@@ -283,11 +270,7 @@ export async function getRatePlan(
     params
   ).then((res) => res.json());
 
-  return {
-    ...response.rate_plan,
-    rate_collections: omitFalsey(response.rate_collections || []),
-    object_type: 'RatePlan',
-  };
+  return serializers.parseRatePlan(response.rate_plan);
 }
 
 export async function createRatePlan(params: CreateRatePlanParams): Promise<RatePlan> {
@@ -299,6 +282,7 @@ export async function createRatePlan(params: CreateRatePlanParams): Promise<Rate
   return {
     ...response.rate_plan,
     rate_collections: [], // New Rate Plans always have empty rate_collection sets
+    start_date: null, // New Rate Plans always have no start date (no rate collections)
     object_type: 'RatePlan',
   };
 }

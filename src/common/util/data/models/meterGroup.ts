@@ -1,13 +1,4 @@
-import { DurationUnit, Interval } from 'luxon';
-
-import {
-  AbstractMeterGroup,
-  isOriginFile,
-  isScenario,
-  Maybe,
-  Nullable,
-  OriginFile,
-} from 'navigader/types';
+import { isOriginFile, isScenario, Maybe, OriginFile } from 'navigader/types';
 
 /** ============================ Constants ================================= */
 const MIN_INGESTION_PERCENTAGE = 95;
@@ -40,38 +31,4 @@ export function isSufficientlyIngested(originFile: Maybe<OriginFile>) {
   // If origin files have sufficiently finished ingesting, they are selectable. We don't
   // require 100% completion in case a few meters fail to ingest.
   return originFile.progress.percent_complete >= MIN_INGESTION_PERCENTAGE;
-}
-
-/**
- * Determines if a meter group's dataframe spans multiple years, even if only partially. This is
- * a constraint imposed by the modeling. If the meter group's date range crosses multiple years,
- * returns `true`. Otherwise, even if no meter group is provided or it has no date range,
- * returns `false`.
- *
- * @param {AbstractMeterGroup} meterGroup: the meter group to check
- */
-export function spansMultipleYears(meterGroup: Maybe<AbstractMeterGroup>) {
-  const interval = getDateRangeInterval(meterGroup);
-  return interval !== null && !interval.hasSame('year');
-}
-
-/**
- * Returns a luxon `Interval` object representing the meter group's timespan. If the date range
- * is not available, return `null`. If a second parameter, `unit`, is provided, returns the length
- * of the interval in the given unit
- *
- * @param {AbstractMeterGroup} meterGroup: the meter group to return the interval of
- * @param {DurationUnit} unit: the unit in which to return the interval length. If not provided,
- *   the interval itself is returned
- */
-export function getDateRangeInterval(
-  meterGroup: Maybe<AbstractMeterGroup>,
-  unit: DurationUnit
-): Nullable<number>;
-export function getDateRangeInterval(meterGroup: Maybe<AbstractMeterGroup>): Nullable<Interval>;
-export function getDateRangeInterval(meterGroup: Maybe<AbstractMeterGroup>, unit?: DurationUnit) {
-  if (!meterGroup || !meterGroup.date_range) return null;
-  const [start, endLimit] = meterGroup.date_range;
-  const interval = Interval.fromDateTimes(start, endLimit);
-  return unit ? interval.length(unit) : interval;
 }

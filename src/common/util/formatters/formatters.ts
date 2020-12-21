@@ -7,7 +7,7 @@ import { parseDate } from '../serializers';
 
 /** ============================ Types ===================================== */
 type DollarFormatOptions = Partial<{ cents: boolean }>;
-type DateFormatterInput = Date | string;
+type DateFormatterInput = Date | DateTime | string;
 
 /** ============================ Formatters ================================ */
 /**
@@ -58,9 +58,16 @@ export function getMonthName(monthIndex: number) {
  * Utility methods for formatting dates consistently in the application. This will largely just be a
  * wrapper around Luxon
  */
-const wrapDate = (d: DateFormatterInput) => (_.isDate(d) ? d : parseDate(d));
-const formatDate = (d: DateFormatterInput, format: LocaleOptions & DateTimeFormatOptions) =>
-  DateTime.fromJSDate(wrapDate(d)).toLocaleString(format);
+const formatDate = (d: DateFormatterInput, format: LocaleOptions & DateTimeFormatOptions) => {
+  // Convert the input to a luxon DateTime object
+  const luxonDate: DateTime = (() => {
+    if (d instanceof DateTime) return d;
+    return DateTime.fromJSDate(_.isDate(d) ? d : parseDate(d));
+  })();
+
+  return luxonDate.toLocaleString(format);
+};
+
 export const date = {
   monthDayHourMinute: (date: DateFormatterInput) =>
     formatDate(date, {

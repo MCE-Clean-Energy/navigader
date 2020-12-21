@@ -8,6 +8,7 @@ import { Maybe } from 'navigader/types';
 
 /** ============================ Types ===================================== */
 type RadioProps = Omit<React.LabelHTMLAttributes<HTMLLabelElement>, 'onChange'> & {
+  disabled?: boolean;
   label: React.ReactNode;
   value: string;
 };

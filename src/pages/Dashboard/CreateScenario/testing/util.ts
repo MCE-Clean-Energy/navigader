@@ -51,6 +51,7 @@ export function makeState(state?: Partial<CreateScenarioState>): CreateScenarioS
     originFileSelections: [],
     name: null,
     scenarioSelections: [],
+    startDate: null,
     ...state,
   };
 }

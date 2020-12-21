@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import * as React from 'react';
 
 import { Nullable, Tuple } from 'navigader/types';
@@ -6,7 +7,7 @@ import { formatters } from 'navigader/util';
 import { Typography } from './Typography';
 
 /** ============================ Types ===================================== */
-type StandardDateProps = { date?: Date | string };
+type StandardDateProps = { date?: Nullable<Date | DateTime | string> };
 type StandardDateRangeProps = { range?: Nullable<Tuple<Date>> };
 
 /** ============================ Components ================================ */

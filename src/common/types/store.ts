@@ -18,6 +18,7 @@ import {
   ObjectWithId,
   RawSystemProfile,
   SystemProfile,
+  RawRatePlan,
 } from 'navigader/types';
 
 /** ============================ Models slice ============================== */
@@ -28,10 +29,10 @@ export type ModelClassInterior =
   | RawCAISORate
   | DERConfiguration
   | DERStrategy
-  | RatePlan
   | RawGHGRate
   | RawMeter
   | RawOriginFile
+  | RawRatePlan
   | RawScenario
   | RawSystemProfile;
 
@@ -54,7 +55,7 @@ export type ModelsSlice = {
   hasMeterGroups: Nullable<boolean>;
   meterGroups: RawMeterGroup[];
   meters: RawMeter[];
-  ratePlans: RatePlan[];
+  ratePlans: RawRatePlan[];
   systemProfiles: RawSystemProfile[];
 };
 

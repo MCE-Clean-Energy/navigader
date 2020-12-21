@@ -174,7 +174,10 @@ const SelectedCostFunctions: React.FC<CreateScenarioScreenProps> = (props) => {
         if (_.isEmpty(props.state.costFunctionSelections)) {
           return (
             <Typography variant="body1">
-              None selected. <Link to={routes.dashboard.createScenario.selectDers}>Add DERs</Link>
+              None selected.{' '}
+              <Link to={routes.dashboard.createScenario.selectCostFunctions}>
+                Add cost functions
+              </Link>
             </Typography>
           );
         }

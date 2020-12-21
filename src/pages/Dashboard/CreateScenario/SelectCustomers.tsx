@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { DateTime } from 'luxon';
 import * as React from 'react';
 
 import {
@@ -11,14 +12,15 @@ import {
   Typography,
 } from 'navigader/components';
 import { makeStylesHook } from 'navigader/styles';
-import { OriginFile, Scenario } from 'navigader/types';
-import { formatters, models } from 'navigader/util';
+import { Nullable, OriginFile, Scenario } from 'navigader/types';
+import { formatters, interval, models } from 'navigader/util';
 import { CreateScenarioScreenProps } from './common';
 
 /** ============================ Types ===================================== */
 type CommonChipProps = {
   onClick: () => void;
   selected: boolean;
+  startDate: Nullable<DateTime>;
 };
 
 type SelectOriginFileChipProps = CommonChipProps & { originFile: OriginFile };
@@ -78,18 +80,19 @@ const SelectionCard: React.FC<SelectionCardProps> = ({ title, children }) => {
 };
 
 const SelectOriginFileChip: React.FC<SelectOriginFileChipProps> = (props) => {
-  const { originFile, onClick, selected } = props;
+  const { originFile, onClick, selected, startDate } = props;
   const classes = useCustomerChipStyles();
   const { meter_count } = originFile;
   const { expected_meter_count } = originFile.metadata;
-  const spansMultipleYears = models.meterGroup.spansMultipleYears(originFile);
+  const spansMultipleYears = interval.spansMultipleYears(originFile);
+  const hasDifferentYear = !interval.hasYear(originFile, startDate);
   const ingested = models.meterGroup.isSufficientlyIngested(originFile);
 
   return (
     <MeterGroupChip
       className={classes.meterGroupChip}
       color={selected ? 'primary' : 'secondary'}
-      disabled={!ingested || spansMultipleYears}
+      disabled={!ingested || spansMultipleYears || hasDifferentYear}
       meterGroup={originFile}
       onClick={onClick}
       info={getTooltipText()}
@@ -118,6 +121,23 @@ const SelectOriginFileChip: React.FC<SelectOriginFileChipProps> = (props) => {
         This file contains data from multiple calendar years. Scenarios can only be run on files
         from the same year. This file contains data from ${dateRange}.
       `;
+    } else if (hasDifferentYear) {
+      const originFileStartDate = interval.getStartDate(originFile);
+      if (_.isNull(originFileStartDate)) {
+        // This is a strange situation in which the origin file has finished ingesting but for some
+        // reason we don't have a date range for it. It's possible the file has no meter data.
+        return `
+          File's start date could not be determined. Please refresh the page and try again, or
+          contact support.
+        `;
+      } else {
+        const originFileYear = originFileStartDate.year;
+        return `
+          This file's interval data is for the year ${originFileYear}, which differs from the year
+          of other selected customer segments (${startDate!.year}). All customer segments must have
+          the same calendar year or the scenarios will not be able to run properly.
+        `;
+      }
     }
   }
 };
@@ -142,8 +162,9 @@ const MeterGroups: React.FC<CreateScenarioScreenProps> = (props) => {
               <SelectOriginFileChip
                 key={originFile.id}
                 originFile={originFile}
-                onClick={toggleMeterGroup.bind(null, originFile.id)}
+                onClick={toggleMeterGroup.bind(null, originFile)}
                 selected={state.originFileSelections.includes(originFile.id)}
+                startDate={state.startDate}
               />
             ))}
           </Flex.Container>
@@ -154,24 +175,32 @@ const MeterGroups: React.FC<CreateScenarioScreenProps> = (props) => {
   );
 
   /** ========================== Callbacks ================================= */
-  function toggleMeterGroup(id: string) {
-    updateState({
-      originFileSelections: state.originFileSelections.includes(id)
-        ? _.without(state.originFileSelections, id)
-        : [...state.originFileSelections, id],
-    });
+  function toggleMeterGroup(originFile: OriginFile) {
+    const { id } = originFile;
+    const { originFileSelections } = state;
+    const wasSelected = originFileSelections.includes(id);
+    updateState(
+      {
+        originFileSelections: wasSelected
+          ? _.without(originFileSelections, id)
+          : [...originFileSelections, id],
+      },
+      wasSelected ? null : interval.getStartDate(originFile)
+    );
   }
 };
 
-const SelectScenarioChip: React.FC<SelectScenarioChipProps> = ({ scenario, onClick, selected }) => {
+const SelectScenarioChip: React.FC<SelectScenarioChipProps> = (props) => {
+  const { scenario, onClick, selected, startDate } = props;
   const classes = useCustomerChipStyles();
   const { is_complete, percent_complete } = scenario.progress;
+  const hasDifferentYear = !interval.hasYear(scenario, startDate);
 
   return (
     <MeterGroupChip
       className={classes.meterGroupChip}
       color={selected ? 'primary' : 'secondary'}
-      disabled={!is_complete}
+      disabled={!is_complete || hasDifferentYear}
       onClick={onClick}
       meterGroup={scenario}
       info={getTooltipText()}
@@ -180,20 +209,37 @@ const SelectScenarioChip: React.FC<SelectScenarioChipProps> = ({ scenario, onCli
 
   /** ========================== Helpers =================================== */
   function getTooltipText() {
-    if (is_complete) return undefined;
+    if (!is_complete) {
+      let rationale = `It is currently ${percent_complete}% complete`;
+      if (percent_complete === 100) {
+        rationale = `
+          The simulation has finished, and aggregate statistics are being produced. It should be
+          available for use shortly
+        `;
+      }
 
-    let rationale = `It is currently ${percent_complete}% complete`;
-    if (percent_complete === 100) {
-      rationale = `
-        The simulation has finished, and aggregate statistics are being produced. It should be
-        available for use shortly
+      return `
+        This scenario is still being processed. ${rationale}. You
+        can run a scenario with it once it has finished processing.
       `;
+    } else if (hasDifferentYear) {
+      const scenarioStartDate = interval.getStartDate(scenario);
+      if (_.isNull(scenarioStartDate)) {
+        // This is a strange situation in which the scenario has finished processing but for some
+        // reason we don't have a date range for it.
+        return `
+          Scenario's start date could not be determined. Please refresh the page and try again, or
+          contact support.
+        `;
+      } else {
+        const scenarioYear = scenarioStartDate.year;
+        return `
+          This scenario's interval data is for the year ${scenarioYear}, which differs from the year
+          of other selected customer segments (${startDate!.year}). All customer segments must have
+          the same calendar year or the scenarios will not be able to run properly.
+        `;
+      }
     }
-
-    return `
-      This scenario is still being processed. ${rationale}. You
-      can run a scenario with it once it has finished processing.
-    `;
   }
 };
 
@@ -222,9 +268,10 @@ const Scenarios: React.FC<CreateScenarioScreenProps> = (props) => {
             {scenarios.map((scenario) => (
               <SelectScenarioChip
                 key={scenario.id}
-                onClick={toggleScenario.bind(null, scenario.id)}
+                onClick={toggleScenario.bind(null, scenario)}
                 scenario={scenario}
                 selected={state.scenarioSelections.includes(scenario.id)}
+                startDate={state.startDate}
               />
             ))}
           </Flex.Container>
@@ -235,12 +282,18 @@ const Scenarios: React.FC<CreateScenarioScreenProps> = (props) => {
   );
 
   /** ========================== Callbacks ================================= */
-  function toggleScenario(id: string) {
-    updateState({
-      scenarioSelections: state.scenarioSelections.includes(id)
-        ? _.without(state.scenarioSelections, id)
-        : [...state.scenarioSelections, id],
-    });
+  function toggleScenario(scenario: Scenario) {
+    const { id } = scenario;
+    const { scenarioSelections } = state;
+    const wasSelected = scenarioSelections.includes(id);
+    updateState(
+      {
+        scenarioSelections: wasSelected
+          ? _.without(scenarioSelections, id)
+          : [...scenarioSelections, id],
+      },
+      wasSelected ? null : interval.getStartDate(scenario)
+    );
   }
 };
 

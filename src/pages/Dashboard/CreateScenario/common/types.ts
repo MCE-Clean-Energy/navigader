@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 import * as api from 'navigader/api';
 import {
   CostFunctions,
@@ -22,6 +24,7 @@ export type CreateScenarioState = {
   originFileSelections: OriginFile['id'][];
   name: Nullable<string>;
   scenarioSelections: Scenario['id'][];
+  startDate: Nullable<DateTime>;
 };
 
 export type CreateScenarioScreenProps = {
@@ -34,5 +37,5 @@ export type CreateScenarioScreenProps = {
 
   // State props
   state: CreateScenarioState;
-  updateState: (state: Partial<CreateScenarioState>) => void;
+  updateState: (state: Partial<CreateScenarioState>, startDate?: Nullable<DateTime>) => void;
 };

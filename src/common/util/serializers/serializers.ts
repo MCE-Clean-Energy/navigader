@@ -6,28 +6,33 @@ import {
   AbstractRawMeterGroup,
   CAISORate,
   DataTypeMap,
+  DateRange,
   GHGRate,
   isRawScenarioReport,
   isRawScenarioReportSummary,
   Meter,
   MeterGroup,
+  Nullable,
   OriginFile,
   PandasFrame,
+  RatePlan,
   RawCAISORate,
   RawDataTypeMap,
+  RawDateRange,
   RawGHGRate,
   RawMeter,
   RawMeterGroup,
   RawOriginFile,
   RawPandasFrame,
+  RawRatePlan,
   RawScenario,
+  RawSystemProfile,
   Scenario,
   ScenarioReport,
   ScenarioReportFields,
-  RawSystemProfile,
   SystemProfile,
 } from 'navigader/types';
-import { Frame288Numeric, makeIntervalData, percentOf } from '../data';
+import { Frame288Numeric, IntervalData, percentOf } from '../data';
 
 /** ============================ Meters ==================================== */
 export function parseMeter(meter: RawMeter): Meter {
@@ -49,6 +54,7 @@ export function parseSystemProfile(profile: RawSystemProfile): SystemProfile {
   return {
     ...profile,
     data: parseDataField(profile.data, profile.name, 'kw', 'index'),
+    date_range: parseDateRange(profile.date_range),
   };
 }
 
@@ -56,6 +62,7 @@ export function serializeSystemProfile(profile: SystemProfile): RawSystemProfile
   return {
     ...profile,
     data: serializeDataField(profile.data, 'kw', 'index'),
+    date_range: serializeDateRange(profile.date_range),
   };
 }
 
@@ -92,26 +99,11 @@ export function parseMeterGroup(rawMeterGroup: RawMeterGroup): MeterGroup {
   }
 }
 
-/**
- * Helper function for parsing the meter group's `date_range` field
- *
- * @param {Tuple<String>} range: the range of the meter group as provided by the back end
- */
-function parseDateRange(
-  range: AbstractRawMeterGroup['date_range']
-): AbstractMeterGroup['date_range'] {
-  return range.includes(NOT_A_TIME) ? null : [parseDate(range[0]), parseDate(range[1])];
-}
-
 export function serializeMeterGroup(meterGroup: AbstractMeterGroup): AbstractRawMeterGroup {
-  const { date_range } = meterGroup;
   return {
     ...meterGroup,
     data: serializeDataField(meterGroup.data, 'kw', 'index'),
-    date_range:
-      date_range === null
-        ? [NOT_A_TIME, NOT_A_TIME]
-        : [serializeDate(date_range[0]), serializeDate(date_range[1])],
+    date_range: serializeDateRange(meterGroup.date_range),
   };
 }
 
@@ -283,6 +275,7 @@ export function parseGHGRate(rate: RawGHGRate): GHGRate {
           units: 'tCO2/kW',
         })
       : undefined,
+    effective: parseDate(rate.effective),
     id: rate.id,
 
     // This is declared as part of the `RawGHGRate` type but it isn't provided by the backend
@@ -294,6 +287,7 @@ export function serializeGHGRate(rate: GHGRate): RawGHGRate {
   return {
     ...rate,
     data: rate.data?.frame,
+    effective: serializeDate(rate.effective),
     id: rate.id,
   };
 }
@@ -303,6 +297,7 @@ export function parseCAISORate(rate: RawCAISORate): CAISORate {
   return {
     ...rate,
     data: parseDataField(rate.data || {}, rate.name, '$/kwh', 'start'),
+    date_range: parseDateRange(rate.date_range),
 
     // This is declared as part of the `RawCAISORate` type but it isn't
     // provided by the backend
@@ -314,7 +309,23 @@ export function serializeCAISORate(rate: CAISORate): RawCAISORate {
   return {
     ...rate,
     data: serializeDataField(rate.data, '$/kwh', 'start'),
+    date_range: serializeDateRange(rate.date_range),
   };
+}
+
+/** ============================ Rate plans ================================ */
+export function parseRatePlan(ratePlan: RawRatePlan): RatePlan {
+  return {
+    ...ratePlan,
+    start_date: parseDateTime(ratePlan.start_date),
+
+    // This field is included in the `RatePlan` type but not provided by the backend
+    object_type: 'RatePlan',
+  };
+}
+
+export function serializeRatePlan(ratePlan: RatePlan): RawRatePlan {
+  return { ...ratePlan, start_date: serializeDateTime(ratePlan.start_date) };
 }
 
 /** ============================ Pandas ==================================== */
@@ -378,7 +389,9 @@ function parseDataField<Column extends string, Unit extends string>(
   return {
     ...obj,
     default:
-      obj && obj.default ? makeIntervalData({ ...obj.default, name }, column, unit) : undefined,
+      obj && obj.default
+        ? IntervalData.fromObject({ ...obj.default, name }, column, unit)
+        : undefined,
   };
 }
 
@@ -401,14 +414,47 @@ function serializeDataField<Column extends string, Unit extends string>(
 
 /** ============================ Data fields =============================== */
 /**
+ * Parses a date string into a luxon DateTime object. Note that using the `Date` constructor is
+ * unreliable across browsers: ambiguous date strings that omit timezone info will be interpreted
+ * differently by different browsers.
+ *
+ * @param {Nullable<string>} dateString: the string to parse.
+ */
+export function parseDateTime(dateString: string): DateTime;
+export function parseDateTime(dateString: null): null;
+export function parseDateTime(dateString: Nullable<string>): Nullable<DateTime>;
+export function parseDateTime(dateString: Nullable<string>): Nullable<DateTime> {
+  if (_.isNull(dateString)) return null;
+  return DateTime.fromISO(dateString);
+}
+
+/**
  * Parses a date string into a `Date` object, using Luxon. Note that using the `Date` constructor is
  * unreliable across browsers: ambiguous date strings that omit timezone info will be interpreted
  * differently by different browsers.
  *
- * @param {string} dateString: the string to parse.
+ * TODO: replace this completely with parseLuxonDate-- will require editing a lot of types
+ *
+ * @param {Nullable<string>} dateString: the string to parse.
  */
-export function parseDate(dateString: string) {
-  return DateTime.fromISO(dateString).toJSDate();
+export function parseDate(dateString: string): Date;
+export function parseDate(dateString: null): null;
+export function parseDate(dateString: Nullable<string>): Nullable<Date>;
+export function parseDate(dateString: Nullable<string>) {
+  return parseDateTime(dateString)?.toJSDate() ?? null;
+}
+
+/**
+ * Serializes a luxon DateTime object into a string
+ *
+ * @param {Nullable<DateTime>} date: the luxon DateTime object to serialize
+ */
+export function serializeDateTime(date: DateTime): string;
+export function serializeDateTime(date: null): null;
+export function serializeDateTime(date: Nullable<DateTime>): Nullable<string>;
+export function serializeDateTime(date: Nullable<DateTime>) {
+  if (_.isNull(date)) return null;
+  return serializeDate(date.toJSDate());
 }
 
 /**
@@ -421,4 +467,27 @@ export function parseDate(dateString: string) {
  */
 export function serializeDate(date: Date) {
   return date.toISOString();
+}
+
+/**
+ * Helper function for parsing the `date_range` fields. If either the start or the end of the range
+ * is "NaT", returns `null`.
+ *
+ * @param {RawDateRange} range: a tuple of strings representing the start and end of the range
+ */
+function parseDateRange(range: RawDateRange['date_range']): DateRange['date_range'] {
+  return range.includes(NOT_A_TIME) ? null : [parseDate(range[0]), parseDate(range[1])];
+}
+
+/**
+ * Serializes a `date_range` field. If the range field is `null`, that implies that either the start
+ * or the end of the raw date range contained "NaT". We can't know which at this point, so we will
+ * serialize both the start and end as "NaT".
+ *
+ * @param {DateRange} range: the parsed date range object to serialize
+ */
+function serializeDateRange(range: DateRange['date_range']): RawDateRange['date_range'] {
+  return range === null
+    ? [NOT_A_TIME, NOT_A_TIME]
+    : [serializeDate(range[0]), serializeDate(range[1])];
 }
