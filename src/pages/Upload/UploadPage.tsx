@@ -8,6 +8,7 @@ import {
   Card,
   Collapse,
   ContactSupport,
+  FileSize,
   Flex,
   Grid,
   Link,
@@ -20,7 +21,7 @@ import { routes } from 'navigader/routes';
 import { slices } from 'navigader/store';
 import { makeStylesHook } from 'navigader/styles';
 import { Maybe } from 'navigader/types';
-import { FileSize } from 'navigader/components';
+import { HELP_PAGE_URI } from 'navigader/util';
 
 /** ============================ Types ===================================== */
 type UploadingStatus = 'not started' | 'uploading' | 'success' | 'failure';
@@ -221,6 +222,18 @@ const FileFormatAlert: React.FC = () => {
         <Typography.Code>DATE</Typography.Code> column and the latest date in the{' '}
         <Typography.Code>DATE</Typography.Code> column are in different calendar years, the file
         will not be available for running simulations.
+      </Typography>
+
+      <Typography paragraph variant="body2">
+        {HELP_PAGE_URI ? (
+          <span>
+            For guidance on how to combine electric interval data and gas interval data into a
+            single "hybrid gas-electric interval" file, instructional videos about NavigaDER and
+            general troubleshooting tips, visit the{' '}
+            <Link.NewTab to={HELP_PAGE_URI}>help page</Link.NewTab>.{' '}
+          </span>
+        ) : null}
+        If you have trouble with an upload, please <ContactSupport />.
       </Typography>
     </Alert>
   );

@@ -9,9 +9,8 @@ import { Gradient } from '../branding';
 import { Button } from '../Button';
 import * as Flex from '../Flex';
 import { Padding } from '../Padding';
-import { AccountMenu } from './AccountMenu';
+import { AppBarActions } from './AppBarActions';
 import { DRAWER_WIDTH } from './common';
-import { Feedback } from './Feedback';
 
 /** ============================ Types ===================================== */
 type AppBarProps = {
@@ -97,10 +96,7 @@ export const AppBar: React.FC<AppBarProps> = ({ drawerOpen, openDrawer }) => {
               </Flex.Item>
 
               <Flex.Item>
-                <Flex.Container alignItems="center" className={classes.rightSide}>
-                  <Feedback />
-                  <AccountMenu />
-                </Flex.Container>
+                <AppBarActions />
               </Flex.Item>
             </Flex.Container>
           </Padding>

@@ -18,16 +18,23 @@ npm install
 
 Building the application requires a `.env` file to specify certain environment variables:
 
-- `REACT_APP_ENV`: a simple representation of the current environment. Typically `prod` or
-  `staging` or `local`
-- `REACT_APP_BEO_URI`: the URI of the `beo_datastore` backend that will be serving data to the
-  front end. This should omit a trailing `/`.
+- `REACT_APP_BEO_URI`: _Required_. The URI where the backend of the BEO application is hosted. This
+  is automatically set in the deployment script. This should omit a trailing `/`.
+- `REACT_APP_SUPPORT_EMAIL`: _Strongly recommended_. The email address where users will be directed
+  to send support messages. If this is excluded, the "Submit Feedback" icon in the application
+  header will not be rendered.
+- `REACT_APP_ENV`: _Optional_. The environment of the NavigaDER deployment. Typically this will be
+  one of `prod`, `staging` or `local`. This is automatically set in the deployment script.
+- `REACT_APP_HELP_PAGE_URI`: _Optional_. The URI where the User Manual/help page is hosted. If
+  omitted, the "Help" button in the application header will not render.
 
 Full example:
 
 ```
+REACT_APP_BEO_URI=https://api.navigader.com
+REACT_APP_SUPPORT_EMAIL=support@navigader.com
 REACT_APP_ENV=local
-REACT_APP_BEO_URI=http://localhost:8000
+REACT_APP_HELP_PAGE_URI=https://navigader.com/user-manual
 ```
 
 You can confirm if the installation worked successfully by running `npm start`. This will launch the
