@@ -154,9 +154,10 @@ export const EVSEStrategyDialog: React.FC<EVSEStrategyDialogProps> = (props) => 
   function getEmptyFields(state: EVSEStrategyDialogState) {
     const requiredFields: Array<keyof EVSEStrategyDialogState> = [
       'charge_off_nem',
-      'start_charge_hour',
+      'distance',
       'end_charge_hour',
       'name',
+      'start_charge_hour',
     ];
 
     return requiredFields.filter((field) => _.isUndefined(state[field]));
