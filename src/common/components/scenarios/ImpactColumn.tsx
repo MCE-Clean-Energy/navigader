@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { makeStylesHook } from 'navigader/styles';
-import { AlertType, CostFunctionShort, Maybe, Nullable } from 'navigader/types';
+import { AlertType, Maybe, Scenario } from 'navigader/types';
 import { omitFalsey } from 'navigader/util';
 
 import * as Flex from '../Flex';
@@ -13,8 +13,9 @@ import { Typography } from '../Typography';
 /** ============================ Types ===================================== */
 type ImpactColumnProps = React.PropsWithChildren<{
   children: (n: Maybe<number>) => React.ReactNode;
-  costFn: Nullable<CostFunctionShort>;
+  costFnClass: keyof Scenario['cost_functions'];
   costCalculation: Maybe<number>;
+  scenario: Scenario;
 }>;
 
 type ImpactColumnHeaderProps = TableCellProps & {
@@ -69,12 +70,21 @@ const ImpactColumnHeader: React.FC<ImpactColumnHeaderProps> = (props) => {
 
 export const ImpactColumn = Object.assign(
   function ImpactColumn(props: ImpactColumnProps) {
-    const { children, costCalculation, costFn } = props;
+    const { children, costCalculation, costFnClass, scenario } = props;
+    const costFn = scenario.cost_functions[costFnClass];
+
+    const costFnClassName = {
+      ghg_rate: 'GHG rate',
+      procurement_rate: 'procurement rate',
+      rate_plan: 'rate plan',
+      system_profile: 'system profile',
+    }[costFnClass];
 
     // Determine the text to show in the popover. If there's a cost calculation but no cost
     // function, that implies the cost function was deleted.
     const [hoverText, alertType] = (() => {
-      if (costCalculation === undefined) return [undefined, undefined];
+      if (!scenario.progress.is_complete) return ['Scenario is processing', 'info'];
+      if (costCalculation === undefined) return [`No ${costFnClassName} selected`, undefined];
       if (costFn) return [`Calculated with ${costFn.name}`, undefined];
       return ['Cost function has been deleted', 'warning'];
     })() as [Maybe<string>, Maybe<AlertType>];

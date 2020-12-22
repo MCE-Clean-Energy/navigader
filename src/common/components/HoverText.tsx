@@ -35,13 +35,13 @@ export const HoverText: React.FC<HoverTextProps> = (props) => {
 
   // Wrap the text in an Alert if a `type` prop was given
   const [TextWrapper, padding] = _.isUndefined(type)
-    ? [<div />, undefined]
-    : [<Alert type={type} />, 0];
+    ? [<div />, 2]
+    : [<Alert type={type} />, undefined];
 
   // Otherwise wrap the children within a Popover and render them with some textDecoration
   return (
     <Popover HoverComponent={React.cloneElement(TextWrapper, { children: text })} padding={padding}>
-      <span className={classes.hoverText}>{children}</span>
+      <div className={classes.hoverText}>{children}</div>
     </Popover>
   );
 };

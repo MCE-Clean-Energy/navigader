@@ -32,7 +32,7 @@ type CostFunctionCardProps = {
 const useStyles = makeStylesHook(
   (theme) => ({
     cardTitle: { padding: theme.spacing(2, 2, 0) },
-    hover: { maxWidth: 500, padding: 0 },
+    hover: { maxWidth: 500 },
     radioList: { maxHeight: 500, overflowY: 'auto' },
   }),
   'CostFunctionCard'

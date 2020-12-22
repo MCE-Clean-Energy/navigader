@@ -265,37 +265,41 @@ export const ScenariosTable: React.FC<ScenariosTableProps> = (props) => {
                 <Table.Cell align="right">
                   {formatters.commas(
                     formatters.maxDecimals(getField(scenario, 'UsageDelta', innerAveraged), 2)
-                  ) ?? '-'}
+                  ) ?? '--'}
                 </Table.Cell>
                 <ImpactColumn
                   costCalculation={getField(scenario, 'GHGDelta', innerAveraged)}
-                  costFn={scenario.cost_functions.ghg_rate}
+                  costFnClass="ghg_rate"
+                  scenario={scenario}
                 >
-                  {(n) => formatters.commas(formatters.maxDecimals(n, 2)) ?? '-'}
+                  {(n) => formatters.commas(formatters.maxDecimals(n, 2)) ?? '--'}
                 </ImpactColumn>
                 <ImpactColumn
                   costCalculation={getField(scenario, 'RADelta', innerAveraged)}
-                  costFn={scenario.cost_functions.system_profile}
+                  costFnClass="system_profile"
+                  scenario={scenario}
                 >
-                  {(n) => formatters.commas(formatters.maxDecimals(n, 2)) ?? '-'}
+                  {(n) => formatters.commas(formatters.maxDecimals(n, 2)) ?? '--'}
                 </ImpactColumn>
                 <ImpactColumn
                   costCalculation={getField(scenario, 'ProcurementCostDelta', innerAveraged)}
-                  costFn={scenario.cost_functions.procurement_rate}
+                  costFnClass="procurement_rate"
+                  scenario={scenario}
                 >
-                  {(n) => formatters.dollars(n) ?? '-'}
+                  {(n) => formatters.dollars(n) ?? '--'}
                 </ImpactColumn>
                 <ImpactColumn
                   costCalculation={getField(scenario, 'BillRevenueDelta', innerAveraged)}
-                  costFn={scenario.cost_functions.rate_plan}
+                  costFnClass="rate_plan"
+                  scenario={scenario}
                 >
-                  {(n) => formatters.dollars(n) ?? '-'}
+                  {(n) => formatters.dollars(n) ?? '--'}
                 </ImpactColumn>
                 <Table.Cell align="right">
-                  {formatters.dollars(getField(scenario, 'ExpenseDelta', innerAveraged)) ?? '-'}
+                  {formatters.dollars(getField(scenario, 'ExpenseDelta', innerAveraged)) ?? '--'}
                 </Table.Cell>
                 <Table.Cell align="right">
-                  {formatters.dollars(getField(scenario, 'ProfitDelta', innerAveraged)) ?? '-'}
+                  {formatters.dollars(getField(scenario, 'ProfitDelta', innerAveraged)) ?? '--'}
                 </Table.Cell>
                 {actionsMenu && <Table.Cell>{actionsMenu(scenario)}</Table.Cell>}
               </Table.Row>

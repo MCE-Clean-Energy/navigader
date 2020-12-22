@@ -27,16 +27,7 @@ type OriginFileDetailsProps = { info: React.ReactNode; originFile: OriginFile };
 type DERSectionProps = { field: string; value: string };
 
 /** ============================ Styles ==================================== */
-const useStyles = makeStylesHook(
-  () => ({
-    hover: {
-      maxWidth: 500,
-      padding: 0,
-    },
-  }),
-  'MeterGroupChip'
-);
-
+const useStyles = makeStylesHook(() => ({ hover: { maxWidth: 500 } }), 'MeterGroupChip');
 const useDetailsBoxStyles = makeStylesHook(
   (theme) => ({
     meterGroup: {
