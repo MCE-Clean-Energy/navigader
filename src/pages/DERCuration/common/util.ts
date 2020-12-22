@@ -159,18 +159,18 @@ async function deleteDER(
 
   // If the request succeeded, remove the DER object from the store and print a snackbar success
   // message.
+  let errorMsg = 'Something went wrong. Please try again or contact support.';
   if (response.ok) {
     dispatch(slices.models.removeModel(object));
     dispatch(slices.ui.setMessage({ type: 'success', msg: 'DER successfully deleted' }));
     return true;
+  } else if (response.status === 403) {
+    errorMsg = 'You do not have permission to delete this DER object!';
+  } else if (response.status === 400) {
+    errorMsg = await response.json();
   }
 
   // Otherwise if the response returned a 403 (HTTP Forbidden), print a snackbar error message
-  const errorMsg =
-    response.status === 403
-      ? 'You do not have permission to delete this DER object!'
-      : 'Something went wrong. Please try again or contact support.';
-
   dispatch(slices.ui.setMessage({ msg: errorMsg, type: 'error' }));
   return false;
 }
