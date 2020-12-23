@@ -25,10 +25,12 @@ const useStyles = makeStylesHook(
 export const CAISORateDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const classes = useStyles();
-  const { caisoRate, loading } = hooks.useCAISORate(+id, { data_types: ['default'] });
+  const caisoRate = hooks.useCAISORate(+id, { data_types: ['default'] });
   const [selectedMonth, setSelectedMonth] = React.useState<MonthIndex>(
     DateTime.local().month as MonthIndex
   );
+
+  if (!caisoRate) return null;
 
   return (
     <Grid>
@@ -46,7 +48,7 @@ export const CAISORateDetails: React.FC = () => {
         </Button>
       </Grid.Item>
       <Grid.Item span={12}>
-        {caisoRate && !loading && (
+        {caisoRate.data.default && (
           <Grid>
             <Grid.Item span={12}>
               <Centered>

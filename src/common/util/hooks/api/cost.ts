@@ -8,6 +8,7 @@ import {
   CostFunctions,
   GHGRate,
   Loader,
+  Maybe,
   RatePlan,
   SystemProfile,
 } from 'navigader/types';
@@ -128,14 +129,17 @@ export function useCAISORates(filters: DataTypeFilters = {}): Loader<CAISORate[]
   return Object.assign([...caisoRates], { loading });
 }
 
-export function useCAISORate(caisoRateId: CAISORate['id'], filters: DataTypeFilters = {}) {
+export function useCAISORate(
+  caisoRateId: CAISORate['id'],
+  filters: DataTypeFilters = {}
+): Maybe<CAISORate> {
   const dispatch = useDispatch();
 
   // Check the store for CAISO rates that match the provided filters
   const storedCAISORates = useSelector(slices.models.selectCAISORates);
   const caisoRate = _.find(storedCAISORates, { id: caisoRateId });
 
-  const loading = useAsync(
+  useAsync(
     async () => {
       // If we've already loaded the rates, we don't need to do so again
       if (caisoRate) return;
@@ -151,7 +155,7 @@ export function useCAISORate(caisoRateId: CAISORate['id'], filters: DataTypeFilt
     (data) => dispatch(slices.models.updateModel(data))
   );
 
-  return Object.assign({ caisoRate, loading });
+  return caisoRate;
 }
 
 /** ============================ System profiles =========================== */
