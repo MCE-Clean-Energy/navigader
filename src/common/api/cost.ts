@@ -242,7 +242,7 @@ export async function deleteCAISORate(id: IdType) {
 
 export function downloadCAISORate(id: IdType, onProgress?: ProgressCallback) {
   const url = routes.caiso_rate.download(id);
-  return downloadFile(url, 'caiso-rate-data.csv', onProgress);
+  return downloadFile(url, 'procurement-rate-data.csv', onProgress);
 }
 
 /** ============================ Rate plans ================================ */
