@@ -24,7 +24,7 @@ case $environment in
   prod)
     export REACT_APP_ENV=prod;
     export REACT_APP_BEO_URI=https://api.navigader.com;
-    s3_uri=s3://navigader.com
+    s3_uri=s3://www.navigader.com
     cf_id=$PROD_CLOUDFRONT_ID;
     ;;
 esac
