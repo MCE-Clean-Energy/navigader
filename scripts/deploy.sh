@@ -37,7 +37,7 @@ npm run build;
 # Sync to S3
 printf '\n\n';
 echo "Deploying to S3 ($s3_uri)..."
-aws s3 sync build/ $s3_uri
+aws s3 sync ../build/ $s3_uri
 
 # Invalidate CloudFront cache
 printf '\n\n';
